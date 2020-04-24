@@ -1,0 +1,41 @@
+{
+  "name": "turbox-snippets",
+  "displayName": "Turbox Snippets",
+  "version": "1.0.0",
+  "description": "Code snippets for Turbox",
+  "author": "feifan <darknight3@vip.qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turboojs/turbox.git"
+  },
+  "scripts": {},
+  "publisher": "feifan-gff",
+	"engines": {
+		"vscode": "^1.28.0"
+	},
+	"categories": [
+		"Snippets"
+  ],
+  "icon": "https://img.alicdn.com/tfs/TB1ykVwDxD1gK0jSZFsXXbldVXa-349-349.png",
+	"contributes": {
+		"snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "javascriptreact",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/snippets.json"
+      }
+    ]
+	}
+}

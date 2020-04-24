@@ -1,0 +1,17 @@
+.vscode
+.DS_Store
+.difflintfiles
+.idea
+lerna-debug.log*
+npm-debug.log*
+node_modules
+.npmrc
+yarn-debug.log*
+yarn-error.log*
+lib
+dist
+es
+coverage
+ts
+typings
+.history

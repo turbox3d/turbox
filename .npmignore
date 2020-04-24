@@ -1,0 +1,18 @@
+# npm and yarn
+npm-debug.log*
+node_modules
+.npmrc
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Mac
+.DS_Store
+
+# git
+.git
+
+# Editor directories and files
+.idea
+.vscode
+.history

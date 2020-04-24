@@ -1,0 +1,51 @@
+{
+  "name": "turboo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "webpack-dev-server --config ./demo/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:turboojs/turbox.git"
+  },
+  "keywords": [
+    "framework",
+    "react",
+    "front-end"
+  ],
+  "author": "feifan <darknight3@vip.qq.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/runtime": "^7.6.3",
+    "@tacky/store": "^2.0.14",
+    "@types/jest": "^24.0.19",
+    "@types/node": "^12.11.5",
+    "@types/react": "^16.9.14",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^6.0.3",
+    "jest": "^25.3.0",
+    "lerna": "^3.20.2",
+    "lodash": "^4.17.15",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "ts-jest": "^24.1.0",
+    "ts-loader": "^7.0.0",
+    "typescript": "^3.6.4",
+    "vsce": "^1.68.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "dependencies": {}
+}

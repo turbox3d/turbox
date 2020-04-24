@@ -1,0 +1,30 @@
+language: node_js
+cache:
+  yarn: true
+node_js:
+  - 12.16.2
+
+stages:
+  - test
+  - name: deploy
+    if: tag =~ ^@turboo
+  - name: deploy-plugin
+    if: tag =~ ^@plugin
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - lerna bootstrap
+        - lerna run test
+    - stage: deploy
+      script:
+        - lerna bootstrap
+        - lerna run build:all
+        - cp .npmrc.template $HOME/.npmrc
+        - lerna publish from-package --yes
+    - stage: deploy-plugin
+      script:
+        - cp .vsce.template $HOME/.vsce
+        - cd ./plugins/turbox-snippets
+        - npx vsce publish

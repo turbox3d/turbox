@@ -1,0 +1,6 @@
+{
+  "publishers":[{
+    "name": "feifan-gff",
+    "pat": "${AZURE_ACCESS_TOKEN}"
+  }]
+}
