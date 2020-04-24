@@ -9,12 +9,6 @@ import { Domain } from './core/domain';
 import { init } from './core/init';
 import { undo, redo, getTimeTravelStatus } from './core/collector';
 
-// Proxy、Reflect、Symbol、Promise、Map、Set
-// "plugins": [
-//   "transform-decorators-legacy",
-//   "transform-class-properties"
-// ]
-
 export default {
   reactive,
   render,
