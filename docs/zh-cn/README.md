@@ -18,7 +18,7 @@
 |---------|--------|-------------|
 | @turboo/cli       | - | 工程命令行工具 |
 | @turboo/dev-tool       | - | 浏览器扩展插件 |
-| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets#review-details) | vscode 代码片段生成插件 |
+| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | vscode 代码片段生成插件 |
 
 ## 文档列表
 * <a href="https://turboojs.github.io/turbox/#/zh-cn/turbox" target="_blank">@turboo/turbox</a>

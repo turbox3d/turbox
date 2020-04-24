@@ -23,7 +23,7 @@
 |---------|--------|-------------|
 | @turboo/cli       | - | Project cli tool, include scaffolding |
 | @turboo/dev-tool       | - | Browser DevTools extension |
-| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets#review-details) | Vscode snippet extension |
+| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | Vscode snippet extension |
 
 ## Documentation
 [中文文档](https://turboojs.github.io/turbox/#/zh-cn/turbox)

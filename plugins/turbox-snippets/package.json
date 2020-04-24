@@ -17,7 +17,7 @@
 	"categories": [
 		"Snippets"
   ],
-  "icon": "https://img.alicdn.com/tfs/TB1ykVwDxD1gK0jSZFsXXbldVXa-349-349.png",
+  "icon": "images/turbox.png",
 	"contributes": {
 		"snippets": [
       {
