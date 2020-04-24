@@ -1,5 +1,5 @@
-import { applyMiddleware, use } from '../core/use'
-import { createStore } from '../core/store'
+import { applyMiddleware, use } from './use'
+import { createStore } from './store'
 import effectMiddleware from '../middlewares/effect'
 import loggerMiddleware from '../middlewares/logger'
 import { ctx } from '../const/config'

@@ -18,12 +18,12 @@
 |---------|--------|-------------|
 | @turboo/cli       | - | 工程命令行工具 |
 | @turboo/dev-tool       | - | 浏览器扩展插件 |
-<!-- | @turboo/snippet        | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets#review-details) | Vscode snippet extension | -->
+| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets#review-details) | vscode 代码片段生成插件 |
 
 ## 文档列表
-<!-- * <a href="https://turboojs.github.io/turboo/#/zh-cn/turbox" target="_blank">@turboo/turbox</a>
-* <a href="https://turboojs.github.io/turboo/#/zh-cn/cli" target="_blank">@turboo/cli</a>
-* <a href="https://turboojs.github.io/turboo/#/zh-cn/dev-tool" target="_blank">@turboo/dev-tool</a> -->
+* <a href="https://turboojs.github.io/turbox/#/zh-cn/turbox" target="_blank">@turboo/turbox</a>
+* <a href="https://turboojs.github.io/turbox/#/zh-cn/cli" target="_blank">@turboo/cli</a>
+* <a href="https://turboojs.github.io/turbox/#/zh-cn/dev-tool" target="_blank">@turboo/dev-tool</a>
 
 ## 问题
 暂时先发我邮件. (darknight3@vip.qq.com)
