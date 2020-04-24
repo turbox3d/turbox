@@ -1,5 +1,5 @@
 import { Domain } from './core/domain';
-import { Component } from 'react';
+import { ReactionId } from './core/collector';
 
 export type MiddlewareParam = {
   dispatch: (action: DispatchedAction) => DispatchedAction,
@@ -11,7 +11,7 @@ export interface Middleware {
 
 export interface Store {
   dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>,
-  subscribe: (listener: Function, componentInstanceUid: Component) => () => void,
+  subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void,
 }
 
 export interface AtomStateTree {

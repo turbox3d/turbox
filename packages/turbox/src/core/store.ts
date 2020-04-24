@@ -1,9 +1,8 @@
 import { Store, DispatchedAction, Mutation, EMaterialType } from '../interfaces';
 import { invariant } from '../utils/error';
-import { historyCollector } from './collector';
+import { historyCollector, ReactionId } from './collector';
 import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
-import { Component } from 'react';
 import { ctx } from '../const/config';
 import { materialCallStack } from './domain';
 
@@ -15,10 +14,10 @@ export function createStore(enhancer: (createStore: any) => Store) {
     return store;
   }
 
-  const componentUUIDToListeners: WeakMap<Component, Function[]> = new WeakMap();
+  const componentUUIDToListeners: WeakMap<ReactionId, Function[]> = new WeakMap();
   let isUpdating: boolean = false;
 
-  function subscribe(listener: Function, uuid: Component) {
+  function subscribe(listener: Function, uuid: ReactionId) {
     let isSubscribed = true;
     const listeners = componentUUIDToListeners.get(uuid);
 

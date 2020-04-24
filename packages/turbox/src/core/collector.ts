@@ -5,9 +5,11 @@ import { store } from './store';
 import generateUUID from '../utils/uuid';
 import { materialCallStack } from './domain';
 import { EMaterialType } from '../interfaces';
+import { Reaction } from './autoRun';
 
+export type ReactionId = Component | Reaction;
 export interface KeyToComponentIdsMap {
-  [key: string]: Component[];
+  [key: string]: ReactionId[];
 };
 
 export type TargetToKeysMap = Map<object, string[]>;
@@ -38,10 +40,10 @@ class DepCollector {
   /**
    * Using a small amount of memory to improve execute performance
    */
-  public reverseDependencyMap = new WeakMap<Component, TargetToKeysMap>();
-  private componentIdStack: Component[] = [];
+  public reverseDependencyMap = new WeakMap<ReactionId, TargetToKeysMap>();
+  private componentIdStack: ReactionId[] = [];
 
-  private clearCurrentComponentOldDeps(id: Component) {
+  private clearCurrentComponentOldDeps(id: ReactionId) {
     const targetToKeysMap = this.reverseDependencyMap.get(id);
     if (targetToKeysMap !== void 0) {
       targetToKeysMap.forEach((propKeys, targetKey) => {
@@ -63,7 +65,7 @@ class DepCollector {
     }
   }
 
-  start(id: Component) {
+  start(id: ReactionId) {
     this.clearCurrentComponentOldDeps(id);
     this.reverseDependencyMap.delete(id);
     this.componentIdStack.push(id);
@@ -160,7 +162,7 @@ class HistoryCollector {
    */
   public currentHistoryIdSet?: HistoryIdSet;
   public transactionHistories: HistoryNode[] = [];
-  public waitTriggerComponentIds: Component[] = [];
+  public waitTriggerComponentIds: ReactionId[] = [];
   public cursor: number = -1;
 
   collect(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {

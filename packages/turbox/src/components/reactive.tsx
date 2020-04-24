@@ -5,7 +5,7 @@ import { depCollector } from '../core/collector';
 
 export function reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
 export function reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
-// export function reactive(func: Function): any;
+
 /**
  * Returns a high order component with auto refresh feature.
  */
@@ -13,7 +13,7 @@ export function reactive<P extends object>(arg?: React.ComponentType<P> | Functi
   const decorator = <P extends object>(Target: React.ComponentType<P>): React.ComponentType<P> => {
     // const displayName: string = Target.displayName || Target.name || '<TURBOX_COMPONENT>';
     let _this: React.Component;
-    // Function component with do not have this context
+    // Function component do not have this context
     const ObservableTarget: React.FunctionComponent = (props: P) => {
       depCollector.start(_this);
       const fn = Target as React.FunctionComponent<P>;

@@ -8,9 +8,11 @@ import { reactor } from './decorators/reactor';
 import { Domain } from './core/domain';
 import { init } from './core/init';
 import { undo, redo, getTimeTravelStatus } from './core/collector';
+import { autoRun } from './core/autoRun';
 
 export default {
   reactive,
+  autoRun,
   render,
   effect,
   mutation,
@@ -26,6 +28,7 @@ export default {
 
 export {
   reactive,
+  autoRun,
   render,
   effect,
   mutation,

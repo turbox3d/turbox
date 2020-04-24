@@ -28,6 +28,11 @@ const cts = new Countertops({
   })],
 });
 
+// reactive(() => {
+//   const v = cts.countertops[0].points[0].position.x;
+//   console.log(v);
+// });
+
 const DemoBox = reactive(() => {
   const testAsync = () => {
     const p = new Point({
