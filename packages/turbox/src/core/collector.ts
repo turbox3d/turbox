@@ -330,7 +330,7 @@ export const redo = (stepNum: number = 1) => {
 
 export const getTimeTravelStatus = () => {
   return {
-    canUndo: historyCollector.canUndo(),
-    canRedo: historyCollector.canRedo(),
+    undoable: historyCollector.canUndo(),
+    redoable: historyCollector.canRedo(),
   };
 }

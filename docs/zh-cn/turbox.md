@@ -516,14 +516,16 @@ let ctx = {
 **@turboo/turbox** 默认在 reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
 ### time travelling
-框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态。
+框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态开启或关闭时间旅行记录器。
 ```typescript
 type undo = (stepNum: number = 1) => void;
 type redo = (stepNum: number = 1) => void;
 type getTimeTravelStatus = () => {
-  canUndo: boolean;
-  canRedo: boolean;
+  undoable: boolean;
+  redoable: boolean;
 };
+type enableTimeTravel = () => void;
+type disableTimeTravel = () => void;
 ```
 撤销恢复的每一步的定义跟上面章节提到的事务有关
 

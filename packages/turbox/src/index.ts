@@ -1,7 +1,7 @@
 import { reactive } from './components/reactive';
 import { render } from './components/render';
 import { use } from './core/use';
-import { config } from './const/config';
+import { config, enableTimeTravel, disableTimeTravel } from './const/config';
 import { mutation } from './decorators/mutation';
 import { effect } from './decorators/effect';
 import { reactor } from './decorators/reactor';
@@ -24,6 +24,8 @@ export default {
   undo,
   redo,
   getTimeTravelStatus,
+  enableTimeTravel,
+  disableTimeTravel,
 }
 
 export {
@@ -40,4 +42,6 @@ export {
   undo,
   redo,
   getTimeTravelStatus,
+  enableTimeTravel,
+  disableTimeTravel,
 }
