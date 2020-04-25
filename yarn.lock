@@ -2022,10 +2022,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@turboo/turbox@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@turboo/turbox/-/turbox-1.0.0.tgz#e9bca9aacb710e397c90590dbee97489bc56d99b"
-  integrity sha512-VWsnJSWonrGSRhLPpbNvEfXgbXk9P/qUOYbZP6b/7vYmXjvnkdROIdDxrT4Jhv8DvmnAB8ZstAnOJuCDIpKG9w==
+"@turboo/turbox@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@turboo/turbox/-/turbox-1.0.3.tgz#b587f428348ddfff63697dae673be02c8bc2e5cc"
+  integrity sha512-g2DX/F2aMFWRu27u+JqteT7THp+SleBMUZmy4z2iqIbFCufCphyIoeWz1W0bVe/vOghzdfHmKc4WzBDOOUFl1Q==
 
 "@types/babel__core@^7.1.7":
   version "7.1.7"
