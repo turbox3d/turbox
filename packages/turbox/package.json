@@ -1,6 +1,6 @@
 {
   "name": "@turboo/turbox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Large-scale reactive state management framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
