@@ -12,7 +12,7 @@ function createLoggerMiddleware(): Middleware {
       `%caction: ${action.name}, namespace: ${action.domain[NAMESPACE]}, prev state:`,
       'color: red'
     );
-    console.dir(deepMerge({}, action.domain, { clone: true })); // deep copy，logger current state before change.
+    console.dir(deepMerge({}, action.domain.properties, { clone: true })); // deep copy，logger current state before change.
     console.groupEnd();
 
     const nextResult = next(action); // wait the result of the next middleware
@@ -21,7 +21,7 @@ function createLoggerMiddleware(): Middleware {
       `%caction: ${action.name}, namespace: ${action.domain[NAMESPACE]}, next state:`,
       'color: green'
     );
-    console.dir(deepMerge({}, action.domain, { clone: true })); // deep copy，logger current state after change.
+    console.dir(deepMerge({}, action.domain.properties, { clone: true })); // deep copy，logger current state after change.
     console.groupEnd();
 
     return nextResult;

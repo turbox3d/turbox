@@ -18,7 +18,7 @@ export const materialCallStack: EMaterialType[] = [];
  */
 export class Domain<S = {}> {
   // prompt: add property do not forget sync to black list
-  private properties: { [key in keyof this]?: this[key] } = {};
+  public properties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
 
   constructor() {

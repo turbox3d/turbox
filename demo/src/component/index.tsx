@@ -1,4 +1,4 @@
-import { config, init, redo, reactive, undo } from '@turboo/turbox';
+import { config, init, redo, reactive, undo, autoRun } from '@turboo/turbox';
 import React from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -28,10 +28,15 @@ const cts = new Countertops({
   })],
 });
 
-// reactive(() => {
-//   const v = cts.countertops[0].points[0].position.x;
-//   console.log(v);
-// });
+const p = new Point({
+  position: new Point2d(100, 100),
+  type: EPointType.CIRCLE,
+});
+
+autoRun(() => {
+  console.log('&&&&&');
+  console.log(p.position);
+});
 
 const DemoBox = reactive(() => {
   const testAsync = () => {
@@ -80,6 +85,9 @@ const DemoBox = reactive(() => {
   const redoHandler = () => {
     redo();
   };
+  const updatePosition = () => {
+    p.updatePosition(new Point2d(200, 200));
+  };
   console.log('***parent');
 
   return (
@@ -121,6 +129,9 @@ const DemoBox = reactive(() => {
                 </button>
         <button onClick={updateFirstPointPosition}>
           更改第一个点
+                </button>
+        <button onClick={updatePosition}>
+          更改位置
                 </button>
       </div>
     </React.Fragment>
