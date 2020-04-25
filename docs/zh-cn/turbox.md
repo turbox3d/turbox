@@ -414,6 +414,16 @@ export default class Item extends React.Component {
 }
 ```
 
+### autoRun
+```typescript
+interface Options {
+  name: string;
+}
+type disposer = () => void;
+type autoRun = (func: Function, options?: Options) => disposer;
+```
+有些时候我们不想依赖于 react 组件，那么可以使用 autoRun 来包裹一个函数使其成为响应式函数，每次更新了该函数依赖到的属性时，该函数会被重新执行一次。autoRun 的返回值是一个 disposer 函数，调用它可以销毁这个函数的 autoRun 能力，以后就不会再响应变更。
+
 ### render
 ```typescript
 type render = (
@@ -516,7 +526,7 @@ let ctx = {
 **@turboo/turbox** 默认在 reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
 ### time travelling
-框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态开启或关闭时间旅行记录器。
+框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态开启或关闭时间旅行记录器、清空撤销恢复栈。
 ```typescript
 type undo = (stepNum: number = 1) => void;
 type redo = (stepNum: number = 1) => void;
@@ -526,6 +536,7 @@ type getTimeTravelStatus = () => {
 };
 type enableTimeTravel = () => void;
 type disableTimeTravel = () => void;
+type clearTimeTravelStack = () => void;
 ```
 撤销恢复的每一步的定义跟上面章节提到的事务有关
 

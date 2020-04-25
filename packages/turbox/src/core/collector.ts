@@ -316,6 +316,13 @@ class HistoryCollector {
       this.cursor -= 1;
     }
   }
+
+  clear() {
+    this.currentHistory = void 0;
+    this.currentHistoryIdSet = void 0;
+    this.transactionHistories = [];
+    this.cursor = -1;
+  }
 }
 
 export const historyCollector = new HistoryCollector();
@@ -333,4 +340,8 @@ export const getTimeTravelStatus = () => {
     undoable: historyCollector.canUndo(),
     redoable: historyCollector.canRedo(),
   };
+}
+
+export const clearTimeTravelStack = () => {
+  historyCollector.clear();
 }

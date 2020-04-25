@@ -7,7 +7,7 @@ import { effect } from './decorators/effect';
 import { reactor } from './decorators/reactor';
 import { Domain } from './core/domain';
 import { init } from './core/init';
-import { undo, redo, getTimeTravelStatus } from './core/collector';
+import { undo, redo, getTimeTravelStatus, clearTimeTravelStack } from './core/collector';
 import { autoRun } from './core/autoRun';
 
 export default {
@@ -26,6 +26,7 @@ export default {
   getTimeTravelStatus,
   enableTimeTravel,
   disableTimeTravel,
+  clearTimeTravelStack,
 }
 
 export {
@@ -44,4 +45,5 @@ export {
   getTimeTravelStatus,
   enableTimeTravel,
   disableTimeTravel,
+  clearTimeTravelStack,
 }
