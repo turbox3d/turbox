@@ -7,7 +7,7 @@
 [![install size](https://img.shields.io/bundlephobia/minzip/@turboo/turbox?style=flat-square)](https://www.npmjs.com/package/@turboo/turbox)
 
 ## 介绍
-**turbox** 是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
+**turbox**（涡轮）是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
 
 ### 快速上手
 一个最简单的例子：
