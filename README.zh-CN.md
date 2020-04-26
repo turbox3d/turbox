@@ -1,4 +1,4 @@
-English | [简体中文](./README.zh-CN.md)
+[English](./README.md) | 简体中文
 
 <p align="center">
   <img src="https://img.alicdn.com/tfs/TB1SqdcDrH1gK0jSZFwXXc7aXXa-349-349.png" alt="turbox Logo" width="86" height="86">
@@ -12,27 +12,27 @@ English | [简体中文](./README.zh-CN.md)
 
 <h2 align="center">Turbox</h2>
 
-**Turbox** is a large-scale reactive state management framework.
+**Turbox**（涡轮）是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
 
-## Ecosystem
+## 生态系统
 | Project | Status | Description |
 |---------|--------|-------------|
-| @turboo/cli       | - | Project cli tool, include scaffolding |
-| @turboo/dev-tool       | - | Browser DevTools extension |
-| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | Vscode snippet extension |
+| @turboo/cli       | - | 工程命令行工具 |
+| @turboo/dev-tool       | - | 浏览器扩展插件 |
+| @turboo/snippet  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | vscode 代码片段生成插件 |
 
-## Documentation
+## 文档
 [中文文档](https://turboojs.github.io/turbox/#/zh-cn/turbox)
 
 Visit [turbox official website](https://turboojs.github.io/turbox/#/en-us/).
 
-## Questions
-Send email to me temporary. (darknight3@vip.qq.com)
+## 问题
+暂时先发我邮件. (darknight3@vip.qq.com)
 
-## Changelog
-Detailed changes for each release are documented in the [changelog](https://turboojs.github.io/turbox/#/CHANGELOG).
+## 版本变更记录
+详细变更记录请看 [changelog](https://turboojs.github.io/turbox/#/CHANGELOG).
 
-## License
+## 许可证
 [MIT](http://opensource.org/licenses/MIT)
 
 Copyright (c) 2020-present, Feifan Gu (feifan, geoff)

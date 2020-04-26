@@ -1,17 +1,13 @@
 # Turbox
 
-<a href="https://travis-ci.com/github/turboojs/turbox">
-  <img src="https://img.shields.io/travis/com/turboojs/turbox/master.svg?style=flat-square" alt="Build Status">
-</a>
-<a href="https://www.npmjs.com/package/@turboo/turbox">
-  <img src="https://img.shields.io/npm/v/@turboo/turbox.svg?style=flat-square" alt="Npm Version">
-</a>
-<a href="https://www.npmjs.com/package/@turboo/turbox">
-  <img src="https://img.shields.io/npm/dm/@turboo/turbox.svg?style=flat-square" alt="Npm Downloads">
-</a>
+[![build status](https://img.shields.io/travis/com/turboojs/turbox/master.svg?style=flat-square)](https://travis-ci.com/github/turboojs/turbox)
+[![license](https://img.shields.io/github/license/turboojs/turbox?style=flat-square)](https://travis-ci.com/github/turboojs/turbox)
+[![npm version](https://img.shields.io/npm/v/@turboo/turbox.svg?style=flat-square)](https://www.npmjs.com/package/@turboo/turbox)
+[![npm downloads](https://img.shields.io/npm/dm/@turboo/turbox.svg?style=flat-square)](https://www.npmjs.com/package/@turboo/turbox)
+[![install size](https://img.shields.io/bundlephobia/minzip/@turboo/turbox?style=flat-square)](https://www.npmjs.com/package/@turboo/turbox)
 
 ## 介绍
-**Turbox** 是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
+**Turbox**（涡轮）是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
 
 ## 生态系统
 | Project | Status | Description |
