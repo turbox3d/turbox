@@ -26,8 +26,10 @@
 
 Visit [turbox official website](https://turboojs.github.io/turbox/#/en-us/).
 
-## 问题
-暂时先发我邮件. (darknight3@vip.qq.com)
+## 反馈
+| Github Issue | 微信群 |
+| --- | --- |
+| [turboojs/turbox/issues](https://github.com/turboojs/turbox/issues) | <img src="https://img.alicdn.com/tfs/TB1jrwCEQY2gK0jSZFgXXc5OFXa-670-614.png" width="120" /> |
 
 ## 版本变更记录
 详细变更记录请看 [changelog](https://turboojs.github.io/turbox/#/CHANGELOG).
