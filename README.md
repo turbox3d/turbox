@@ -26,8 +26,10 @@ English | [简体中文](./README.zh-CN.md)
 
 Visit [turbox official website](https://turboojs.github.io/turbox/#/en-us/).
 
-## Questions
-Send email to me temporary. (darknight3@vip.qq.com)
+## Feedback
+| Github Issue | Wechat |
+| --- | --- |
+| [turboojs/turbox/issues](https://github.com/turboojs/turbox/issues) | <img src="https://img.alicdn.com/tfs/TB1jrwCEQY2gK0jSZFgXXc5OFXa-670-614.png" width="120" /> |
 
 ## Changelog
 Detailed changes for each release are documented in the [changelog](https://turboojs.github.io/turbox/#/CHANGELOG).
