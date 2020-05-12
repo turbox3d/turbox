@@ -2,6 +2,7 @@ import Point2d from '../math/Point2d';
 import { Domain, effect, mutation, reactor } from '@turboo/turbox';
 import { Line } from './line';
 import { Point } from './point';
+import { EPointType } from '../types/enum';
 
 export class Countertop extends Domain {
   @reactor points: Point[];
@@ -11,7 +12,7 @@ export class Countertop extends Domain {
     return this.lines.length === this.points.length;
   }
 
-  @mutation
+  // @mutation
   linkPointsAndLines = () => {
     this.lines.forEach((line, index) => {
       const startPoint = this.points[index];
@@ -38,11 +39,29 @@ export class Countertop extends Domain {
   @mutation
   updateFirstPointPosition() {
     this.points[0].position = new Point2d(-1, -1);
+    // this.testEffect(new Point({
+    //   position: new Point2d(100, 100),
+    //   type: EPointType.NONE,
+    // }), new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // }));
+    this.addPoint(new Point({
+      position: new Point2d(100, 100),
+      type: EPointType.NONE,
+    }));
   }
 
   @mutation
   addPoint(point: Point) {
     this.points.push(point);
+    // this.linkPointsAndLines();
   }
 
   delay = () => {
@@ -51,6 +70,12 @@ export class Countertop extends Domain {
         resolve();
       }, 2000);
     });
+  }
+
+  @effect
+  async testTwoEffect(p: Point, l: Line) {
+    this.testEffect(p, l);
+    this.testEffect(p, l);
   }
 
   @effect

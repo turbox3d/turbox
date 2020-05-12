@@ -57,8 +57,9 @@ const DemoBox = reactive(() => {
         type: EPointType.NONE,
       }),
     });
-    cts.countertops[0].testEffect(p, l);
-    cts.countertops[0].testEffect(p, l);
+    // cts.countertops[0].testEffect(p, l);
+    // cts.countertops[0].testEffect(p, l);
+    cts.countertops[0].testTwoEffect(p, l);
   };
   const addPoint = () => {
     const p = new Point({

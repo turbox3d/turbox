@@ -7,6 +7,7 @@ import { ctx } from '../const/config';
 import { materialCallStack } from './domain';
 
 export let store: Store;
+export let isUpdating: boolean = false;
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -15,7 +16,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
   }
 
   const componentUUIDToListeners: WeakMap<ReactionId, Function[]> = new WeakMap();
-  let isUpdating: boolean = false;
 
   function subscribe(listener: Function, uuid: ReactionId) {
     let isSubscribed = true;
@@ -56,8 +56,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
       isAtom,
       isInner = false,
     } = action;
-
-    invariant(!isUpdating, 'Cannot trigger other mutation while the current mutation is executing.');
 
     const callback = () => {
       if (triggerCollector.waitTriggerComponentIds.length > 0) {
