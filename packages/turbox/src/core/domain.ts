@@ -3,10 +3,11 @@ import { EMaterialType, Mutation } from '../interfaces';
 import { isPlainObject, convert2UniqueString, hasOwn, isObject, bind, isDomain } from '../utils/common';
 import { invariant } from '../utils/error';
 import generateUUID from '../utils/uuid';
-import { depCollector, historyCollector, EOperationTypes } from './collector';
+import { depCollector, triggerCollector } from './collector';
 import { canObserve } from '../utils/decorator';
 import { store } from './store';
 import { ReactorConfig } from '../decorators/reactor';
+import { EOperationTypes } from './timeTravel';
 
 const proxyCache = new WeakMap<any, any>();
 const rawCache = new WeakMap<any, any>();
@@ -47,7 +48,7 @@ export class Domain<S = {}> {
 
     if (oldValue !== v) {
       this.properties[stringKey] = v;
-      historyCollector.collect(this, stringKey, {
+      triggerCollector.trigger(this, stringKey, {
         type: EOperationTypes.SET,
         beforeUpdate: oldValue,
         didUpdate: v,
@@ -65,13 +66,13 @@ export class Domain<S = {}> {
     if (target === proxyCache.get(receiver)) {
       const result = Reflect.set(target, key, value, receiver);
       if (!hadKey) {
-        historyCollector.collect(target, stringKey, {
+        triggerCollector.trigger(target, stringKey, {
           type: EOperationTypes.ADD,
           beforeUpdate: oldValue,
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
       } else if (value !== oldValue) {
-        historyCollector.collect(target, stringKey, {
+        triggerCollector.trigger(target, stringKey, {
           type: EOperationTypes.SET,
           beforeUpdate: oldValue,
           didUpdate: value,

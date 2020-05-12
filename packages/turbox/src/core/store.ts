@@ -1,6 +1,6 @@
 import { Store, DispatchedAction, Mutation, EMaterialType } from '../interfaces';
 import { invariant } from '../utils/error';
-import { historyCollector, ReactionId } from './collector';
+import { ReactionId, triggerCollector } from './collector';
 import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { ctx } from '../const/config';
@@ -60,8 +60,8 @@ export function createStore(enhancer: (createStore: any) => Store) {
     invariant(!isUpdating, 'Cannot trigger other mutation while the current mutation is executing.');
 
     const callback = () => {
-      if (historyCollector.waitTriggerComponentIds.length > 0) {
-        const ids = deduplicate(historyCollector.waitTriggerComponentIds);
+      if (triggerCollector.waitTriggerComponentIds.length > 0) {
+        const ids = deduplicate(triggerCollector.waitTriggerComponentIds);
         const pendingListeners: Function[] = [];
 
         for (let index = 0; index < ids.length; index++) {
@@ -80,13 +80,13 @@ export function createStore(enhancer: (createStore: any) => Store) {
       isInBatch = false;
       dirtyJob = void 0;
       if (ctx.timeTravel.isActive && includes(materialCallStack, EMaterialType.EFFECT)) {
-        historyCollector.endBatch(false);
+        triggerCollector.endBatch(false);
         return;
       }
-      if (ctx.timeTravel.isActive && !isInner) {
-        historyCollector.save();
+      if (!isInner) {
+        triggerCollector.save();
       }
-      historyCollector.endBatch();
+      triggerCollector.endBatch();
     }
 
     if (!isInBatch && dirtyJob === void 0) {
@@ -94,7 +94,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
     }
 
     if (isAtom) {
-      if (historyCollector.waitTriggerComponentIds.length > 0) {
+      if (triggerCollector.waitTriggerComponentIds.length > 0) {
         // flush previous job
         dirtyJob && dirtyJob();
       }

@@ -13,8 +13,8 @@ const PointComp: React.FC<IProps> = ({ data, index }) => {
 
   return (
     <React.Fragment>
-      <span>position：{JSON.stringify(data.position)}</span>
-      <span>prevLine: {JSON.stringify(data.prevLine)}</span>
+      <span>position：{data && data.position && JSON.stringify(data.position)}</span>
+      <span>prevLine：{data && data.prevLine && JSON.stringify(data.prevLine)}</span>
     </React.Fragment>
   );
 };

@@ -1,11 +1,8 @@
 import { includes } from '../utils/common';
 import { ctx } from '../const/config';
 import { Component } from 'react';
-import { store } from './store';
-import generateUUID from '../utils/uuid';
-import { materialCallStack } from './domain';
-import { EMaterialType } from '../interfaces';
 import { Reaction } from './autoRun';
+import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './timeTravel';
 
 export type ReactionId = Component | Reaction;
 export interface KeyToComponentIdsMap {
@@ -120,65 +117,24 @@ class DepCollector {
 
 export const depCollector = new DepCollector();
 
-export const enum EOperationTypes {
-  SET = 'set',
-  ADD = 'add',
-  DELETE = 'delete',
-  CLEAR = 'clear',
-  GET = 'get',
-  HAS = 'has',
-  ITERATE = 'iterate'
-}
-
-export interface KeyToDiffChangeMap {
-  [key: string]: {
-    beforeUpdate: any;
-    didUpdate: any;
-  };
-}
-
-export type History = WeakMap<object, KeyToDiffChangeMap>;
-
-export type HistoryIdSet = Set<object>;
-
-export interface HistoryNode {
-  historyKey: HistoryIdSet;
-  history: History;
-}
-
-export interface HistoryCollectorPayload {
-  type: EOperationTypes;
-  beforeUpdate: any;
-  didUpdate: any;
-}
-
-/**
- * collect prop diff history record
- */
-class HistoryCollector {
-  public currentHistory?: History;
-  /**
-   * Considering the memory cost and iteratable, using Set just only keep id.
-   */
-  public currentHistoryIdSet?: HistoryIdSet;
-  public transactionHistories: HistoryNode[] = [];
+class TriggerCollector {
   public waitTriggerComponentIds: ReactionId[] = [];
-  public cursor: number = -1;
 
-  collect(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
+  trigger(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
     const { beforeUpdate, didUpdate, type } = payload;
     this.collectComponentId(target, key, type);
 
-    if (!ctx.timeTravel.isActive || !isNeedRecord) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord) {
       return;
     }
-    if (this.currentHistoryIdSet === void 0) {
-      this.currentHistoryIdSet = new Set();
+    const ctt = TimeTravel.currentTimeTravel;
+    if (ctt.currentHistoryIdSet === void 0) {
+      ctt.currentHistoryIdSet = new Set();
     }
-    if (this.currentHistory === void 0) {
-      this.currentHistory = new WeakMap();
+    if (ctt.currentHistory === void 0) {
+      ctt.currentHistory = new WeakMap();
     }
-    const keyToDiffChangeMap = this.currentHistory.get(target);
+    const keyToDiffChangeMap = ctt.currentHistory.get(target);
 
     if (keyToDiffChangeMap !== void 0) {
       if (keyToDiffChangeMap[key] !== void 0) {
@@ -190,7 +146,7 @@ class HistoryCollector {
         };
       }
     } else {
-      this.currentHistory.set(target, {
+      ctt.currentHistory.set(target, {
         [key]: {
           beforeUpdate,
           didUpdate,
@@ -198,7 +154,7 @@ class HistoryCollector {
       });
     }
 
-    this.currentHistoryIdSet.add(target);
+    ctt.currentHistoryIdSet.add(target);
   }
 
   collectComponentId(target: object, key: string, type: EOperationTypes) {
@@ -216,132 +172,38 @@ class HistoryCollector {
 
   endBatch(isClearHistory = true) {
     this.waitTriggerComponentIds = [];
-    if (!ctx.timeTravel.isActive || !isClearHistory) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
       return;
     }
-    this.currentHistory = void 0;
-    this.currentHistoryIdSet = void 0;
-  }
-
-  canUndo() {
-    return this.cursor >= 0;
-  }
-
-  canRedo() {
-    return this.cursor < this.transactionHistories.length - 1;
-  }
-
-  /**
-   * @todo support multiple steps
-   * revert to the previous history status
-   */
-  undo(stepNum: number = 1) {
-    if (!this.canUndo()) {
-      return;
-    }
-    const currentHistory = this.transactionHistories[this.cursor];
-    const original = () => {
-      currentHistory.historyKey.forEach(target => {
-        const keyToDiffObj = currentHistory.history.get(target);
-        if (keyToDiffObj) {
-          const keys = Object.keys(keyToDiffObj);
-          for (let i = 0; i < keys.length; i++) {
-            const propKey = keys[i];
-            target[propKey] = keyToDiffObj[propKey].beforeUpdate;
-          }
-        }
-      });
-    };
-    materialCallStack.push(EMaterialType.TIME_TRAVEL);
-    store.dispatch({
-      name: `$timeTravel_${generateUUID()}`,
-      payload: [],
-      original,
-      isInner: true,
-    });
-    materialCallStack.pop();
-    this.cursor -= 1;
-  }
-
-  /**
-   * @todo support multiple steps
-   * apply the next history status
-   */
-  redo(stepNum: number = 1) {
-    if (!this.canRedo()) {
-      return;
-    }
-    this.cursor += 1;
-    const currentHistory = this.transactionHistories[this.cursor];
-    const original = () => {
-      currentHistory.historyKey.forEach(target => {
-        const keyToDiffObj = currentHistory.history.get(target);
-        if (keyToDiffObj) {
-          const keys = Object.keys(keyToDiffObj);
-          for (let i = 0; i < keys.length; i++) {
-            const propKey = keys[i];
-            target[propKey] = keyToDiffObj[propKey].didUpdate;
-          }
-        }
-      });
-    };
-    materialCallStack.push(EMaterialType.TIME_TRAVEL);
-    store.dispatch({
-      name: `$timeTravel_${generateUUID()}`,
-      payload: [],
-      original,
-      isInner: true,
-    });
-    materialCallStack.pop();
+    TimeTravel.currentTimeTravel.currentHistory = void 0;
+    TimeTravel.currentTimeTravel.currentHistoryIdSet = void 0;
   }
 
   save() {
-    if (this.cursor === this.transactionHistories.length - 1) {
-      this.transactionHistories.push({
-        historyKey: this.currentHistoryIdSet!,
-        history: this.currentHistory!,
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
+      return;
+    }
+    const ctt = TimeTravel.currentTimeTravel;
+    if (ctt.cursor === ctt.transactionHistories.length - 1) {
+      ctt.transactionHistories.push({
+        historyKey: ctt.currentHistoryIdSet!,
+        history: ctt.currentHistory!,
       });
-      this.cursor += 1;
-    } else if (this.cursor < this.transactionHistories.length - 1) {
-      this.transactionHistories = this.transactionHistories.slice(0, this.cursor + 1);
-      this.transactionHistories.push({
-        historyKey: this.currentHistoryIdSet!,
-        history: this.currentHistory!,
+      ctt.cursor += 1;
+    } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
+      ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
+      ctt.transactionHistories.push({
+        historyKey: ctt.currentHistoryIdSet!,
+        history: ctt.currentHistory!,
       });
-      this.cursor += 1;
+      ctt.cursor += 1;
     }
 
-    if (this.transactionHistories.length > ctx.timeTravel.maxStepNumber) {
-      this.transactionHistories.shift();
-      this.cursor -= 1;
+    if (ctt.transactionHistories.length > ctx.timeTravel.maxStepNumber) {
+      ctt.transactionHistories.shift();
+      ctt.cursor -= 1;
     }
-  }
-
-  clear() {
-    this.currentHistory = void 0;
-    this.currentHistoryIdSet = void 0;
-    this.transactionHistories = [];
-    this.cursor = -1;
   }
 }
 
-export const historyCollector = new HistoryCollector();
-
-export const undo = (stepNum: number = 1) => {
-  historyCollector.undo(stepNum);
-};
-
-export const redo = (stepNum: number = 1) => {
-  historyCollector.redo(stepNum);
-};
-
-export const getTimeTravelStatus = () => {
-  return {
-    undoable: historyCollector.canUndo(),
-    redoable: historyCollector.canRedo(),
-  };
-}
-
-export const clearTimeTravelStack = () => {
-  historyCollector.clear();
-}
+export const triggerCollector = new TriggerCollector();

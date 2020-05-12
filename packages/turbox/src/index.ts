@@ -1,14 +1,14 @@
 import { reactive } from './components/reactive';
 import { render } from './components/render';
 import { use } from './core/use';
-import { config, enableTimeTravel, disableTimeTravel } from './const/config';
+import { config } from './const/config';
 import { mutation } from './decorators/mutation';
 import { effect } from './decorators/effect';
 import { reactor } from './decorators/reactor';
 import { Domain } from './core/domain';
 import { init } from './core/init';
-import { undo, redo, getTimeTravelStatus, clearTimeTravelStack } from './core/collector';
 import { autoRun } from './core/autoRun';
+import { TimeTravel } from './core/timeTravel';
 
 export default {
   reactive,
@@ -21,12 +21,7 @@ export default {
   reactor,
   Domain,
   init,
-  undo,
-  redo,
-  getTimeTravelStatus,
-  enableTimeTravel,
-  disableTimeTravel,
-  clearTimeTravelStack,
+  TimeTravel,
 }
 
 export {
@@ -40,10 +35,5 @@ export {
   reactor,
   Domain,
   init,
-  undo,
-  redo,
-  getTimeTravelStatus,
-  enableTimeTravel,
-  disableTimeTravel,
-  clearTimeTravelStack,
+  TimeTravel,
 }

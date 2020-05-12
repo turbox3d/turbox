@@ -19,11 +19,3 @@ export let ctx: ConfigCtx = {
 export function config(conf: Partial<ConfigCtx>) {
   ctx = deepMerge(ctx, conf);
 }
-
-export function enableTimeTravel() {
-  ctx.timeTravel.isActive = true;
-}
-
-export function disableTimeTravel() {
-  ctx.timeTravel.isActive = false;
-}

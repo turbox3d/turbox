@@ -6,7 +6,7 @@ import { Effect, EMaterialType, BabelDescriptor } from '../interfaces';
 import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
-import { historyCollector } from '../core/collector';
+import { triggerCollector } from '../core/collector';
 
 /**
  * @todo: enhance effect feature, such as takeLead, takeLast
@@ -27,8 +27,8 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
     if (ctx.timeTravel.isActive && !includes(materialCallStack, EMaterialType.EFFECT)) {
-      historyCollector.save();
-      historyCollector.endBatch();
+      triggerCollector.save();
+      triggerCollector.endBatch();
     }
   };
 }

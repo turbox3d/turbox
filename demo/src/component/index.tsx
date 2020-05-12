@@ -1,4 +1,4 @@
-import { config, init, redo, reactive, undo, autoRun } from '@turboo/turbox';
+import { config, init, reactive, autoRun, TimeTravel } from '@turboo/turbox';
 import React from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -20,6 +20,9 @@ config({
   }
 });
 init();
+
+export const mainTimeTravel = TimeTravel.create();
+TimeTravel.active(mainTimeTravel);
 
 const cts = new Countertops({
   countertops: [new Countertop({
@@ -80,10 +83,16 @@ const DemoBox = reactive(() => {
     cts.countertops[0].updateFirstPointPosition();
   };
   const undoHandler = () => {
-    undo();
+    console.log('undoable', TimeTravel.undoable);
+    if (TimeTravel.undoable) {
+      TimeTravel.undo();
+    }
   };
   const redoHandler = () => {
-    redo();
+    console.log('redoable', TimeTravel.redoable);
+    if (TimeTravel.redoable) {
+      TimeTravel.redo();
+    }
   };
   const updatePosition = () => {
     p.updatePosition(new Point2d(200, 200));
@@ -92,16 +101,16 @@ const DemoBox = reactive(() => {
 
   return (
     <React.Fragment>
-      {cts.countertops[0].points.length > 0 &&
+      {cts.countertops.length && cts.countertops[0].points.length > 0 &&
         <div>position:
-                    {cts.countertops[0].points[0].position.x},
-                    {cts.countertops[0].points[0].position.y}
+                    {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.x},
+                    {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
       }
-      {cts.countertops[0].lines.map(line => (
+      {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}
-      {cts.countertops[0].points.map((point, index) => (
+      {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
         <PointTpl data={point} index={index} />
       ))}
       <div
@@ -132,6 +141,21 @@ const DemoBox = reactive(() => {
                 </button>
         <button onClick={updatePosition}>
           更改位置
+                </button>
+        <button onClick={() => TimeTravel.pause()}>
+          暂停
+                </button>
+        <button onClick={() => TimeTravel.resume()}>
+          继续
+                </button>
+        <button onClick={() => TimeTravel.clear()}>
+          清空
+                </button>
+        <button onClick={() => {
+          const a = TimeTravel.create();
+          TimeTravel.active(a);
+        }}>
+          切换撤销恢复空间
                 </button>
       </div>
     </React.Fragment>
