@@ -22,7 +22,7 @@ config({
 init();
 
 export const mainTimeTravel = TimeTravel.create();
-TimeTravel.active(mainTimeTravel);
+TimeTravel.switch(mainTimeTravel);
 
 const cts = new Countertops({
   countertops: [new Countertop({
@@ -153,7 +153,7 @@ const DemoBox = reactive(() => {
                 </button>
         <button onClick={() => {
           const a = TimeTravel.create();
-          TimeTravel.active(a);
+          TimeTravel.switch(a);
         }}>
           切换撤销恢复空间
                 </button>

@@ -523,19 +523,32 @@ let ctx = {
 **@turboo/turbox** 默认在 reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
 ### time travelling
-框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态开启或关闭时间旅行记录器、清空撤销恢复栈。
+框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。
 ```typescript
-type undo = (stepNum: number = 1) => void;
-type redo = (stepNum: number = 1) => void;
-type getTimeTravelStatus = () => {
+export class TimeTravel {
+  static create: () => TimeTravel;
+  static switch: (instance: TimeTravel) => void;
+  static pause: () => void;
+  static resume: () => void;
+  static undo: () => void;
+  static redo: () => void;
+  static clear: () => void;
+  static undoable: boolean;
+  static redoable: boolean;
   undoable: boolean;
   redoable: boolean;
-};
-type enableTimeTravel = () => void;
-type disableTimeTravel = () => void;
-type clearTimeTravelStack = () => void;
+  undo: () => void;
+  redo: () => void;
+  clear: () => void;
+}
 ```
 撤销恢复的每一步的定义跟上面章节提到的事务有关
+
+你可以创建多个时间旅行器，并切换应用它，这时相应的操作会自动记录到当前最新被切换的时间旅行器实例中，如果要退出当前的，只要切换到其他旅行器即可
+```js
+const mainTimeTravel = TimeTravel.create();
+TimeTravel.switch(mainTimeTravel);
+```
 
 > 时间旅行只会记录每一次变化的信息，而不是整个 snapshot，这样内存占用会更小
 

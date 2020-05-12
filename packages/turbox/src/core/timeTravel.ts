@@ -49,7 +49,7 @@ export class TimeTravel {
   cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
 
-  static active = (instance: TimeTravel) => {
+  static switch = (instance: TimeTravel) => {
     TimeTravel.currentTimeTravel = instance;
     TimeTravel.resume();
   };
