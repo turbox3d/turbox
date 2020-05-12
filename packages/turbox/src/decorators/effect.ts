@@ -1,5 +1,5 @@
 import { ctx } from '../const/config';
-import { store } from '../core/store';
+import { store, actionNames } from '../core/store';
 import { CURRENT_MATERIAL_TYPE } from '../const/symbol';
 import { bind, convert2UniqueString, includes } from '../utils/common';
 import { Effect, EMaterialType, BabelDescriptor } from '../interfaces';
@@ -8,16 +8,20 @@ import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { triggerCollector } from '../core/collector';
 
+interface EffectConfig {
+  name: string;
+}
+
 /**
  * @todo: enhance effect feature, such as takeLead, takeLast
  */
-function createEffect(target: Object, name: string | symbol | number, original: any) {
+function createEffect(target: Object, name: string | symbol | number, original: any, config: EffectConfig) {
   const stringMethodName = convert2UniqueString(name);
   return async function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.EFFECT;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
     await store.dispatch({
-      name: stringMethodName,
+      name: config.name || stringMethodName,
       payload,
       type: EMaterialType.EFFECT,
       domain: this,
@@ -27,18 +31,22 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
     if (ctx.timeTravel.isActive && !includes(materialCallStack, EMaterialType.EFFECT)) {
-      triggerCollector.save();
+      const chain = actionNames.join('.');
+      triggerCollector.save(chain);
       triggerCollector.endBatch();
     }
   };
 }
 
 export function effect(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function effect(): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function effect(name?: string): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 /**
  * decorator @effect, handle some async process and effect.
  */
 export function effect(...args: any[]) {
+  const config: EffectConfig = {
+    name: '',
+  };
   const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
     invariant(
       ctx.middleware.effect,
@@ -55,7 +63,7 @@ export function effect(...args: any[]) {
           return effectFunc;
         },
         set: function (original) {
-          effectFunc = createEffect(target, name, original);
+          effectFunc = createEffect(target, name, original, config);
         },
       });
       return;
@@ -64,7 +72,7 @@ export function effect(...args: any[]) {
     // babel/typescript: @effect method() {}
     if (descriptor.value !== void 0) {
       const original: Effect = descriptor.value;
-      descriptor.value = createEffect(target, name, original);
+      descriptor.value = createEffect(target, name, original, config);
       return descriptor;
     }
 
@@ -73,7 +81,7 @@ export function effect(...args: any[]) {
     descriptor.initializer = function () {
       invariant(!!initializer, 'The initializer of the descriptor doesn\'t exist, please compile it by using babel and correspond decorator plugin.');
 
-      return createEffect(target, name, initializer && initializer.call(this));
+      return createEffect(target, name, initializer && initializer.call(this), config);
     };
 
     return descriptor;
@@ -84,5 +92,7 @@ export function effect(...args: any[]) {
     return decorator.apply(null, args as any);
   }
   // @effect(args)
+  config.name = args[0] || '';
+
   return decorator;
 }

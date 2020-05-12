@@ -4,7 +4,7 @@ import { Countertop } from './countertop';
 export class Countertops extends Domain {
   @reactor countertops: Countertop[];
 
-  @mutation
+  @mutation('更新Countertops')
   updateCountertops(countertops: Countertop[]) {
     this.countertops = countertops;
   }

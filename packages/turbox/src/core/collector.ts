@@ -3,6 +3,7 @@ import { ctx } from '../const/config';
 import { Component } from 'react';
 import { Reaction } from './autoRun';
 import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './timeTravel';
+import { actionNames } from './store';
 
 export type ReactionId = Component | Reaction;
 export interface KeyToComponentIdsMap {
@@ -175,17 +176,19 @@ class TriggerCollector {
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
       return;
     }
+    actionNames.length = 0;
     TimeTravel.currentTimeTravel.currentHistory = void 0;
     TimeTravel.currentTimeTravel.currentHistoryIdSet = void 0;
   }
 
-  save() {
+  save(chain: string) {
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({
+        name: chain,
         historyKey: ctt.currentHistoryIdSet!,
         history: ctt.currentHistory!,
       });
@@ -193,6 +196,7 @@ class TriggerCollector {
     } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
       ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
       ctt.transactionHistories.push({
+        name: chain,
         historyKey: ctt.currentHistoryIdSet!,
         history: ctt.currentHistory!,
       });

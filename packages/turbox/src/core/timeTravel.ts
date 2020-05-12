@@ -26,6 +26,7 @@ export type History = WeakMap<object, KeyToDiffChangeMap>;
 export type HistoryIdSet = Set<object>;
 
 export interface HistoryNode {
+  name: string;
   historyKey: HistoryIdSet;
   history: History;
 }
@@ -118,7 +119,7 @@ export class TimeTravel {
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     store.dispatch({
-      name: `$timeTravel_${generateUUID()}`,
+      name: `@@TURBOX__UNDO_${generateUUID()}`,
       payload: [],
       original,
       isInner: true,
@@ -151,7 +152,7 @@ export class TimeTravel {
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     store.dispatch({
-      name: `$timeTravel_${generateUUID()}`,
+      name: `@@TURBOX__REDO_${generateUUID()}`,
       payload: [],
       original,
       isInner: true,

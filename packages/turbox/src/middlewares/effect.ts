@@ -1,5 +1,5 @@
 import { Effect, EMaterialType, Middleware } from '../interfaces';
-import { isUpdating } from '../core/store';
+import { isUpdating, actionNames } from '../core/store';
 import { invariant } from '../utils/error';
 
 function createEffectMiddleware(): Middleware {
@@ -11,6 +11,7 @@ function createEffectMiddleware(): Middleware {
 
       const effect = original as Effect;
       try {
+        actionNames.push(name);
         await effect(...payload);
       } catch (error) {
         return error;

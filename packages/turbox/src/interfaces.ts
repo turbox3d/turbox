@@ -43,7 +43,7 @@ export enum EMaterialType {
 export interface DispatchedAction {
   payload: any[],
   original: Effect | Mutation,
-  name?: string,
+  name: string,
   type?: EMaterialType,
   domain?: Domain,
   isAtom?: boolean;

@@ -1,5 +1,4 @@
 import { Store, DispatchedAction, Mutation, EMaterialType } from '../interfaces';
-import { invariant } from '../utils/error';
 import { ReactionId, triggerCollector } from './collector';
 import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
@@ -8,6 +7,7 @@ import { materialCallStack } from './domain';
 
 export let store: Store;
 export let isUpdating: boolean = false;
+export const actionNames: string[] = [];
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -82,7 +82,8 @@ export function createStore(enhancer: (createStore: any) => Store) {
         return;
       }
       if (!isInner) {
-        triggerCollector.save();
+        const chain = actionNames.join('.');
+        triggerCollector.save(chain);
       }
       triggerCollector.endBatch();
     }
@@ -107,6 +108,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
       currentMutation(...payload);
     } finally {
       isUpdating = false;
+      actionNames.push(name);
     }
 
     if (!isInBatch) {

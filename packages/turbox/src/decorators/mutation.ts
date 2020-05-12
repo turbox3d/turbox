@@ -6,18 +6,23 @@ import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 
-function createMutation(target: Object, name: string | symbol | number, original: any, isAtom: boolean) {
+interface MutationConfig {
+  isAtom: boolean;
+  name: string;
+}
+
+function createMutation(target: Object, name: string | symbol | number, original: any, config: MutationConfig) {
   const stringMethodName = convert2UniqueString(name);
   return function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.MUTATION;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
     store.dispatch({
-      name: stringMethodName,
+      name: config.name || stringMethodName,
       payload,
       type: EMaterialType.MUTATION,
       domain: this,
       original: bind(original, this) as Mutation,
-      isAtom,
+      isAtom: config.isAtom,
     });
     materialCallStack.pop();
     const length = materialCallStack.length;
@@ -26,12 +31,15 @@ function createMutation(target: Object, name: string | symbol | number, original
 }
 
 export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function mutation(isAtom?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function mutation(name?: string, isAtom?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 /**
  * decorator @mutation, update state by mutation styling.
  */
 export function mutation(...args: any[]) {
-  let isAtom: boolean = false;
+  const config: MutationConfig = {
+    isAtom: false,
+    name: '',
+  };
   const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
     // typescript only: @mutation method = () => {}
     if (descriptor === void 0) {
@@ -43,7 +51,7 @@ export function mutation(...args: any[]) {
           return mutationFunc;
         },
         set: function (original) {
-          mutationFunc = createMutation(target, name, original, isAtom);
+          mutationFunc = createMutation(target, name, original, config);
         },
       });
       return;
@@ -52,7 +60,7 @@ export function mutation(...args: any[]) {
     // babel/typescript: @mutation method() {}
     if (descriptor.value !== void 0) {
       const original: Mutation = descriptor.value;
-      descriptor.value = createMutation(target, name, original, isAtom);
+      descriptor.value = createMutation(target, name, original, config);
       return descriptor;
     }
 
@@ -61,7 +69,7 @@ export function mutation(...args: any[]) {
     descriptor.initializer = function () {
       invariant(!!initializer, 'The initializer of the descriptor doesn\'t exist, please compile it by using babel and correspond decorator plugin.');
 
-      return createMutation(target, name, initializer && initializer.call(this), isAtom);
+      return createMutation(target, name, initializer && initializer.call(this), config);
     };
 
     return descriptor;
@@ -72,7 +80,8 @@ export function mutation(...args: any[]) {
     return decorator.apply(null, args as any);
   }
   // @mutation(args)
-  isAtom = args[0] !== void 0 ? args[0] : false;
+  config.name = args[0] || '';
+  config.isAtom = args[1] !== void 0 ? args[1] : false;
 
   return decorator;
 }

@@ -215,7 +215,7 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @mutation(true)
+  @mutation('xxx', true)
   changeIdx1(idx) {
     this.currentIdx = idx;
     this.array.push('aaa');
@@ -236,7 +236,9 @@ class MyDomain extends Domain {
 }
 ```
 
-> 注意下 mutation 装饰器的参数，这个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中
+> 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中
+
+> mutation 里面可以嵌套 mutation，但不可以嵌套 effect，看到下面 effect 那一小节你就会知道为什么
 
 #### $update
 上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **@turboo/turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
@@ -283,7 +285,7 @@ class MyDomain extends Domain {
 
   @throttle(300) // 可以用一些装饰器来控制函数执行
   @bind()
-  @effect
+  @effect('获取阅读列表')
   async fetchReadList() {
     this.isLoading();
     const { readList } = await API.get('/api/balabala');
@@ -298,6 +300,8 @@ class MyDomain extends Domain {
 > 看起来似乎普通的 async 函数也可以做到同样的事情，那么 effect 装饰器修饰的函数与普通函数相比有什么区别呢？区别就在于 effect 函数本身会被作为一个独立的包含副作用的操作经过中间件处理，同时也会被独立的整体的作为一次记录到时间旅行器中，被它分发的子 mutation 的操作会被时间旅行器忽略掉不记录，这样你应该就更能理解什么叫做副作用了
 
 > effect 可以嵌套 effect，记录操作行为的粒度始终以最外层的 effect 为准
+
+> effect 装饰器的参数可以自定义名称，如果未指定，默认使用函数名
 
 ### operator（暂未实现，敬请期待）
 后续 **@turboo/turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。

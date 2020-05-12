@@ -173,7 +173,7 @@ export class Domain<S = {}> {
     }
     // update state after store init
     store.dispatch({
-      name: actionName || `$update_${generateUUID()}`,
+      name: actionName || `@@TURBOX__UPDATE_${generateUUID()}`,
       payload: [],
       type: EMaterialType.UPDATE,
       domain: this,

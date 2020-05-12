@@ -158,6 +158,9 @@ const DemoBox = reactive(() => {
         }}>
           切换撤销恢复空间
                 </button>
+        <button onClick={() => console.log(TimeTravel.currentTimeTravel!.transactionHistories)}>
+          打印历史记录
+                </button>
       </div>
     </React.Fragment>
   );

@@ -11,7 +11,7 @@ export class Point extends Domain {
   @reactor nextLine?: Line;
   @reactor countertop?: Countertop;
 
-  @mutation
+  @mutation('更新点位置')
   updatePosition = (p: Point2d) => {
     this.position = p;
   }

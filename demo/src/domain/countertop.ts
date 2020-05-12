@@ -36,7 +36,7 @@ export class Countertop extends Domain {
     });
   }
 
-  @mutation
+  @mutation('更新第一个点')
   updateFirstPointPosition() {
     this.points[0].position = new Point2d(-1, -1);
     // this.testEffect(new Point({
@@ -58,7 +58,7 @@ export class Countertop extends Domain {
     }));
   }
 
-  @mutation
+  @mutation('添加点')
   addPoint(point: Point) {
     this.points.push(point);
     // this.linkPointsAndLines();
@@ -72,20 +72,20 @@ export class Countertop extends Domain {
     });
   }
 
-  @effect
+  @effect('测试两个effect')
   async testTwoEffect(p: Point, l: Line) {
     this.testEffect(p, l);
     this.testEffect(p, l);
   }
 
-  @effect
+  @effect('测试effect')
   async testEffect(p: Point, l: Line) {
     this.addPoint(p);
     await this.delay();
     this.addLine(l);
   }
 
-  @mutation
+  @mutation('添加线')
   addLine(line: Line) {
     this.lines.push(line);
   }
