@@ -66,6 +66,7 @@ const DemoBox = reactive(() => {
       position: new Point2d(100, 100),
       type: EPointType.NONE,
     });
+    TimeTravel.start('添加点和线');
     cts.countertops[0].addPoint(p);
   };
   const addLine = () => {
@@ -79,6 +80,7 @@ const DemoBox = reactive(() => {
         type: EPointType.NONE,
       }),
     }));
+    TimeTravel.complete();
   };
   const updateFirstPointPosition = () => {
     cts.countertops[0].updateFirstPointPosition();

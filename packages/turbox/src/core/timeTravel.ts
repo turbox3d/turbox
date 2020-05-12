@@ -1,8 +1,9 @@
 import { materialCallStack } from './domain';
 import { EMaterialType } from '../interfaces';
-import { store } from './store';
+import { store, actionNames } from './store';
 import generateUUID from '../utils/uuid';
 import { ctx } from '../const/config';
+import { triggerCollector } from './collector';
 
 export const enum EOperationTypes {
   SET = 'set',
@@ -49,6 +50,7 @@ export class TimeTravel {
   transactionHistories: HistoryNode[] = [];
   cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
+  static freeze: boolean = false;
 
   static switch = (instance: TimeTravel) => {
     TimeTravel.currentTimeTravel = instance;
@@ -78,6 +80,19 @@ export class TimeTravel {
 
   static clear = () => {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.clear();
+  }
+
+  static start = (name?: string) => {
+    TimeTravel.resume();
+    name && actionNames.push(name);
+    TimeTravel.freeze = true;
+  }
+
+  static complete = () => {
+    TimeTravel.freeze = false;
+    const chain = actionNames.join('.');
+    triggerCollector.save(chain);
+    triggerCollector.endBatch();
   }
 
   static get undoable() {

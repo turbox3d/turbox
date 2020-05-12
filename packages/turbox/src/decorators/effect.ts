@@ -7,6 +7,7 @@ import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { triggerCollector } from '../core/collector';
+import { TimeTravel } from '../core/timeTravel';
 
 interface EffectConfig {
   name: string;
@@ -30,7 +31,7 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     materialCallStack.pop();
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
-    if (ctx.timeTravel.isActive && !includes(materialCallStack, EMaterialType.EFFECT)) {
+    if (ctx.timeTravel.isActive && (!TimeTravel.freeze && !includes(materialCallStack, EMaterialType.EFFECT))) {
       const chain = actionNames.join('.');
       triggerCollector.save(chain);
       triggerCollector.endBatch();
