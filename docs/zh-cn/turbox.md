@@ -534,6 +534,8 @@ export class TimeTravel {
   static switch: (instance: TimeTravel) => void;
   static pause: () => void;
   static resume: () => void;
+  static start: (name?: string) => void;
+  static complete: () => void;
   static undo: () => void;
   static redo: () => void;
   static clear: () => void;
@@ -552,6 +554,31 @@ export class TimeTravel {
 ```js
 const mainTimeTravel = TimeTravel.create();
 TimeTravel.switch(mainTimeTravel);
+```
+
+有些时候，撤销恢复的粒度是由多次事件触发的组合动作完成，这时候可以通过 start 和 complete 来实现，在这期间，所有的行为变更都会被合并到一个历史记录
+```js
+const addPoint = () => {
+  TimeTravel.start('添加点和线');
+  const p = new Point({
+    position: new Point2d(100, 100),
+    type: EPointType.NONE,
+  });
+  cts.countertops[0].addPoint(p);
+};
+const addLine = () => {
+  cts.countertops[0].addLine(new Line({
+    start: new Point({
+      position: new Point2d(200, 200),
+      type: EPointType.NONE,
+    }),
+    end: new Point({
+      position: new Point2d(200, 200),
+      type: EPointType.NONE,
+    }),
+  }));
+  TimeTravel.complete();
+};
 ```
 
 > 时间旅行只会记录每一次变化的信息，而不是整个 snapshot，这样内存占用会更小
