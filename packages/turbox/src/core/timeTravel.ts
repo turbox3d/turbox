@@ -4,6 +4,8 @@ import { store, actionNames } from './store';
 import generateUUID from '../utils/uuid';
 import { ctx } from '../const/config';
 import { triggerCollector } from './collector';
+import { invariant } from '../utils/error';
+import { nextTick } from '../utils/common';
 
 export const enum EOperationTypes {
   SET = 'set',
@@ -83,16 +85,25 @@ export class TimeTravel {
   }
 
   static start = (name?: string) => {
+    invariant(!TimeTravel.freeze, 'Already started, please complete first.');
+    if (TimeTravel.freeze) {
+      return;
+    }
     TimeTravel.resume();
     name && actionNames.push(name);
     TimeTravel.freeze = true;
   }
 
   static complete = () => {
-    TimeTravel.freeze = false;
-    const chain = actionNames.join('.');
-    triggerCollector.save(chain);
-    triggerCollector.endBatch();
+    if (!TimeTravel.freeze) {
+      return;
+    }
+    nextTick(() => {
+      TimeTravel.freeze = false;
+      const chain = actionNames.join('.');
+      triggerCollector.save(chain);
+      triggerCollector.endBatch();
+    });
   }
 
   static get undoable() {

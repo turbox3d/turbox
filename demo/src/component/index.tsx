@@ -62,11 +62,11 @@ const DemoBox = reactive(() => {
     cts.countertops[0].testTwoEffect(p, l);
   };
   const addPoint = () => {
+    TimeTravel.start('添加点和线');
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
     });
-    TimeTravel.start('添加点和线');
     cts.countertops[0].addPoint(p);
   };
   const addLine = () => {
