@@ -1954,6 +1954,11 @@
   dependencies:
     type-detect "4.0.8"
 
+"@turbox3d/reactivity@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.1.tgz#e23765f00326aaff11b2dd6c4543650f6dadd704"
+  integrity sha512-ytPuM39nzdMs8YZZPMXtq8bF5s3nm+UzS3WYoWR2PivXDNFVcB6zOGR6G8MLk6NROCaR7EXJJWQktbtZqKUeZA==
+
 "@types/babel__core@^7.1.7":
   version "7.1.7"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.7.tgz#1dacad8840364a57c98d0dd4855c6dd3752c6b89"
@@ -9556,6 +9561,13 @@ tunnel@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.4.tgz#2d3785a158c174c9a16dc2c046ec5fc5f1742213"
   integrity sha1-LTeFoVjBdMmhbcLARuxfxfF0IhM=
+
+turbox@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.0.1.tgz#255abaf8c1ad460842bb80481d2ae45aff9ce33b"
+  integrity sha512-6d3MWsJxpQpdI02UObE+h5//EMxBIc//OYbKgeS/R6xfE8T6tREmVlno9qkUHTWLYOJAjJzhA92AcTSOHHmsDA==
+  dependencies:
+    "@turbox3d/reactivity" "^1.0.1"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

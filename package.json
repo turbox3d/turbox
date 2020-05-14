@@ -46,5 +46,7 @@
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.10.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "turbox": "^1.0.1"
+  }
 }
