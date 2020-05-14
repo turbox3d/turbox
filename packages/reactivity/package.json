@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/reactivity",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Large-scale reactive state management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
