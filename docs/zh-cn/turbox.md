@@ -1,19 +1,19 @@
-# @turbox3d/turbox
+# Turbox
 
 [![build status](https://img.shields.io/travis/com/turbox3d/turbox/master.svg?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
 [![license](https://img.shields.io/github/license/turbox3d/turbox?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
-[![npm version](https://img.shields.io/npm/v/@turbox3d/turbox.svg?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
-[![npm downloads](https://img.shields.io/npm/dm/@turbox3d/turbox.svg?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
-[![install size](https://img.shields.io/bundlephobia/minzip/@turbox3d/turbox?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
+[![npm version](https://img.shields.io/npm/v/turbox.svg?style=flat-square)](https://www.npmjs.com/package/turbox)
+[![npm downloads](https://img.shields.io/npm/dm/turbox.svg?style=flat-square)](https://www.npmjs.com/package/turbox)
+[![install size](https://img.shields.io/bundlephobia/minzip/turbox?style=flat-square)](https://www.npmjs.com/package/turbox)
 
 ## 介绍
-**turbox**（涡轮）是一个适合大型单页软件应用的响应式状态管理框架，场景来源于复杂大型 3D 业务
+**turbox**（涡轮）是一个适合大型生产力单页软件应用的前端框架，场景来源于复杂大型 3D 业务
 
 ### 快速上手
 一个最简单的例子：
 ```js
 // line.js
-import { Domain, reactor, mutation } from '@turbox3d/turbox';
+import { Domain, reactor, mutation } from 'turbox';
 
 class Line extends Domain {
   @reactor start?: Point;
@@ -33,7 +33,7 @@ class Line extends Domain {
 
 export default Line;
 // point.js
-import { Domain, reactor, mutation } from '@turbox3d/turbox';
+import { Domain, reactor, mutation } from 'turbox';
 
 class Point extends Domain {
   @reactor prevLine?: Line;
@@ -56,7 +56,7 @@ export default Point;
 
 // component.jsx
 import { Component } from 'react';
-import { Reactive } from '@turbox3d/turbox';
+import { Reactive } from 'turbox';
 import Point from './point';
 import Line from './line';
 
@@ -78,7 +78,7 @@ export default class extends Component {
 
 // function-component.jsx
 import * as React from 'react';
-import { Reactive, reactive } from '@turbox3d/turbox';
+import { Reactive, reactive } from 'turbox';
 import Point from './point';
 import Line from './line';
 
@@ -112,7 +112,7 @@ reactive(() => {
 
 // entry.js
 import React from 'react';
-import Turbox from '@turbox3d/turbox';
+import Turbox from 'turbox';
 import Layout from './component';
 // import Layout from './function-component'; // use function component
 
@@ -123,31 +123,31 @@ Turbox.render(<Layout />, '#app');
 
 ### 安装
 ```
-$ npm install --save @turbox3d/turbox
+$ npm install --save turbox
 
-$ yarn add @turbox3d/turbox
+$ yarn add turbox
 ```
 
 > 本框架必须使用 decorator，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
 
 ### 依赖
-**@turbox3d/turbox** 依赖 **react-dom, react 16或以上版本**
+**turbox** 依赖 **react-dom, react 16或以上版本**
 
 ### 兼容性
-**@turbox3d/turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
+**turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
 
 ## API & 概念
 
 ### Domain
-在 **@turbox3d/turbox** 中，我们推荐使用面向对象的写法来组织我们的代码，这在一些复杂中大型单页应用中是比较有利的，以往我们在做一些简单的 web 页面时通常把状态设计成一颗尽量扁平化的树就已经够用了，甚至函数式的写法似乎也不错，而在中大型单页 3D 应用和其他的一些复杂应用中，数据模型往往是一个非常复杂的图状数据结构，这就要求我们可以把复杂的状态设计成一个个合理的数据模型单元，每个模型都拥有自己的一系列业务逻辑和与其他数据模型之间的一些关系，最后构成图状模型。
+在 **turbox** 中，我们推荐使用面向对象的写法来组织我们的代码，这在一些复杂中大型单页应用中是比较有利的，以往我们在做一些简单的 web 页面时通常把状态设计成一颗尽量扁平化的树就已经够用了，甚至函数式的写法似乎也不错，而在中大型单页 3D 应用和其他的一些复杂应用中，数据模型往往是一个非常复杂的图状数据结构，这就要求我们可以把复杂的状态设计成一个个合理的数据模型单元，每个模型都拥有自己的一系列业务逻辑和与其他数据模型之间的一些关系，最后构成图状模型。
 
 domain 我们称之为一个领域模型，实际上它就是一个增强父类，把你的普通数据模型升级成为一个响应式的领域模型，其中可能包含 reactor、effect、mutation 等装饰器修饰的属性和函数，也有可能包含构造函数、成员变量等 class 本身所具有的特性。
 
-不管是 store 还是 domain，只是一种概念，本质上它们都是为了从视图层中剥离业务逻辑，并且得到一定程度的解耦、复用和互相依赖，至于如何设计，这就是使用者的事情了，你可以采用 VIPER、MVP 架构、传统 MVC 架构或是其他的设计思想来组织你的应用，甚至如果你的业务场景真的具有领域模型这个概念，并且在后端和产品层面都可以遵守领域模型，那也可以尝试设计成领域模型架构，如果不存在，仅仅是单纯业务逻辑的剥离也未尝不可，框架并不限制这些。不过 **@turbox3d/turbox** 还是会提供一份最佳实践的设计，在文档最后，仅供参考。
+不管是 store 还是 domain，只是一种概念，本质上它们都是为了从视图层中剥离业务逻辑，并且得到一定程度的解耦、复用和互相依赖，至于如何设计，这就是使用者的事情了，你可以采用 VIPER、ECS、MVP、传统 MVC 架构或是其他的设计思想来组织你的应用，甚至如果你的业务场景真的具有领域模型这个概念，并且在后端和产品层面都可以遵守领域模型，那也可以尝试设计成领域模型架构，如果不存在，仅仅是单纯业务逻辑的剥离也未尝不可，框架并不限制这些。不过 **turbox** 还是会提供一份最佳实践的设计，在文档最后，仅供参考。
 
-如下代码所示，这就是一个 domain，其实就是一个普通的 class 继承了 **@turbox3d/turbox** 提供的 Domain 父类：
+如下代码所示，这就是一个 domain，其实就是一个普通的 class 继承了 **turbox** 提供的 Domain 父类：
 ```js
-import { Domain, reactor, reducer, effect, mutation } from '@turbox3d/turbox';
+import { Domain, reactor, reducer, effect, mutation } from 'turbox';
 
 export class MyDomain extends Domain {
   @reactor result = 0;
@@ -169,7 +169,7 @@ export class MyDomain extends Domain {
 
 每个 domain 都可以拥有多个实例，不同实例之间的状态是隔离的，完全的面向对象。但在大部分模型不复杂的前中后台多页 web 应用中，通常它是单例的，因为只是用来存储几个零散的交互状态，状态模型并不复杂，甚至函数式更好，使用者自行根据业务场景选择合适的框架，并进行合理的设计。
 ```js
-import { Domain, reactor, reducer, effect, mutation } from '@turbox3d/turbox';
+import { Domain, reactor, reducer, effect, mutation } from 'turbox';
 
 class MyDomain extends Domain {
   @reactor() isLoading = false;
@@ -188,7 +188,7 @@ $ins2.isLoading; // still be false
 ```
 
 ### reactor
-在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **@turbox3d/turbox** 中，通过 @reactor 的装饰器来声明，如下代码所示：
+在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，如下代码所示：
 ```js
 export class MyDomain extends Domain {
   @reactor isLoading = false;
@@ -208,9 +208,9 @@ export class MyDomain extends Domain {
 
 从关注点精度来说，**mobx** 是属性级别的，而 **redux** 是某个容器的全局状态机，**redux** 虽然可以通过 combine 来降低关注点，但使用上配合 **immutable** 还是比 **mobx** 要麻烦一些，易用性上这一点 **mobx** 更好，只需要关注对应的属性。但精度过细也有缺点，比如我需要做一组操作的状态回退，或是自描述一套流程，就比较难直接快速的看出来，不过 **mobx** 后来也有了 action 的概念，不过必须启用 enforce actions 严格模式才有意义。
 
-**@turbox3d/turbox** 中提供了 mutation 装饰器专门做数据处理和更新，一些业务流程和外部数据的获取，则可以被隔离开，这有助于更好的描述业务流程、复用复杂一些的更新计算逻辑等，使用形式如下：
+**turbox** 中提供了 mutation 装饰器专门做数据处理和更新，一些业务流程和外部数据的获取，则可以被隔离开，这有助于更好的描述业务流程、复用复杂一些的更新计算逻辑等，使用形式如下：
 ```js
-// @turbox3d/turbox
+// turbox
 class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
@@ -241,7 +241,7 @@ class MyDomain extends Domain {
 > mutation 里面可以嵌套 mutation，但不可以嵌套 effect，看到下面 effect 那一小节你就会知道为什么
 
 #### $update
-上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **@turbox3d/turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
+上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
 ```js
 class MyDomain extends Domain {
   @reactor() currentIdx = 0;
@@ -258,7 +258,7 @@ class MyDomain extends Domain {
 ```
 > 和 redux 一样，更新 domain 中的 reactor state 是一个同步的过程，触发 mutation 操作（默认多次会被合并），如果状态改变了，都会触发一次依赖到此操作状态的组件的 forceUpdate() 方法来执行 reRender
 
-> 要在 mutation 中更新数组状态，可以直接使用数组原生 API，也可以直接操作数组下标或直接赋值，都能触发重新渲染，这是因为 @turbox3d/turbox 使用了 Proxy 的能力
+> 要在 mutation 中更新数组状态，可以直接使用数组原生 API，也可以直接操作数组下标或直接赋值，都能触发重新渲染，这是因为 turbox 使用了 Proxy 的能力
 
 > 可以使用构造函数对 reactor 修饰的属性赋值，这是因为在构造时，属性一定还没有被视图层观察，在这之前，你可以对这个实例的属性做任何修改，但一旦渲染完毕后，就只能通过 mutation 或 $update 来做修改
 
@@ -267,7 +267,7 @@ class MyDomain extends Domain {
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
 ### effect
-单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能比较弱，**@turbox3d/turbox** 因为考虑到 **redux** 中间件机制的可扩展性，也采用了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，默认情况下，**@turbox3d/turbox** 会提供基础的 effect 中间件，这样就可以处理副作用了，使用方法如下：
+单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能比较弱，**turbox** 因为考虑到 **redux** 中间件机制的可扩展性，也采用了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，默认情况下，**turbox** 会提供基础的 effect 中间件，这样就可以处理副作用了，使用方法如下：
 ```js
 import { throttle, bind } from 'lodash-decorators';
 
@@ -304,7 +304,7 @@ class MyDomain extends Domain {
 > effect 装饰器的参数可以自定义名称，如果未指定，默认使用函数名
 
 ### operator（暂未实现，敬请期待）
-后续 **@turbox3d/turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
+后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
 
 ### computed（暂未实现，敬请期待）
 有的业务比较复杂，需要根据某几个原始 reactor state 的变化自动触发算法，计算出视图组件真正需要的状态，在视图中放入太多的逻辑会让组件过重且难以维护，并且如果原始 reactor state 没有发生变化，就不应该重复执行耗时的计算，直接返回上一次计算过的结果性能更佳，这时候就需要用到 computed 装饰器，如下代码所示：
@@ -329,14 +329,14 @@ class MyDomain extends Domain {
 //   }
 // }
 
-// computed 修饰的函数返回的状态是只读的，只会根据原始 reactor state 进行变化，不能直接通过 mutation 或者 this 来修改，@turbox3d/turbox 希望计算过程跟数据流一样是单向的，如果需要逆向算法，还是写一个通用 effect 来逆向分解更新原始 reactor state 更好维护一些，通过监听互相触发更新虽然很方便，但过于 magic，比如 vue 的 watch，这种代码多了之后对排查和维护是灾难性的
+// computed 修饰的函数返回的状态是只读的，只会根据原始 reactor state 进行变化，不能直接通过 mutation 或者 this 来修改，turbox 希望计算过程跟数据流一样是单向的，如果需要逆向算法，还是写一个通用 effect 来逆向分解更新原始 reactor state 更好维护一些，通过监听互相触发更新虽然很方便，但过于 magic，比如 vue 的 watch，这种代码多了之后对排查和维护是灾难性的
 -->
 
 ### watch（暂未实现，敬请期待）
 某些情况需要根据数据的变化引发其他外部操作或数据的更新，这时候可以利用 watch，大部分情况并不推荐使用这种做法，因为这可能会导致程序难以测试并且不可预测，还有可能造成死循环，魔法过多对维护也会造成很大的代价。只在某些特别必要的场景，比如某些数据就是有极强的关联性，会导致外部操作或外部数据的更新，部分情况很难在所有应该触发更新的地方去手动调用触发更新，为了减少心智负担才用。
 
 ### Reactive
-**@turbox3d/turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
+**turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
 ```js
 import $column from '@domain/dwork/design-column/column';
 import $tag from '@domain/dwork/design-column/tag';
@@ -433,7 +433,7 @@ type render = (
   callback: () => void
 ) => void
 ```
-在 **mobx** 和 **redux** 中都没有干预 ReactDOM.render，而在 **@turbox3d/turbox** 中提供了 Turbox.render 函数来将组件渲染到 dom 上，实际上只是对 ReactDOM.render 函数的封装，将 **@turbox3d/turbox** 中的一些初始化细节给隐藏起来，实际上 render 函数主要做了根据配置决定是否加载内置中间件，初始化 store 以及把根组件渲染到对应节点，使用方式如下所示：
+在 **mobx** 和 **redux** 中都没有干预 ReactDOM.render，而在 **turbox** 中提供了 Turbox.render 函数来将组件渲染到 dom 上，实际上只是对 ReactDOM.render 函数的封装，将 **turbox** 中的一些初始化细节给隐藏起来，实际上 render 函数主要做了根据配置决定是否加载内置中间件，初始化 store 以及把根组件渲染到对应节点，使用方式如下所示：
 ```js
 Turbox.render(<Layout />, '#app', () => {
   // ReactDOM.render 的 callback
@@ -463,7 +463,7 @@ type Param = {
 type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => DispatchedAction
 type use = (middleware: middleware | middleware[]) => void
 ```
-**@turbox3d/turbox** 内置了 effect 和 logger 中间件，effect 默认开启，logger 默认关闭，effect 中间件上面已经介绍过了，而 logger 是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
+**turbox** 内置了 effect 和 logger 中间件，effect 默认开启，logger 默认关闭，effect 中间件上面已经介绍过了，而 logger 是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
 ```js
 const middleware = ({ dispatch }) => (next) => (action) => {
   // balabala...
@@ -497,7 +497,7 @@ type config = (config: Config) => void
 ```
 config 函数用来定义全局配置信息，可以开启或关闭中间件、时间旅行器、开发者工具等，传入的配置会覆盖默认配置，使用方式如下所示：
 ```js
-import Turbox from '@turbox3d/turbox';
+import Turbox from 'turbox';
 
 Turbox.config({
   middleware: {
@@ -524,7 +524,7 @@ let ctx = {
 > 必须在 Turbox.render 之前调用
 
 ### exception
-**@turbox3d/turbox** 默认在 Reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
+**turbox** 默认在 Reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
 ### time travelling
 框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。
@@ -756,7 +756,7 @@ export async function fetchCategoryTags() {
 ```js
 // entry.js
 import React from 'react';
-import Turbox from '@turbox3d/turbox';
+import Turbox from 'turbox';
 import Layout from './Layout';
 
 async function main() {
@@ -802,7 +802,7 @@ export const store = {
 ### 如何链接模型和组件
 下面是一个简单的例子，详情请见上面的 API & 概念：
 ```js
-import { Reactive } from '@turbox3d/turbox';
+import { Reactive } from 'turbox';
 import $column from '@domain/dwork/design-column/column'; // 导出的是一个实例
 import $list from '@presenter/dwork/column-list/list'; // 导出的是一个实例
 
@@ -830,7 +830,7 @@ export default class List extends React.PureComponent {
 ```
 
 ## 框架特性对比
-以下简单介绍几个业界比较流行的框架和 **@turbox3d/turbox** 框架，让不了解状态管理的童鞋可以快速找到自己适合的框架。
+以下简单介绍几个业界比较流行的框架和 **turbox** 框架，让不了解状态管理的童鞋可以快速找到自己适合的框架。
 
 ### react-redux
 **react-redux** 是比较经典的状态管理框架，最优秀的地方在于可扩展性和可预测性，个人使用感受来说适合一些复杂稳定的业务，并且还是比较考验架构设计的，**redux**（以下代指 **react-redux**） 相对来说还是给了开发者比较多折腾的空间，核心代码不多，扩展能力强，但直接裸用 **redux** 开发链路较长，心智负担较多，效率不算很高。
@@ -862,16 +862,15 @@ export default class List extends React.PureComponent {
 ### vuex架构图
 ![vuex](https://qhstaticssl.kujiale.com/as/e738c068c874a74d0192c83b039980e9/vuex.png)
 
-### @turbox3d/turbox
-**@turbox3d/turbox** 也是一个状态管理框架，它的灵感主要还是来源于以上框架和部分复杂业务场景，**@turbox3d/turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收一些优秀框架的思想来解决实际问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，这就是框架的意义所在。
+### turbox
+**turbox** 是一个包含了状态管理的应用框架，它的灵感主要还是来源于以上框架和部分复杂业务场景，**turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收一些优秀框架的思想来解决实际问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，这就是框架的意义所在。
 
-- 基于 Proxy 的响应式状态管理框架
-- 面向对象的设计理念
+- 基于 Proxy 的响应式状态管理
 - 支持复杂图状数据结构，而不仅仅是 plain object
 - 中间件系统沿袭了 **redux**，让更新流程得以扩展，可以做诸如流程全埋点，线上链路故障排查，性能分析，自动化测试等
 - 丰富的错误提示机制
 - 事务机制，让你更好的记录操作行为
-- 内存占用更小的时间旅行，轻松实现撤销恢复等功能
+- 内存占用更小的时间旅行，轻松实现撤销恢复、历史记录行为链路跟踪等功能
 - 默认提供处理副作用的装饰器，对异步场景更友好
 - 提供各种描述符，来处理竞态和复杂更新流程（待做）
 - 提供了计算属性和 watch 功能（待做）

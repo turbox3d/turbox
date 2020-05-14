@@ -17,7 +17,7 @@ English | [简体中文](./README.zh-CN.md)
 ## Ecosystem
 | Project | Status | Description |
 |---------|--------|-------------|
-| @turbox3d/cli       | - | Project cli tool, include scaffolding |
+| turbox-cli       | - | Project cli tool, include scaffolding |
 | turbox-dev-tool       | - | Browser DevTools extension |
 | turbox-snippets  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | Vscode snippet extension |
 

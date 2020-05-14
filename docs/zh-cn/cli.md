@@ -1,4 +1,4 @@
-# @turbox3d/cli
+# turbox-cli
 [![pipeline status](https://img.shields.io/travis/com/turbox3d/turbox/master.svg?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
 
 ## 介绍

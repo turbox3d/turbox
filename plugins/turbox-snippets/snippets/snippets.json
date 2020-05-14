@@ -34,12 +34,12 @@
 			"export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
 			"\t@reactor() example = '';",
 			"",
-			"\t@mutation",
+			"\t@mutation()",
 			"\tupdateExample(example) {",
 			"\t\tthis.example = example;",
 			"\t}",
 			"",
-			"\t@effect",
+			"\t@effect()",
 			"\tasync fetch() {",
 			"\t\tthis.updateExample('example');",
 			"\t}",
@@ -65,7 +65,7 @@
 	"Create mutation": {
 		"prefix": "tmu",
 		"body": [
-			"@mutation",
+			"@mutation()",
 			"${1:updateState}(${2:newState}) {",
 			"\tthis.${3:state} = ${2:newState};",
 			"}"
@@ -75,7 +75,7 @@
 	"Create effect": {
 		"prefix": "tef",
 		"body": [
-			"@effect",
+			"@effect()",
 			"async ${1:fetch}() {",
 			"\t$0",
 			"}"
@@ -86,9 +86,9 @@
 		"prefix": "tcc",
 		"body": [
 			"import React, { Component } from 'react';",
-			"import { reactive } from 'turbox';",
+			"import { Reactive } from 'turbox';",
 			"",
-			"@reactive()",
+			"@Reactive()",
 			"class ${1:${TM_FILENAME_BASE}} extends Component {",
 			"\trender() {",
 			"\t\treturn (",
@@ -108,9 +108,9 @@
 		"prefix": "tfc",
 		"body": [
 			"import React from 'react';",
-			"import { reactive } from 'turbox';",
+			"import { Reactive } from 'turbox';",
 			"",
-			"const ${1:${TM_FILENAME_BASE}} = reactive(() => {",
+			"const ${1:${TM_FILENAME_BASE}} = Reactive(() => {",
 			"\treturn (",
 			"\t\t<div>",
 			"\t\t\t$0",
@@ -127,9 +127,9 @@
 		"prefix": "tcpc",
 		"body": [
 			"import React, { PureComponent } from 'react';",
-			"import { reactive } from 'turbox';",
+			"import { Reactive } from 'turbox';",
 			"",
-			"@reactive()",
+			"@Reactive()",
 			"class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
 			"\trender() {",
 			"\t\treturn (",

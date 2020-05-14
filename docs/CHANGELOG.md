@@ -8,8 +8,8 @@
 > - :house:      [Internal]
 > - :nail_care:  [Polish]
 
-## 2020-04-23
-@turbox3d/turbox 0.0.1 released.
+## 2020-05-14
+turbox 1.0.0 released.
 
 <!-- ## 2020-04-02
 @tacky/store 2.0.9 released.
