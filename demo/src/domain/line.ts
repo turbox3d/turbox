@@ -1,4 +1,4 @@
-import { Domain, reactor } from '@turboo/turbox';
+import { Domain, reactor } from 'turbox';
 import { Countertop } from './countertop';
 import { Point } from './point';
 

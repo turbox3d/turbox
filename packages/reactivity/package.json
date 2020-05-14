@@ -1,7 +1,7 @@
 {
-  "name": "turbox",
+  "name": "@turbox3d/reactivity",
   "version": "0.0.1",
-  "description": "Large-scale productivity application front-end framework",
+  "description": "Large-scale reactive state management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./index.d.ts",
@@ -28,9 +28,6 @@
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
-  },
-  "dependencies": {
-    "@turbox3d/reactivity": "^0.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
@@ -67,8 +64,8 @@
     "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es",
     "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib",
     "build:watch": "tsc -w -target es2018 -declarationDir ./typings -types node -outDir ./ts & npx babel ts -w --out-dir es",
-    "build:umd": "npx webpack --mode='development' -o dist/turbox.js",
-    "build:umd:min": "npx webpack --mode='production' -o dist/turbox.min.js",
+    "build:umd": "npx webpack --mode='development' -o dist/turbox-reactivity.js",
+    "build:umd:min": "npx webpack --mode='production' -o dist/turbox-reactivity.min.js",
     "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
   },
   "bugs": {

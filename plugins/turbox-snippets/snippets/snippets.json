@@ -1,8 +1,8 @@
 {
-  "Create entry with tacky": {
+  "Create entry with turbox": {
 		"prefix": "ten",
 		"body": [
-			"import Turbox from '@turboo/turbox';",
+			"import Turbox from 'turbox';",
 			"",
 			"async function main() {",
 			"\tTurbox.config({",
@@ -29,7 +29,7 @@
 	"Create Domain": {
 		"prefix": "tdm",
 		"body": [
-			"import { Domain, reactor, effect, mutation } from '@turboo/turbox';",
+			"import { Domain, reactor, effect, mutation } from 'turbox';",
 			"",
 			"export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
 			"\t@reactor() example = '';",
@@ -86,7 +86,7 @@
 		"prefix": "tcc",
 		"body": [
 			"import React, { Component } from 'react';",
-			"import { reactive } from '@turboo/turbox';",
+			"import { reactive } from 'turbox';",
 			"",
 			"@reactive()",
 			"class ${1:${TM_FILENAME_BASE}} extends Component {",
@@ -102,13 +102,13 @@
 			"export default ${1:${TM_FILENAME_BASE}};",
 			""
 		],
-		"description": "Create a Class Component with tacky"
+		"description": "Create a Class Component with turbox"
 	},
 	"Create a Function Component with turbox": {
 		"prefix": "tfc",
 		"body": [
 			"import React from 'react';",
-			"import { reactive } from '@turboo/turbox';",
+			"import { reactive } from 'turbox';",
 			"",
 			"const ${1:${TM_FILENAME_BASE}} = reactive(() => {",
 			"\treturn (",
@@ -127,7 +127,7 @@
 		"prefix": "tcpc",
 		"body": [
 			"import React, { PureComponent } from 'react';",
-			"import { reactive } from '@turboo/turbox';",
+			"import { reactive } from 'turbox';",
 			"",
 			"@reactive()",
 			"class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
@@ -148,7 +148,7 @@
   "Create a reactive function with turbox": {
     "prefix": "trf",
     "body": [
-      "import { reactive } from '@turboo/turbox';",
+      "import { reactive } from 'turbox';",
       "",
       "const ${1:${TM_FILENAME_BASE}} = reactive(() => {",
       "\t$0",

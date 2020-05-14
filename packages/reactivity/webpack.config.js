@@ -4,9 +4,9 @@ module.exports = {
   entry: ['./es/index.js'],
   output: {
     library: {
-      commonjs: 'turbox',
-      amd: 'turbox',
-      root: 'Turbox'
+      commonjs: '@turbox3d/reactivity',
+      amd: '@turbox3d/reactivity',
+      root: 'TurboxReactivity'
     },
     libraryTarget: 'umd'
   },

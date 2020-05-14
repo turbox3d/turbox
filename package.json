@@ -1,5 +1,5 @@
 {
-  "name": "turboo",
+  "name": "turbox",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -7,11 +7,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:turboojs/turbox.git"
+    "url": "git@github.com:turbox3d/turbox.git"
   },
   "keywords": [
     "framework",
-    "react",
+    "productivity application",
     "front-end"
   ],
   "author": "feifan <darknight3@vip.qq.com>",
@@ -28,7 +28,6 @@
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.9.4",
     "@babel/runtime": "^7.6.3",
-    "@turboo/turbox": "^1.0.3",
     "@types/jest": "^24.0.19",
     "@types/node": "^12.11.5",
     "@types/react": "^16.9.14",

@@ -16,8 +16,8 @@ export class Reaction {
   }
 }
 
-export function autoRun(func: Function, options?: Options) {
-  const name = (options && options.name) || func.name || `@@TURBOX__AUTORUN_${generateUUID()}`;
+export function reactive(func: Function, options?: Options) {
+  const name = (options && options.name) || func.name || `@@TURBOX__REACTIVE_${generateUUID()}`;
   const reaction = new Reaction(name, function() {
     depCollector.start(this);
     func.call(this);

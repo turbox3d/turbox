@@ -1,4 +1,4 @@
-import { reactive } from '@turboo/turbox';
+import { Reactive } from 'turbox';
 import React from 'react';
 import { Point } from '../domain/point';
 
@@ -19,4 +19,4 @@ const PointComp: React.FC<IProps> = ({ data, index }) => {
   );
 };
 
-export default reactive(PointComp);
+export default Reactive(PointComp);

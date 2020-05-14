@@ -3,13 +3,13 @@ import ErrorBoundary from './ErrorBoundary';
 import { store } from '../core/store';
 import { depCollector } from '../core/collector';
 
-export function reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
-export function reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
+export function Reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
+export function Reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
 
 /**
  * Returns a high order component with auto refresh feature.
  */
-export function reactive<P extends object>(arg?: React.ComponentType<P> | Function) {
+export function Reactive<P extends object>(arg?: React.ComponentType<P> | Function) {
   const decorator = <P extends object>(Target: React.ComponentType<P>): React.ComponentType<P> => {
     // const displayName: string = Target.displayName || Target.name || '<TURBOX_COMPONENT>';
     let _this: React.Component;

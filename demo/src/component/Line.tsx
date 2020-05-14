@@ -1,4 +1,4 @@
-import { reactive } from '@turboo/turbox';
+import { Reactive } from 'turbox';
 import React from 'react';
 import { Line } from '../domain/line';
 
@@ -16,4 +16,4 @@ const LineComp: React.FC<IProps> = ({ data }) => {
   );
 };
 
-export default reactive(LineComp);
+export default Reactive(LineComp);

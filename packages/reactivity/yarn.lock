@@ -925,11 +925,6 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@turbox3d/reactivity@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-0.0.1.tgz#0bc21018a17a220a63793d1f1ad010036052a72b"
-  integrity sha512-ty5MZ2hQ906IXLadLX5JKaAPgdd6E3oOTsLWZbeETXDdmnsaheVfWEywIS2erwEOgcjjHfYsy4oExCdjZ0Xz5Q==
-
 "@types/babel__core@^7.1.0":
   version "7.1.7"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.7.tgz#1dacad8840364a57c98d0dd4855c6dd3752c6b89"

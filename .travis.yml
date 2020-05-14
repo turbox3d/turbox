@@ -7,7 +7,7 @@ node_js:
 stages:
   - test
   - name: deploy
-    if: tag =~ ^@turboo
+    if: (tag =~ ^@turbox3d) OR (tag =~ ^turbox)
   - name: deploy-plugin
     if: tag =~ ^@plugin
 

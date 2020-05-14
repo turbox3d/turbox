@@ -1,5 +1,5 @@
 import Point2d from '../math/Point2d';
-import { Domain, effect, mutation, reactor } from '@turboo/turbox';
+import { Domain, effect, mutation, reactor } from 'turbox';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';

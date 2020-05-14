@@ -1,4 +1,4 @@
-import { config, init, reactive, autoRun, TimeTravel } from '@turboo/turbox';
+import { config, init, Reactive, reactive, TimeTravel } from 'turbox';
 import React from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -36,12 +36,12 @@ const p = new Point({
   type: EPointType.CIRCLE,
 });
 
-autoRun(() => {
+reactive(() => {
   console.log('&&&&&');
   console.log(p.position);
 });
 
-const DemoBox = reactive(() => {
+const DemoBox = Reactive(() => {
   const testAsync = () => {
     const p = new Point({
       position: new Point2d(100, 100),

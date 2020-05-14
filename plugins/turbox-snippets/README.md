@@ -1,6 +1,6 @@
 # turbox-snippets
 
-Code snippets for [turbox](https://github.com/turboojs/turbox)
+Code snippets for [turbox](https://github.com/turbox3d/turbox)
 
 ## Installation
 

@@ -9,7 +9,7 @@
 > - :nail_care:  [Polish]
 
 ## 2020-04-23
-@turboo/turbox 0.0.1 released.
+@turbox3d/turbox 0.0.1 released.
 
 <!-- ## 2020-04-02
 @tacky/store 2.0.9 released.
