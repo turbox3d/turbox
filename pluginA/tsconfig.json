@@ -1,0 +1,34 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "es6",
+    "noImplicitAny": false,
+    "declaration": true,
+    "strictNullChecks": true,
+    "allowJs": false,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": false,
+    "downlevelIteration": true,
+    "watch": false,
+    "target": "es5",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es2018"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/**/*",
+    "**/__tests__/**/*"
+  ]
+}

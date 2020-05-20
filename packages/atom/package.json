@@ -1,37 +1,26 @@
 {
-  "name": "turbox",
-  "version": "1.0.1",
-  "description": "Large-scale productivity application front-end framework",
+  "name": "@turbox3d/atom",
+  "version": "0.0.1",
+  "description": "Micro front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./index.d.ts",
   "keywords": [
     "framework",
-    "react",
-    "redux",
-    "react-redux",
-    "mobx",
-    "mobx-react",
-    "vuex",
+    "micro-frontends",
     "front-end",
     "turbox3d",
     "turbox",
     "alibaba",
-    "taobao",
-    "state-management"
+    "taobao"
   ],
   "publishConfig": {
     "access": "public"
   },
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
-  "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
-  },
   "dependencies": {
-    "@turbox3d/reactivity": "^1.0.1",
-    "@turbox3d/atom": "^0.0.1"
+    "@turbox3d/reactivity": "^1.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
@@ -62,14 +51,12 @@
     "url": "git+https://github.com/turbox3d/turbox.git"
   },
   "scripts": {
-    "test": "npx jest --forceExit --coverage --verbose",
-    "test:watch": "npm run test -- --watchAll",
     "build:ts": "rm -rf ts && tsc -target es2018 -declarationDir ./typings -types node -outDir ./ts",
     "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es",
     "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib",
     "build:watch": "tsc -w -target es2018 -declarationDir ./typings -types node -outDir ./ts & npx babel ts -w --out-dir es",
-    "build:umd": "npx webpack --mode='development' -o dist/turbox.js",
-    "build:umd:min": "npx webpack --mode='production' -o dist/turbox.min.js",
+    "build:umd": "npx webpack --mode='development' -o dist/turbox-atom.js",
+    "build:umd:min": "npx webpack --mode='production' -o dist/turbox-atom.min.js",
     "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
   },
   "bugs": {
