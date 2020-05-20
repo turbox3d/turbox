@@ -1,6 +1,4 @@
-import { reactor, reactive, mutation, Domain } from 'turbox';
-import { createPlugin, Service } from './atom';
-import { pluginAServices } from './pluginA';
+import { reactor, reactive, mutation, Domain, Service, createPlugin } from 'turbox';
 
 // const Services = {
 //   TPZZ_PLUGINA: pluginAServices,

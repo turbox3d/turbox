@@ -12,8 +12,10 @@ export let isRunning = false;
  * Includes init built-in middleware, create store, load domain tree and so on.
  */
 export function init() {
+  if (isRunning) {
+    return;
+  }
   invariant(isSupportProxy() && isSupportSymbol(), 'Proxy or Symbol is not supported, please add polyfill.');
-  invariant(!isRunning, 'Cannot init store multiple times.');
 
   isRunning = true;
 

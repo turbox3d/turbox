@@ -1,5 +1,4 @@
-import { createApp } from './atom';
-import { init } from 'turbox';
+import { init, createApp } from 'turbox';
 
 init();
 
