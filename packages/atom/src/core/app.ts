@@ -1,17 +1,19 @@
 import { loadScript } from '../utils/load';
 
-export let appMetaData: {
-  name: string,
-  meta?: object,
+interface AppMeta {
+  name: string;
+  meta: object;
   preload: {
     range: number,
-  },
-  config: object,
-};
+  };
+  config: object;
+}
+
+export let appMetaData: AppMeta;
 
 export interface AppParams {
   name: string;
-  meta: object;
+  meta?: object;
   preload: {
     range: number,
   };
@@ -34,7 +36,7 @@ export const createApp = ({
   }
   appMetaData = {
     name,
-    meta,
+    meta: meta || {},
     preload: preload || { range: 2 },
     config: {},
   };

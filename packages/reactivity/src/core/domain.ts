@@ -6,7 +6,7 @@ import generateUUID from '../utils/uuid';
 import { depCollector, triggerCollector } from './collector';
 import { canObserve } from '../utils/decorator';
 import { store } from './store';
-import { ReactorConfig } from '../decorators/reactor';
+import { ReactorConfig, meta } from '../decorators/reactor';
 import { EOperationTypes } from './time-travel';
 
 const proxyCache = new WeakMap<any, any>();
@@ -91,7 +91,12 @@ export class Domain<S = {}> {
 
     depCollector.collect(target, stringKey);
     if (this.reactorConfigMap[rootKey].callback) {
-      this.reactorConfigMap[rootKey].callback.call(this, target, key);
+      const f = () => {
+        meta.freeze = true;
+        this.reactorConfigMap[rootKey].callback && this.reactorConfigMap[rootKey].callback.call(this, target, key);
+        meta.freeze = false;
+      };
+      !meta.freeze && f();
     }
 
     return isObject(res) && !isDomain(res) ? this.proxyReactive(res, rootKey) : res;

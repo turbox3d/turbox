@@ -9,10 +9,19 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: "/build/",
   },
+  externals: {
+    // turbox: {
+    //   commonjs: 'turbox',
+    //   commonjs2: 'turbox',
+    //   amd: 'turbox',
+    //   root: 'Turbox'
+    // },
+    turbox: 'Turbox',
+  },
   devServer: {
     contentBase: path.resolve(__dirname),
     compress: true,
-    port: 9000
+    port: 9002
   },
   module: {
     rules: [{

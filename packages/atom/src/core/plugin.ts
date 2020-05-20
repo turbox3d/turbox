@@ -12,7 +12,7 @@ export interface PluginParams {
   lazy: boolean;
   deps?: string[];
   services?: object;
-  main: (meta?: object) => void;
+  main: (meta: object) => void;
 }
 
 /**

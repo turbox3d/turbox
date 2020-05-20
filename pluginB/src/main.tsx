@@ -4,8 +4,6 @@ import { reactor, reactive, mutation, Domain, Service, createPlugin } from 'turb
 //   TPZZ_PLUGINA: pluginAServices,
 // };
 
-const Services = Service.services;
-
 class HumanModel extends Domain {
   @reactor name = 'xxxB';
   @reactor() age = 20;
@@ -37,14 +35,14 @@ const store = {
 
 const render = () => {
   console.log('***pluginB render done***');
-  reactive(() => {
-    if (!Services.TPZZ_PLUGINA) {
-      return;
-    }
-    Services.TPZZ_PLUGINA.changeAge(18);
-    const designId = Services.TPZZ_PLUGINA.getDesignId();
-    console.log(designId);
-  });
+  // reactive(() => {
+  //   if (!Service.services.TPZZ_PLUGINA) {
+  //     return;
+  //   }
+  //   Service.services.TPZZ_PLUGINA.changeAge(18);
+  //   const designId = Service.services.TPZZ_PLUGINA.getDesignId();
+  //   console.log('pluginB获取A的Id：', designId);
+  // });
 };
 const initI18N = () => {
 };

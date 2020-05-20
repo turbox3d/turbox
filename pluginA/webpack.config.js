@@ -12,7 +12,16 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname),
     compress: true,
-    port: 9000
+    port: 9001
+  },
+  externals: {
+    // turbox: {
+    //   commonjs: 'turbox',
+    //   commonjs2: 'turbox',
+    //   amd: 'turbox',
+    //   root: 'Turbox'
+    // },
+    turbox: 'Turbox',
   },
   module: {
     rules: [{

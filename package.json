@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "webpack-dev-server --config ./demo/webpack.config.js"
+    "start": "webpack-dev-server --config ./demo/webpack.config.js",
+    "start:plugin-a": "webpack-dev-server --config ./pluginA/webpack.config.js",
+    "start:plugin-b": "webpack-dev-server --config ./pluginB/webpack.config.js"
   },
   "repository": {
     "type": "git",

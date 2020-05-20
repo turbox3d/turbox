@@ -14,6 +14,29 @@ module.exports = {
     compress: true,
     port: 9000
   },
+  externals: {
+    // turbox: {
+    //   commonjs: 'turbox',
+    //   commonjs2: 'turbox',
+    //   amd: 'turbox',
+    //   root: 'Turbox'
+    // },
+    // react: {
+    //   commonjs: 'react',
+    //   commonjs2: 'react',
+    //   amd: 'react',
+    //   root: 'React'
+    // },
+    // 'react-dom': {
+    //   commonjs: 'react-dom',
+    //   commonjs2: 'react-dom',
+    //   amd: 'react-dom',
+    //   root: 'ReactDOM'
+    // },
+    turbox: 'Turbox',
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
   module: {
     rules: [{
       test: /\.js[x]?$/,

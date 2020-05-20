@@ -2,13 +2,18 @@ import { BabelDescriptor } from '../interfaces';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { Domain } from '../core/domain';
 
+export const meta = {
+  freeze: false,
+};
+
 export interface ReactorConfig {
   deepProxy: boolean;
   isNeedRecord: boolean;
-  callback?: (target: Object, property: string | symbol | number) => void | Promise<void>;
+  callback?: (target: Object, property: string | symbol | number) => void;
 }
+
 export function reactor(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void | Promise<void>): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 /**
  * reactor decorator, making the reactor observable.
  */
@@ -23,7 +28,14 @@ export function reactor(...args: any[]) {
       configurable: true,
       get: function () {
         const current = (this as Domain);
-        config.callback && config.callback.call(current, current, property);
+        if (config.callback) {
+          const f = () => {
+            meta.freeze = true;
+            config.callback && config.callback.call(current, current, property);
+            meta.freeze = false;
+          };
+          !meta.freeze && f();
+        }
         return current.propertyGet(property, config);
       },
       set: function (newVal: any) {
