@@ -2,7 +2,7 @@ import { includes } from '../utils/common';
 import { ctx } from '../const/config';
 import { Component } from 'react';
 import { Reaction } from './reactive';
-import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './timeTravel';
+import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './time-travel';
 import { actionNames } from './store';
 
 export type ReactionId = Component | Reaction;

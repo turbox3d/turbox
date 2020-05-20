@@ -7,7 +7,7 @@ import { depCollector, triggerCollector } from './collector';
 import { canObserve } from '../utils/decorator';
 import { store } from './store';
 import { ReactorConfig } from '../decorators/reactor';
-import { EOperationTypes } from './timeTravel';
+import { EOperationTypes } from './time-travel';
 
 const proxyCache = new WeakMap<any, any>();
 const rawCache = new WeakMap<any, any>();
@@ -90,6 +90,9 @@ export class Domain<S = {}> {
     const rootKey = rootKeyCache.get(target)!;
 
     depCollector.collect(target, stringKey);
+    if (this.reactorConfigMap[rootKey].callback) {
+      this.reactorConfigMap[rootKey].callback.call(this, target, key);
+    }
 
     return isObject(res) && !isDomain(res) ? this.proxyReactive(res, rootKey) : res;
   }

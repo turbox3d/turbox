@@ -5,9 +5,10 @@ import { Domain } from '../core/domain';
 export interface ReactorConfig {
   deepProxy: boolean;
   isNeedRecord: boolean;
+  callback?: (target: Object, property: string | symbol | number) => void | Promise<void>;
 }
 export function reactor(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function reactor(deepProxy?: boolean, isNeedRecord?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void | Promise<void>): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 /**
  * reactor decorator, making the reactor observable.
  */
@@ -22,6 +23,7 @@ export function reactor(...args: any[]) {
       configurable: true,
       get: function () {
         const current = (this as Domain);
+        config.callback && config.callback.call(current, current, property);
         return current.propertyGet(property, config);
       },
       set: function (newVal: any) {
@@ -46,6 +48,7 @@ export function reactor(...args: any[]) {
   // @decorator(args)
   config.deepProxy = args[0] !== void 0 ? args[0] : true;
   config.isNeedRecord = args[1] !== void 0 ? args[1] : true;
+  config.callback = args[2];
 
   return decorator;
 }

@@ -4,7 +4,7 @@ import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { ctx } from '../const/config';
 import { materialCallStack } from './domain';
-import { TimeTravel } from './timeTravel';
+import { TimeTravel } from './time-travel';
 
 export let store: Store;
 export let isUpdating: boolean = false;

@@ -193,13 +193,17 @@ $ins2.isLoading; // still be false
 export class MyDomain extends Domain {
   @reactor isLoading = false;
   @reactor() list = [];
-  @reactor(true, true) prop = 'prop';
+  @reactor(true, true, function(target, property) {}) prop = 'prop';
 }
 ```
 
 > reactor 装饰器可以加括号传参，也可以不加括号不传参，框架都支持，其他装饰器比如 mutation、effect、reactive 同理
 
-> reactor 装饰器有两个参数，第一个参数是 deepProxy，用来表示是否需要深度代理，默认开启，这样可以支持深层 mutable 的写法，默认也会对数据结构做性能优化，如果关闭，则需要通过拷贝赋值的方式来触发更新，或者其他 immutable 的方式，否则不会触发更新。第二个参数是 isNeedRecord，表示该属性是否需要被记录到时间旅行器中。
+> reactor 装饰器有三个参数，第一个参数是 deepProxy，用来表示是否需要深度代理，默认开启，这样可以支持深层 mutable 的写法，默认也会对数据结构做性能优化，如果关闭，则需要通过拷贝赋值的方式来触发更新，或者其他 immutable 的方式，否则不会触发更新。
+
+> 第二个参数是 isNeedRecord，表示该属性是否需要被记录到时间旅行器中。
+
+> 第三个参数是个 callback 回调，当该属性被使用（get）时，该函数会被触发，该回调有两个参数，第一个参数是 target 对象，第二个参数是被使用时的属性 key，如果访问的是深层次节点则 target 指代的是当前深层次的访问对象，property 则为深层次使用时的属性 key。
 
 ### mutation
 在 **redux** 中，我们写的最多的就是 reducer，它是用来处理数据更新操作，传统意义来说，reducer 是一个具有输入输出的纯函数，它更像是一个物料，或是一个早就定制好的流水线，任何相同的输入，一定会得到相同的输出，它的执行不会改变它所在的环境，外部环境也不应该影响它，这种特性似乎非常适合 **react** 数据状态机的思想，每一个 snapshot 都对应着一份数据，数据变了，就产生了新的 snapshot。

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { init, isRunning } from '../core/init';
+import { init, isRunning } from './init';
 
 /**
  * Includes render on dom, init built-in middleware, create store, load domain global tree and so on.

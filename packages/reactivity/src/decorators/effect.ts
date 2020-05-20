@@ -7,7 +7,7 @@ import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { triggerCollector } from '../core/collector';
-import { TimeTravel } from '../core/timeTravel';
+import { TimeTravel } from '../core/time-travel';
 
 interface EffectConfig {
   name: string;

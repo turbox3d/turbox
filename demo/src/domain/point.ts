@@ -5,7 +5,10 @@ import { Line } from './line';
 import { EPointType } from '../types/enum';
 
 export class Point extends Domain {
-  @reactor() position: Point2d;
+  @reactor(true, true, function(target, property) {
+    // console.log('$$$$$', target, property);
+    // console.log(this);
+  }) position: Point2d;
   @reactor type: EPointType;
   @reactor prevLine?: Line;
   @reactor nextLine?: Line;

@@ -1,5 +1,5 @@
-import { Reactive } from './components/reactive';
-import { render } from './components/render';
+import { Reactive } from './components/Reactive';
+import { render } from './core/render';
 import { use } from './core/use';
 import { config } from './const/config';
 import { mutation } from './decorators/mutation';
@@ -8,7 +8,7 @@ import { reactor } from './decorators/reactor';
 import { Domain } from './core/domain';
 import { init } from './core/init';
 import { reactive } from './core/reactive';
-import { TimeTravel } from './core/timeTravel';
+import { TimeTravel } from './core/time-travel';
 
 export default {
   Reactive,
