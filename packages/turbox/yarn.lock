@@ -925,17 +925,17 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@turbox3d/atom@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@turbox3d/atom/-/atom-0.0.3.tgz#293f9fa9a3ac890c05280974dc26a2eab689295c"
-  integrity sha512-ZaRDJULFvry1A8KF05KEKMcfr5jfAeX2E3hw5xpZRi9rGvbMCBTSNIv+c63TZhVqjDJaVlDthnOkHmCbkr317A==
+"@turbox3d/atom@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@turbox3d/atom/-/atom-0.0.4.tgz#79cc5c22c20e8cf88a21e3a3c58d2160ee8e03f8"
+  integrity sha512-oYNpl/pzVUM3DZotUQNmE1hndEo5wiHnlKCBdOQyqpbcwjKZ2QkStWCw9tYpnEH7sOE3mWDCxBrs3jYFeMecdA==
   dependencies:
-    "@turbox3d/reactivity" "^1.0.3"
+    "@turbox3d/reactivity" "^1.0.4"
 
-"@turbox3d/reactivity@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.3.tgz#473028c6793c31ee6c5923d3a08a061de1086994"
-  integrity sha512-sv2Z5FiPWKA2Iv7D1atZWu4HHVVZ829/KH68Wy0M7uxq8XVntyXuV92HBdwhg/hkBOHRtFJGmKY9pQYiJEF+/g==
+"@turbox3d/reactivity@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.4.tgz#2b96dd85054adf083ed1339f54e1cb000480e51c"
+  integrity sha512-AGOcE2wNzCqtZSaSsNfC0EdbhxVopoMVhheT7//Hrg5IrxWl6XLKQ+bZBKyBRqNpl0JlkYH/wFqQL+dk1WvR9Q==
 
 "@types/babel__core@^7.1.0":
   version "7.1.7"

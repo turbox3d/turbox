@@ -62,7 +62,7 @@ const DemoBox = Reactive(() => {
     cts.countertops[0].testTwoEffect(p, l);
   };
   const addPoint = () => {
-    TimeTravel.start('添加点和线');
+    // TimeTravel.start('添加点和线');
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
@@ -80,7 +80,7 @@ const DemoBox = Reactive(() => {
         type: EPointType.NONE,
       }),
     }));
-    TimeTravel.complete();
+    // TimeTravel.complete();
   };
   const updateFirstPointPosition = () => {
     cts.countertops[0].updateFirstPointPosition();
@@ -104,12 +104,12 @@ const DemoBox = Reactive(() => {
 
   return (
     <React.Fragment>
-      {cts.countertops.length && cts.countertops[0].points.length > 0 &&
+      {/* {cts.countertops.length && cts.countertops[0].points.length > 0 &&
         <div>position:
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.x},
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
-      }
+      } */}
       {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}

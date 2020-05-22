@@ -52,10 +52,10 @@ export class Countertop extends Domain {
     //     type: EPointType.NONE,
     //   }),
     // }));
-    this.addPoint(new Point({
-      position: new Point2d(100, 100),
-      type: EPointType.NONE,
-    }));
+    // this.addPoint(new Point({
+    //   position: new Point2d(100, 100),
+    //   type: EPointType.NONE,
+    // }));
   }
 
   @mutation('添加点')

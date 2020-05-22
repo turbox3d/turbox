@@ -26,8 +26,8 @@ export function createPlugin({
   main,
 }: PluginParams) {
   DepGraph.collect(name, lazy, deps);
-  main(appMetaData.meta);
   services && Service.register(name, services);
+  main(appMetaData.meta);
   // if (requestIdleCallback) {
   //   requestIdleCallback(() => {
   //     DepGraph.preload(name);

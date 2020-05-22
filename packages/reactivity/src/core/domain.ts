@@ -65,15 +65,16 @@ export class Domain<S = {}> {
     // do nothing if target is in the prototype chain
     if (target === proxyCache.get(receiver)) {
       const result = Reflect.set(target, key, value, receiver);
-      if (!hadKey) {
+      if (value !== oldValue) {
         triggerCollector.trigger(target, stringKey, {
-          type: EOperationTypes.ADD,
+          type: EOperationTypes.SET,
           beforeUpdate: oldValue,
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
-      } else if (value !== oldValue) {
+      }
+      if (!hadKey) {
         triggerCollector.trigger(target, stringKey, {
-          type: EOperationTypes.SET,
+          type: EOperationTypes.ADD,
           beforeUpdate: oldValue,
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
