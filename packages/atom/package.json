@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/atom",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Micro front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -20,7 +20,7 @@
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "dependencies": {
-    "@turbox3d/reactivity": "^1.0.4"
+    "@turbox3d/reactivity": "^1.0.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
