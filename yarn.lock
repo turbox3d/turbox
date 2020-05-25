@@ -1954,17 +1954,17 @@
   dependencies:
     type-detect "4.0.8"
 
-"@turbox3d/atom@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@turbox3d/atom/-/atom-0.0.3.tgz#293f9fa9a3ac890c05280974dc26a2eab689295c"
-  integrity sha512-ZaRDJULFvry1A8KF05KEKMcfr5jfAeX2E3hw5xpZRi9rGvbMCBTSNIv+c63TZhVqjDJaVlDthnOkHmCbkr317A==
+"@turbox3d/atom@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@turbox3d/atom/-/atom-0.0.5.tgz#a30b58589aa7a21ddfec45c2dac17a81339f8587"
+  integrity sha512-CoD8P1N+y/cRb0JIA86a+bNjOO5z2Sf1dbVdTcKHPy8zwiRviRrPotKUoNtUHiWVlPLHRSVo4Y8X3yeVtDPW3g==
   dependencies:
-    "@turbox3d/reactivity" "^1.0.3"
+    "@turbox3d/reactivity" "^1.0.5"
 
-"@turbox3d/reactivity@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.3.tgz#473028c6793c31ee6c5923d3a08a061de1086994"
-  integrity sha512-sv2Z5FiPWKA2Iv7D1atZWu4HHVVZ829/KH68Wy0M7uxq8XVntyXuV92HBdwhg/hkBOHRtFJGmKY9pQYiJEF+/g==
+"@turbox3d/reactivity@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.5.tgz#5457cf435d530a5e4241791b32d586c5e3ff77ed"
+  integrity sha512-H/7Ak+druNN8j7qbHbSrmc+lsL/iICL750dGtjwM+E43QJXwaTHyUTdq0S//ZtcuD9/+SqI5XAzEWDLT53OT9g==
 
 "@types/babel__core@^7.1.7":
   version "7.1.7"
@@ -9569,13 +9569,13 @@ tunnel@0.0.4:
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.4.tgz#2d3785a158c174c9a16dc2c046ec5fc5f1742213"
   integrity sha1-LTeFoVjBdMmhbcLARuxfxfF0IhM=
 
-turbox@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.0.3.tgz#96d306937d569d8fc6d74017e6335d9476a52e6f"
-  integrity sha512-HDMS4o9sbeBLbyrfdm0btDGvlPWIiWrsQxdfaZug3T509PhhWIMoFip+TzATHOGnASWy3ZugOTM7/27+XJAh5g==
+turbox@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.0.5.tgz#721f2ac0143618d446e966a57454373e67283eb3"
+  integrity sha512-VJ2EYgGbktN9c/XjXiqBz2IRIs5iJjPbdco22F1D9eeOBLhZeXB3PVV5XbfP067oIvOEdK6PgeiOH4jpvJ429A==
   dependencies:
-    "@turbox3d/atom" "^0.0.3"
-    "@turbox3d/reactivity" "^1.0.3"
+    "@turbox3d/atom" "^0.0.5"
+    "@turbox3d/reactivity" "^1.0.5"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
