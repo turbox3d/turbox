@@ -7,6 +7,7 @@ import { EPointType } from '../types/enum';
 export class Countertop extends Domain {
   @reactor points: Point[];
   @reactor lines: Line[];
+  @reactor info: any = {};
 
   isClosedPath() {
     return this.lines.length === this.points.length;
@@ -36,6 +37,11 @@ export class Countertop extends Domain {
     });
   }
 
+  @mutation('测试加key')
+  addKey() {
+    this.info.a = 'testkey';
+  }
+
   @mutation('更新第一个点')
   updateFirstPointPosition() {
     this.points[0].position = new Point2d(-1, -1);
@@ -62,6 +68,11 @@ export class Countertop extends Domain {
   addPoint(point: Point) {
     this.points.push(point);
     // this.linkPointsAndLines();
+  }
+
+  @mutation('删除点')
+  removePoint(index) {
+    this.points.splice(index, 1);
   }
 
   delay = () => {

@@ -4,6 +4,7 @@ import { Component } from 'react';
 import { Reaction } from './reactive';
 import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './time-travel';
 import { actionNames } from './store';
+import { rawCache } from './domain';
 
 export type ReactionId = Component | Reaction;
 export interface KeyToComponentIdsMap {
@@ -11,6 +12,8 @@ export interface KeyToComponentIdsMap {
 };
 
 export type TargetToKeysMap = Map<object, string[]>;
+
+export const ARRAY_LENGTH_KEY = 'length';
 
 const isInBlackList = (propKey: string) => {
   const blackList = {
@@ -123,9 +126,10 @@ class TriggerCollector {
 
   trigger(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
     const { beforeUpdate, didUpdate, type } = payload;
-    this.collectComponentId(target, key, type);
+    const enhanceKey = type === EOperationTypes.ADD ? EOperationTypes.ITERATE : key;
+    this.collectComponentId(target, enhanceKey);
 
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord || enhanceKey === EOperationTypes.ITERATE) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;
@@ -135,40 +139,41 @@ class TriggerCollector {
     if (ctt.currentHistory === void 0) {
       ctt.currentHistory = new WeakMap();
     }
-    const keyToDiffChangeMap = ctt.currentHistory.get(target);
+    const proxyTarget = rawCache.get(target);
+    if (!proxyTarget) {
+      return;
+    }
+    const keyToDiffChangeMap = ctt.currentHistory.get(proxyTarget);
 
     if (keyToDiffChangeMap !== void 0) {
-      if (keyToDiffChangeMap[key] !== void 0) {
-        keyToDiffChangeMap[key].didUpdate = didUpdate;
+      if (keyToDiffChangeMap[enhanceKey] !== void 0) {
+        keyToDiffChangeMap[enhanceKey].didUpdate = didUpdate;
       } else {
-        keyToDiffChangeMap[key] = {
+        keyToDiffChangeMap[enhanceKey] = {
           beforeUpdate,
           didUpdate,
         };
       }
     } else {
-      ctt.currentHistory.set(target, {
-        [key]: {
+      ctt.currentHistory.set(proxyTarget, {
+        [enhanceKey]: {
           beforeUpdate,
           didUpdate,
         }
       });
     }
 
-    ctt.currentHistoryIdSet.add(target);
+    ctt.currentHistoryIdSet.add(proxyTarget);
   }
 
-  collectComponentId(target: object, key: string, type: EOperationTypes) {
+  collectComponentId(target: object, enhanceKey: string) {
     const keyToComponentIdsMap = depCollector.dependencyMap.get(target);
-    if (keyToComponentIdsMap === void 0) {
-      return;
+    if (keyToComponentIdsMap !== void 0) {
+      const idsArray = keyToComponentIdsMap[enhanceKey];
+      if (idsArray !== void 0 && idsArray.length > 0) {
+        this.waitTriggerComponentIds.push(...idsArray);
+      }
     }
-    const tempKey = type === EOperationTypes.ADD ? (Array.isArray(target) ? 'length' : EOperationTypes.ITERATE) : key;
-    const idsArray = keyToComponentIdsMap[tempKey];
-    if (idsArray === void 0 || idsArray.length === 0) {
-      return;
-    }
-    this.waitTriggerComponentIds.push(...idsArray);
   }
 
   endBatch(isClearHistory = true) {

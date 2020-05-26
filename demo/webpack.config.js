@@ -33,7 +33,7 @@ module.exports = {
     //   amd: 'react-dom',
     //   root: 'ReactDOM'
     // },
-    turbox: 'Turbox',
+    // turbox: 'Turbox',
     react: 'React',
     'react-dom': 'ReactDOM',
   },

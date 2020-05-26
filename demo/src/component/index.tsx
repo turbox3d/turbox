@@ -36,10 +36,10 @@ const p = new Point({
   type: EPointType.CIRCLE,
 });
 
-reactive(() => {
-  console.log('&&&&&');
-  console.log(p.position);
-});
+// reactive(() => {
+//   console.log('&&&&&');
+//   console.log(p.position);
+// });
 
 const DemoBox = Reactive(() => {
   const testAsync = () => {
@@ -69,6 +69,12 @@ const DemoBox = Reactive(() => {
     });
     cts.countertops[0].addPoint(p);
   };
+  const removePoint = () => {
+    cts.countertops[0].removePoint(1);
+  }
+  const addKey = () => {
+    cts.countertops[0].addKey();
+  }
   const addLine = () => {
     cts.countertops[0].addLine(new Line({
       start: new Point({
@@ -110,9 +116,12 @@ const DemoBox = Reactive(() => {
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
       } */}
-      {cts.countertops.length && cts.countertops[0].lines.map(line => (
+      {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
+        <span>{cts.countertops[0].info.a}</span>
+      }
+      {/* {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
-      ))}
+      ))} */}
       {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
         <PointTpl data={point} index={index} />
       ))}
@@ -129,6 +138,12 @@ const DemoBox = Reactive(() => {
                 </button>
         <button onClick={addPoint}>
           添加一个点
+                </button>
+        <button onClick={removePoint}>
+          删除一个点
+                </button>
+        <button onClick={addKey}>
+          加key
                 </button>
         <button onClick={addLine}>
           添加一根线
