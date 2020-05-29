@@ -3,6 +3,7 @@ import { reactor, reactive, mutation, Domain, Service, createPlugin } from 'turb
 // const Services = {
 //   TPZZ_PLUGINB: pluginBServices,
 // };
+const Services = Service.services;
 
 class HumanModel extends Domain {
   @reactor name = 'xxxA';
@@ -36,21 +37,23 @@ const store = {
 const render = () => {
   console.log('***pluginA render done***');
   // reactive(() => {
-  //   if (!Service.services.TPZZ_PLUGINB) {
+  //   if (!Services.TPZZ_PLUGINB) {
   //     return;
   //   }
   //   setTimeout(() => {
-  //     Service.services.TPZZ_PLUGINB.changeDesignId('newPluginB');
+  //     Services.TPZZ_PLUGINB.changeDesignId('newPluginB');
   //   }, 3000);
   // });
 
-  // reactive(() => {
-  //   if (!Service.services.TPZZ_PLUGINB) {
-  //     return;
-  //   }
-  //   const designId = Service.services.TPZZ_PLUGINB.getDesignId();
-  //   console.log('pluginA获取B的Id：', designId);
-  // });
+  reactive(() => {
+    console.log('A^^^^^');
+    if (!Services.TPZZ_PLUGINB) {
+      console.log('A%%%');
+      return;
+    }
+    const designId = Services.TPZZ_PLUGINB.getDesignId();
+    console.log('pluginA获取B的Id：', designId);
+  });
 };
 const initI18N = () => {
 };
