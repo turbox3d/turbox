@@ -1,5 +1,5 @@
 import { config, init, Reactive, reactive, TimeTravel } from 'turbox';
-import React from 'react';
+import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
 import { Line } from '../domain/line';
@@ -8,6 +8,7 @@ import LineTpl from './Line';
 import PointTpl from './Point';
 import Point2d from '../math/Point2d';
 import { EPointType } from '../types/enum';
+import DisposerTest from './DisposerTest';
 
 config({
   timeTravel: {
@@ -24,7 +25,7 @@ init();
 export const mainTimeTravel = TimeTravel.create();
 TimeTravel.switch(mainTimeTravel);
 
-const cts = new Countertops({
+export const cts = new Countertops({
   countertops: [new Countertop({
     lines: [],
     points: [],
@@ -36,12 +37,14 @@ const p = new Point({
   type: EPointType.CIRCLE,
 });
 
-// reactive(() => {
-//   console.log('&&&&&');
-//   console.log(p.position);
-// });
+const disposer = reactive(() => {
+  console.log('&&&&&');
+  // console.log(p.position);
+  console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
+});
 
 const DemoBox = Reactive(() => {
+  const [flag, setFlag] = useState(true);
   const testAsync = () => {
     const p = new Point({
       position: new Point2d(100, 100),
@@ -75,6 +78,9 @@ const DemoBox = Reactive(() => {
   const addKey = () => {
     cts.countertops[0].addKey();
   }
+  const removeKey = () => {
+    cts.countertops[0].removeKey();
+  }
   const addLine = () => {
     cts.countertops[0].addLine(new Line({
       start: new Point({
@@ -106,6 +112,9 @@ const DemoBox = Reactive(() => {
   const updatePosition = () => {
     p.updatePosition(new Point2d(200, 200));
   };
+  const testDisposer = () => {
+    setFlag(false);
+  }
   console.log('***parent');
 
   return (
@@ -116,15 +125,18 @@ const DemoBox = Reactive(() => {
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
       } */}
-      {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
+      {/* {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
         <span>{cts.countertops[0].info.a}</span>
-      }
+      } */}
       {/* {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))} */}
       {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
         <PointTpl data={point} index={index} />
       ))}
+      {flag &&
+        <DisposerTest />
+      }
       <div
         style={{
           position: 'absolute',
@@ -133,6 +145,9 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onClick={testDisposer}>
+          测试组件 Disposer
+                </button>
         <button onClick={testAsync}>
           测试异步
                 </button>
@@ -144,6 +159,12 @@ const DemoBox = Reactive(() => {
                 </button>
         <button onClick={addKey}>
           加key
+                </button>
+        <button onClick={removeKey}>
+          删key
+                </button>
+        <button onClick={() => disposer()}>
+          disposer
                 </button>
         <button onClick={addLine}>
           添加一根线

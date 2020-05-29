@@ -42,6 +42,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
           if (this.unsubscribeHandler !== void 0) {
             this.unsubscribeHandler();
           }
+          depCollector.clear(_this);
         }
 
         render() {
@@ -96,6 +97,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
         if (this.unsubscribeHandler !== void 0) {
           this.unsubscribeHandler();
         }
+        depCollector.clear(_this);
       }
 
       render() {

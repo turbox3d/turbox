@@ -24,13 +24,10 @@ export interface KeyToDiffChangeMap {
   };
 }
 
-export type History = WeakMap<object, KeyToDiffChangeMap>;
-
-export type HistoryIdSet = Set<object>;
+export type History = Map<object, KeyToDiffChangeMap>;
 
 export interface HistoryNode {
   name: string;
-  historyKey: HistoryIdSet;
   history: History;
 }
 
@@ -45,10 +42,6 @@ export interface HistoryCollectorPayload {
  */
 export class TimeTravel {
   currentHistory?: History;
-  /**
-   * Considering the memory cost and iteratable, using Set just only keep id.
-   */
-  currentHistoryIdSet?: HistoryIdSet;
   transactionHistories: HistoryNode[] = [];
   cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
@@ -132,8 +125,7 @@ export class TimeTravel {
     }
     const currentHistory = this.transactionHistories[this.cursor];
     const original = () => {
-      currentHistory.historyKey.forEach(target => {
-        const keyToDiffObj = currentHistory.history.get(target);
+      currentHistory.history.forEach((keyToDiffObj, target) => {
         if (keyToDiffObj) {
           const keys = Object.keys(keyToDiffObj);
           for (let i = 0; i < keys.length; i++) {
@@ -165,8 +157,7 @@ export class TimeTravel {
     this.cursor += 1;
     const currentHistory = this.transactionHistories[this.cursor];
     const original = () => {
-      currentHistory.historyKey.forEach(target => {
-        const keyToDiffObj = currentHistory.history.get(target);
+      currentHistory.history.forEach((keyToDiffObj, target) => {
         if (keyToDiffObj) {
           const keys = Object.keys(keyToDiffObj);
           for (let i = 0; i < keys.length; i++) {
@@ -188,7 +179,6 @@ export class TimeTravel {
 
   clear() {
     this.currentHistory = void 0;
-    this.currentHistoryIdSet = void 0;
     this.transactionHistories = [];
     this.cursor = -1;
   }

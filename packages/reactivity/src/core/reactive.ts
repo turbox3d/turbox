@@ -10,6 +10,10 @@ export class Reaction {
   name: string;
   runner: Function;
 
+  dispose() {
+    depCollector.clear(this);
+  }
+
   constructor(name: string, runner: Function) {
     this.name = name;
     this.runner = runner;
@@ -31,5 +35,6 @@ export function reactive(func: Function, options?: Options) {
     if (unsubscribeHandler !== void 0) {
       unsubscribeHandler();
     }
+    reaction.dispose();
   };
 }

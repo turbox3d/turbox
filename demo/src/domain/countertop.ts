@@ -7,7 +7,10 @@ import { EPointType } from '../types/enum';
 export class Countertop extends Domain {
   @reactor points: Point[];
   @reactor lines: Line[];
-  @reactor info: any = {};
+  @reactor info: any = {
+    a: 1,
+    b: 'bbb',
+  };
 
   isClosedPath() {
     return this.lines.length === this.points.length;
@@ -39,7 +42,12 @@ export class Countertop extends Domain {
 
   @mutation('测试加key')
   addKey() {
-    this.info.a = 'testkey';
+    this.info.a += 1;
+  }
+
+  @mutation('测试删key')
+  removeKey() {
+    delete this.info.b;
   }
 
   @mutation('更新第一个点')
