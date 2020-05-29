@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { init, createApp } from 'turbox';
+// import { init, createApp } from 'turbox';
 import DemoBox from './component/index';
 
 document.addEventListener("DOMContentLoaded", function (event) {
