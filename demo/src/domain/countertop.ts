@@ -91,10 +91,16 @@ export class Countertop extends Domain {
     });
   }
 
-  @effect('测试两个effect')
+  @effect('')
   async testTwoEffect(p: Point, l: Line) {
     this.testEffect(p, l);
     this.testEffect(p, l);
+  }
+
+  @mutation()
+  testTwoMutation(p: Point, l: Line) {
+    this.addPoint(p);
+    this.addLine(l);
   }
 
   @effect('测试effect')

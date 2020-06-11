@@ -10,8 +10,11 @@ const LineComp: React.FC<IProps> = ({ data }) => {
   console.log('***childLine');
   return (
     <React.Fragment>
-      <span>start: {JSON.stringify(data.start)}</span>
-      <span>end: {JSON.stringify(data.end)}</span>
+      <span>line:
+        <span>lineLength: {data.length}</span>
+        <span>lineStart: ({data.start.position.x},{data.start.position.y})</span>
+        <span>lineEnd: ({data.end.position.x},{data.end.position.y})</span>
+      </span>
     </React.Fragment>
   );
 };

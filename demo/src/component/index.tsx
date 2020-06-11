@@ -24,6 +24,7 @@ init();
 
 export const mainTimeTravel = TimeTravel.create();
 TimeTravel.switch(mainTimeTravel);
+let count = 100;
 
 export const cts = new Countertops({
   countertops: [new Countertop({
@@ -65,7 +66,7 @@ const DemoBox = Reactive(() => {
     cts.countertops[0].testTwoEffect(p, l);
   };
   const addPoint = () => {
-    // TimeTravel.start('添加点和线');
+    // TimeTravel.start('addPointAndLine', '添加点和线');
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
@@ -115,6 +116,39 @@ const DemoBox = Reactive(() => {
   const testDisposer = () => {
     setFlag(false);
   }
+  const testMouseMove = () => {
+    if (count === 100) {
+      TimeTravel.start('testMouseMove');
+    }
+    if (count === 200) {
+      TimeTravel.complete();
+      return;
+    }
+    count++;
+    console.log('mouse move', count);
+    const p = new Point({
+      position: new Point2d(count, count),
+      type: EPointType.NONE,
+    });
+    cts.countertops[0].addPoint(p);
+  }
+  const testMutation = () => {
+    const p = new Point({
+      position: new Point2d(100, 100),
+      type: EPointType.NONE,
+    });
+    const l = new Line({
+      start: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+      end: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+    });
+    cts.countertops[0].testTwoMutation(p, l);
+  }
   console.log('***parent');
 
   return (
@@ -128,9 +162,9 @@ const DemoBox = Reactive(() => {
       {/* {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
         <span>{cts.countertops[0].info.a}</span>
       } */}
-      {/* {cts.countertops.length && cts.countertops[0].lines.map(line => (
+      {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
-      ))} */}
+      ))}
       {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
         <PointTpl data={point} index={index} />
       ))}
@@ -145,11 +179,17 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onMouseMove={testMouseMove}>
+          测试MouseMove
+                </button>
         <button onClick={testDisposer}>
           测试组件 Disposer
                 </button>
         <button onClick={testAsync}>
           测试异步
+                </button>
+        <button onClick={testMutation}>
+          测试多个Mutation
                 </button>
         <button onClick={addPoint}>
           添加一个点

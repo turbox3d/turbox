@@ -1,11 +1,12 @@
 import { materialCallStack } from './domain';
 import { EMaterialType } from '../interfaces';
-import { store, actionNames } from './store';
+import { store, actionTypeChain, ActionType } from './store';
 import generateUUID from '../utils/uuid';
 import { ctx } from '../const/config';
 import { triggerCollector } from './collector';
 import { invariant } from '../utils/error';
 import { nextTick } from '../utils/common';
+import { EMPTY_ACTION_NAME } from '../const/symbol';
 
 export const enum EOperationTypes {
   SET = 'set',
@@ -27,7 +28,7 @@ export interface KeyToDiffChangeMap {
 export type History = Map<object, KeyToDiffChangeMap>;
 
 export interface HistoryNode {
-  name: string;
+  actionChain: ActionType[];
   history: History;
 }
 
@@ -77,13 +78,16 @@ export class TimeTravel {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.clear();
   }
 
-  static start = (name?: string) => {
+  static start = (name: string, displayName?: string) => {
     invariant(!TimeTravel.freeze, 'Already started, please complete first.');
     if (TimeTravel.freeze) {
       return;
     }
     TimeTravel.resume();
-    name && actionNames.push(name);
+    actionTypeChain.push({
+      name,
+      displayName: displayName || EMPTY_ACTION_NAME,
+    });
     TimeTravel.freeze = true;
   }
 
@@ -93,8 +97,7 @@ export class TimeTravel {
     }
     nextTick(() => {
       TimeTravel.freeze = false;
-      const chain = actionNames.join('.');
-      triggerCollector.save(chain);
+      triggerCollector.save(actionTypeChain);
       triggerCollector.endBatch();
     });
   }
@@ -138,6 +141,7 @@ export class TimeTravel {
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     store.dispatch({
       name: `@@TURBOX__UNDO_${generateUUID()}`,
+      displayName: EMPTY_ACTION_NAME,
       payload: [],
       original,
       isInner: true,
@@ -170,6 +174,7 @@ export class TimeTravel {
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     store.dispatch({
       name: `@@TURBOX__REDO_${generateUUID()}`,
+      displayName: EMPTY_ACTION_NAME,
       payload: [],
       original,
       isInner: true,

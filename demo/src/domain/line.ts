@@ -5,6 +5,7 @@ import { Point } from './point';
 export class Line extends Domain {
   @reactor start: Point;
   @reactor end: Point;
+  @reactor length: number;
   @reactor countertop?: Countertop;
 
   constructor({
@@ -20,5 +21,6 @@ export class Line extends Domain {
     this.start = start;
     this.end = end;
     this.countertop = countertop;
+    this.length = 10;
   }
 }

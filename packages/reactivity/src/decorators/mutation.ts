@@ -1,5 +1,5 @@
 import { store } from '../core/store';
-import { CURRENT_MATERIAL_TYPE } from '../const/symbol';
+import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString } from '../utils/common';
 import { Mutation, EMaterialType, BabelDescriptor } from '../interfaces';
 import { invariant } from '../utils/error';
@@ -17,7 +17,8 @@ function createMutation(target: Object, name: string | symbol | number, original
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.MUTATION;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
     store.dispatch({
-      name: config.name || stringMethodName,
+      name: stringMethodName,
+      displayName: config.name || EMPTY_ACTION_NAME,
       payload,
       type: EMaterialType.MUTATION,
       domain: this,

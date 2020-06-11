@@ -1,4 +1,4 @@
-import { CURRENT_MATERIAL_TYPE, NAMESPACE } from '../const/symbol';
+import { CURRENT_MATERIAL_TYPE, NAMESPACE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { EMaterialType, Mutation } from '../interfaces';
 import { isPlainObject, convert2UniqueString, hasOwn, isObject, bind, isDomain } from '../utils/common';
 import { invariant } from '../utils/error';
@@ -166,9 +166,9 @@ export class Domain<S = {}> {
   /**
    * the syntax sweet of updating state out of mutation
    */
-  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string): void {
+  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string): void {
     invariant(isPlainObject(obj), 'resetState(...) param type error. Param should be a plain object.');
-    this.dispatch(obj as object, actionName);
+    this.dispatch(obj as object, actionName, displayName);
   }
 
   /**
@@ -187,7 +187,7 @@ export class Domain<S = {}> {
     }
   }
 
-  private dispatch(obj: object, actionName?: string) {
+  private dispatch(obj: object, actionName?: string, displayName?: string) {
     const original = function () {
       const keys = Object.keys(obj);
       for (let i = 0, len = keys.length; i < len; i++) {
@@ -208,6 +208,7 @@ export class Domain<S = {}> {
     // update state after store init
     store.dispatch({
       name: actionName || `@@TURBOX__UPDATE_${generateUUID()}`,
+      displayName: displayName || EMPTY_ACTION_NAME,
       payload: [],
       type: EMaterialType.UPDATE,
       domain: this,

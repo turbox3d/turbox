@@ -1,6 +1,6 @@
 import { ctx } from '../const/config';
-import { store, actionNames } from '../core/store';
-import { CURRENT_MATERIAL_TYPE } from '../const/symbol';
+import { store, actionTypeChain } from '../core/store';
+import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString, includes } from '../utils/common';
 import { Effect, EMaterialType, BabelDescriptor } from '../interfaces';
 import { invariant } from '../utils/error';
@@ -22,7 +22,8 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.EFFECT;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
     await store.dispatch({
-      name: config.name || stringMethodName,
+      name: stringMethodName,
+      displayName: config.name || EMPTY_ACTION_NAME,
       payload,
       type: EMaterialType.EFFECT,
       domain: this,
@@ -32,8 +33,7 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
     if (ctx.timeTravel.isActive && (!TimeTravel.freeze && !includes(materialCallStack, EMaterialType.EFFECT))) {
-      const chain = actionNames.join('.');
-      triggerCollector.save(chain);
+      triggerCollector.save(actionTypeChain);
       triggerCollector.endBatch();
     }
   };

@@ -256,7 +256,7 @@ class MyDomain extends Domain {
     this.$update({
       currentIdx: idx,
       array: ['aaa'],
-    });
+    }, 'doSomething', '做些事');
   }
 }
 ```
@@ -538,7 +538,7 @@ export class TimeTravel {
   static switch: (instance: TimeTravel) => void;
   static pause: () => void;
   static resume: () => void;
-  static start: (name?: string) => void;
+  static start: (name: string, displayName?: string) => void;
   static complete: () => void;
   static undo: () => void;
   static redo: () => void;
@@ -563,7 +563,7 @@ TimeTravel.switch(mainTimeTravel);
 有些时候，撤销恢复的粒度是由多次事件触发的组合动作完成，这时候可以通过 start 和 complete 来实现，在这期间，所有的行为变更都会被合并到一个历史记录
 ```js
 const addPoint = () => {
-  TimeTravel.start('添加点和线');
+  TimeTravel.start('addPointAndLine', '添加点和线');
   const p = new Point({
     position: new Point2d(100, 100),
     type: EPointType.NONE,

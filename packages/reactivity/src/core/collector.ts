@@ -2,7 +2,7 @@ import { ctx } from '../const/config';
 import { Component } from 'react';
 import { Reaction } from './reactive';
 import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './time-travel';
-import { actionNames } from './store';
+import { actionTypeChain, ActionType } from './store';
 import { rawCache } from './domain';
 
 export type ReactionId = Component | Reaction;
@@ -208,25 +208,26 @@ class TriggerCollector {
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
       return;
     }
-    actionNames.length = 0;
+    actionTypeChain.length = 0;
     TimeTravel.currentTimeTravel.currentHistory = void 0;
   }
 
-  save(chain: string) {
+  save(actionChain: ActionType[]) {
+    const actionChainSnapshot = actionChain.concat();
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({
-        name: chain,
+        actionChain: actionChainSnapshot,
         history: ctt.currentHistory!,
       });
       ctt.cursor += 1;
     } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
       ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
       ctt.transactionHistories.push({
-        name: chain,
+        actionChain: actionChainSnapshot,
         history: ctt.currentHistory!,
       });
       ctt.cursor += 1;

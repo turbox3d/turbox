@@ -8,7 +8,13 @@ import { TimeTravel } from './time-travel';
 
 export let store: Store;
 export let isUpdating: boolean = false;
-export const actionNames: string[] = [];
+
+export interface ActionType {
+  name: string;
+  displayName: string;
+}
+
+export const actionTypeChain: ActionType[] = [];
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -50,6 +56,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
   function dispatch(action: DispatchedAction) {
     const {
       name,
+      displayName,
       payload,
       type,
       domain,
@@ -83,8 +90,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
         return;
       }
       if (!isInner) {
-        const chain = actionNames.join('.');
-        triggerCollector.save(chain);
+        triggerCollector.save(actionTypeChain);
       }
       triggerCollector.endBatch();
     }
@@ -105,11 +111,14 @@ export function createStore(enhancer: (createStore: any) => Store) {
       if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
         return;
       }
+      actionTypeChain.push({
+        name,
+        displayName,
+      });
       const currentMutation = original as Mutation;
       currentMutation(...payload);
     } finally {
       isUpdating = false;
-      actionNames.push(name);
     }
 
     if (!isInBatch) {
