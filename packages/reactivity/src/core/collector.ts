@@ -27,6 +27,7 @@ const isInBlackList = (propKey: string) => {
   const blackList = {
     constructor: true,
     properties: true,
+    context: true,
     currentTarget: true,
     originalArrayLength: true,
     reactorConfigMap: true,
@@ -218,17 +219,23 @@ class TriggerCollector {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;
+    if (!ctt.currentHistory) {
+      return;
+    }
+    if (ctt.currentHistory.size === 0) {
+      return;
+    }
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({
         actionChain: actionChainSnapshot,
-        history: ctt.currentHistory!,
+        history: ctt.currentHistory,
       });
       ctt.cursor += 1;
     } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
       ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
       ctt.transactionHistories.push({
         actionChain: actionChainSnapshot,
-        history: ctt.currentHistory!,
+        history: ctt.currentHistory,
       });
       ctt.cursor += 1;
     }

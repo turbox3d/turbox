@@ -8,7 +8,7 @@ export const meta = {
 
 export interface ReactorConfig {
   deepProxy: boolean;
-  isNeedRecord: boolean;
+  isNeedRecord?: boolean;
   callback?: (target: Object, property: string | symbol | number) => void;
 }
 
@@ -20,7 +20,6 @@ export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: 
 export function reactor(...args: any[]) {
   const config: ReactorConfig = {
     deepProxy: true,
-    isNeedRecord: true,
   };
   const decorator = function <T>(target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<T>): any {
     const newDescriptor = {
@@ -59,7 +58,9 @@ export function reactor(...args: any[]) {
   }
   // @decorator(args)
   config.deepProxy = args[0] !== void 0 ? args[0] : true;
-  config.isNeedRecord = args[1] !== void 0 ? args[1] : true;
+  if (args[1] !== void 0) {
+    config.isNeedRecord = args[1];
+  }
   config.callback = args[2];
 
   return decorator;

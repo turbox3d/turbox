@@ -14,6 +14,10 @@ export const rawCache = new WeakMap<any, any>();
 export const rootKeyCache = new WeakMap<any, string>();
 export const materialCallStack: EMaterialType[] = [];
 
+interface DomainContext {
+  isNeedRecord: boolean;
+}
+
 /**
  * Framework base class 'Domain', class must be extends this base class which is need to be observable.
  */
@@ -21,6 +25,7 @@ export class Domain<S = {}> {
   // prompt: add property do not forget sync to black list
   public properties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
+  private context: DomainContext;
 
   constructor() {
     const target = Object.getPrototypeOf(this);
@@ -28,23 +33,36 @@ export class Domain<S = {}> {
     const namespace = `${domainName}_${generateUUID()}`;
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.DEFAULT;
     this[NAMESPACE] = namespace;
+    this.context = this.initDomainContext();
+  }
+
+  initDomainContext(): DomainContext {
+    return {
+      isNeedRecord: true,
+    };
   }
 
   propertyGet(key: string | symbol | number, config: ReactorConfig) {
     const stringKey = convert2UniqueString(key);
     const v = this.properties[stringKey];
-    this.reactorConfigMap[stringKey] = config;
+    const mergedConfig = Object.assign({}, {
+      isNeedRecord: this.context.isNeedRecord,
+    }, config);
+    this.reactorConfigMap[stringKey] = mergedConfig;
 
     depCollector.collect(this, stringKey);
 
-    return isObject(v) && !isDomain(v) && config.deepProxy ? this.proxyReactive(v, stringKey) : v;
+    return isObject(v) && !isDomain(v) && mergedConfig.deepProxy ? this.proxyReactive(v, stringKey) : v;
   }
 
   propertySet(key: string | symbol | number, v: any, config: ReactorConfig) {
     const stringKey = convert2UniqueString(key);
     this.illegalAssignmentCheck(this, stringKey);
     const oldValue = this.properties[stringKey];
-    this.reactorConfigMap[stringKey] = config;
+    const mergedConfig = Object.assign({}, {
+      isNeedRecord: this.context.isNeedRecord,
+    }, config);
+    this.reactorConfigMap[stringKey] = mergedConfig;
 
     if (oldValue !== v) {
       this.properties[stringKey] = v;
@@ -52,7 +70,7 @@ export class Domain<S = {}> {
         type: EOperationTypes.SET,
         beforeUpdate: oldValue,
         didUpdate: v,
-      }, config.isNeedRecord);
+      }, mergedConfig.isNeedRecord);
     }
   }
 

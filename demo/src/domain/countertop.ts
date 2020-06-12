@@ -5,12 +5,18 @@ import { Point } from './point';
 import { EPointType } from '../types/enum';
 
 export class Countertop extends Domain {
-  @reactor points: Point[];
-  @reactor lines: Line[];
-  @reactor info: any = {
+  @reactor(true) points: Point[];
+  @reactor(true, true) lines: Line[];
+  @reactor(true, true) info: any = {
     a: 1,
     b: 'bbb',
   };
+
+  initDomainContext() {
+    return {
+      isNeedRecord: false,
+    };
+  }
 
   isClosedPath() {
     return this.lines.length === this.points.length;
