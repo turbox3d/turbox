@@ -3,7 +3,7 @@ import { deepMerge } from '../utils/deep-merge';
 import { NAMESPACE } from '../const/symbol';
 
 function createLoggerMiddleware(): Middleware {
-  return ({ dispatch }) => (next: any) => (action) => {
+  return () => (next: any) => (action) => {
     if (!action.domain) {
       return next(action);
     }

@@ -4,11 +4,10 @@ import { deepMerge } from '../utils/deep-merge';
 export let ctx: ConfigCtx = {
   middleware: {
     logger: process.env.NODE_ENV !== 'production',
-    effect: true
   },
   timeTravel: {
     isActive: false,
-    maxStepNumber: 5,
+    maxStepNumber: 20,
   },
   devTool: false,
 };

@@ -49,11 +49,6 @@ export function effect(...args: any[]) {
     name: '',
   };
   const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
-    invariant(
-      ctx.middleware.effect,
-      'If you want to use @effect decorator, please turn on the built-in effect middleware. By \"config(...)\".'
-    );
-
     // typescript only: @effect method = async () => {}
     if (descriptor === void 0) {
       let effectFunc: Function;

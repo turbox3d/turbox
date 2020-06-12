@@ -1,6 +1,7 @@
 import { applyMiddleware, use } from './use'
 import { createStore } from './store'
 import effectMiddleware from '../middlewares/effect'
+import mutationMiddleware from '../middlewares/mutation';
 import loggerMiddleware from '../middlewares/logger'
 import { ctx } from '../const/config'
 import { compose } from '../utils/compose';
@@ -19,9 +20,8 @@ export function init() {
 
   isRunning = true;
 
-  if (ctx.middleware.effect) {
-    use(effectMiddleware);
-  }
+  use(effectMiddleware);
+  use(mutationMiddleware);
 
   if (ctx.middleware.logger) {
     use(loggerMiddleware);

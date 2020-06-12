@@ -283,7 +283,7 @@ class MyDomain extends Domain {
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
 ### effect
-单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能比较弱，**turbox** 因为考虑到 **redux** 中间件机制的可扩展性，也采用了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，默认情况下，**turbox** 会提供基础的 effect 中间件，这样就可以处理副作用了，使用方法如下：
+单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大，**turbox** 因为考虑到 **redux** 中间件机制的可扩展可切面性，也借鉴了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，**turbox** 会默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
 ```js
 import { throttle, bind } from 'lodash-decorators';
 
@@ -501,11 +501,10 @@ Turbox.render(<Layout />, '#app');
 type Config = {
   middleware: {
     logger: boolean = false,
-    effect: boolean = true
   },
   timeTravel: {
     isActive: boolean = false,
-    maxStepNumber: number = 5,
+    maxStepNumber: number = 20,
   },
   devTool: boolean = false
 }
@@ -527,11 +526,10 @@ Turbox.render(<Layout />, '#app');
 let ctx = {
   middleware: {
     logger: false, // 默认关闭 logger 中间件，在生产环境自动关闭
-    effect: true // 默认开启 effect 中间件
   },
   timeTravel: {
     isActive: false, // 是否激活时间旅行器
-    maxStepNumber: 5, // 记录操作的最大步数
+    maxStepNumber: 20, // 记录操作的最大步数
   },
   devTool: false // 默认关闭 devTool，在生产环境自动关闭
 }

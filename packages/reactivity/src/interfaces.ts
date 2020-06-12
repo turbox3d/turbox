@@ -53,12 +53,11 @@ export interface DispatchedAction {
 
 export interface ConfigCtx {
   middleware: {
-    logger: boolean,
-    effect: boolean
+    logger?: boolean,
   },
   timeTravel: {
     isActive: boolean,
-    maxStepNumber: number,
+    maxStepNumber?: number,
   },
   devTool: boolean,
 }

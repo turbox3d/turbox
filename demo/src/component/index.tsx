@@ -13,11 +13,9 @@ import DisposerTest from './DisposerTest';
 config({
   timeTravel: {
     isActive: true,
-    maxStepNumber: 5,
   },
   middleware: {
     logger: true,
-    effect: true,
   }
 });
 init();

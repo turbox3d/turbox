@@ -111,10 +111,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
       if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
         return;
       }
-      actionTypeChain.push({
-        name,
-        displayName,
-      });
       const currentMutation = original as Mutation;
       currentMutation(...payload);
     } finally {

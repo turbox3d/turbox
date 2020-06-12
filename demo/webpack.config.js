@@ -34,8 +34,8 @@ module.exports = {
     //   root: 'ReactDOM'
     // },
     // turbox: 'Turbox',
-    react: 'React',
-    'react-dom': 'ReactDOM',
+    // react: 'React',
+    // 'react-dom': 'ReactDOM',
   },
   module: {
     rules: [{

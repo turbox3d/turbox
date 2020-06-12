@@ -240,7 +240,7 @@ class TriggerCollector {
       ctt.cursor += 1;
     }
 
-    if (ctt.transactionHistories.length > ctx.timeTravel.maxStepNumber) {
+    if (ctt.transactionHistories.length > ctx.timeTravel.maxStepNumber!) {
       ctt.transactionHistories.shift();
       ctt.cursor -= 1;
     }

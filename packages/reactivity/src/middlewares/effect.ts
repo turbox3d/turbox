@@ -3,8 +3,8 @@ import { isUpdating, actionTypeChain } from '../core/store';
 import { invariant } from '../utils/error';
 
 function createEffectMiddleware(): Middleware {
-  return ({ dispatch }) => (next: any) => async (action) => {
-    const { name, displayName, payload, type, domain, original } = action;
+  return () => (next: any) => async (action) => {
+    const { name, displayName, payload, type, original } = action;
 
     if (type === EMaterialType.EFFECT) {
       invariant(!isUpdating, 'Cannot trigger other effect while the current mutation is executing.');
