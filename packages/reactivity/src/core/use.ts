@@ -19,13 +19,13 @@ export function applyMiddleware() {
       fail(`Dispatching while constructing your middleware is not allowed. ` +
         `Other middleware would not be applied to this dispatch.`);
     };
-    const middlewareAPI = {
+    const exposedMethod = {
       // getState: store.getState,
-      dispatch: (...args: any[]) => dispatch(...args)
+      dispatch: (...args: any[]) => dispatch(...args),
     };
-    const chain = middlewares.map(middleware => middleware(middlewareAPI));
+    const runnerChain = middlewares.map(middleware => middleware(exposedMethod));
 
-    dispatch = compose(...chain)(store.dispatch);
+    dispatch = compose(...runnerChain)(store.dispatch);
 
     return {
       ...store,

@@ -1,6 +1,7 @@
-import { Effect, EMaterialType, Middleware } from '../interfaces';
+import { Effect, Middleware } from '../interfaces';
 import { isUpdating, actionTypeChain } from '../core/store';
 import { invariant } from '../utils/error';
+import { EMaterialType } from '../const/enums';
 
 function createEffectMiddleware(): Middleware {
   return () => (next: any) => async (action) => {

@@ -1,5 +1,4 @@
 import { materialCallStack } from './domain';
-import { EMaterialType } from '../interfaces';
 import { store, actionTypeChain, ActionType } from './store';
 import generateUUID from '../utils/uuid';
 import { ctx } from '../const/config';
@@ -7,16 +6,7 @@ import { triggerCollector } from './collector';
 import { invariant } from '../utils/error';
 import { nextTick } from '../utils/common';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
-
-export const enum EOperationTypes {
-  SET = 'set',
-  ADD = 'add',
-  DELETE = 'delete',
-  CLEAR = 'clear',
-  GET = 'get',
-  HAS = 'has',
-  ITERATE = 'iterate'
-}
+import { ECollectType, EMaterialType } from '../const/enums';
 
 export interface KeyToDiffChangeMap {
   [key: string]: {
@@ -33,7 +23,7 @@ export interface HistoryNode {
 }
 
 export interface HistoryCollectorPayload {
-  type: EOperationTypes;
+  type: ECollectType;
   beforeUpdate: any;
   didUpdate: any;
 }

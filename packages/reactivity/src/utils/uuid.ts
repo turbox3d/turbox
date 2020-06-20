@@ -10,7 +10,7 @@ export default function generateUUID(): string {
     if (i === 8 || i === 13 || i === 18 || i === 23) {
       uuid[i] = '-';
     } else if (i === 14) {
-      uuid[i] = '4';
+      uuid[i] = '7';
     } else {
       if (rnd <= 0x02) {
         /* tslint:disable no-bitwise */

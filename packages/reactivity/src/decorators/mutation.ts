@@ -1,10 +1,11 @@
 import { store } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString } from '../utils/common';
-import { Mutation, EMaterialType, BabelDescriptor } from '../interfaces';
+import { Mutation, BabelDescriptor } from '../interfaces';
 import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
+import { EMaterialType } from '../const/enums';
 
 interface MutationConfig {
   isAtom: boolean;

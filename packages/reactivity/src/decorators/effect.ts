@@ -2,12 +2,13 @@ import { ctx } from '../const/config';
 import { store, actionTypeChain } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString, includes } from '../utils/common';
-import { Effect, EMaterialType, BabelDescriptor } from '../interfaces';
+import { Effect, BabelDescriptor } from '../interfaces';
 import { invariant } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { triggerCollector } from '../core/collector';
 import { TimeTravel } from '../core/time-travel';
+import { EMaterialType } from '../const/enums';
 
 interface EffectConfig {
   name: string;

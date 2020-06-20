@@ -1,5 +1,6 @@
 import { Domain } from './core/domain';
 import { ReactionId } from './core/collector';
+import { EMaterialType } from './const/enums';
 
 export type MiddlewareParam = {
   dispatch: (action: DispatchedAction) => DispatchedAction,
@@ -14,30 +15,12 @@ export interface Store {
   subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void,
 }
 
-export interface AtomStateTree {
-  instance: Domain<any>,
-  plainObject: ModuleState,
-  default: ModuleState
-}
-
-export interface ModuleState {
-  [key: string]: any
-}
-
 export interface Mutation {
   (...restPayload: any[]): void
 }
 
 export interface Effect {
   (...restPayload: any[]): Promise<void>
-}
-
-export enum EMaterialType {
-  DEFAULT = 1,
-  MUTATION,
-  UPDATE,
-  EFFECT,
-  TIME_TRAVEL,
 }
 
 export interface DispatchedAction {

@@ -1,10 +1,11 @@
-import { Store, DispatchedAction, Mutation, EMaterialType } from '../interfaces';
+import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
 import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { ctx } from '../const/config';
 import { materialCallStack } from './domain';
 import { TimeTravel } from './time-travel';
+import { EMaterialType } from '../const/enums';
 
 export let store: Store;
 export let isUpdating: boolean = false;

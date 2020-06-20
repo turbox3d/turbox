@@ -1,17 +1,12 @@
 import { ctx } from '../const/config';
 import { Component } from 'react';
 import { Reaction } from './reactive';
-import { HistoryCollectorPayload, TimeTravel, EOperationTypes } from './time-travel';
+import { HistoryCollectorPayload, TimeTravel } from './time-travel';
 import { actionTypeChain, ActionType } from './store';
 import { rawCache } from './domain';
+import { EDepState, ECollectType, ESpecialReservedKey } from '../const/enums';
 
 export type ReactionId = Component | Reaction;
-
-export enum EDepState {
-  NOT_OBSERVED = 1,
-  OBSERVED,
-  LATEST,
-}
 
 export interface DepNodeAssembly {
   [prop: string]: Set<ReactionId>;
@@ -20,8 +15,6 @@ export interface DepNodeAssembly {
 export interface DepNodeStatus {
   [prop: string]: EDepState;
 }
-
-export const ARRAY_LENGTH_KEY = 'length';
 
 const isInBlackList = (propKey: string) => {
   const blackList = {
@@ -159,10 +152,10 @@ class TriggerCollector {
 
   trigger(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
     const { beforeUpdate, didUpdate, type } = payload;
-    const enhanceKey = type === EOperationTypes.ADD ? EOperationTypes.ITERATE : key;
+    const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;
     this.collectComponentId(target, enhanceKey);
 
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord || enhanceKey === EOperationTypes.ITERATE) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord || enhanceKey === ESpecialReservedKey.ITERATE) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;

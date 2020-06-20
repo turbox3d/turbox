@@ -1,13 +1,13 @@
 import { CURRENT_MATERIAL_TYPE, NAMESPACE, EMPTY_ACTION_NAME } from '../const/symbol';
-import { EMaterialType, Mutation } from '../interfaces';
+import { Mutation } from '../interfaces';
 import { isPlainObject, convert2UniqueString, hasOwn, isObject, bind, isDomain } from '../utils/common';
 import { invariant } from '../utils/error';
 import generateUUID from '../utils/uuid';
-import { depCollector, triggerCollector, ARRAY_LENGTH_KEY } from './collector';
+import { depCollector, triggerCollector } from './collector';
 import { canObserve } from '../utils/decorator';
 import { store } from './store';
 import { ReactorConfig, meta } from '../decorators/reactor';
-import { EOperationTypes } from './time-travel';
+import { ECollectType, ESpecialReservedKey, EMaterialType } from '../const/enums';
 
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
@@ -67,7 +67,7 @@ export class Domain<S = {}> {
     if (oldValue !== v) {
       this.properties[stringKey] = v;
       triggerCollector.trigger(this, stringKey, {
-        type: EOperationTypes.SET,
+        type: ECollectType.SET,
         beforeUpdate: oldValue,
         didUpdate: v,
       }, mergedConfig.isNeedRecord);
@@ -81,7 +81,7 @@ export class Domain<S = {}> {
     // array length need hack
     if (Array.isArray(target) && target !== this.currentTarget) {
       this.currentTarget = target;
-      this.originalArrayLength = target[ARRAY_LENGTH_KEY];
+      this.originalArrayLength = target[ESpecialReservedKey.ARRAY_LENGTH];
     }
     const stringKey = convert2UniqueString(key);
     this.illegalAssignmentCheck(target, stringKey);
@@ -91,20 +91,20 @@ export class Domain<S = {}> {
     // do nothing if target is in the prototype chain
     if (target === proxyCache.get(receiver)) {
       const result = Reflect.set(target, key, value, receiver);
-      if (stringKey === ARRAY_LENGTH_KEY || value !== oldValue) {
+      if (stringKey === ESpecialReservedKey.ARRAY_LENGTH || value !== oldValue) {
         triggerCollector.trigger(target, stringKey, {
-          type: EOperationTypes.SET,
-          beforeUpdate: stringKey === ARRAY_LENGTH_KEY ? this.originalArrayLength : oldValue,
+          type: ECollectType.SET,
+          beforeUpdate: stringKey === ESpecialReservedKey.ARRAY_LENGTH ? this.originalArrayLength : oldValue,
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
-        if (stringKey === ARRAY_LENGTH_KEY) {
+        if (stringKey === ESpecialReservedKey.ARRAY_LENGTH) {
           this.currentTarget = void 0;
           this.originalArrayLength = void 0;
         }
       }
       if (!hadKey) {
         triggerCollector.trigger(target, stringKey, {
-          type: EOperationTypes.ADD,
+          type: ECollectType.ADD,
           beforeUpdate: oldValue,
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
@@ -138,7 +138,7 @@ export class Domain<S = {}> {
     const rootKey = rootKeyCache.get(target)!;
     const oldValue = target[key];
     triggerCollector.trigger(target, stringKey, {
-      type: EOperationTypes.DELETE,
+      type: ECollectType.DELETE,
       beforeUpdate: oldValue,
       didUpdate: void 0,
     }, this.reactorConfigMap[rootKey].isNeedRecord);
@@ -146,7 +146,7 @@ export class Domain<S = {}> {
   }
 
   private proxyOwnKeys(target: any): (string | number | symbol)[] {
-    depCollector.collect(target, EOperationTypes.ITERATE);
+    depCollector.collect(target, ESpecialReservedKey.ITERATE);
     return Reflect.ownKeys(target);
   }
 

@@ -1,5 +1,6 @@
-import { EMaterialType, Middleware } from '../interfaces';
+import { Middleware } from '../interfaces';
 import { actionTypeChain } from '../core/store';
+import { EMaterialType } from '../const/enums';
 
 function createMutationMiddleware(): Middleware {
   return () => (next: any) => (action) => {
