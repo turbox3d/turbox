@@ -12,7 +12,7 @@
 
 <h2 align="center">Turbox</h2>
 
-**Turbox**（涡轮）是一个适合大型生产力单页软件应用的前端框架，场景来源于复杂大型 3D 业务
+**Turbox**（涡轮）是阿里巴巴集团开发的适合大型生产力软件应用的前端框架，场景来源于复杂大型 3D 业务
 
 ## 生态系统
 | Project | Status | Description |
