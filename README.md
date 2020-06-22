@@ -12,7 +12,7 @@ English | [简体中文](./README.zh-CN.md)
 
 <h2 align="center">Turbox</h2>
 
-**Turbox** is alibaba taobao large-scale productivity application front-end framework.
+**Turbox** is a large-scale productivity application front-end framework developed by Alibaba Group.
 
 ## Ecosystem
 | Project | Status | Description |
