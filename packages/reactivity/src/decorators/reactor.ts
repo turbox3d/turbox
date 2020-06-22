@@ -12,8 +12,8 @@ export interface ReactorConfig {
   callback?: (target: Object, property: string | symbol | number) => void;
 }
 
-export function reactor(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function reactor(target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
+export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void): (target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 /**
  * reactor decorator, making the reactor observable.
  */

@@ -3,7 +3,7 @@ import { store, actionTypeChain, ActionType } from './store';
 import generateUUID from '../utils/uuid';
 import { ctx } from '../const/config';
 import { triggerCollector } from './collector';
-import { invariant } from '../utils/error';
+import { invariant, fail } from '../utils/error';
 import { nextTick } from '../utils/common';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { ECollectType, EMaterialType } from '../const/enums';
@@ -129,6 +129,9 @@ export class TimeTravel {
       });
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
+    if (!store) {
+      fail('store is not ready, please init first.');
+    }
     store.dispatch({
       name: `@@TURBOX__UNDO_${generateUUID()}`,
       displayName: EMPTY_ACTION_NAME,
@@ -162,6 +165,9 @@ export class TimeTravel {
       });
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
+    if (!store) {
+      fail('store is not ready, please init first.');
+    }
     store.dispatch({
       name: `@@TURBOX__REDO_${generateUUID()}`,
       displayName: EMPTY_ACTION_NAME,

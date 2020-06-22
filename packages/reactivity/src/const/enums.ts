@@ -7,6 +7,7 @@ export enum EDepState {
 export enum ESpecialReservedKey {
   ARRAY_LENGTH = 'length',
   ITERATE = 'iterate',
+  COMPUTED = 'computed',
 }
 
 export const enum ECollectType {

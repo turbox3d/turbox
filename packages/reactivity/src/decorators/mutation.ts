@@ -2,7 +2,7 @@ import { store } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString } from '../utils/common';
 import { Mutation, BabelDescriptor } from '../interfaces';
-import { invariant } from '../utils/error';
+import { invariant, fail } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { EMaterialType } from '../const/enums';
@@ -17,6 +17,9 @@ function createMutation(target: Object, name: string | symbol | number, original
   return function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.MUTATION;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
+    if (!store) {
+      fail('store is not ready, please init first.');
+    }
     store.dispatch({
       name: stringMethodName,
       displayName: config.name || EMPTY_ACTION_NAME,

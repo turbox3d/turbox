@@ -7,8 +7,10 @@ import { ctx } from '../const/config'
 import { compose } from '../utils/compose';
 import { invariant } from '../utils/error';
 import { isSupportProxy, isSupportSymbol } from '../utils/lang';
+import { Emitter } from '../utils/common';
 
 export let isRunning = false;
+export const emitter = new Emitter();
 /**
  * Includes init built-in middleware, create store, load domain tree and so on.
  */
@@ -37,4 +39,6 @@ export function init() {
   const enhancer = composeEnhancers(...enhancers);
 
   createStore(enhancer);
+
+  emitter.emit('storeOnActive');
 }

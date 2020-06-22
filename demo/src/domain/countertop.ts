@@ -1,5 +1,5 @@
 import Point2d from '../math/Point2d';
-import { Domain, effect, mutation, reactor } from 'turbox';
+import { Domain, effect, mutation, reactor, computed } from 'turbox';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
@@ -11,11 +11,24 @@ export class Countertop extends Domain {
     a: 1,
     b: 'bbb',
   };
+  @reactor() firstName = 'Jack';
+  @reactor() lastName = 'Ma';
 
   initDomainContext() {
     return {
       isNeedRecord: false,
     };
+  }
+
+  @computed()
+  get fullName() {
+    console.log('***rere-computed***');
+    return this.firstName + ' ' + this.lastName;
+  }
+
+  getFullName = () => {
+    console.log('***re-computed***');
+    return this.firstName + ' ' + this.lastName;
   }
 
   isClosedPath() {

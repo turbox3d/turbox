@@ -6,6 +6,7 @@ import { ctx } from '../const/config';
 import { materialCallStack } from './domain';
 import { TimeTravel } from './time-travel';
 import { EMaterialType } from '../const/enums';
+import { Reaction } from './reactive';
 
 export let store: Store;
 export let isUpdating: boolean = false;
@@ -66,23 +67,40 @@ export function createStore(enhancer: (createStore: any) => Store) {
       isInner = false,
     } = action;
 
-    const callback = () => {
-      if (triggerCollector.waitTriggerComponentIds.length > 0) {
-        const ids = deduplicate(triggerCollector.waitTriggerComponentIds);
-        const pendingListeners: Function[] = [];
+    const flushChange = (ids: ReactionId[], needBatchUpdate = true) => {
+      if (!ids.length) {
+        return;
+      }
+      const pendingListeners: Function[] = [];
 
-        for (let index = 0; index < ids.length; index++) {
-          const cid = ids[index];
-          const listeners = componentUUIDToListeners.get(cid) || [];
-          pendingListeners.push(...listeners);
+      for (let index = 0; index < ids.length; index++) {
+        const cid = ids[index];
+        const listeners = componentUUIDToListeners.get(cid) || [];
+        pendingListeners.push(...listeners);
+      }
+
+      const flush = () => {
+        for (let index = 0; index < pendingListeners.length; index++) {
+          const listener = pendingListeners[index];
+          listener();
         }
+      };
 
-        ReactDOM.unstable_batchedUpdates(() => {
-          for (let index = 0; index < pendingListeners.length; index++) {
-            const listener = pendingListeners[index];
-            listener();
-          }
-        });
+      if (needBatchUpdate) {
+        ReactDOM.unstable_batchedUpdates(flush);
+      } else {
+        flush();
+      }
+    };
+
+    const callback = () => {
+      const ids = deduplicate(triggerCollector.waitTriggerComponentIds);
+      if (ids.length > 0) {
+        const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
+        // do computed reaction first
+        flushChange(computedReactionIds, false);
+        const restIds = deduplicate(triggerCollector.waitTriggerComponentIds).filter(id => !(id instanceof Reaction && id.computed));
+        flushChange(restIds);
       }
       isInBatch = false;
       dirtyJob = void 0;
@@ -114,6 +132,13 @@ export function createStore(enhancer: (createStore: any) => Store) {
       }
       const currentMutation = original as Mutation;
       currentMutation(...payload);
+      // keep alive computed
+      const computedReactionIds = triggerCollector.waitTriggerComponentIds.filter(id => id instanceof Reaction && !id.lazy && id.computed);
+      if (computedReactionIds.length > 0) {
+        flushChange(deduplicate(computedReactionIds), false);
+      }
+    } catch (error) {
+      throw new Error(error);
     } finally {
       isUpdating = false;
     }

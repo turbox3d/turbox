@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel } from 'turbox';
+import { config, init, Reactive, reactive, TimeTravel, computed } from 'turbox';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -36,11 +36,13 @@ const p = new Point({
   type: EPointType.CIRCLE,
 });
 
-const disposer = reactive(() => {
+const r = reactive(() => {
   console.log('&&&&&');
   // console.log(p.position);
   console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
 });
+
+const fullName = computed(cts.countertops[0].getFullName);
 
 const DemoBox = Reactive(() => {
   const [flag, setFlag] = useState(true);
@@ -147,6 +149,13 @@ const DemoBox = Reactive(() => {
     });
     cts.countertops[0].testTwoMutation(p, l);
   }
+  const testComputed = () => {
+    const lastName = cts.countertops[0].lastName + 'AAA';
+    cts.countertops[0].$update({
+      // firstName,
+      lastName,
+    });
+  }
   console.log('***parent');
 
   return (
@@ -157,9 +166,12 @@ const DemoBox = Reactive(() => {
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
       } */}
-      {/* {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
-        <span>{cts.countertops[0].info.a}</span>
-      } */}
+      {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
+        <span>key：{cts.countertops[0].info.a}</span>
+      }
+      <br />
+      <span>fullName：{fullName.get()}</span><br/>
+      <span>fullName2：{cts.countertops[0].fullName}</span>
       {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}
@@ -177,6 +189,9 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onClick={testComputed}>
+          测试 Computed
+                </button>
         <button onMouseMove={testMouseMove}>
           测试MouseMove
                 </button>
@@ -201,7 +216,7 @@ const DemoBox = Reactive(() => {
         <button onClick={removeKey}>
           删key
                 </button>
-        <button onClick={() => disposer()}>
+        <button onClick={() => r.dispose()}>
           disposer
                 </button>
         <button onClick={addLine}>

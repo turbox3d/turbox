@@ -155,7 +155,13 @@ class TriggerCollector {
     const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;
     this.collectComponentId(target, enhanceKey);
 
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isNeedRecord || enhanceKey === ESpecialReservedKey.ITERATE) {
+    if (
+      !ctx.timeTravel.isActive ||
+      !TimeTravel.currentTimeTravel ||
+      !isNeedRecord ||
+      enhanceKey === ESpecialReservedKey.ITERATE ||
+      enhanceKey === ESpecialReservedKey.COMPUTED
+    ) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;

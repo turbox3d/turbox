@@ -2,6 +2,7 @@ import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import { store } from '../core/store';
 import { depCollector } from '../core/collector';
+import { fail } from '../utils/error';
 
 export function Reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
 export function Reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
@@ -33,6 +34,9 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
         unsubscribeHandler?: () => void;
 
         componentDidMount() {
+          if (!store) {
+            fail('store is not ready, please init first.');
+          }
           this.unsubscribeHandler = store.subscribe(() => {
             this.forceUpdate();
           }, _this);
@@ -88,6 +92,9 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       unsubscribeHandler?: () => void;
 
       componentDidMount() {
+        if (!store) {
+          fail('store is not ready, please init first.');
+        }
         this.unsubscribeHandler = store.subscribe(() => {
           callback();
         }, _this);

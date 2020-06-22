@@ -436,10 +436,16 @@ export default class Item extends React.Component {
 interface Options {
   name: string;
 }
-type disposer = () => void;
-type reactive = (func: Function, options?: Options) => disposer;
+class Reaction {
+  name: string;
+  runner: Function;
+  computed: boolean;
+  unsubscribeHandler?: () => void;
+  dispose: () => void;
+}
+type reactive = (func: Function, options?: Options) => Reaction;
 ```
-有些时候我们不想依赖于 react 组件，那么可以使用字母全小写的 reactive 来包裹一个函数使其成为响应式函数，每次更新了该函数依赖到的属性时，该函数会被重新执行一次。reactive 的返回值是一个 disposer 函数，调用它可以销毁这个函数的 reactive 能力，以后就不会再响应变更。
+有些时候我们不想依赖于 react 组件，那么可以使用字母全小写的 reactive 来包裹一个函数使其成为响应式函数，每次更新了该函数依赖到的属性时，该函数会被重新执行一次。reactive 的返回值是一个 Reaction 实例，调用它的 dispose 函数可以销毁这个函数的 reactive 能力，以后就不会再响应变更，并且会做垃圾收集。
 
 ### render
 ```typescript

@@ -1,6 +1,10 @@
-import { Reactive } from 'turbox';
+import { Reactive, reactive } from 'turbox';
 import React from 'react';
 import { cts } from './index';
+
+const r = reactive(() => {
+  console.log('^^^^^');
+});
 
 const Disposer: React.FC<{}> = () => {
   console.log('Disposer');
