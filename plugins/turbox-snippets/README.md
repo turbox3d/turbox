@@ -23,6 +23,8 @@ In order to install an extension you need to launch the Command Pallet (Ctrl + S
 | `trc→`         | Create reactor                             |
 | `tu→`          | Update state                               |
 | `tmu→`         | Create mutation for update state           |
+| `tcp→`         | Create computed                            |
+| `tcpf→`        | Create computed function                   |
 | `tef→`         | Create effect                              |
 | `tcc→`         | Create a Class Component with turbox       |
 | `tfc→`         | Create a Function Component with turbox    |

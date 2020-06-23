@@ -12,7 +12,7 @@
       "\t\t}",
       "\t\ttimeTravel: {",
       "\t\t\tisActive: false,",
-      "\t\t\tmaxStepNumber: 5,",
+      "\t\t\tmaxStepNumber: 20,",
       "\t\t}",
 			"\t});",
 			"\tTurbox.render(",
@@ -37,7 +37,12 @@
 			"\t@mutation()",
 			"\tupdateExample(example) {",
 			"\t\tthis.example = example;",
-			"\t}",
+      "\t}",
+      "",
+      "\t@computed()",
+      "\tget computedProp() {",
+      "\t\treturn this.example;",
+      "\t}",
 			"",
 			"\t@effect()",
 			"\tasync fetch() {",
@@ -71,7 +76,28 @@
 			"}"
 		],
 		"description": "Create mutation for update state"
-	},
+  },
+  "Create computed": {
+    "prefix": "tcp",
+    "body": [
+      "@computed()",
+      "get ${1:computedProp}() {",
+      "\treturn this.${2:newState};",
+      "}"
+    ],
+    "description": "Create computed"
+  },
+  "Create computed function": {
+    "prefix": "tcpf",
+    "body": [
+      "const computedProp = computed(() => {",
+      "\treturn this.firstName + ' ' + this.lastName;",
+      "}, {",
+      "\tlazy: true,",
+      "});"
+    ],
+    "description": "Create computed function"
+  },
 	"Create effect": {
 		"prefix": "tef",
 		"body": [
