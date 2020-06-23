@@ -1,6 +1,6 @@
 {
   "name": "turbox",
-  "version": "1.0.12",
+  "version": "1.0.11",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
