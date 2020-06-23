@@ -11,8 +11,8 @@ export interface Middleware {
 }
 
 export interface Store {
-  dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>,
-  subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void,
+  dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+  subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void;
 }
 
 export interface Mutation {
