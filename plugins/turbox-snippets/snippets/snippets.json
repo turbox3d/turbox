@@ -29,7 +29,7 @@
 	"Create Domain": {
 		"prefix": "tdm",
 		"body": [
-			"import { Domain, reactor, effect, mutation } from 'turbox';",
+			"import { Domain, reactor, effect, mutation, computed } from 'turbox';",
 			"",
 			"export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
 			"\t@reactor() example = '';",
