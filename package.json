@@ -16,6 +16,10 @@
     "productivity application",
     "front-end"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "peerDependencies": {

@@ -21,7 +21,8 @@
     "state-management"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
