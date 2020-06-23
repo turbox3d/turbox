@@ -971,10 +971,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@turbox3d/reactivity@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.10.tgz#3e09480787718a3281c2d3b2a80d123fb12b34a6"
-  integrity sha512-gYJcmbi/8hInZOAGeYUHI5Vql/SGA0h3vz4Jw094V+EEMR4Wz1j7NbuhMpqYXy0wFBlHq5gOZmzZVCn2dm2chA==
+"@turbox3d/reactivity@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.12.tgz#1efac8bcea5044937aed0590f6f9d097f140b3aa"
+  integrity sha512-0ClHUJ9pYizevvuw1mHEWHU++iX/QX0txugDqO+mcUPHfaw1J4U1SDuS/6dtPHBqaj0JQjblN92cMu8reiEfrg==
 
 "@types/babel__core@^7.1.0":
   version "7.1.9"
