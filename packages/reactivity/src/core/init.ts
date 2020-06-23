@@ -7,7 +7,7 @@ import { ctx } from '../const/config'
 import { compose } from '../utils/compose';
 import { invariant } from '../utils/error';
 import { isSupportProxy, isSupportSymbol } from '../utils/lang';
-import { Emitter } from '../utils/common';
+import { Emitter } from '../utils/event';
 
 export let isRunning = false;
 export const emitter = new Emitter();
