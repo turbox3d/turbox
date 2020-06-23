@@ -322,34 +322,49 @@ class MyDomain extends Domain {
 ### operator（暂未实现，敬请期待）
 后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
 
-### computed（暂未实现，敬请期待）
-有的业务比较复杂，需要根据某几个原始 reactor state 的变化自动触发算法，计算出视图组件真正需要的状态，在视图中放入太多的逻辑会让组件过重且难以维护，并且如果原始 reactor state 没有发生变化，就不应该重复执行耗时的计算，直接返回上一次计算过的结果性能更佳，这时候就需要用到 computed 装饰器，如下代码所示：
+### computed
+2d、3d 业务的计算通常比较复杂，需要根据某几个原始 reactor state 的值自动触发算法或公式，计算出视图真正需要的状态，计算功能的意义在于可以收敛计算代码并且缓存计算结果以提高性能。
 
-<!--
-// 在 presenter 中处理跨 domain 的计算属性
-// @register({
-//   name: 'presenter',
-//   deps: ['column', 'tag'],
-// })
-// class presenter {
-//   @computed
-//   get currentTagColumnList() {
-//     const columnList = this.$column.columnList;
-//     const currentTagId = this.$tag.currentTagId;
-//     return columnList.filter(column => column.tagId === currentTagId);
-//   }
+在视图中放入太多的逻辑会让组件过重且难以维护，并且无法复用计算逻辑。如果原始 reactor state 没有发生变化，就不应该重复执行耗时的计算，因为两次计算的结果一定是一样的，直接返回上一次计算过的结果性能更佳。使用方式如下代码所示：
 
-//   @effect
-//   async reverseComputed() {
+```js
+class TestDomain extends Domain {
+  @reactor() firstName = 'Jack';
+  @reactor() lastName = 'Ma';
 
-//   }
-// }
+  @computed({ lazy: true })
+  get fullName() {
+    return this.firstName + ' ' + this.lastName;
+  }
 
-// computed 修饰的函数返回的状态是只读的，只会根据原始 reactor state 进行变化，不能直接通过 mutation 或者 this 来修改，turbox 希望计算过程跟数据流一样是单向的，如果需要逆向算法，还是写一个通用 effect 来逆向分解更新原始 reactor state 更好维护一些，通过监听互相触发更新虽然很方便，但过于 magic，比如 vue 的 watch，这种代码多了之后对排查和维护是灾难性的
--->
+  /** 这种写法虽然看起来优雅但不推荐，一个是因为只在 ts 下支持，另一个是因为做了 hack，会导致语法高亮识别为函数而不是属性，并且无法写原生 set */
+  @computed()
+  fullName = () => {
+    return this.firstName + ' ' + this.lastName;
+  }
+}
+```
 
-### watch（暂未实现，敬请期待）
-某些情况需要根据数据的变化引发其他外部操作或数据的更新，这时候可以利用 watch，大部分情况并不推荐使用这种做法，因为这可能会导致程序难以测试并且不可预测，还有可能造成死循环，魔法过多对维护也会造成很大的代价。只在某些特别必要的场景，比如某些数据就是有极强的关联性，会导致外部操作或外部数据的更新，部分情况很难在所有应该触发更新的地方去手动调用触发更新，为了减少心智负担才用。
+有时候我们不想使用装饰器，可以直接用 computed 函数：
+
+```js
+const fullName = computed(() => {
+  // 注意一下作用域，默认不会帮你绑定作用域
+  return this.firstName + ' ' + this.lastName;
+}, {
+  lazy: true,
+});
+
+// 使用属性的时候得调用 get 方法，因为没法对原始数据类型做代理，并且需要惰性求值能力
+fullName.get();
+```
+
+> 计算属性只会在用到该属性的时候才会发生计算，确保性能最佳
+
+> 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时计算，默认开启惰性计算，意味着只会在重新渲染或执行之前才会做一次 dirty 检察，在这之前计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
+
+<!-- ### watch（暂未实现，敬请期待）
+某些情况需要根据数据的变化引发其他外部操作或数据的更新，这时候可以利用 watch，大部分情况并不推荐使用这种做法，因为这可能会导致程序难以测试并且不可预测，还有可能造成死循环，魔法过多对维护也会造成很大的代价。只在某些特别必要的场景，比如某些数据就是有极强的关联性，会导致外部操作或外部数据的更新，部分情况很难在所有应该触发更新的地方去手动调用触发更新，为了减少心智负担才用。 -->
 
 ### Reactive
 **turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
