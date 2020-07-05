@@ -1,20 +1,28 @@
 import { Middleware } from '../interfaces';
 import { actionTypeChain } from '../core/store';
 import { EMaterialType } from '../const/enums';
+import { Action } from '../core/action';
 
 function createMutationMiddleware(): Middleware {
-  return () => (next: any) => (action) => {
-    const { name, displayName, type, isInner } = action;
+  return () => (next: any) => (dispatchedAction) => {
+    const { name, displayName, type, isInner } = dispatchedAction;
     if (isInner || (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
-      return next(action);
+      return next(dispatchedAction);
     }
 
-    actionTypeChain.push({
-      name,
-      displayName,
-    });
+    if (Action.context) {
+      Action.context.historyNode.actionChain.push({
+        name,
+        displayName,
+      });
+    } else {
+      actionTypeChain.push({
+        name,
+        displayName,
+      });
+    }
 
-    return next(action);
+    return next(dispatchedAction);
   };
 }
 

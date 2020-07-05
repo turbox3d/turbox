@@ -21,6 +21,13 @@ export function includes<T>(array: T[], item: T) {
   return array.indexOf(item) > -1;
 }
 
+export function remove<T>(array: T[], item: T) {
+  const index = array.indexOf(item);
+  if (index > -1) {
+    array.splice(index, 1);
+  }
+}
+
 // boolean, string, number, undefined, null
 export function isPrimitive(value: any) {
   return value === null || (typeof value !== 'object' && typeof value !== 'function');

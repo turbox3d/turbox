@@ -1,4 +1,4 @@
-import { bind, shallowEqual } from '../common';
+import { bind, shallowEqual, remove } from '../common';
 import { deepMerge } from '../deep-merge';
 
 describe('utils -> common', () => {
@@ -146,5 +146,11 @@ describe('utils -> common', () => {
     }
     const fn = bind(originalObj.say, targetObj)
     expect(fn()).toBe('baz')
+  })
+
+  it('remove', () => {
+    const array = [1, 2, 3];
+    remove(array, 2);
+    expect(array).toBe([1, 3]);
   })
 })

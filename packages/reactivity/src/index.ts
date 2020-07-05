@@ -10,6 +10,8 @@ import { Domain } from './core/domain';
 import { init } from './core/init';
 import { reactive } from './core/reactive';
 import { TimeTravel } from './core/time-travel';
+import { Action } from './core/action';
+import { ActionStatus } from './const/enums';
 
 export default {
   Reactive,
@@ -21,9 +23,11 @@ export default {
   use,
   config,
   reactor,
-  Domain,
   init,
+  Domain,
   TimeTravel,
+  Action,
+  ActionStatus,
 }
 
 export {
@@ -36,7 +40,9 @@ export {
   use,
   config,
   reactor,
-  Domain,
   init,
+  Domain,
   TimeTravel,
+  Action,
+  ActionStatus,
 }

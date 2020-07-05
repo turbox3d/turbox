@@ -23,3 +23,9 @@ export enum EMaterialType {
   EFFECT = 'effect',
   TIME_TRAVEL = 'timeTravel',
 }
+
+export enum ActionStatus {
+  WORKING = 'working',
+  COMPLETED = 'completed',
+  ABORT = 'abort',
+}

@@ -1,6 +1,7 @@
 import { Domain } from './core/domain';
 import { ReactionId } from './core/collector';
 import { EMaterialType } from './const/enums';
+import { Action } from './core/action';
 
 export type MiddlewareParam = {
   dispatch: (action: DispatchedAction) => DispatchedAction,
@@ -20,7 +21,7 @@ export interface Mutation {
 }
 
 export interface Effect {
-  (...restPayload: any[]): Promise<void>
+  (action: Action, ...restPayload: any[]): Promise<void>
 }
 
 export interface DispatchedAction {
@@ -28,6 +29,7 @@ export interface DispatchedAction {
   original: Effect | Mutation;
   name: string;
   displayName: string;
+  action?: Action;
   type?: EMaterialType;
   domain?: Domain;
   isAtom?: boolean;

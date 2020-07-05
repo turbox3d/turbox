@@ -1,10 +1,7 @@
 import { materialCallStack } from './domain';
-import { store, actionTypeChain, ActionType } from './store';
-import generateUUID from '../utils/uuid';
+import { store, ActionType } from './store';
 import { ctx } from '../const/config';
-import { triggerCollector } from './collector';
-import { invariant, fail } from '../utils/error';
-import { nextTick } from '../utils/common';
+import { fail } from '../utils/error';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { ECollectType, EMaterialType } from '../const/enums';
 
@@ -36,7 +33,6 @@ export class TimeTravel {
   transactionHistories: HistoryNode[] = [];
   cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
-  static freeze: boolean = false;
 
   static switch = (instance: TimeTravel) => {
     TimeTravel.currentTimeTravel = instance;
@@ -66,30 +62,6 @@ export class TimeTravel {
 
   static clear = () => {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.clear();
-  }
-
-  static start = (name: string, displayName?: string) => {
-    invariant(!TimeTravel.freeze, 'Already started, please complete first.');
-    if (TimeTravel.freeze) {
-      return;
-    }
-    TimeTravel.resume();
-    actionTypeChain.push({
-      name,
-      displayName: displayName || EMPTY_ACTION_NAME,
-    });
-    TimeTravel.freeze = true;
-  }
-
-  static complete = () => {
-    if (!TimeTravel.freeze) {
-      return;
-    }
-    nextTick(() => {
-      TimeTravel.freeze = false;
-      triggerCollector.save(actionTypeChain);
-      triggerCollector.endBatch();
-    });
   }
 
   static get undoable() {
@@ -133,7 +105,7 @@ export class TimeTravel {
       fail('store is not ready, please init first.');
     }
     store.dispatch({
-      name: `@@TURBOX__UNDO_${generateUUID()}`,
+      name: `@@TURBOX__UNDO_${currentHistory.actionChain[0]}`,
       displayName: EMPTY_ACTION_NAME,
       payload: [],
       original,
@@ -169,7 +141,7 @@ export class TimeTravel {
       fail('store is not ready, please init first.');
     }
     store.dispatch({
-      name: `@@TURBOX__REDO_${generateUUID()}`,
+      name: `@@TURBOX__REDO_${currentHistory.actionChain[0]}`,
       displayName: EMPTY_ACTION_NAME,
       payload: [],
       original,

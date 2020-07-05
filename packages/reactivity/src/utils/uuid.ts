@@ -13,7 +13,6 @@ export default function generateUUID(): string {
       uuid[i] = '7';
     } else {
       if (rnd <= 0x02) {
-        /* tslint:disable no-bitwise */
         rnd = 0x2000000 + (Math.random() * 0x1000000) | 0;
       }
       const r = rnd & 0xf;

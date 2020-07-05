@@ -225,7 +225,7 @@ export class Domain<S = {}> {
     }
     // update state after store init
     store.dispatch({
-      name: actionName || `@@TURBOX__UPDATE_${generateUUID()}`,
+      name: actionName || '@@TURBOX__UPDATE',
       displayName: displayName || EMPTY_ACTION_NAME,
       payload: [],
       type: EMaterialType.UPDATE,

@@ -1,10 +1,10 @@
 import { ctx } from '../const/config';
 import { Component } from 'react';
 import { Reaction } from './reactive';
-import { HistoryCollectorPayload, TimeTravel } from './time-travel';
+import { HistoryCollectorPayload, TimeTravel, History } from './time-travel';
 import { actionTypeChain, ActionType } from './store';
-import { rawCache } from './domain';
 import { EDepState, ECollectType, ESpecialReservedKey } from '../const/enums';
+import { Action } from './action';
 
 export type ReactionId = Component | Reaction;
 
@@ -154,7 +154,6 @@ class TriggerCollector {
     const { beforeUpdate, didUpdate, type } = payload;
     const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;
     this.collectComponentId(target, enhanceKey);
-
     if (
       !ctx.timeTravel.isActive ||
       !TimeTravel.currentTimeTravel ||
@@ -164,16 +163,28 @@ class TriggerCollector {
     ) {
       return;
     }
-    const ctt = TimeTravel.currentTimeTravel;
-    if (ctt.currentHistory === void 0) {
-      ctt.currentHistory = new Map();
-    }
-    const proxyTarget = rawCache.get(target);
-    if (!proxyTarget) {
+    if (Action.context) {
+      this.recordDiff(target, enhanceKey, beforeUpdate, didUpdate, Action.context.historyNode.history);
       return;
     }
-    const keyToDiffChangeMap = ctt.currentHistory.get(proxyTarget);
+    this.recordDiff(target, enhanceKey, beforeUpdate, didUpdate, TimeTravel.currentTimeTravel.currentHistory);
+  }
 
+  private collectComponentId(target: object, enhanceKey: string) {
+    const depNodeAssembly = depCollector.dependencyMap.get(target);
+    if (depNodeAssembly !== void 0) {
+      const idSet = depNodeAssembly[enhanceKey];
+      if (idSet !== void 0 && idSet.size > 0) {
+        this.waitTriggerComponentIds.push(...Array.from(idSet));
+      }
+    }
+  }
+
+  private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history?: History) {
+    if (history === void 0) {
+      history = new Map();
+    }
+    const keyToDiffChangeMap = history.get(target);
     if (keyToDiffChangeMap !== void 0) {
       if (keyToDiffChangeMap[enhanceKey] !== void 0) {
         keyToDiffChangeMap[enhanceKey].didUpdate = didUpdate;
@@ -184,7 +195,7 @@ class TriggerCollector {
         };
       }
     } else {
-      ctt.currentHistory.set(proxyTarget, {
+      history.set(target, {
         [enhanceKey]: {
           beforeUpdate,
           didUpdate,
@@ -193,48 +204,38 @@ class TriggerCollector {
     }
   }
 
-  collectComponentId(target: object, enhanceKey: string) {
-    const depNodeAssembly = depCollector.dependencyMap.get(target);
-    if (depNodeAssembly !== void 0) {
-      const idSet = depNodeAssembly[enhanceKey];
-      if (idSet !== void 0 && idSet.size > 0) {
-        this.waitTriggerComponentIds.push(...Array.from(idSet));
-      }
-    }
-  }
-
-  endBatch(isClearHistory = true) {
+  endBatch(isClearHistory = true, action?: Action) {
     this.waitTriggerComponentIds = [];
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
+      return;
+    }
+    if (action) {
+      action.historyNode.actionChain.length = 0;
+      action.historyNode.history = new Map();
       return;
     }
     actionTypeChain.length = 0;
     TimeTravel.currentTimeTravel.currentHistory = void 0;
   }
 
-  save(actionChain: ActionType[]) {
-    const actionChainSnapshot = actionChain.concat();
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
+  private saveHistory(ctt: TimeTravel, actionChain: ActionType[], history?: History) {
+    if (!history) {
       return;
     }
-    const ctt = TimeTravel.currentTimeTravel;
-    if (!ctt.currentHistory) {
-      return;
-    }
-    if (ctt.currentHistory.size === 0) {
+    if (history.size === 0) {
       return;
     }
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({
-        actionChain: actionChainSnapshot,
-        history: ctt.currentHistory,
+        actionChain,
+        history,
       });
       ctt.cursor += 1;
     } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
       ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
       ctt.transactionHistories.push({
-        actionChain: actionChainSnapshot,
-        history: ctt.currentHistory,
+        actionChain,
+        history,
       });
       ctt.cursor += 1;
     }
@@ -243,6 +244,18 @@ class TriggerCollector {
       ctt.transactionHistories.shift();
       ctt.cursor -= 1;
     }
+  }
+
+  save(action?: Action) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
+      return;
+    }
+    const ctt = TimeTravel.currentTimeTravel;
+    if (action) {
+      this.saveHistory(ctt, action.historyNode.actionChain, action.historyNode.history);
+      return;
+    }
+    this.saveHistory(ctt, actionTypeChain.concat(), ctt.currentHistory);
   }
 }
 

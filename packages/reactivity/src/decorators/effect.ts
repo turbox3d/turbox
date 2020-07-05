@@ -1,14 +1,12 @@
-import { ctx } from '../const/config';
-import { store, actionTypeChain } from '../core/store';
+import { store } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
-import { bind, convert2UniqueString, includes } from '../utils/common';
+import { bind, convert2UniqueString } from '../utils/common';
 import { Effect, BabelDescriptor } from '../interfaces';
 import { invariant, fail } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
-import { triggerCollector } from '../core/collector';
-import { TimeTravel } from '../core/time-travel';
 import { EMaterialType } from '../const/enums';
+import { Action } from '../core/action';
 
 interface EffectConfig {
   name: string;
@@ -25,21 +23,20 @@ function createEffect(target: Object, name: string | symbol | number, original: 
     if (!store) {
       fail('store is not ready, please init first.');
     }
+    const action = Action.create(stringMethodName, config.name);
     await store.dispatch({
       name: stringMethodName,
+      action,
       displayName: config.name || EMPTY_ACTION_NAME,
       payload,
       type: EMaterialType.EFFECT,
       domain: this,
-      original: bind(original, this) as Effect
+      original: bind(original, this) as Effect,
     });
     materialCallStack.pop();
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
-    if (ctx.timeTravel.isActive && (!TimeTravel.freeze && !includes(materialCallStack, EMaterialType.EFFECT))) {
-      triggerCollector.save(actionTypeChain);
-      triggerCollector.endBatch();
-    }
+    action.complete();
   };
 }
 

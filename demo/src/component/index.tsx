@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed } from 'turbox';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action } from 'turbox';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -43,6 +43,7 @@ const r = reactive(() => {
 });
 
 const fullName = computed(cts.countertops[0].getFullName);
+let action;
 
 const DemoBox = Reactive(() => {
   const [flag, setFlag] = useState(true);
@@ -115,23 +116,40 @@ const DemoBox = Reactive(() => {
   };
   const testDisposer = () => {
     setFlag(false);
-  }
+  };
+
   const testMouseMove = () => {
     if (count === 100) {
-      TimeTravel.start('testMouseMove');
+      action = Action.create('testMouseMove', '测试鼠标移动');
     }
-    if (count === 200) {
-      TimeTravel.complete();
+    if (count === 201) {
       return;
     }
+    if (count === 200) {
+      console.log(action);
+      action.complete();
+      count++;
+      return;
+    }
+    // takeLast takeLead
+    // 完成：完成不仅会合并记录到撤销恢复栈，还会移出当前队列，还会 gc，防止内存泄漏
+    // action.complete(); // 这么设计 API 是防止 action 为空，多写一个判断
+    // const actions = Action.get('nameA', 'nameB'); 列出所有没完成的 action 队列 (action.name)
+    // 清空：不仅要从队列里移除掉这个 action，最后 gc
+    // action.abort(); 清空指定的 action
+    // action.revert(); 回退掉未完成的已更改状态的部分
+    // Action.abortAll(); 清空当前 action 队列
+
     count++;
     console.log('mouse move', count);
     const p = new Point({
       position: new Point2d(count, count),
       type: EPointType.NONE,
     });
-    cts.countertops[0].addPoint(p);
-  }
+    action.execute(() => {
+      cts.countertops[0].addPoint(p);
+    });
+  };
   const testMutation = () => {
     const p = new Point({
       position: new Point2d(100, 100),
@@ -148,14 +166,14 @@ const DemoBox = Reactive(() => {
       }),
     });
     cts.countertops[0].testTwoMutation(p, l);
-  }
+  };
   const testComputed = () => {
     const lastName = cts.countertops[0].lastName + 'AAA';
     cts.countertops[0].$update({
       // firstName,
       lastName,
     });
-  }
+  };
   console.log('***parent');
 
   return (

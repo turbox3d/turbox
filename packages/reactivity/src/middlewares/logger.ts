@@ -3,25 +3,25 @@ import { deepMerge } from '../utils/deep-merge';
 import { NAMESPACE } from '../const/symbol';
 
 function createLoggerMiddleware(): Middleware {
-  return () => (next: any) => (action) => {
-    if (!action.domain) {
-      return next(action);
+  return () => (next: any) => (dispatchedAction) => {
+    if (!dispatchedAction.domain) {
+      return next(dispatchedAction);
     }
 
     console.group(
-      `%caction: ${action.name}, name: ${action.displayName}, namespace: ${action.domain[NAMESPACE]}, prev state:`,
+      `%caction: ${dispatchedAction.name}, name: ${dispatchedAction.displayName}, namespace: ${dispatchedAction.domain[NAMESPACE]}, prev state:`,
       'color: red'
     );
-    console.dir(deepMerge({}, action.domain.properties, { clone: true })); // deep copy，logger current state before change.
+    console.dir(deepMerge({}, dispatchedAction.domain.properties, { clone: true })); // deep copy，logger current state before change.
     console.groupEnd();
 
-    const nextResult = next(action); // wait the result of the next middleware
+    const nextResult = next(dispatchedAction); // wait the result of the next middleware
 
     console.group(
-      `%caction: ${action.name}, name: ${action.displayName}, namespace: ${action.domain[NAMESPACE]}, next state:`,
+      `%caction: ${dispatchedAction.name}, name: ${dispatchedAction.displayName}, namespace: ${dispatchedAction.domain[NAMESPACE]}, next state:`,
       'color: green'
     );
-    console.dir(deepMerge({}, action.domain.properties, { clone: true })); // deep copy，logger current state after change.
+    console.dir(deepMerge({}, dispatchedAction.domain.properties, { clone: true })); // deep copy，logger current state after change.
     console.groupEnd();
 
     return nextResult;
