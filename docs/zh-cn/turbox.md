@@ -462,27 +462,11 @@ type reactive = (func: Function, options?: Options) => Reaction;
 ```
 有些时候我们不想依赖于 react 组件，那么可以使用字母全小写的 reactive 来包裹一个函数使其成为响应式函数，每次更新了该函数依赖到的属性时，该函数会被重新执行一次。reactive 的返回值是一个 Reaction 实例，调用它的 dispose 函数可以销毁这个函数的 reactive 能力，以后就不会再响应变更，并且会做垃圾收集。
 
-### render
-```typescript
-type render = (
-  component: React.Component,
-  querySelector: string,
-  callback: () => void
-) => void
-```
-在 **mobx** 和 **redux** 中都没有干预 ReactDOM.render，而在 **turbox** 中提供了 Turbox.render 函数来将组件渲染到 dom 上，实际上只是对 ReactDOM.render 函数的封装，将 **turbox** 中的一些初始化细节给隐藏起来，实际上 render 函数主要做了根据配置决定是否加载内置中间件，初始化 store 以及把根组件渲染到对应节点，使用方式如下所示：
-```js
-Turbox.render(<Layout />, '#app', () => {
-  // ReactDOM.render 的 callback
-});
-```
-当然如果有需要，也可以在同一个页面的不同节点 render 多个应用，但他们本质上会共享 domain，因为 store 只会初始化一次
-
 ### init
 ```typescript
 type init = () => void
 ```
-你也可以使用 `init` 方法来做纯粹的初始化操作，然后自己渲染到节点上，这样更灵活一些，使用方式如下所示：
+`init` 方法是用来做中间件和 store 的初始化，根据配置决定是否加载内置中间件，然后初始化 store，使用方式如下所示：
 ```js
 Turbox.init();
 
