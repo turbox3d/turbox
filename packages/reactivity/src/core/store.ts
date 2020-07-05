@@ -2,8 +2,6 @@ import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
 import { nextTick, deduplicate, includes } from '../utils/common';
 import * as ReactDOM from 'react-dom';
-import { ctx } from '../const/config';
-import { materialCallStack } from './domain';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
 
@@ -103,10 +101,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
       }
       isInBatch = false;
       dirtyJob = void 0;
-      if (ctx.timeTravel.isActive && includes(materialCallStack, EMaterialType.EFFECT)) {
-        triggerCollector.endBatch(false);
-        return;
-      }
       if (!isInner) {
         triggerCollector.save();
       }

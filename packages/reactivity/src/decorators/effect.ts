@@ -33,10 +33,10 @@ function createEffect(target: Object, name: string | symbol | number, original: 
       domain: this,
       original: bind(original, this) as Effect,
     });
+    action.complete();
     materialCallStack.pop();
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
-    action.complete();
   };
 }
 

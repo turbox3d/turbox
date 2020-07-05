@@ -1,5 +1,4 @@
 import { Reactive } from './components/Reactive';
-import { render } from './core/render';
 import { use } from './core/use';
 import { config } from './const/config';
 import { mutation } from './decorators/mutation';
@@ -16,7 +15,6 @@ import { ActionStatus } from './const/enums';
 export default {
   Reactive,
   reactive,
-  render,
   effect,
   mutation,
   computed,
@@ -33,7 +31,6 @@ export default {
 export {
   Reactive,
   reactive,
-  render,
   effect,
   mutation,
   computed,
