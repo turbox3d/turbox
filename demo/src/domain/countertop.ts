@@ -16,7 +16,7 @@ export class Countertop extends Domain {
 
   initDomainContext() {
     return {
-      isNeedRecord: false,
+      isNeedRecord: true,
     };
   }
 
