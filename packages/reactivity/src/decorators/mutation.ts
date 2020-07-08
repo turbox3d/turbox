@@ -35,8 +35,8 @@ function createMutation(target: Object, name: string | symbol | number, original
   };
 }
 
-export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function mutation(name?: string, isAtom?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
+export function mutation(name?: string, isAtom?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
 /**
  * decorator @mutation, update state by mutation styling.
  */
@@ -45,11 +45,11 @@ export function mutation(...args: any[]) {
     isAtom: false,
     name: '',
   };
-  const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
+  const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): BabelDescriptor<Mutation> => {
     // typescript only: @mutation method = () => {}
     if (descriptor === void 0) {
       let mutationFunc: Function;
-      Object.defineProperty(target, name, {
+      return Object.defineProperty(target, name, {
         enumerable: true,
         configurable: true,
         get: function () {
@@ -59,7 +59,6 @@ export function mutation(...args: any[]) {
           mutationFunc = createMutation(target, name, original, config);
         },
       });
-      return;
     }
 
     // babel/typescript: @mutation method() {}

@@ -1,5 +1,5 @@
 import Point2d from '../math/Point2d';
-import { Domain, effect, mutation, reactor, computed, Action } from 'turbox';
+import { Domain, effect, mutation, reactor, computed, Action, Effect } from 'turbox';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
@@ -92,7 +92,7 @@ export class Countertop extends Domain {
   }
 
   @mutation('添加点')
-  addPoint(point: Point) {
+  addPoint = (point: Point) => {
     this.points.push(point);
     // this.linkPointsAndLines();
   }
@@ -111,7 +111,8 @@ export class Countertop extends Domain {
   }
 
   @effect('')
-  async testTwoEffect(p: Point, l: Line) {
+  async testTwoEffect(action: Action, p: Point, l: Line) {
+    console.log(action);
     this.testEffect(p, l);
     this.testEffect(p, l);
   }
@@ -123,10 +124,15 @@ export class Countertop extends Domain {
   }
 
   @effect('测试effect')
-  async testEffect(p: Point, l: Line) {
-    this.addPoint(p);
+  testEffect = async (action: Action, p: Point, l: Line) => {
+    console.log(action);
+    action.execute(() => {
+      this.addPoint(p);
+    });
     await this.delay();
-    this.addLine(l);
+    action.execute(() => {
+      this.addLine(l);
+    });
   }
 
   @mutation('添加线')

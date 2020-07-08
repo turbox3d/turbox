@@ -40,8 +40,8 @@ function createEffect(target: Object, name: string | symbol | number, original: 
   };
 }
 
-export function effect(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function effect(name?: string): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function effect(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Effect>): any;
+export function effect(name?: string): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Effect>) => any;
 /**
  * decorator @effect, handle some async process and effect.
  */
@@ -49,11 +49,11 @@ export function effect(...args: any[]) {
   const config: EffectConfig = {
     name: '',
   };
-  const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
+  const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Effect>) => {
     // typescript only: @effect method = async () => {}
     if (descriptor === void 0) {
-      let effectFunc: Function;
-      Object.defineProperty(target, name, {
+      let effectFunc: (...payload: any[]) => Promise<void>;
+      return Object.defineProperty(target, name, {
         enumerable: true,
         configurable: true,
         get: function () {
@@ -63,7 +63,6 @@ export function effect(...args: any[]) {
           effectFunc = createEffect(target, name, original, config);
         },
       });
-      return;
     }
 
     // babel/typescript: @effect method() {}

@@ -17,8 +17,8 @@ export interface ComputedRef<T> {
   set?: (value: any) => void;
 }
 
-export function computed(target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function computed(options?: Partial<ComputedOption>): (target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function computed(target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): any;
+export function computed(options?: Partial<ComputedOption>): (target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor) => any;
 export function computed<T>(computeRunner: () => T, options?: Partial<ComputedOption>): ComputedRef<T>;
 
 /**
@@ -79,7 +79,7 @@ export function computed<T>(...args: any[]) {
   let computeRunner: () => T;
   let options: ComputedOption | undefined;
 
-  const decorator = (target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>): any => {
+  const decorator = (target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): ComputedRef<T> => {
     const lazy = options && options.lazy !== void 0 ? options.lazy : true;
     const reaction = reactive(() => {
       dirty = true;
