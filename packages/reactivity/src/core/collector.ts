@@ -5,6 +5,7 @@ import { HistoryCollectorPayload, TimeTravel, History } from './time-travel';
 import { actionTypeChain, ActionType } from './store';
 import { EDepState, ECollectType, ESpecialReservedKey } from '../const/enums';
 import { Action } from './action';
+import { rawCache } from './domain';
 
 export type ReactionId = Component | Reaction;
 
@@ -181,7 +182,11 @@ class TriggerCollector {
   }
 
   private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history: History) {
-    const keyToDiffChangeMap = history.get(target);
+    const proxyTarget = rawCache.get(target);
+    if (!proxyTarget) {
+      return;
+    }
+    const keyToDiffChangeMap = history.get(proxyTarget);
     if (keyToDiffChangeMap !== void 0) {
       if (keyToDiffChangeMap[enhanceKey] !== void 0) {
         keyToDiffChangeMap[enhanceKey].didUpdate = didUpdate;
@@ -192,7 +197,7 @@ class TriggerCollector {
         };
       }
     } else {
-      history.set(target, {
+      history.set(proxyTarget, {
         [enhanceKey]: {
           beforeUpdate,
           didUpdate,

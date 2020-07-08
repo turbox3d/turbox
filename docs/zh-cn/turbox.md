@@ -147,7 +147,7 @@ domain 我们称之为一个领域模型，实际上它就是一个增强父类�
 
 如下代码所示，这就是一个 domain，其实就是一个普通的 class 继承了 **turbox** 提供的 Domain 父类：
 ```js
-import { Domain, reactor, reducer, effect, mutation } from 'turbox';
+import { Domain, reactor, reducer, mutation } from 'turbox';
 
 export class MyDomain extends Domain {
   @reactor result = 0;
@@ -159,7 +159,6 @@ export class MyDomain extends Domain {
     }
   }
 
-  @effect
   fetchData = async () => {
     const { result } = await $API.get('/api/balabala');
     this.isLoaded(result);
@@ -179,7 +178,7 @@ export class MyDomain extends Domain {
 
 每个 domain 都可以拥有多个实例，不同实例之间的状态是隔离的，完全的面向对象。但在大部分模型不复杂的前中后台多页 web 应用中，通常它是单例的，因为只是用来存储几个零散的交互状态，状态模型并不复杂，甚至函数式更好，使用者自行根据业务场景选择合适的框架，并进行合理的设计。
 ```js
-import { Domain, reactor, reducer, effect, mutation } from 'turbox';
+import { Domain, reactor, reducer, mutation } from 'turbox';
 
 class MyDomain extends Domain {
   @reactor() isLoading = false;
@@ -263,7 +262,6 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @effect
   changeState(idx) {
     this.$update({
       currentIdx: idx,
@@ -282,8 +280,10 @@ class MyDomain extends Domain {
 
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
-### effect
+### effect（即将重做）
 单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大，**turbox** 因为考虑到 **redux** 中间件机制的可扩展可切面性，也借鉴了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，**turbox** 会默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
+
+后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
 ```js
 import { throttle, bind } from 'lodash-decorators';
 
@@ -319,8 +319,100 @@ class MyDomain extends Domain {
 
 > effect 装饰器的参数可以自定义名称，如果未指定，默认使用函数名
 
-### operator（暂未实现，敬请期待）
-后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
+### action
+`action` 通常是用来灵活控制操作行为的 api，可以简单的理解为一种事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
+```js
+class MyDomain extends Domain {
+  @reactor isLoading = false;
+  @reactor readList = [];
+
+  @mutation
+  isLoaded({ readList }) {
+    if (readList) {
+      this.readList = readList;
+    }
+    this.isLoading = false;
+  }
+
+  async fetchReadList() {
+    const action = Action.create('fetchReadList', '拉取阅读列表');
+    action.execute(() => {
+      // mutation 更新操作放在这
+      this.isLoading();
+    });
+    const { readList } = await API.get('/api/balabala');
+    action.execute(() => {
+      // mutation 更新操作放在这
+      this.isLoaded({ readList });
+    });
+    action.complete();
+  }
+}
+```
+在合适的时机创建一个 action 实例，需要绑定到该 action 的更新操作需要放到 execute 函数中执行，这样即使不在当前执行栈中，或是一些并发异步的场景，或是没有在该 action execute 范围中执行的更新，均不会影响到该 action 作为一个独立的事务加入到撤销恢复栈中，在 complete 完成之前，所做的所有更新都会被合并到一次行为，在调用 complete 后，保存到撤销恢复栈中。上面的例子是写在一个函数中的，有时候我们是通过组合事件动作来完成一个事务，举个例子：
+```js
+class MyDomain extends Domain {
+  @mutation
+  drawPoint() {
+  }
+
+  @mutation
+  drawLine() {
+  }
+}
+
+const drawDomain = new MyDomain();
+
+const action = Action.create('drawLine', '画一根线');
+const drawLine = () => {
+  action.execute(() => {
+    drawDomain.drawLine();
+  });
+  if (balabala) {
+    action.complete();
+  }
+};
+const drawPoint = () => {
+  action.execute(() => {
+    drawDomain.drawPoint();
+  });
+};
+
+/* 先画一个点，再画一根线，再画一个点，完成组合操作，假设不在一个执行栈中完成 */
+drawPoint();
+drawLine();
+drawPoint();
+```
+有些时候，我们需要更灵活的控制，可以直接获取行为池中的实例来进行控制，不传参数则获取所有，也可以根据 key 来筛选，如下所示：
+```js
+const actions = Action.get('actionKeyA', 'actionKeyB'); // 列出所有没完成的 action
+
+/* 下面是 action 的接口 */
+enum ActionStatus {
+  WORKING = 'working',
+  COMPLETED = 'completed',
+  ABORT = 'abort',
+}
+
+interface Action {
+  name: string;
+  displayName: string;
+  status: ActionStatus;
+  historyNode: HistoryNode;
+}
+```
+有些时候我们需要做类似 takeLead、takeLast 的操作，丢弃掉前面几次未完成的事务或后面几次的，可以使用 abort：
+```js
+action.abort(revert = true);
+// 丢弃当前未完成池中的所有事务
+Action.abortAll();
+```
+abort 会把事务池中的当前事务移除，并且阻止未完成的事务继续执行 execute 和 complete，还会根据 revert 参数来决定是否需要回退掉已经发生更改的状态，并丢弃掉 diff 记录，不进撤销恢复栈。
+
+也可以单独调用 revert api 来回滚状态：
+```js
+action.revert();
+```
 
 ### computed
 2d、3d 业务的计算通常比较复杂，需要根据某几个原始 reactor state 的值自动触发算法或公式，计算出视图真正需要的状态，计算功能的意义在于可以收敛计算代码并且缓存计算结果以提高性能。

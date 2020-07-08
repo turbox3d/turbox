@@ -127,6 +127,14 @@ const DemoBox = Reactive(() => {
     }
     if (count === 200) {
       console.log(action);
+      action.revert();
+      const p = new Point({
+        position: new Point2d(count, count),
+        type: EPointType.NONE,
+      });
+      action.execute(() => {
+        cts.countertops[0].addPoint(p);
+      });
       action.complete();
       count++;
       return;

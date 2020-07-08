@@ -77,6 +77,10 @@ export class Action {
       isInner: true,
     });
     materialCallStack.pop();
+    this.historyNode = {
+      actionChain: [],
+      history: new Map(),
+    };
   }
 
   static abortAll(revert = true) {
