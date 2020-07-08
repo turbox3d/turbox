@@ -9,8 +9,8 @@ import { Domain } from './core/domain';
 import { init } from './core/init';
 import { reactive } from './core/reactive';
 import { TimeTravel } from './core/time-travel';
-import { Action } from './core/action';
 import { ActionStatus } from './const/enums';
+import { Action } from './core/action';
 
 export default {
   Reactive,
