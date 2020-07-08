@@ -29,7 +29,7 @@ export interface HistoryCollectorPayload {
  * collect prop diff history record
  */
 export class TimeTravel {
-  currentHistory?: History;
+  currentHistory: History = new Map();
   transactionHistories: HistoryNode[] = [];
   cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
@@ -151,7 +151,7 @@ export class TimeTravel {
   }
 
   clear() {
-    this.currentHistory = void 0;
+    this.currentHistory = new Map();
     this.transactionHistories = [];
     this.cursor = -1;
   }

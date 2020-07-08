@@ -180,10 +180,7 @@ class TriggerCollector {
     }
   }
 
-  private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history?: History) {
-    if (history === void 0) {
-      history = new Map();
-    }
+  private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history: History) {
     const keyToDiffChangeMap = history.get(target);
     if (keyToDiffChangeMap !== void 0) {
       if (keyToDiffChangeMap[enhanceKey] !== void 0) {
@@ -215,7 +212,7 @@ class TriggerCollector {
       return;
     }
     actionTypeChain.length = 0;
-    TimeTravel.currentTimeTravel.currentHistory = void 0;
+    TimeTravel.currentTimeTravel.currentHistory = new Map();
   }
 
   private saveHistory(ctt: TimeTravel, actionChain: ActionType[], history?: History) {
