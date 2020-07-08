@@ -12,7 +12,7 @@ interface MutationConfig {
   name: string;
 }
 
-function createMutation(target: Object, name: string | symbol | number, original: any, config: MutationConfig) {
+function createMutation(target: Object, name: string | symbol | number, original: Mutation, config: MutationConfig) {
   const stringMethodName = convert2UniqueString(name);
   return function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.MUTATION;
@@ -55,7 +55,7 @@ export function mutation(...args: any[]) {
         get: function () {
           return mutationFunc;
         },
-        set: function (original) {
+        set: function (original: Mutation) {
           mutationFunc = createMutation(target, name, original, config);
         },
       });
@@ -74,7 +74,7 @@ export function mutation(...args: any[]) {
     descriptor.initializer = function () {
       invariant(!!initializer, 'The initializer of the descriptor doesn\'t exist, please compile it by using babel and correspond decorator plugin.');
 
-      return createMutation(target, name, initializer && initializer.call(this), config);
+      return createMutation(target, name, (initializer && initializer.call(this)) as Mutation, config);
     };
 
     return descriptor;

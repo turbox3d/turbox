@@ -15,7 +15,7 @@ interface EffectConfig {
 /**
  * @todo: enhance effect feature, such as takeLead, takeLast
  */
-function createEffect(target: Object, name: string | symbol | number, original: any, config: EffectConfig) {
+function createEffect(target: Object, name: string | symbol | number, original: Effect, config: EffectConfig) {
   const stringMethodName = convert2UniqueString(name);
   return async function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.EFFECT;
@@ -59,7 +59,7 @@ export function effect(...args: any[]) {
         get: function () {
           return effectFunc;
         },
-        set: function (original) {
+        set: function (original: Effect) {
           effectFunc = createEffect(target, name, original, config);
         },
       });
@@ -78,7 +78,7 @@ export function effect(...args: any[]) {
     descriptor.initializer = function () {
       invariant(!!initializer, 'The initializer of the descriptor doesn\'t exist, please compile it by using babel and correspond decorator plugin.');
 
-      return createEffect(target, name, initializer && initializer.call(this), config);
+      return createEffect(target, name, (initializer && initializer.call(this)) as Effect, config);
     };
 
     return descriptor;

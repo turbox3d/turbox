@@ -2017,10 +2017,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@turbox3d/reactivity@^1.0.13":
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.0.13.tgz#a4003dd15f669c0f3ed83a455369761146d71d7b"
-  integrity sha512-l4vlh3Dg1225C2bcz6xu8ix1ATYKtJCNUOkSy90r6Ce81AJjMnj8sPX6DFtaWsOScf0xJTZKNJlglEgEWZCAbw==
+"@turbox3d/reactivity@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.1.1.tgz#6673538295f0039bc82b7dd133f67d64c956e3a7"
+  integrity sha512-G53HSZqifFMTqCeA00m4olMQbFFmevhZOKNbYD8yJPz7ewB/jBq4GSKl9tW7SxKbxnuTxXw0TGGqvSntbHLfiQ==
 
 "@types/babel__core@^7.1.7":
   version "7.1.9"
@@ -9579,12 +9579,12 @@ tunnel@0.0.4:
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.4.tgz#2d3785a158c174c9a16dc2c046ec5fc5f1742213"
   integrity sha1-LTeFoVjBdMmhbcLARuxfxfF0IhM=
 
-turbox@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.0.13.tgz#93b418f8d9044b0fd67bc97d3d0e4258e0e2bcf3"
-  integrity sha512-f0tZEBRRr1HIqRSE6+iZHVFB0WbNvm0ysNhKkqKvcJ/6y4cNOEyDBo+fTp8nczrLvO5VCLWicCwv56k6ulZfvg==
+turbox@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.1.1.tgz#dda3ee3eea58c51762d53582b8d4d97e37fe0592"
+  integrity sha512-F2hcsp9ihCWryEMcvaU7gu7YJtK4OireBsrhX/2bKDnQM8sbe+MyNEsPx+Dw7JaRJhVRyBX2FSkbFIddu7caGA==
   dependencies:
-    "@turbox3d/reactivity" "^1.0.13"
+    "@turbox3d/reactivity" "^1.1.1"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

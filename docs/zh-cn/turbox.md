@@ -280,45 +280,6 @@ class MyDomain extends Domain {
 
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
-### effect（即将重做）
-单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个 dispatch 行为中会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大，**turbox** 因为考虑到 **redux** 中间件机制的可扩展可切面性，也借鉴了 **redux** 的中间件机制，以适应可能需要控制 action 触发过程的需求，**turbox** 会默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
-
-后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
-```js
-import { throttle, bind } from 'lodash-decorators';
-
-class MyDomain extends Domain {
-  @reactor isLoading = false;
-  @reactor readList = [];
-
-  @mutation
-  isLoaded({ readList }) {
-    if (readList) {
-      this.readList = readList;
-    }
-    this.isLoading = false;
-  }
-
-  @throttle(300) // 可以用一些装饰器来控制函数执行
-  @bind()
-  @effect('获取阅读列表')
-  async fetchReadList() {
-    this.isLoading();
-    const { readList } = await API.get('/api/balabala');
-    this.isLoaded({ readList });
-  }
-}
-```
-> 在 effect 函数中不能直接通过 this 去修改状态，只能读取，修改必须要通过 mutation，或者使用 $update 语法糖。这么设计是为了遵守更新过程与业务流程逻辑的分离，做到单一职责，如果不强制可能会导致过程式的代码很多，写出完全不考虑复用性、可读性、可维护性的代码，此举确实会导致写起来稍微麻烦一点点，但看起来对于更新流程的描述更清晰了
-
-> effect 修饰的函数大部分情况下都是异步的，但也不排除分发了多个同步的 mutation 操作，多个同步代码顺序是可以信赖的，后面的代码可以拿到更新后的状态，异步的操作不可以，必须用 await 等待完成后才能拿到最新的状态。
-
-> 看起来似乎普通的 async 函数也可以做到同样的事情，那么 effect 装饰器修饰的函数与普通函数相比有什么区别呢？区别就在于 effect 函数本身会被作为一个独立的包含副作用的操作经过中间件处理，同时也会被独立的整体的作为一次记录到时间旅行器中，被它分发的子 mutation 的操作会被时间旅行器忽略掉不记录，这样你应该就更能理解什么叫做副作用了
-
-> effect 可以嵌套 effect，记录操作行为的粒度始终以最外层的 effect 为准
-
-> effect 装饰器的参数可以自定义名称，如果未指定，默认使用函数名
-
 ### action
 `action` 通常是用来灵活控制操作行为的 api，可以简单的理解为一种事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
 ```js
@@ -413,6 +374,55 @@ abort 会把事务池中的当前事务移除，并且阻止未完成的事务�
 ```js
 action.revert();
 ```
+
+### effect（即将重做）
+单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个行为会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大。**turbox** 默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
+```js
+import { throttle, bind } from 'lodash-decorators';
+
+class MyDomain extends Domain {
+  @reactor isLoading = false;
+  @reactor readList = [];
+
+  @mutation
+  isLoaded({ readList }) {
+    if (readList) {
+      this.readList = readList;
+    }
+    this.isLoading = false;
+  }
+
+  @throttle(300) // 可以用一些装饰器来控制函数执行
+  @bind()
+  @effect('获取阅读列表')
+  async fetchReadList(action) {
+    action.execute(() => {
+      this.isLoading();
+    });
+    const { readList } = await API.get('/api/balabala');
+    action.execute(() => {
+      this.isLoaded({ readList });
+    });
+  }
+
+  async fetchReadList2() {
+    this.isLoading();
+    const { readList } = await API.get('/api/balabala');
+    this.isLoaded({ readList });
+  }
+}
+```
+我们看到上面代码提供了两种方式来处理副作用，看起来似乎普通的 async 函数也可以做到同样的事情，并且写法更简洁，那么 effect 装饰器修饰的函数与普通函数相比有什么区别呢？区别就在于 effect 函数本身会被作为一个独立的包含副作用的操作经过中间件处理，同时会帮助你自动创建 action 实例，并回传 action 参数给用户来进行调用，在 effect 执行完成后会帮助你自动 complete 该次 action，记录到撤销恢复栈中，简单可以理解为 effect 是 action 的一个经过中间件的增强语法糖。
+
+> 在 effect 函数中不能直接通过 this 去修改状态，只能读取，修改必须要通过 mutation，或者使用 $update 语法糖。这么设计是为了遵守更新过程与业务流程逻辑的分离，做到单一职责，如果不强制可能会导致过程式的代码很多，写出完全不考虑复用性、可读性、可维护性的代码，此举确实会导致写起来稍微麻烦一点点，但看起来对于更新流程的描述更清晰了
+
+> effect 修饰的函数大部分情况下都是异步的，但也不排除分发了多个同步的 mutation 操作，多个同步代码顺序是可以信赖的，后面的代码可以拿到更新后的状态，异步的操作不可以，必须用 await 等待完成后才能拿到最新的状态
+
+> effect 可以嵌套 effect，记录操作行为的粒度始终以 effect 回传的 action 参数来控制
+
+> effect 装饰器的参数可以自定义名称，如果未指定，默认使用函数名
+
+后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。
 
 ### computed
 2d、3d 业务的计算通常比较复杂，需要根据某几个原始 reactor state 的值自动触发算法或公式，计算出视图真正需要的状态，计算功能的意义在于可以收敛计算代码并且缓存计算结果以提高性能。
