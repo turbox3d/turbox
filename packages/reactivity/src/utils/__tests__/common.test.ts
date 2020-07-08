@@ -151,6 +151,6 @@ describe('utils -> common', () => {
   it('remove', () => {
     const array = [1, 2, 3];
     remove(array, 2);
-    expect(array).toBe([1, 3]);
+    expect(array).toStrictEqual([1, 3]);
   })
 })
