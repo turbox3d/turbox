@@ -2017,10 +2017,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@turbox3d/reactivity@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.1.1.tgz#6673538295f0039bc82b7dd133f67d64c956e3a7"
-  integrity sha512-G53HSZqifFMTqCeA00m4olMQbFFmevhZOKNbYD8yJPz7ewB/jBq4GSKl9tW7SxKbxnuTxXw0TGGqvSntbHLfiQ==
+"@turbox3d/reactivity@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.1.2.tgz#0989a0cb15b396fd5b9eac0ab442c18d6a406944"
+  integrity sha512-bT9ERpsmdEeAstfF69huQwQcAclF6GiXlEjstIgOjs8uwaU7ErG/fa2BoJVCmYi7Y9gtLMwbnynXxm+fG2WCmA==
 
 "@types/babel__core@^7.1.7":
   version "7.1.9"
@@ -6993,6 +6993,11 @@ mkdirp@0.x, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@^0.5.3:
   dependencies:
     minimist "^1.2.5"
 
+mobx@^5.15.4:
+  version "5.15.4"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-5.15.4.tgz#9da1a84e97ba624622f4e55a0bf3300fb931c2ab"
+  integrity sha512-xRFJxSU2Im3nrGCdjSuOTFmxVDGeqOHL+TyADCGbT0k4HHqGmx5u2yaHNryvoORpI4DfbzjJ5jPmuv+d7sioFw==
+
 modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
@@ -9579,12 +9584,12 @@ tunnel@0.0.4:
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.4.tgz#2d3785a158c174c9a16dc2c046ec5fc5f1742213"
   integrity sha1-LTeFoVjBdMmhbcLARuxfxfF0IhM=
 
-turbox@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.1.1.tgz#dda3ee3eea58c51762d53582b8d4d97e37fe0592"
-  integrity sha512-F2hcsp9ihCWryEMcvaU7gu7YJtK4OireBsrhX/2bKDnQM8sbe+MyNEsPx+Dw7JaRJhVRyBX2FSkbFIddu7caGA==
+turbox@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.1.2.tgz#86698cf9d88fa3efc7253aa9aae6b4f8d66eaea8"
+  integrity sha512-dPstu+4NpRZVMbocXWdKIXVupl+6Ekkxsdk4Y2JsVGcKP6ohHCP1exni3rQP3/VTay0cyMa86HDwZSdgdxtUIg==
   dependencies:
-    "@turbox3d/reactivity" "^1.1.1"
+    "@turbox3d/reactivity" "^1.1.2"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
