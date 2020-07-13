@@ -90,7 +90,6 @@ export class Domain<S = {}> {
     const rootKey = rootKeyCache.get(target)!;
     // do nothing if target is in the prototype chain
     if (target === proxyCache.get(receiver)) {
-      const result = Reflect.set(target, key, value, receiver);
       if (stringKey === ESpecialReservedKey.ARRAY_LENGTH || value !== oldValue) {
         triggerCollector.trigger(target, stringKey, {
           type: ECollectType.SET,
@@ -109,6 +108,7 @@ export class Domain<S = {}> {
           didUpdate: value,
         }, this.reactorConfigMap[rootKey].isNeedRecord);
       }
+      const result = Reflect.set(target, key, value, receiver);
       return result;
     }
 

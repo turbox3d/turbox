@@ -6,6 +6,13 @@ import { EPointType } from '../types/enum';
 
 export class Countertop extends Domain {
   @reactor(true) points: Point[];
+  @reactor() normalPoints = [{
+    position: true,
+  }, {
+    position: true,
+  }, {
+    position: true,
+  }];
   @reactor(true, true) lines: Line[];
   @reactor(true, true) info: any = {
     a: 1,
@@ -91,6 +98,11 @@ export class Countertop extends Domain {
     // }));
   }
 
+  @mutation()
+  updatePointByIndex(index, position) {
+    this.normalPoints[index].position = position;
+  }
+
   @mutation('添加点')
   addPoint = (point: Point) => {
     this.points.push(point);
@@ -110,12 +122,12 @@ export class Countertop extends Domain {
     });
   }
 
-  @effect('')
-  async testTwoEffect(action: Action, p: Point, l: Line) {
-    console.log(action);
-    this.testEffect(p, l);
-    this.testEffect(p, l);
-  }
+  // @effect('')
+  // async testTwoEffect(action: Action, p: Point, l: Line) {
+  //   console.log(action);
+  //   this.testEffect(p, l);
+  //   this.testEffect(p, l);
+  // }
 
   @mutation()
   testTwoMutation(p: Point, l: Line) {

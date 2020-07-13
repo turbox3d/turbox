@@ -9,6 +9,7 @@ import PointTpl from './Point';
 import Point2d from '../math/Point2d';
 import { EPointType } from '../types/enum';
 import DisposerTest from './DisposerTest';
+import NormalPoint from './NormalPoint';
 
 config({
   timeTravel: {
@@ -64,7 +65,7 @@ const DemoBox = Reactive(() => {
     });
     // cts.countertops[0].testEffect(p, l);
     // cts.countertops[0].testEffect(p, l);
-    cts.countertops[0].testTwoEffect(p, l);
+    // cts.countertops[0].testTwoEffect(p, l);
   };
   const addPoint = () => {
     // TimeTravel.start('addPointAndLine', '添加点和线');
@@ -196,6 +197,9 @@ const DemoBox = Reactive(() => {
         <span>key：{cts.countertops[0].info.a}</span>
       }
       <br />
+      {cts.countertops.length && cts.countertops[0].normalPoints.map((np, index) => (
+        <NormalPoint index={index} np={np} />
+      ))}
       <span>fullName：{fullName.get()}</span><br/>
       <span>fullName2：{cts.countertops[0].fullName}</span>
       {cts.countertops.length && cts.countertops[0].lines.map(line => (

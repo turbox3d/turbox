@@ -39,17 +39,18 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
           }
           this.unsubscribeHandler = store.subscribe(() => {
             this.forceUpdate();
-          }, _this);
+          }, this);
         }
 
         componentWillUnmount() {
           if (this.unsubscribeHandler !== void 0) {
             this.unsubscribeHandler();
           }
-          depCollector.clear(_this);
+          depCollector.clear(this);
         }
 
         render() {
+          _this = this;
           return (
             <ErrorBoundary>
               <ObservableTarget {...this.props as P} />
@@ -57,13 +58,6 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
           );
         }
       }
-
-      const baseRender = Wrapper.prototype.render;
-
-      Wrapper.prototype.render = function () {
-        _this = this;
-        return baseRender.call(this);
-      };
 
       copyStaticProperties(Target, Wrapper);
 
@@ -80,7 +74,6 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
     }
 
     target.render = function () {
-      _this = this;
       callback = refreshChildComponentView.call(this);
       depCollector.start(this);
       const result = baseRender.call(this);
@@ -97,14 +90,14 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
         }
         this.unsubscribeHandler = store.subscribe(() => {
           callback();
-        }, _this);
+        }, this);
       }
 
       componentWillUnmount() {
         if (this.unsubscribeHandler !== void 0) {
           this.unsubscribeHandler();
         }
-        depCollector.clear(_this);
+        depCollector.clear(this);
       }
 
       render() {
