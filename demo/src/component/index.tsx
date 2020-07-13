@@ -201,7 +201,8 @@ const DemoBox = Reactive(() => {
         <NormalPoint index={index} np={np} />
       ))}
       <span>fullName：{fullName.get()}</span><br/>
-      <span>fullName2：{cts.countertops[0].fullName}</span>
+      <span>fullName2：{cts.countertops[0].fullName}</span><br />
+      <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span>
       {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}

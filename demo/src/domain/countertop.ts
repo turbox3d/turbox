@@ -7,11 +7,17 @@ import { EPointType } from '../types/enum';
 export class Countertop extends Domain {
   @reactor(true) points: Point[];
   @reactor() normalPoints = [{
-    position: true,
+    position: {
+      isActive: true,
+    },
   }, {
-    position: true,
+    position: {
+      isActive: true,
+    },
   }, {
-    position: true,
+    position: {
+      isActive: true,
+    },
   }];
   @reactor(true, true) lines: Line[];
   @reactor(true, true) info: any = {
@@ -31,6 +37,11 @@ export class Countertop extends Domain {
   get fullName() {
     console.log('***rere-computed***');
     return this.firstName + ' ' + this.lastName;
+  }
+  set fullName(value: string) {
+    const [firstName, lastName] = value.split(' ');
+    this.firstName = firstName;
+    this.lastName = lastName;
   }
 
   getFullName = () => {
@@ -100,12 +111,13 @@ export class Countertop extends Domain {
 
   @mutation()
   updatePointByIndex(index, position) {
-    this.normalPoints[index].position = position;
+    this.normalPoints[index].position.isActive = position;
   }
 
   @mutation('添加点')
   addPoint = (point: Point) => {
     this.points.push(point);
+    this.fullName = 'Geoff Gu';
     // this.linkPointsAndLines();
   }
 
