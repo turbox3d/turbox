@@ -1,7 +1,6 @@
 import { reactive } from '../core/reactive';
 import { depCollector, triggerCollector } from '../core/collector';
 import { ECollectType, ESpecialReservedKey } from '../const/enums';
-import { BabelDescriptor } from '../interfaces';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { bind } from '../utils/common';
 

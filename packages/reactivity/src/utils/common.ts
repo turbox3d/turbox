@@ -10,6 +10,10 @@ export function isDomain(value: any): boolean {
   return value instanceof Domain;
 }
 
+export function isPromise(value: any) {
+  return value && typeof value.then === 'function';
+}
+
 // {}
 export function isPlainObject(value: any) {
   if (value === null || typeof value !== 'object') return false

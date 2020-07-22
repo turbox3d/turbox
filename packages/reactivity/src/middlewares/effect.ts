@@ -1,15 +1,19 @@
 import { Effect, Middleware } from '../interfaces';
-import { isUpdating, actionTypeChain } from '../core/store';
+import { actionTypeChain } from '../core/store';
 import { invariant } from '../utils/error';
 import { EMaterialType } from '../const/enums';
 import { Action } from '../core/action';
+import { materialCallStack } from '../core/domain';
 
 function createEffectMiddleware(): Middleware {
   return () => (next: any) => async (dispatchedAction) => {
     const { name, displayName, payload, type, original, action } = dispatchedAction;
 
     if (type === EMaterialType.EFFECT) {
-      invariant(!isUpdating, 'Cannot trigger other effect while the current mutation is executing.');
+      const length = materialCallStack.length;
+      if (length > 1) {
+        invariant(materialCallStack[length - 2] !== EMaterialType.MUTATION, 'Cannot trigger other effect while the current mutation is executing.');
+      }
 
       const effect = original as Effect;
       try {

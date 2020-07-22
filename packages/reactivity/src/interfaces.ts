@@ -17,7 +17,7 @@ export interface Store {
 }
 
 export interface Mutation {
-  (...restPayload: any[]): void
+  (...restPayload: any[]): void | Promise<unknown>
 }
 
 export interface Effect {
@@ -32,7 +32,7 @@ export interface DispatchedAction {
   action?: Action;
   type?: EMaterialType;
   domain?: Domain;
-  isAtom?: boolean;
+  immediately?: boolean;
   isInner?: boolean;
 }
 

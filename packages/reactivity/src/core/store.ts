@@ -1,12 +1,11 @@
 import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
-import { nextTick, deduplicate, includes } from '../utils/common';
+import { nextTick, deduplicate, includes, isPromise } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
 
 export let store: Store;
-export let isUpdating: boolean = false;
 
 export interface ActionType {
   name: string;
@@ -48,9 +47,66 @@ export function createStore(enhancer: (createStore: any) => Store) {
     }
   }
 
-  let isInBatch: boolean = false;
   let dirtyJob: Function | undefined;
-  let needCreateRestSyncJobTrigger: boolean = true;
+  let mutationDepth = 0;
+  let called = false;
+
+  const flushChange = (ids: ReactionId[], needBatchUpdate = true) => {
+    if (!ids.length) {
+      return;
+    }
+    const pendingListeners: Function[] = [];
+
+    for (let index = 0; index < ids.length; index++) {
+      const cid = ids[index];
+      const listeners = componentUUIDToListeners.get(cid) || [];
+      pendingListeners.push(...listeners);
+    }
+
+    const flush = () => {
+      for (let index = 0; index < pendingListeners.length; index++) {
+        const listener = pendingListeners[index];
+        listener();
+      }
+    };
+
+    if (needBatchUpdate) {
+      ReactDOM.unstable_batchedUpdates(flush);
+    } else {
+      flush();
+    }
+  };
+
+  const keepAliveComputed = () => {
+    const computedReactionIds = triggerCollector.waitTriggerComponentIds.filter(id => id instanceof Reaction && !id.lazy && id.computed);
+    if (computedReactionIds.length > 0) {
+      flushChange(deduplicate(computedReactionIds), false);
+    }
+  };
+
+  const nextTickQueue: Function[] = [];
+
+  const nextTickCaller = () => {
+    if (called) {
+      return;
+    }
+    called = true;
+    const func = () => {
+      nextTick(() => {
+        if (mutationDepth > 0) {
+          called = false;
+          return;
+        }
+        if (nextTickQueue.length === 0) {
+          return;
+        }
+        dirtyJob && dirtyJob();
+        nextTickQueue.shift();
+      });
+    };
+    func();
+    nextTickQueue.push(func);
+  };
 
   function dispatch(dispatchedAction: DispatchedAction) {
     const {
@@ -60,35 +116,13 @@ export function createStore(enhancer: (createStore: any) => Store) {
       type,
       domain,
       original,
-      isAtom,
+      immediately,
       isInner = false,
     } = dispatchedAction;
 
-    const flushChange = (ids: ReactionId[], needBatchUpdate = true) => {
-      if (!ids.length) {
-        return;
-      }
-      const pendingListeners: Function[] = [];
-
-      for (let index = 0; index < ids.length; index++) {
-        const cid = ids[index];
-        const listeners = componentUUIDToListeners.get(cid) || [];
-        pendingListeners.push(...listeners);
-      }
-
-      const flush = () => {
-        for (let index = 0; index < pendingListeners.length; index++) {
-          const listener = pendingListeners[index];
-          listener();
-        }
-      };
-
-      if (needBatchUpdate) {
-        ReactDOM.unstable_batchedUpdates(flush);
-      } else {
-        flush();
-      }
-    };
+    if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
+      return;
+    }
 
     const callback = () => {
       const ids = deduplicate(triggerCollector.waitTriggerComponentIds);
@@ -99,57 +133,47 @@ export function createStore(enhancer: (createStore: any) => Store) {
         const restIds = deduplicate(triggerCollector.waitTriggerComponentIds).filter(id => !(id instanceof Reaction && id.computed));
         flushChange(restIds);
       }
-      isInBatch = false;
+      called = false;
       dirtyJob = void 0;
       if (!isInner) {
         triggerCollector.save();
       }
       triggerCollector.endBatch();
+    };
+
+    mutationDepth += 1;
+
+    if (immediately && triggerCollector.waitTriggerComponentIds.length > 0) {
+      // flush previous job
+      dirtyJob && dirtyJob();
+      nextTickQueue.shift();
     }
 
-    if (!isInBatch && dirtyJob === void 0) {
+    if (dirtyJob === void 0) {
       dirtyJob = callback;
     }
 
-    if (isAtom) {
-      if (triggerCollector.waitTriggerComponentIds.length > 0) {
-        // flush previous job
-        dirtyJob && dirtyJob();
-      }
+    const result = (original as Mutation)(...payload);
+    if (isPromise(result)) {
+      return (result as Promise<void>).then(() => {
+        mutationDepth -= 1;
+        keepAliveComputed();
+        nextTickCaller();
+        return dispatchedAction;
+      });
     }
 
-    try {
-      isUpdating = true;
-      if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
-        return;
-      }
-      const currentMutation = original as Mutation;
-      currentMutation(...payload);
-      // keep alive computed
-      const computedReactionIds = triggerCollector.waitTriggerComponentIds.filter(id => id instanceof Reaction && !id.lazy && id.computed);
-      if (computedReactionIds.length > 0) {
-        flushChange(deduplicate(computedReactionIds), false);
-      }
-    } catch (error) {
-      throw new Error(error);
-    } finally {
-      isUpdating = false;
+    mutationDepth -= 1;
+
+    keepAliveComputed();
+
+    if (immediately) {
+      // immediately execute
+      callback();
+      return dispatchedAction;
     }
 
-    if (!isInBatch) {
-      isInBatch = true;
-      if (isAtom) {
-        // immediately execute
-        callback();
-      }
-      if (needCreateRestSyncJobTrigger) {
-        nextTick(() => {
-          dirtyJob && dirtyJob();
-          needCreateRestSyncJobTrigger = true;
-        });
-        needCreateRestSyncJobTrigger = false;
-      }
-    }
+    nextTickCaller();
 
     return dispatchedAction;
   }

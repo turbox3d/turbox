@@ -1,14 +1,14 @@
 import { store } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
-import { bind, convert2UniqueString } from '../utils/common';
-import { Mutation, BabelDescriptor } from '../interfaces';
+import { bind, convert2UniqueString, isPromise } from '../utils/common';
+import { Mutation, BabelDescriptor, DispatchedAction } from '../interfaces';
 import { invariant, fail } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
 import { EMaterialType } from '../const/enums';
 
 interface MutationConfig {
-  isAtom: boolean;
+  immediately: boolean;
   name: string;
 }
 
@@ -20,15 +20,25 @@ function createMutation(target: Object, name: string | symbol | number, original
     if (!store) {
       fail('store is not ready, please init first.');
     }
-    store.dispatch({
+    const result = store.dispatch({
       name: stringMethodName,
       displayName: config.name || EMPTY_ACTION_NAME,
       payload,
       type: EMaterialType.MUTATION,
       domain: this,
       original: bind(original, this) as Mutation,
-      isAtom: config.isAtom,
+      immediately: config.immediately,
     });
+    if (isPromise(result)) {
+      return new Promise((resolve) => {
+        (result as Promise<DispatchedAction>).then(() => {
+          materialCallStack.pop();
+          const length = materialCallStack.length;
+          this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+          resolve();
+        });
+      });
+    }
     materialCallStack.pop();
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
@@ -36,13 +46,13 @@ function createMutation(target: Object, name: string | symbol | number, original
 }
 
 export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
-export function mutation(name?: string, isAtom?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
+export function mutation(name?: string, immediately?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
 /**
  * decorator @mutation, update state by mutation styling.
  */
 export function mutation(...args: any[]) {
   const config: MutationConfig = {
-    isAtom: false,
+    immediately: false,
     name: '',
   };
   const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): BabelDescriptor<Mutation> => {
@@ -85,7 +95,7 @@ export function mutation(...args: any[]) {
   }
   // @mutation(args)
   config.name = args[0] || '';
-  config.isAtom = args[1] !== void 0 ? args[1] : false;
+  config.immediately = args[1] !== void 0 ? args[1] : false;
 
   return decorator;
 }
