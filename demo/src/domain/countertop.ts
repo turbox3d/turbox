@@ -146,12 +146,14 @@ export class Countertop extends Domain {
     this.addPoint(p);
     await this.delay(2000);
     this.addPoint(p);
+    return 'aaa';
   }
 
   async ttt(p: Point, l: Line) {
     this.addPoint(p);
     this.addPoint(p);
-    await this.testTwoMutation(p, l);
+    const t = await this.testTwoMutation(p, l);
+    console.log('@@@@@@@', t);
     this.addPoint(p);
     this.addPoint(p);
     await this.delay(2000);

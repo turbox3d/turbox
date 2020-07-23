@@ -331,6 +331,8 @@ class MyDomain extends Domain {
 
 > mutation 里面可以嵌套 mutation，但不可以嵌套 effect，看到下面 effect 那一小节你就会知道为什么
 
+> mutation 是用来做变更的，符合规范的情况是它不应该有返回值，也没有必要有返回值，但如果有场景一定要返回值，也是可以接收到的
+
 #### $update
 上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
 ```js
@@ -657,9 +659,9 @@ ReactDOM.render(
 ### middleware
 ```typescript
 type Param = {
-  dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+  dispatch: (action: DispatchedAction) => any | Promise<any>;
 }
-type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => any | Promise<any>;
 type use = (middleware: middleware | middleware[]) => void
 ```
 **turbox** 有一套中间件机制，其中内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
@@ -668,8 +670,8 @@ const middleware = ({ dispatch }) => (next) => (action) => {
   // balabala...
   const nextHandler = next(action); // 注意：返回值可能是个 promise
   if (isPromise(nextHandler)) {
-    return new Promise<DispatchedAction>((resolve) => {
-      (nextHandler as Promise<DispatchedAction>).then((res) => {
+    return new Promise<any>((resolve) => {
+      (nextHandler as Promise<any>).then((res) => {
         // peipeipei...
         resolve(res);
       });

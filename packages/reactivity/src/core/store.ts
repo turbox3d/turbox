@@ -153,11 +153,11 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     const result = (original as Mutation)(...payload);
     if (isPromise(result)) {
-      return (result as Promise<void>).then(() => {
+      return (result as Promise<void>).then((res) => {
         mutationDepth -= 1;
         keepAliveComputed();
         nextTickCaller();
-        return dispatchedAction;
+        return res;
       });
     }
 
@@ -168,12 +168,12 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (immediately) {
       // immediately execute
       dirtyJob && dirtyJob();
-      return dispatchedAction;
+      return result;
     }
 
     nextTickCaller();
 
-    return dispatchedAction;
+    return result;
   }
 
   return {

@@ -1,7 +1,7 @@
 import { store } from '../core/store';
 import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString, isPromise } from '../utils/common';
-import { Mutation, BabelDescriptor, DispatchedAction } from '../interfaces';
+import { Mutation, BabelDescriptor } from '../interfaces';
 import { invariant, fail } from '../utils/error';
 import { quacksLikeADecorator } from '../utils/decorator';
 import { materialCallStack } from '../core/domain';
@@ -31,17 +31,18 @@ function createMutation(target: Object, name: string | symbol | number, original
     });
     if (isPromise(result)) {
       return new Promise((resolve) => {
-        (result as Promise<DispatchedAction>).then(() => {
+        (result as Promise<any>).then((res) => {
           materialCallStack.pop();
           const length = materialCallStack.length;
           this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
-          resolve();
+          resolve(res);
         });
       });
     }
     materialCallStack.pop();
     const length = materialCallStack.length;
     this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+    return result;
   };
 }
 

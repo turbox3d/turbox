@@ -3,7 +3,7 @@ import { ReactionId } from './core/collector';
 import { EMaterialType } from './const/enums';
 import { Action } from './core/action';
 
-export type Dispatch = (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+export type Dispatch = (action: DispatchedAction) => any | Promise<any>;
 
 export type MiddlewareParam = {
   dispatch: Dispatch,
@@ -19,7 +19,7 @@ export interface Store {
 }
 
 export interface Mutation {
-  (...restPayload: any[]): void | Promise<unknown>
+  (...restPayload: any[]): any | Promise<any>
 }
 
 export interface Effect {
