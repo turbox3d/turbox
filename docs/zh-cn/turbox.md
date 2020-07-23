@@ -251,6 +251,82 @@ class MyDomain extends Domain {
 }
 ```
 
+正常情况我们都会使用同步的 mutation，这也符合业界状态机的思想，有副作用就可以使用普通的 async 函数来做到，但有些场景，我们希望忽略掉副作用，但它的计算过程是异步的，这时候我们可以使用异步的 mutation 来做到这件事，也就是说即使执行到 mutation 里面的 await，也不会立即把计算结果响应到 reactive 层，这时候忽略副作用，认为这个中间计算结果不应该被响应，必须等到该 mutation 完成才响应：
+
+```js
+class MyDomain extends Domain {
+  @reactor() currentIdx = 0;
+  @reactor() array = [];
+
+  @mutation('xxx', true)
+  changeIdx1(idx) {
+    this.currentIdx = idx;
+    this.array.push('aaa');
+  }
+
+  @mutation()
+  changeIdx2(idx) {
+    this.currentIdx = idx;
+  }
+
+  @mutation()
+  async changeIdx3(idx) {
+    this.currentIdx = idx;
+    const res = await fetch();
+    this.currentIdx = res;
+  }
+
+  async handleProcess() {
+    this.changeIdx2(1);
+    await this.changeIdx3(3);
+    const { result } = await $API.get('/api/balabala');
+    this.changeIdx1(result);
+    this.changeIdx1(result + 1);
+  }
+}
+```
+
+如果有多个异步的 mutation 需要计算，并且中间结果不想被立即响应，可以在外层包裹一个 mutation 函数，不然的话，出了异步 mutation 作用域以后就会立即响应一次：
+
+```js
+class MyDomain extends Domain {
+  @reactor() currentIdx = 0;
+  @reactor() array = [];
+
+  @mutation('xxx', true)
+  async changeIdx1(idx) {
+    this.currentIdx = idx;
+    const res = await fetch();
+    this.array.push('aaa');
+  }
+
+  @mutation()
+  async changeIdx2(idx) {
+    this.currentIdx = idx;
+    const res = await fetch();
+  }
+
+  @mutation()
+  async changeIdx3(idx) {
+    this.currentIdx = idx;
+    const res = await fetch();
+    this.currentIdx = res;
+  }
+
+  @mutation()
+  async wrap() {
+    await this.changeIdx1(2);
+    await this.changeIdx2(2);
+    await this.changeIdx3(3);
+  }
+
+  async handleProcess() {
+    await this.wrap();
+    const { result } = await $API.get('/api/balabala');
+  }
+}
+```
+
 > 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中
 
 > mutation 里面可以嵌套 mutation，但不可以嵌套 effect，看到下面 effect 那一小节你就会知道为什么
@@ -581,18 +657,26 @@ ReactDOM.render(
 ### middleware
 ```typescript
 type Param = {
-  dispatch: (action: DispatchedAction) => DispatchedAction,
+  dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
 }
-type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => DispatchedAction
+type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
 type use = (middleware: middleware | middleware[]) => void
 ```
-**turbox** 内置了 effect 和 logger 中间件，effect 默认开启，logger 默认关闭，effect 中间件上面已经介绍过了，而 logger 是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
+**turbox** 有一套中间件机制，其中内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
 ```js
 const middleware = ({ dispatch }) => (next) => (action) => {
   // balabala...
-  const nextHandler = next(action)
+  const nextHandler = next(action); // 注意：返回值可能是个 promise
+  if (isPromise(nextHandler)) {
+    return new Promise<DispatchedAction>((resolve) => {
+      (nextHandler as Promise<DispatchedAction>).then((res) => {
+        // peipeipei...
+        resolve(res);
+      });
+    });
+  }
   // peipeipei...
-  return nextHandler
+  return nextHandler;
 }
 
 Turbox.use(middleware);
