@@ -183,6 +183,23 @@ const DemoBox = Reactive(() => {
       lastName,
     });
   };
+  const testRender = () => {
+    const p = new Point({
+      position: new Point2d(100, 100),
+      type: EPointType.NONE,
+    });
+    const l = new Line({
+      start: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+      end: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+    });
+    cts.countertops[0].ttt(p, l);
+  };
   console.log('***parent');
 
   return (
@@ -220,6 +237,9 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onClick={testRender}>
+          测试重绘时机
+                </button>
         <button onClick={testComputed}>
           测试 Computed
                 </button>

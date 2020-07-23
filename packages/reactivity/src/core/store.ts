@@ -95,6 +95,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
       nextTick(() => {
         if (mutationDepth > 0) {
           called = false;
+          nextTickQueue.shift();
           return;
         }
         if (nextTickQueue.length === 0) {
@@ -110,11 +111,8 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
   function dispatch(dispatchedAction: DispatchedAction) {
     const {
-      name,
-      displayName,
       payload,
       type,
-      domain,
       original,
       immediately,
       isInner = false,
@@ -169,7 +167,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     if (immediately) {
       // immediately execute
-      callback();
+      dirtyJob && dirtyJob();
       return dispatchedAction;
     }
 

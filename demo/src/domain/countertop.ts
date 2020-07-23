@@ -126,11 +126,11 @@ export class Countertop extends Domain {
     this.points.splice(index, 1);
   }
 
-  delay = () => {
+  delay = (time: number) => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, 2000);
+      }, time);
     });
   }
 
@@ -141,10 +141,22 @@ export class Countertop extends Domain {
   //   this.testEffect(p, l);
   // }
 
-  @mutation()
-  testTwoMutation(p: Point, l: Line) {
+  @mutation('', true)
+  async testTwoMutation(p: Point, l: Line) {
     this.addPoint(p);
-    this.addLine(l);
+    await this.delay(2000);
+    this.addPoint(p);
+  }
+
+  async ttt(p: Point, l: Line) {
+    this.addPoint(p);
+    this.addPoint(p);
+    await this.testTwoMutation(p, l);
+    this.addPoint(p);
+    this.addPoint(p);
+    await this.delay(2000);
+    this.addPoint(p);
+    this.addPoint(p);
   }
 
   @effect('测试effect')
@@ -153,7 +165,7 @@ export class Countertop extends Domain {
     action.execute(() => {
       this.addPoint(p);
     });
-    await this.delay();
+    await this.delay(2000);
     action.execute(() => {
       this.addLine(l);
     });

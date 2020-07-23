@@ -3,16 +3,18 @@ import { ReactionId } from './core/collector';
 import { EMaterialType } from './const/enums';
 import { Action } from './core/action';
 
+export type Dispatch = (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+
 export type MiddlewareParam = {
-  dispatch: (action: DispatchedAction) => DispatchedAction,
+  dispatch: Dispatch,
 }
 
 export interface Middleware {
-  ({ dispatch }: MiddlewareParam): (next: any) => (action: DispatchedAction) => any
+  ({ dispatch }: MiddlewareParam): (next: Dispatch) => Dispatch;
 }
 
 export interface Store {
-  dispatch: (action: DispatchedAction) => DispatchedAction | Promise<DispatchedAction>;
+  dispatch: Dispatch;
   subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void;
 }
 

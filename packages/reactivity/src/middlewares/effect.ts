@@ -4,9 +4,10 @@ import { invariant } from '../utils/error';
 import { EMaterialType } from '../const/enums';
 import { Action } from '../core/action';
 import { materialCallStack } from '../core/domain';
+import { normalNextReturn } from './common';
 
 function createEffectMiddleware(): Middleware {
-  return () => (next: any) => async (dispatchedAction) => {
+  return () => (next) => async (dispatchedAction) => {
     const { name, displayName, payload, type, original, action } = dispatchedAction;
 
     if (type === EMaterialType.EFFECT) {
@@ -28,7 +29,7 @@ function createEffectMiddleware(): Middleware {
       return;
     }
 
-    return next(dispatchedAction);
+    return normalNextReturn(next, dispatchedAction);
   }
 }
 

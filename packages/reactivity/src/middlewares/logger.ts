@@ -1,30 +1,34 @@
 import { Middleware } from '../interfaces';
 import { deepMerge } from '../utils/deep-merge';
 import { NAMESPACE } from '../const/symbol';
+import { normalNextReturn } from './common';
 
 function createLoggerMiddleware(): Middleware {
-  return () => (next: any) => (dispatchedAction) => {
-    if (!dispatchedAction.domain) {
-      return next(dispatchedAction);
+  return () => (next) => (dispatchedAction) => {
+    const { name, displayName, domain } = dispatchedAction;
+
+    if (!domain) {
+      return normalNextReturn(next, dispatchedAction);
     }
 
     console.group(
-      `%caction: ${dispatchedAction.name}, name: ${dispatchedAction.displayName}, namespace: ${dispatchedAction.domain[NAMESPACE]}, prev state:`,
+      `%caction: ${name}, name: ${displayName}, namespace: ${domain[NAMESPACE]}, prev state:`,
       'color: red'
     );
-    console.dir(deepMerge({}, dispatchedAction.domain.properties, { clone: true })); // deep copy，logger current state before change.
+    console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state before change.
     console.groupEnd();
 
-    const nextResult = next(dispatchedAction); // wait the result of the next middleware
-
-    console.group(
-      `%caction: ${dispatchedAction.name}, name: ${dispatchedAction.displayName}, namespace: ${dispatchedAction.domain[NAMESPACE]}, next state:`,
-      'color: green'
-    );
-    console.dir(deepMerge({}, dispatchedAction.domain.properties, { clone: true })); // deep copy，logger current state after change.
-    console.groupEnd();
-
-    return nextResult;
+    return normalNextReturn(next, dispatchedAction, () => {
+      if (!domain) {
+        return;
+      }
+      console.group(
+        `%caction: ${name}, name: ${displayName}, namespace: ${domain[NAMESPACE]}, next state:`,
+        'color: green'
+      );
+      console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state after change.
+      console.groupEnd();
+    });
   }
 }
 
