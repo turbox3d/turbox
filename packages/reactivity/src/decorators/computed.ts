@@ -2,7 +2,7 @@ import { reactive } from '../core/reactive';
 import { depCollector, triggerCollector } from '../core/collector';
 import { ECollectType, ESpecialReservedKey } from '../const/enums';
 import { quacksLikeADecorator } from '../utils/decorator';
-import { bind } from '../utils/common';
+import { Domain } from '../core/domain';
 
 export interface ComputedOption {
   /** suspend compute value if it is not observed */
@@ -70,51 +70,20 @@ export function computed<T>(...args: any[]) {
     return computedRef;
   }
 
-  let value: T;
-  let dirty = true;
-  let needReComputed = false;
-  let needTrigger = false;
   let computedRef: ComputedRef<T>;
-  let computeRunner: () => T;
   let options: ComputedOption | undefined;
 
   const decorator = (target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): ComputedRef<T> => {
-    const lazy = options && options.lazy !== void 0 ? options.lazy : true;
-    const reaction = reactive(() => {
-      dirty = true;
-      if (needReComputed) {
-        value = computeRunner();
-      }
-      if (needTrigger) {
-        triggerCollector.trigger(computedRef, ESpecialReservedKey.COMPUTED, {
-          type: ECollectType.SET,
-          beforeUpdate: void 0,
-          didUpdate: void 0,
-        });
-      }
-    }, {
-      name: 'computed',
-      computed: true,
-      lazy,
-    });
-
     computedRef = {
       enumerable: true,
       configurable: true,
       get: function () {
-        if (dirty) {
-          needReComputed = true;
-          needTrigger = false;
-          reaction.runner();
-          dirty = false;
-          needReComputed = false;
-          needTrigger = true;
-        }
-        depCollector.collect(computedRef, ESpecialReservedKey.COMPUTED);
-        return value;
+        const current = (this as Domain);
+        return current.computedPropertyGet<T>(property, options);
       },
       set: function (original) {
-        computeRunner = bind(original, this);
+        const current = (this as Domain);
+        current.computedPropertySet<T>(property, original, options);
       },
     };
 
@@ -128,19 +97,8 @@ export function computed<T>(...args: any[]) {
       enumerable: true,
       configurable: true,
       get: function () {
-        if (!computeRunner) {
-          computeRunner = bind(descriptor.get, this) as (() => T);
-        }
-        if (dirty) {
-          needReComputed = true;
-          needTrigger = false;
-          reaction.runner();
-          dirty = false;
-          needReComputed = false;
-          needTrigger = true;
-        }
-        depCollector.collect(computedRef, ESpecialReservedKey.COMPUTED);
-        return value;
+        const current = (this as Domain);
+        return current.computedPropertyGet<T>(property, options, descriptor);
       },
       set: descriptor.set,
     };

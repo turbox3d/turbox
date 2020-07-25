@@ -43,12 +43,12 @@ const r = reactive(() => {
   console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
 });
 
-const fullName = computed(cts.countertops[0].getFullName);
+// const fullName = computed(cts.countertops[0].getFullName);
 let action;
 
 const DemoBox = Reactive(() => {
   const [flag, setFlag] = useState(true);
-  const testAsync = () => {
+  const testAsync = async () => {
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
@@ -63,7 +63,8 @@ const DemoBox = Reactive(() => {
         type: EPointType.NONE,
       }),
     });
-    // cts.countertops[0].testEffect(p, l);
+    await cts.countertops[0].testEffect(p, l);
+    console.log('#####', 'done');
     // cts.countertops[0].testEffect(p, l);
     // cts.countertops[0].testTwoEffect(p, l);
   };
@@ -177,11 +178,32 @@ const DemoBox = Reactive(() => {
     cts.countertops[0].testTwoMutation(p, l);
   };
   const testComputed = () => {
-    const lastName = cts.countertops[0].lastName + 'AAA';
-    cts.countertops[0].$update({
-      // firstName,
-      lastName,
+    const ct1 = new Countertop({
+      lines: [],
+      points: [],
+      nickName: 'ct1',
     });
+    console.log(ct1.fullName);
+    const ct2 = new Countertop({
+      lines: [],
+      points: [],
+      nickName: 'ct2',
+    });
+    console.log(ct2.fullName);
+
+    ct1.$update({
+      firstName: 'AAA',
+      // lastName,
+    });
+    console.log(ct1.fullName);
+    console.log('imp', ct2.fullName);
+
+    ct2.$update({
+      firstName: 'FUCK',
+      // lastName,
+    });
+    console.log(ct2.fullName);
+    console.log('imp', ct1.fullName);
   };
   const testRender = () => {
     const p = new Point({
@@ -217,9 +239,9 @@ const DemoBox = Reactive(() => {
       {cts.countertops.length && cts.countertops[0].normalPoints.map((np, index) => (
         <NormalPoint index={index} np={np} />
       ))}
-      <span>fullName：{fullName.get()}</span><br/>
-      <span>fullName2：{cts.countertops[0].fullName}</span><br />
-      <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span>
+      {/* <span>fullName：{fullName.get()}</span><br/> */}
+      {/* <span>fullName2：{cts.countertops[0].fullName}</span><br /> */}
+      {/* <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span> */}
       {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}

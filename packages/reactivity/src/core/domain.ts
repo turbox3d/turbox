@@ -8,6 +8,8 @@ import { canObserve } from '../utils/decorator';
 import { store } from './store';
 import { ReactorConfig, meta } from '../decorators/reactor';
 import { ECollectType, ESpecialReservedKey, EMaterialType } from '../const/enums';
+import { Reaction, reactive } from './reactive';
+import { ComputedOption } from '../decorators/computed';
 
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
@@ -18,6 +20,15 @@ interface DomainContext {
   isNeedRecord: boolean;
 }
 
+interface ComputedConfig<T> {
+  value: T;
+  dirty?: boolean;
+  needReComputed?: boolean;
+  needTrigger?: boolean;
+  computeRunner?: () => T;
+  reaction?: Reaction;
+}
+
 /**
  * Framework base class 'Domain', class must be extends this base class which is need to be observable.
  */
@@ -26,6 +37,7 @@ export class Domain<S = {}> {
   public properties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
   private context: DomainContext;
+  private computedProperties: { [key in keyof this]?: ComputedConfig<this[key]> } = {};
 
   constructor() {
     const target = Object.getPrototypeOf(this);
@@ -72,6 +84,69 @@ export class Domain<S = {}> {
         didUpdate: v,
       }, mergedConfig.isNeedRecord);
     }
+  }
+
+  computedPropertyGet<T>(key: string | symbol | number, options?: ComputedOption, descriptor?: PropertyDescriptor) {
+    const stringKey = convert2UniqueString(key);
+    if (!this.computedProperties[stringKey]) {
+      this.computedProperties[stringKey] = {
+        dirty: true,
+        needReComputed: false,
+        needTrigger: false,
+      };
+    }
+    const cc = this.computedProperties[stringKey] as ComputedConfig<T>;
+    const lazy = options && options.lazy !== void 0 ? options.lazy : true;
+    if (!cc.reaction) {
+      cc.reaction = reactive(() => {
+        cc.dirty = true;
+        if (cc.needReComputed) {
+          cc.value = cc.computeRunner!();
+        }
+        if (cc.needTrigger) {
+          triggerCollector.trigger(this, stringKey, {
+            type: ECollectType.SET,
+            beforeUpdate: void 0,
+            didUpdate: void 0,
+          }, false);
+        }
+      }, {
+        name: 'computed',
+        computed: true,
+        lazy,
+      });
+    }
+
+    if (!cc.computeRunner && descriptor) {
+      cc.computeRunner = bind(descriptor.get, this) as (() => T);
+    }
+    if (cc.dirty) {
+      cc.needReComputed = true;
+      cc.needTrigger = false;
+      cc.reaction.runner();
+      cc.dirty = false;
+      cc.needReComputed = false;
+      cc.needTrigger = true;
+    }
+    depCollector.collect(this, stringKey);
+
+    return cc.value;
+  }
+
+  computedPropertySet<T>(key: string | symbol | number, original: any, options?: ComputedOption) {
+    const stringKey = convert2UniqueString(key);
+    if (!this.computedProperties[stringKey]) {
+      this.computedProperties[stringKey] = {
+        dirty: true,
+        needReComputed: false,
+        needTrigger: false,
+      };
+    }
+    const computedConfig = this.computedProperties[stringKey] as ComputedConfig<T>;
+    if (computedConfig.computeRunner) {
+      return;
+    }
+    this.computedProperties[stringKey].computeRunner = bind(original, this);
   }
 
   currentTarget?: any;

@@ -1,6 +1,6 @@
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { store } from './store';
-import { remove, includes, nextTick } from '../utils/common';
+import { remove, includes, nextTick, isPromise } from '../utils/common';
 import { ActionStatus, EMaterialType } from '../const/enums';
 import { HistoryNode } from './time-travel';
 import { triggerCollector } from './collector';
@@ -32,12 +32,17 @@ export class Action {
     return action;
   }
 
-  execute(runner: () => void) {
+  execute(runner: () => void | Promise<void>) {
     if (this.status === ActionStatus.ABORT) {
       return;
     }
     Action.context = this;
-    runner();
+    const result = runner();
+    if (isPromise(result)) {
+      (result as Promise<void>).then(() => {
+        Action.context = void 0;
+      });
+    }
     Action.context = void 0;
   }
 

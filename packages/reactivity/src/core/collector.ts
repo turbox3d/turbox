@@ -25,6 +25,7 @@ const isInBlackList = (propKey: string) => {
     currentTarget: true,
     originalArrayLength: true,
     reactorConfigMap: true,
+    computedProperties: true,
     propertyGet: true,
     propertySet: true,
     proxyDeleteProperty: true,
@@ -227,17 +228,19 @@ class TriggerCollector {
     if (history.size === 0) {
       return;
     }
+    const clonedChain = actionChain.slice();
+    const clonedHistory = new Map(history);
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({
-        actionChain,
-        history,
+        actionChain: clonedChain,
+        history: clonedHistory,
       });
       ctt.cursor += 1;
     } else if (ctt.cursor < ctt.transactionHistories.length - 1) {
       ctt.transactionHistories = ctt.transactionHistories.slice(0, ctt.cursor + 1);
       ctt.transactionHistories.push({
-        actionChain,
-        history,
+        actionChain: clonedChain,
+        history: clonedHistory,
       });
       ctt.cursor += 1;
     }

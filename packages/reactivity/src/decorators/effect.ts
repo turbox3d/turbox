@@ -17,14 +17,14 @@ interface EffectConfig {
  */
 function createEffect(target: Object, name: string | symbol | number, original: Effect, config: EffectConfig) {
   const stringMethodName = convert2UniqueString(name);
-  return async function (...payload: any[]) {
+  return function (...payload: any[]) {
     this[CURRENT_MATERIAL_TYPE] = EMaterialType.EFFECT;
     materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
     if (!store) {
       fail('store is not ready, please init first.');
     }
     const action = Action.create(stringMethodName, config.name);
-    await store.dispatch({
+    const promise = store.dispatch({
       name: stringMethodName,
       action,
       displayName: config.name || EMPTY_ACTION_NAME,
@@ -33,10 +33,14 @@ function createEffect(target: Object, name: string | symbol | number, original: 
       domain: this,
       original: bind(original, this) as Effect,
     });
-    action.complete();
-    materialCallStack.pop();
-    const length = materialCallStack.length;
-    this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+    promise.then(() => {
+      action.complete();
+      materialCallStack.pop();
+      const length = materialCallStack.length;
+      this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+    });
+
+    return promise;
   };
 }
 

@@ -7,7 +7,7 @@ import { materialCallStack } from '../core/domain';
 import { normalNextReturn } from './common';
 
 function createEffectMiddleware(): Middleware {
-  return () => (next) => async (dispatchedAction) => {
+  return () => (next) => (dispatchedAction) => {
     const { name, displayName, payload, type, original, action } = dispatchedAction;
 
     if (type === EMaterialType.EFFECT) {
@@ -17,16 +17,16 @@ function createEffectMiddleware(): Middleware {
       }
 
       const effect = original as Effect;
-      try {
-        actionTypeChain.push({
-          name,
-          displayName,
+      actionTypeChain.push({
+        name,
+        displayName,
+      });
+
+      return new Promise((resolve) => {
+        effect(action as Action, ...payload).then(() => {
+          resolve();
         });
-        await effect(action as Action, ...payload);
-      } catch (error) {
-        return error;
-      }
-      return;
+      });
     }
 
     return normalNextReturn(next, dispatchedAction);

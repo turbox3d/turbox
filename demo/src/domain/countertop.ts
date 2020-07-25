@@ -26,6 +26,7 @@ export class Countertop extends Domain {
   };
   @reactor() firstName = 'Jack';
   @reactor() lastName = 'Ma';
+  nickName = '';
 
   initDomainContext() {
     return {
@@ -33,10 +34,16 @@ export class Countertop extends Domain {
     };
   }
 
-  @computed()
+  get _firstName() {
+    return this.firstName;
+  }
+
+  @computed({
+    lazy: false,
+  })
   get fullName() {
     console.log('***rere-computed***');
-    return this.firstName + ' ' + this.lastName;
+    return this._firstName + ' ' + this.lastName;
   }
   set fullName(value: string) {
     const [firstName, lastName] = value.split(' ');
@@ -44,10 +51,10 @@ export class Countertop extends Domain {
     this.lastName = lastName;
   }
 
-  getFullName = () => {
-    console.log('***re-computed***');
-    return this.firstName + ' ' + this.lastName;
-  }
+  // getFullName = () => {
+  //   console.log('***re-computed***');
+  //   return this.firstName + ' ' + this.lastName;
+  // }
 
   isClosedPath() {
     return this.lines.length === this.points.length;
@@ -117,7 +124,7 @@ export class Countertop extends Domain {
   @mutation('添加点')
   addPoint = (point: Point) => {
     this.points.push(point);
-    this.fullName = 'Geoff Gu';
+    // this.fullName = 'Geoff Gu';
     // this.linkPointsAndLines();
   }
 
@@ -181,13 +188,16 @@ export class Countertop extends Domain {
   constructor({
     lines,
     points,
+    nickName,
   }: {
     lines: Line[],
     points: Point[],
+    nickName: string,
   }) {
     super();
     this.points = points;
     this.lines = lines;
+    this.nickName = nickName;
     this.linkPointsAndLines();
   }
 }

@@ -1,6 +1,6 @@
 import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
-import { nextTick, deduplicate, includes, isPromise } from '../utils/common';
+import { nextTick, deduplicate, includes, isPromise, batchRemove } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
@@ -80,7 +80,10 @@ export function createStore(enhancer: (createStore: any) => Store) {
   const keepAliveComputed = () => {
     const computedReactionIds = triggerCollector.waitTriggerComponentIds.filter(id => id instanceof Reaction && !id.lazy && id.computed);
     if (computedReactionIds.length > 0) {
-      flushChange(deduplicate(computedReactionIds), false);
+      const ids = deduplicate(computedReactionIds);
+      flushChange(ids, false);
+      // clean wait queue keep alive
+      batchRemove(triggerCollector.waitTriggerComponentIds, ids);
     }
   };
 
