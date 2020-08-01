@@ -43,10 +43,10 @@ export function reactive(func: Function, options?: Partial<Options>) {
   }, !!(options && options.computed), lazy);
 
   const subscribe = () => {
-    reaction.runner();
     reaction.unsubscribeHandler = store.subscribe(() => {
       reaction.runner();
     }, reaction);
+    reaction.runner();
   };
 
   if (!store) {

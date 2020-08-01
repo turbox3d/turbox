@@ -29,6 +29,7 @@ export const cts = new Countertops({
   countertops: [new Countertop({
     lines: [],
     points: [],
+    nickName: '',
   })],
 });
 
@@ -74,6 +75,7 @@ const DemoBox = Reactive(() => {
       position: new Point2d(100, 100),
       type: EPointType.NONE,
     });
+    cts.countertops[0].addPoint(p);
     cts.countertops[0].addPoint(p);
   };
   const removePoint = () => {
@@ -223,6 +225,10 @@ const DemoBox = Reactive(() => {
     cts.countertops[0].ttt(p, l);
   };
   console.log('***parent');
+
+  React.useEffect(() => {
+    console.log('parent didMount');
+  }, []);
 
   return (
     <React.Fragment>

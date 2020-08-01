@@ -121,6 +121,11 @@ export class Countertop extends Domain {
     this.normalPoints[index].position.isActive = position;
   }
 
+  @mutation()
+  updatePointsByIndex(index, position) {
+    this.points[index].position = position;
+  }
+
   @mutation('添加点')
   addPoint = (point: Point) => {
     this.points.push(point);

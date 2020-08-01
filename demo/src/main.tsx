@@ -6,3 +6,4 @@ ReactDOM.render(
   <DemoBox />,
   document.getElementById('app')
 );
+// import './benchmark';

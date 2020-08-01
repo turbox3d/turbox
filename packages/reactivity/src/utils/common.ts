@@ -41,6 +41,12 @@ export function batchRemove<T>(array: T[], items: T[]) {
   });
 }
 
+export function batchRemoveFromSet<T>(set: Set<T>, items: T[]) {
+  items.forEach((item) => {
+    set.delete(item);
+  });
+}
+
 // boolean, string, number, undefined, null
 export function isPrimitive(value: any) {
   return value === null || (typeof value !== 'object' && typeof value !== 'function');

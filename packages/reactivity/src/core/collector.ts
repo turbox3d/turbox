@@ -151,7 +151,7 @@ class DepCollector {
 export const depCollector = new DepCollector();
 
 class TriggerCollector {
-  public waitTriggerComponentIds: ReactionId[] = [];
+  public waitTriggerIds: Set<ReactionId> = new Set();
 
   trigger(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
     const { beforeUpdate, didUpdate, type } = payload;
@@ -178,7 +178,7 @@ class TriggerCollector {
     if (depNodeAssembly !== void 0) {
       const idSet = depNodeAssembly[enhanceKey];
       if (idSet !== void 0 && idSet.size > 0) {
-        this.waitTriggerComponentIds.push(...Array.from(idSet));
+        idSet.forEach(id => this.waitTriggerIds.add(id));
       }
     }
   }
@@ -214,7 +214,7 @@ class TriggerCollector {
   }
 
   endBatch(isClearHistory = true, action?: Action) {
-    this.waitTriggerComponentIds = [];
+    this.waitTriggerIds.clear();
     if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
       return;
     }

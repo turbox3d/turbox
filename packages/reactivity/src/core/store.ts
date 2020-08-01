@@ -1,9 +1,10 @@
 import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
-import { nextTick, deduplicate, includes, isPromise, batchRemove } from '../utils/common';
+import { nextTick, includes, isPromise, batchRemoveFromSet } from '../utils/common';
 import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
+import { emitter } from './init';
 
 export let store: Store;
 
@@ -13,6 +14,7 @@ export interface ActionType {
 }
 
 export const actionTypeChain: ActionType[] = [];
+export const viewRenderStatusMap = new Map<ReactionId, boolean>();
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -78,13 +80,13 @@ export function createStore(enhancer: (createStore: any) => Store) {
   };
 
   const keepAliveComputed = () => {
-    const computedReactionIds = triggerCollector.waitTriggerComponentIds.filter(id => id instanceof Reaction && !id.lazy && id.computed);
-    if (computedReactionIds.length > 0) {
-      const ids = deduplicate(computedReactionIds);
-      flushChange(ids, false);
-      // clean wait queue keep alive
-      batchRemove(triggerCollector.waitTriggerComponentIds, ids);
+    const computedReactionIds = [...triggerCollector.waitTriggerIds.values()].filter(id => id instanceof Reaction && !id.lazy && id.computed);
+    if (!computedReactionIds.length) {
+      return;
     }
+    flushChange(computedReactionIds, false);
+    // clean wait queue keep alive
+    batchRemoveFromSet(triggerCollector.waitTriggerIds, computedReactionIds);
   };
 
   const nextTickQueue: Function[] = [];
@@ -111,6 +113,18 @@ export function createStore(enhancer: (createStore: any) => Store) {
     func();
   };
 
+  const saveAndClean = (isInner: boolean) => {
+    called = false;
+    dirtyJob = void 0;
+    nextTickQueue.shift();
+    if (!isInner) {
+      triggerCollector.save();
+    }
+    triggerCollector.endBatch();
+    emitter.off('renderDone');
+    viewRenderStatusMap.clear();
+  };
+
   function dispatch(dispatchedAction: DispatchedAction) {
     const {
       payload,
@@ -125,26 +139,29 @@ export function createStore(enhancer: (createStore: any) => Store) {
     }
 
     const callback = () => {
-      const ids = deduplicate(triggerCollector.waitTriggerComponentIds);
-      if (ids.length > 0) {
-        const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
-        // do computed reaction first
-        flushChange(computedReactionIds, false);
-        const restIds = deduplicate(triggerCollector.waitTriggerComponentIds).filter(id => !(id instanceof Reaction && id.computed));
-        flushChange(restIds);
+      const ids = [...triggerCollector.waitTriggerIds.values()];
+      if (!ids.length) {
+        return;
       }
-      called = false;
-      dirtyJob = void 0;
-      nextTickQueue.shift();
-      if (!isInner) {
-        triggerCollector.save();
-      }
-      triggerCollector.endBatch();
+      const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
+      // do computed reaction first
+      flushChange(computedReactionIds, false);
+      const restIds = ids.filter(id => !(id instanceof Reaction && id.computed));
+      restIds.filter(id => !(id instanceof Reaction)).forEach(id => {
+        viewRenderStatusMap.set(id, false);
+      });
+      emitter.on('renderDone', () => {
+        const allDone = [...viewRenderStatusMap.values()].every(status => status);
+        if (allDone) {
+          saveAndClean(isInner);
+        }
+      });
+      flushChange(restIds);
     };
 
     mutationDepth += 1;
 
-    if (immediately && triggerCollector.waitTriggerComponentIds.length > 0) {
+    if (immediately && triggerCollector.waitTriggerIds.size > 0) {
       // flush previous job
       dirtyJob && dirtyJob();
     }
