@@ -6,6 +6,7 @@ import { actionTypeChain, ActionType } from './store';
 import { EDepState, ECollectType, ESpecialReservedKey } from '../const/enums';
 import { Action } from './action';
 import { rawCache } from './domain';
+import { isDomain } from '../utils/common';
 
 export type ReactionId = Component | Reaction;
 
@@ -183,7 +184,12 @@ class TriggerCollector {
   }
 
   private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history: History) {
-    const proxyTarget = rawCache.get(target);
+    let proxyTarget: object | undefined;
+    if (isDomain(target)) {
+      proxyTarget = target;
+    } else {
+      proxyTarget = rawCache.get(target);
+    }
     if (!proxyTarget) {
       return;
     }

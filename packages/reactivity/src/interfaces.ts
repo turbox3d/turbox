@@ -41,6 +41,8 @@ export interface DispatchedAction {
 export interface ConfigCtx {
   middleware: {
     logger?: boolean,
+    effect?: boolean,
+    perf?: boolean,
   },
   timeTravel: {
     isActive: boolean,

@@ -694,6 +694,8 @@ Turbox.render(<Layout />, '#app');
 type Config = {
   middleware: {
     logger: boolean = false,
+    effect: boolean = false,
+    perf: boolean = false,
   },
   timeTravel: {
     isActive: boolean = false,
@@ -719,6 +721,8 @@ Turbox.render(<Layout />, '#app');
 let ctx = {
   middleware: {
     logger: false, // 默认关闭 logger 中间件，在生产环境自动关闭
+    effect: false, // 默认关闭 effect 中间件
+    perf: false, // 默认关闭 perf 中间件，性能分析用
   },
   timeTravel: {
     isActive: false, // 是否激活时间旅行器

@@ -4,6 +4,8 @@ import { deepMerge } from '../utils/deep-merge';
 export let ctx: ConfigCtx = {
   middleware: {
     logger: process.env.NODE_ENV !== 'production',
+    effect: false,
+    perf: false,
   },
   timeTravel: {
     isActive: false,

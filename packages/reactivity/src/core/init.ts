@@ -22,9 +22,10 @@ export function init() {
 
   isRunning = true;
 
-  use(effectMiddleware);
+  if (ctx.middleware.effect) {
+    use(effectMiddleware);
+  }
   use(mutationMiddleware);
-
   if (ctx.middleware.logger) {
     use(loggerMiddleware);
   }

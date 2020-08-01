@@ -105,11 +105,10 @@ export function createStore(enhancer: (createStore: any) => Store) {
           return;
         }
         dirtyJob && dirtyJob();
-        nextTickQueue.shift();
       });
     };
-    func();
     nextTickQueue.push(func);
+    func();
   };
 
   function dispatch(dispatchedAction: DispatchedAction) {
@@ -136,6 +135,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
       }
       called = false;
       dirtyJob = void 0;
+      nextTickQueue.shift();
       if (!isInner) {
         triggerCollector.save();
       }
@@ -147,7 +147,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (immediately && triggerCollector.waitTriggerComponentIds.length > 0) {
       // flush previous job
       dirtyJob && dirtyJob();
-      nextTickQueue.shift();
     }
 
     if (dirtyJob === void 0) {
