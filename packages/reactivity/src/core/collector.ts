@@ -220,11 +220,11 @@ class TriggerCollector {
     }
     if (action) {
       action.historyNode.actionChain.length = 0;
-      action.historyNode.history = new Map();
+      action.historyNode.history.clear();
       return;
     }
     actionTypeChain.length = 0;
-    TimeTravel.currentTimeTravel.currentHistory = new Map();
+    TimeTravel.currentTimeTravel.currentHistory.clear();
   }
 
   private saveHistory(ctt: TimeTravel, actionChain: ActionType[], history?: History) {
@@ -266,7 +266,7 @@ class TriggerCollector {
       this.saveHistory(ctt, action.historyNode.actionChain, action.historyNode.history);
       return;
     }
-    this.saveHistory(ctt, actionTypeChain.concat(), ctt.currentHistory);
+    this.saveHistory(ctt, actionTypeChain, ctt.currentHistory);
   }
 }
 

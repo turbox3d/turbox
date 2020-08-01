@@ -20,4 +20,11 @@ export class Emitter {
       }
     });
   }
+
+  off(eventName: string) {
+    if (!this.listeners[eventName]) {
+      return;
+    }
+    this.listeners[eventName] = [];
+  }
 }
