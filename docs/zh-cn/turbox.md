@@ -644,17 +644,24 @@ type reactive = (func: Function, options?: Options) => Reaction;
 
 ### init
 ```typescript
-type init = () => void
+type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 ```
-`init` 方法是用来做中间件和 store 的初始化，根据配置决定是否加载内置中间件，然后初始化 store，使用方式如下所示：
+`init` 方法是用来做中间件和 store 的初始化，根据配置决定是否加载内置中间件，然后初始化 store，同时也可以传入一个 function，支持异步，可以在这个函数里做初始化状态数据的操作，使用方式如下所示：
 ```js
-Turbox.init();
+(async () => {
+  await Turbox.init(async () => {
+    const result = await fetchData();
+    doUpdate(result);
+  });
 
-ReactDOM.render(
-  <App />,
-  document.getElementById(mount)
-);
+  ReactDOM.render(
+    <App />,
+    document.getElementById(mount)
+  );
+})();
 ```
+
+> 为什么要放到 init 函数里面做初始化状态操作？原因是需要在 render 之前清理一些由 new、或异步接口产生的不可控的第一次的数据更改记录，只有收到 init 函数里才能集中控制
 
 ### middleware
 ```typescript

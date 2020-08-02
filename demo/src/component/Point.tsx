@@ -56,27 +56,27 @@ interface IProps {
 
 class PointComp extends React.Component<IProps> {
   componentDidMount() {
-    console.log('point didMount');
-    cts.countertops[0].addLine(new Line({
-      start: new Point({
-        position: new Point2d(200, 200),
-        type: EPointType.NONE,
-      }),
-      end: new Point({
-        position: new Point2d(200, 200),
-        type: EPointType.NONE,
-      }),
-    }));
-    cts.countertops[0].addLine(new Line({
-      start: new Point({
-        position: new Point2d(200, 200),
-        type: EPointType.NONE,
-      }),
-      end: new Point({
-        position: new Point2d(200, 200),
-        type: EPointType.NONE,
-      }),
-    }));
+    // console.log('point didMount');
+    // cts.countertops[0].addLine(new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // }));
+    // cts.countertops[0].addLine(new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // }));
   }
 
   componentDidUpdate() {
@@ -99,6 +99,7 @@ class PointComp extends React.Component<IProps> {
         {/* {cts.countertops[0].info.b && cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
         <span>inner: {cts.countertops[0].info.a}</span>
       } */}
+        {/* <span>nickName: {cts.countertops[0].nickName}</span> */}
       </React.Fragment>
     );
   }

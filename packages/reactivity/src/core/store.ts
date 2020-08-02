@@ -167,7 +167,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     mutationDepth += 1;
 
-    if (immediately && triggerCollector.waitTriggerIds.size > 0) {
+    if (isInner || (immediately && triggerCollector.waitTriggerIds.size > 0)) {
       // flush previous job
       dirtyJob && dirtyJob();
     }
@@ -190,7 +190,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     keepAliveComputed();
 
-    if (immediately) {
+    if (isInner || immediately) {
       // immediately execute
       dirtyJob && dirtyJob();
       return result;

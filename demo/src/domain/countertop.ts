@@ -26,7 +26,7 @@ export class Countertop extends Domain {
   };
   @reactor() firstName = 'Jack';
   @reactor() lastName = 'Ma';
-  nickName = '';
+  @reactor(true, true) nickName = '';
 
   initDomainContext() {
     return {
@@ -55,6 +55,10 @@ export class Countertop extends Domain {
   //   console.log('***re-computed***');
   //   return this.firstName + ' ' + this.lastName;
   // }
+  @mutation
+  updateNickName(value: string) {
+    this.nickName = value;
+  }
 
   isClosedPath() {
     return this.lines.length === this.points.length;

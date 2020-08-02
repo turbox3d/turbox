@@ -19,12 +19,6 @@ config({
     logger: true,
   }
 });
-init();
-
-export const mainTimeTravel = TimeTravel.create();
-TimeTravel.switch(mainTimeTravel);
-let count = 100;
-
 export const cts = new Countertops({
   countertops: [new Countertop({
     lines: [],
@@ -32,11 +26,17 @@ export const cts = new Countertops({
     nickName: '',
   })],
 });
-
 const p = new Point({
   position: new Point2d(100, 100),
   type: EPointType.CIRCLE,
 });
+
+export const mainTimeTravel = TimeTravel.create();
+TimeTravel.switch(mainTimeTravel);
+
+init();
+
+let count = 100;
 
 const r = reactive(() => {
   console.log('&&&&&');
@@ -75,8 +75,12 @@ const DemoBox = Reactive(() => {
       position: new Point2d(100, 100),
       type: EPointType.NONE,
     });
+    const p2 = new Point({
+      position: new Point2d(100, 100),
+      type: EPointType.NONE,
+    });
     cts.countertops[0].addPoint(p);
-    cts.countertops[0].addPoint(p);
+    cts.countertops[0].addPoint(p2);
   };
   const removePoint = () => {
     cts.countertops[0].removePoint(1);
@@ -224,6 +228,9 @@ const DemoBox = Reactive(() => {
     });
     cts.countertops[0].ttt(p, l);
   };
+  const testNickName = () => {
+    cts.countertops[0].updateNickName('feifan');
+  };
   console.log('***parent');
 
   React.useEffect(() => {
@@ -238,13 +245,14 @@ const DemoBox = Reactive(() => {
                     {cts.countertops[0].points[0] && cts.countertops[0].points[0].position.y}
         </div>
       } */}
-      {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
+      <span>nickName: {cts.countertops[0].nickName}</span>
+      {/* {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
         <span>key：{cts.countertops[0].info.a}</span>
-      }
+      } */}
       <br />
-      {cts.countertops.length && cts.countertops[0].normalPoints.map((np, index) => (
+      {/* {cts.countertops.length && cts.countertops[0].normalPoints.map((np, index) => (
         <NormalPoint index={index} np={np} />
-      ))}
+      ))} */}
       {/* <span>fullName：{fullName.get()}</span><br/> */}
       {/* <span>fullName2：{cts.countertops[0].fullName}</span><br /> */}
       {/* <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span> */}
@@ -254,9 +262,9 @@ const DemoBox = Reactive(() => {
       {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
         <PointTpl data={point} index={index} />
       ))}
-      {flag &&
+      {/* {flag &&
         <DisposerTest />
-      }
+      } */}
       <div
         style={{
           position: 'absolute',
@@ -265,6 +273,9 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onClick={testNickName}>
+          测试nickname
+                </button>
         <button onClick={testRender}>
           测试重绘时机
                 </button>
