@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action } from 'turbox';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation } from 'turbox';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -17,6 +17,7 @@ config({
   },
   middleware: {
     logger: true,
+    perf: true,
   }
 });
 export const cts = new Countertops({
@@ -64,7 +65,11 @@ const DemoBox = Reactive(() => {
         type: EPointType.NONE,
       }),
     });
-    await cts.countertops[0].testEffect(p, l);
+    const f = mutation('customName', async () => {
+      await cts.countertops[0].addPoint(p);
+    });
+    await f();
+    // await cts.countertops[0].testEffect(p, l);
     console.log('#####', 'done');
     // cts.countertops[0].testEffect(p, l);
     // cts.countertops[0].testTwoEffect(p, l);

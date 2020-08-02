@@ -327,6 +327,17 @@ class MyDomain extends Domain {
 }
 ```
 
+有些时候我们不想用装饰器，也不想自己去建个 domain 类，还想取个运行时才确定的 mutation 名称，就可以用下面这种函数式的 mutation 写法：
+```js
+const f = mutation('customName', async () => {
+  await cts.countertops[0].addPoint(p);
+}, {
+  immediately: true,
+  name: '自定义名称',
+});
+await f();
+```
+
 > 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中
 
 > mutation 里面可以嵌套 mutation，但不可以嵌套 effect，看到下面 effect 那一小节你就会知道为什么

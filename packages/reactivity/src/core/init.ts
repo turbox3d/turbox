@@ -3,6 +3,7 @@ import { createStore } from './store';
 import effectMiddleware from '../middlewares/effect';
 import mutationMiddleware from '../middlewares/mutation';
 import loggerMiddleware from '../middlewares/logger';
+import perfMiddleware from '../middlewares/perf';
 import { ctx } from '../const/config';
 import { compose } from '../utils/compose';
 import { invariant } from '../utils/error';
@@ -26,6 +27,9 @@ export function init(callback?: () => void | Promise<void>) {
 
   isRunning = true;
 
+  if (ctx.middleware.perf) {
+    use(perfMiddleware);
+  }
   if (ctx.middleware.effect) {
     use(effectMiddleware);
   }
