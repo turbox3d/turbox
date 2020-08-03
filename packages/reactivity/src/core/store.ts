@@ -113,11 +113,11 @@ export function createStore(enhancer: (createStore: any) => Store) {
     func();
   };
 
-  const clean = () => {
+  const clean = (needClearHistory = true) => {
     called = false;
     dirtyJob = void 0;
     nextTickQueue.shift();
-    triggerCollector.endBatch();
+    needClearHistory && triggerCollector.endBatch();
     emitter.off('renderDone');
     viewRenderStatusMap.clear();
   };
@@ -138,6 +138,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
     const callback = () => {
       const ids = [...triggerCollector.waitTriggerIds.values()];
       if (!ids.length) {
+        clean(false);
         return;
       }
       if (!isInner) {
