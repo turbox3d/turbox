@@ -7,7 +7,12 @@
 [![install size](https://img.shields.io/bundlephobia/minzip/turbox?style=flat-square)](https://www.npmjs.com/package/turbox)
 
 ## 介绍
-**turbox**（涡轮）是一个适合大型生产力单页软件应用的前端框架，场景来源于复杂大型 3D 业务
+**turbox**（涡轮）是一个适合大型生产力单页软件应用的前端框架，场景来源于复杂大型 3D 业务。
+
+turbox 框架的定位是大型生产力应用的前端框架，但目前暂时还是以状态管理为主，turbox 是响应式流派的状态管理，但会更针对特定场景设计，而目前市面上的流行框架大多针对 web 应用，而且发展方向是足够通用，对我们之前的业务来说无疑是走歪了。为了通用这就不免会在比如性能、体积、不同风格 api、功能性、易用性上面做一些权衡，但不管是 mobx 还是 redux，在以前的业务场景中都无法较好满足，而且 mobx 的扩展性不如 redux，几乎无法在它上面做二次开发，所以诞生了 turbox。
+
+### turbox 框架架构图
+![framework](https://img.alicdn.com/tfs/TB1fRl5g79l0K4jSZFKXXXFjpXa-2231-1777.png)
 
 ### 快速上手
 一个最简单的例子：
@@ -42,7 +47,7 @@ class Point extends Domain {
   @reactor type: EPointType;
 
   @mutation
-  updateLink(prevLine: Line, nextLine?: Line) {
+  buildLink(prevLine: Line, nextLine?: Line) {
     this.prevLine = prevLine;
     this.nextLine = nextLine;
   }
@@ -69,7 +74,7 @@ export default class extends Component {
   render() {
     return (
       <div>
-        <span>{JSON.stringify($line.start.position)}</span>
+        <span>{$line.start.position.x}{$line.start.position.y}</span>
         <button onClick={() => $line.updateLine(new Point(new Point2d(3, 3)))}>add</button>
       </div>
     );
@@ -97,7 +102,7 @@ const Layout = Reactive(() => {
 
   return (
     <div>
-      <span>{JSON.stringify($line.start.position)}</span>
+      <span>{$line.start.position.x}{$line.start.position.y}</span>
       <button onClick={test}>add</button>
     </div>
   );
@@ -128,78 +133,14 @@ $ npm install --save turbox
 $ yarn add turbox
 ```
 
-> 本框架必须使用 decorator，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
-
-### 依赖
-**turbox** 依赖 **react-dom, react 16或以上版本**
+> 本框架有依赖 decorator，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
 
 ### 兼容性
 **turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
 
 ## API & 概念
-
-### Domain
-在 **turbox** 中，我们推荐使用面向对象的写法来组织我们的代码，这在一些复杂中大型单页应用中是比较有利的，以往我们在做一些简单的 web 页面时通常把状态设计成一颗尽量扁平化的树就已经够用了，甚至函数式的写法似乎也不错，而在中大型单页 3D 应用和其他的一些复杂应用中，数据模型往往是一个非常复杂的图状数据结构，这就要求我们可以把复杂的状态设计成一个个合理的数据模型单元，每个模型都拥有自己的一系列业务逻辑和与其他数据模型之间的一些关系，最后构成图状模型。
-
-domain 我们称之为一个领域模型，实际上它就是一个增强父类，把你的普通数据模型升级成为一个响应式的领域模型，其中可能包含 reactor、effect、mutation 等装饰器修饰的属性和函数，也有可能包含构造函数、成员变量等 class 本身所具有的特性。
-
-不管是 store 还是 domain，只是一种概念，本质上它们都是为了从视图层中剥离业务逻辑，并且得到一定程度的解耦、复用和互相依赖，至于如何设计，这就是使用者的事情了，你可以采用 VIPER、ECS、MVP、传统 MVC 架构或是其他的设计思想来组织你的应用，甚至如果你的业务场景真的具有领域模型这个概念，并且在后端和产品层面都可以遵守领域模型，那也可以尝试设计成领域模型架构，如果不存在，仅仅是单纯业务逻辑的剥离也未尝不可，框架并不限制这些。不过 **turbox** 还是会提供一份最佳实践的设计，在文档最后，仅供参考。
-
-如下代码所示，这就是一个 domain，其实就是一个普通的 class 继承了 **turbox** 提供的 Domain 父类：
-```js
-import { Domain, reactor, reducer, mutation } from 'turbox';
-
-export class MyDomain extends Domain {
-  @reactor result = 0;
-
-  @mutation
-  isLoaded(result) {
-    if (result) {
-      this.result = result;
-    }
-  }
-
-  fetchData = async () => {
-    const { result } = await $API.get('/api/balabala');
-    this.isLoaded(result);
-  }
-
-  initDomainContext() {
-    return {
-      isNeedRecord: false,
-    };
-  }
-
-  constructor() {
-    super();
-  }
-}
-```
-
-每个 domain 都可以拥有多个实例，不同实例之间的状态是隔离的，完全的面向对象。但在大部分模型不复杂的前中后台多页 web 应用中，通常它是单例的，因为只是用来存储几个零散的交互状态，状态模型并不复杂，甚至函数式更好，使用者自行根据业务场景选择合适的框架，并进行合理的设计。
-```js
-import { Domain, reactor, reducer, mutation } from 'turbox';
-
-class MyDomain extends Domain {
-  @reactor() isLoading = false;
-
-  @mutation
-  updateLoading() {
-    this.isLoading = true;
-  }
-}
-
-const $ins1 = new MyDomain();
-$ins1.updateLoading();
-$ins1.isLoading; // true
-const $ins2 = new MyDomain();
-$ins2.isLoading; // still be false
-```
-
-> Domain 的子类可以实现一个 initDomainContext 方法，该方法用来声明 Domain 的 context，目前只有 isNeedRecord 属性，用来标记这个类所有响应式属性是否需要记录到撤销恢复栈中
-
 ### reactor
-在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，如下代码所示：
+在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，这样框架就能代理掉属性的 getter、setter 等操作，如下代码所示：
 ```js
 export class MyDomain extends Domain {
   @reactor isLoading = false;
@@ -208,7 +149,7 @@ export class MyDomain extends Domain {
 }
 ```
 
-> reactor 装饰器可以加括号传参，也可以不加括号不传参，框架都支持，其他装饰器比如 mutation、effect、reactive 同理
+> reactor 装饰器可以加括号传参，也可以不加括号不传参，框架都支持，其他装饰器比如 mutation、effect、Reactive 同理
 
 > reactor 装饰器有三个参数，第一个参数是 deepProxy，用来表示是否需要深度代理，默认开启，这样可以支持深层 mutable 的写法，默认也会对数据结构做性能优化，如果关闭，则需要通过拷贝赋值的方式来触发更新，或者其他 immutable 的方式，否则不会触发更新。
 
@@ -365,12 +306,12 @@ class MyDomain extends Domain {
 
 > 可以使用构造函数对 reactor 修饰的属性赋值，这是因为在构造时，属性一定还没有被视图层观察，在这之前，你可以对这个实例的属性做任何修改，但一旦渲染完毕后，就只能通过 mutation 或 $update 来做修改
 
-> 在属性已经被视图层观察后，你只能在 mutation 中直接对属性赋值或使用 $update 来更新数据，在其他函数中直接对 reactor 修饰过的属性赋值会得到一个错误，You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})，这是为了防止非法操作导致状态和视图不同步的情况出现
+> 在属性已经被视图层观察（使用）后，你只能在 mutation 调用范围内对该属性赋值或使用 $update 来更新数据，在其他普通函数中直接对 reactor 修饰过的属性赋值会得到一个错误，You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})，这是为了防止非法操作导致状态和视图不同步的情况出现
 
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
 ### action
-`action` 通常是用来灵活控制操作行为的 api，可以简单的理解为一种事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
+`action` 通常是用来灵活控制操作行为的 api，可以简单的理解为一种主动事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
 ```js
 class MyDomain extends Domain {
   @reactor isLoading = false;
@@ -556,6 +497,77 @@ fullName.get();
 
 <!-- ### watch（暂未实现，敬请期待）
 某些情况需要根据数据的变化引发其他外部操作或数据的更新，这时候可以利用 watch，大部分情况并不推荐使用这种做法，因为这可能会导致程序难以测试并且不可预测，还有可能造成死循环，魔法过多对维护也会造成很大的代价。只在某些特别必要的场景，比如某些数据就是有极强的关联性，会导致外部操作或外部数据的更新，部分情况很难在所有应该触发更新的地方去手动调用触发更新，为了减少心智负担才用。 -->
+
+### Domain
+在上面的例子中，我们会发现有个 Domain 的基类，在 **turbox** 中，Domain 只是类似 React.Component 这样的基类，声明这是一个领域模型，提供了一些通用方法和控制子类的能力，该类的装饰器实际也会依赖基类上的一些私有方法，所以需要配套使用，如下代码所示：
+```js
+import { Domain, reactor, reducer, mutation } from 'turbox';
+
+export class MyDomain extends Domain {
+  @reactor result = 0;
+
+  @mutation
+  isLoaded(result) {
+    if (result) {
+      this.result = result;
+    }
+  }
+
+  fetchData = async () => {
+    const { result } = await $API.get('/api/balabala');
+    this.isLoaded(result);
+  }
+
+  initDomainContext() {
+    return {
+      isNeedRecord: false,
+    };
+  }
+
+  constructor() {
+    super();
+  }
+}
+```
+
+使用的时候就跟普通的 class 一样，如下所示：
+```js
+import { Domain, reactor, reducer, mutation } from 'turbox';
+
+class MyDomain extends Domain {
+  @reactor() isLoading = false;
+
+  @mutation
+  updateLoading() {
+    this.isLoading = true;
+  }
+}
+
+const $ins1 = new MyDomain();
+$ins1.updateLoading();
+$ins1.isLoading; // true
+const $ins2 = new MyDomain();
+$ins2.isLoading; // still be false
+```
+
+以上完全是面向对象的风格，实际上在大部分复杂应用中，我们都会使用面向对象来组织我们的应用，比较简单直接，描述模型，实例隔离，收敛内聚，更符合人类的思维方式
+
+> Domain 的子类可以实现一个 initDomainContext 方法，该方法用来声明 Domain 的 context，目前只有 isNeedRecord 属性，用来标记这个类所有响应式属性是否需要记录到撤销恢复栈中
+
+> Domain 上还提供了 $update 方法，它是更新数据的语法糖，类似 react 的 setState，上面有一小节已经提过
+
+当然除了面向对象，函数式风格也是一种不错的组织方式，这里不讨论他们的优劣，只不过确实都存在不同的适用场景，这种情况，Domain 的概念就被弱化了，更多的是一种松散组合的方式，这也是函数式编程推崇的，如下代码所示：
+```js
+const objectValue = reactor({});
+const arrayValue = reactor([]);
+const m = mutation('customNameMutation', () => {});
+m();
+const e = effect('customNameEffect', async () => {});
+e();
+const computedValue = computed(() => objectValue.xxx + arrayValue[0]);
+```
+
+> reactor、effect 的函数式 API 待实现
 
 ### Reactive
 **turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
@@ -785,12 +797,45 @@ TimeTravel.switch(mainTimeTravel);
 
 > 时间旅行只会记录每一次变化的信息，而不是整个 snapshot，这样内存占用会更小
 
+> 时间旅行也会记录调用路径的函数名或自定义函数名
+
 ## 最佳实践
-
-### 架构图
-![framework](https://qhstaticssl.kujiale.com/as/2232c5fc6a39cc05732ad9fd7a99703a/bp-framework.png)
-
-### 目录结构设计
+3d 业务，以单插件为例：
+```
+├── src
+│   ├── api // 接口层，可以做一些防腐
+│   ├── assets // 文件资产，全局样式，mixin 等
+│   │   ├── images
+│   │   └── styles
+│   ├── components // 插件内部的公共组件
+│   │   ├── 2D
+│   │   ├── 3D
+│   │   └── web
+│   ├── config // 全局配置文件，包括 axios 和主题配置等
+│   │   ├── axios
+│   │   └── theme
+│   ├── const // 存放一些常量和枚举
+│   ├── helpers // 帮助函数，一些通用的函数
+│   ├── models // 数据层，里面的结构可以自己设计
+│   │   ├── scene
+│   │   │   ├── custom
+│   │   │   ├── mesh
+│   │   │   └── molding
+│   │   └── web
+│   ├── permission // 权限点相关
+│   ├── services // 服务层，当前插件对外暴露的方法
+│   │   ├── common
+│   │   └── search
+│   ├── types // 全局声明、ts 常用自定义类型
+│   ├── utils // 工具函数，纯函数，可写单测的
+│   │   └── __tests__
+│   └── views // 视图层
+│   │   ├── FunctionPanel
+│   │   ├── Scene
+│   │   └── TopBar
+│   └── plugin.ts // 插件入口文件
+```
+web 业务：
 ```
 ├── @domain // 领域模型层，只关注当前领域模型的操作和职责，可能有互相依赖
 │   ├── column.js
@@ -805,7 +850,6 @@ TimeTravel.switch(mainTimeTravel);
     └── live-list
         ├── index.jsx
         └── index.scss
-
 ├── @presenter // 处理呈现层，可以向上组合、调用 domain 层，一般是和视图一一对应的关系，描述每个模块容器组件触发的行为过程以及一些处理
 │   └── list.js
 │   └── head.js
@@ -824,212 +868,38 @@ TimeTravel.switch(mainTimeTravel);
 └── tpl.pug
 ```
 
-### 如何设计 Presenter（处理呈现层）
-view 层中尽可能只定义事件行为，不要做过多业务逻辑，尽可能丢到处理呈现层来进行，如下代码所示是 list 模块的 presenter：
-```js
-import $column from '@domain/dwork/design-column/column';
-import $list from '@presenter/dwork/column-list/list';
-// 在视图中只定义行为，一目了然
-@Reactive()
-export default class List extends React.PureComponent {
-  componentDidMount() {
-    $list.initLayoutState();
-  }
+### 如何快速生成 turbox API？
+可以在 vscode 插件商店搜索 turbox，下载 turbox snippets 插件，通过一些简单的指令即可快速生成 API，提升开发效率
 
-  render() {
-    return (
-      <>
-        <Radio.Group onChange={(id) => $list.changeTag(id)}></Radio.Group>
-        <Pagination
-          current={$column.current}
-          defaultPageSize={$column.pageSize}
-          totalPage={$column.totalPage}
-          onChange={(page) => $list.changePage(page)}
-          hideOnSinglePage
-        />
-      </>
-    );
-  }
-}
+### 注意事项
+避免死循环写法
+* 不要在 render 里面触发 mutation，请放到生命周期里
+* 不要在 reactive 里面触发 mutation
 
-// 在 presenter 中实现好这个行为的流程和业务逻辑
-import { getQuery, updateQuery } from '@util/url-tool';
-import $column from '@domain/dwork/design-column/column';
-import $tag from '@domain/dwork/design-column/tag';
+这个跟在 react render 里面不要写 setState 是一样的，容易造成死循环或吞掉一些变更，如果没看懂可以先理解数据驱动视图，和单向数据流
 
-export default class ListPresenter {
-  async changePage(page) {
-    $column.updateColumnListPage(page);
-    updateQuery({
-      page,
-    });
-    $column.fetchColumnListFromRemote({
-      page,
-      tagId: $tag.currentTagId
-    });
-  }
+不同组件形式的生命周期
 
-  async changeTag(id) {
-    $column.updateColumnListPage(1);
-    $tag.updateCurrentTagId(id);
-    updateQuery({
-      page: 1,
-      tagid: id
-    });
-    $column.fetchColumnListFromRemote({
-      page: 1,
-      tagId: id
-    });
-  }
+function component 和 class component 的生命周期执行顺序表现不一致
+function component 的表现是：
+-> batchUpdate 父组件
+-> 逐个 render 子组件
+-> hoc didMount
+-> hoc didUpdate
+-> 完成 batchUpdate
+-> 逐个触发子组件 didMount（useEffect 模拟实现）
+-> 回到第一步
 
-  async initLayoutState() {
-    const { page = 1, tagid = '' } = getQuery();
-    $column.updateColumnListPage(page);
-    $tag.updateCurrentTagId(tagid);
-    $tag.fetchTagsFromRemote();
-    $column.fetchColumnListFromRemote({ page, tagId: tagid });
-  }
-}
-```
+class component 的表现是：
+-> batchUpdate 父组件
+-> 逐个 render 子组件
+-> 逐个触发（子组件 didMount -> hoc didMount）逻辑
+-> hoc didUpdate
+-> 完成 batchUpdate
+-> 回到第一步
 
-还可以做一些异步任务的流程控制，将来还会加入 operator
-```js
-export default class Presenter {
-  async initLayoutStateRace() {
-    const { page = 1, tagid = '' } = getQuery();
-    this.$tag.updateCurrentTagId(tagid);
-    // 此时 tagId 是更新后的值
-    await Promise.race([
-      this.$tag.fetchTagsFromRemote(),
-      this.$column.fetchColumnListFromRemote({ page, tagId: tagid })
-    ])
-    // 此时上面更新过的 state 都是最新的
-    this.$column.updateColumnListPage(page);
-  }
-
-  async initLayoutState() {
-    const { page = 1, tagid = '' } = getQuery();
-    this.$tag.updateCurrentTagId(tagid);
-    await Promise.all([
-      this.$tag.fetchTagsFromRemote(),
-      this.$column.fetchColumnListFromRemote({ page, tagId: tagid })
-    ])
-    this.$column.updateColumnListPage(page);
-  }
-
-  async initLayoutStateSync() {
-    const { page = 1, tagid = '' } = getQuery();
-    this.$tag.updateCurrentTagId(tagid);
-    this.$column.updateColumnListPage(page);
-  }
-}
-```
-
-### 如何设计 API 防腐层
-这一层主要是和后端的数据结构隔离，让前端关注前端的数据结构，如果后端字段改了只需要在这一层调整，不需要一层一层改下去：
-```js
-import API from '@util/ajax-tool';
-
-export async function fetchColumnList({ page, num, tagId }) {
-  const { designColumnVos, totalPages } = await API.get('/api/list',
-    { page, num, tagid: tagId });
-  return {
-    columnList: designColumnVos,
-    totalPage: totalPages,
-  };
-}
-
-export async function fetchCategoryTags() {
-  const { c, d } = await API.get('/api/tag');
-  if (c === '-1') {
-    return {
-      tags: [],
-    };
-  }
-  // 或者修改一些数组中的字段值以满足组件需要的参数
-  return {
-    tags: d && d.l,
-  };
-}
-```
-
-### 如何初始化一个 Turbox 项目
-仅仅调用 render 函数就可以，如下所示：
-```js
-// entry.js
-import React from 'react';
-import Turbox from 'turbox';
-import Layout from './Layout';
-
-async function main() {
-  // 全局配置信息
-  Turbox.config({
-    middleware: {
-      logger: true,
-    }
-  });
-  // 载入中间件
-  Turbox.use(middleware);
-  // 渲染
-  Turbox.render(<Layout />, '#app', async () => {
-  });
-}
-
-main();
-```
-
-### 如何动态初始化 domain 的状态值
-```js
-import $column from '@domain/design-column'; // $column 是一个实例
-import Point from '@domain/point'; // Point 是一个 class
-
-let $point;
-async function main() {
-  const obj = await API.getRemoteData();
-  // 可以在渲染之前修改状态值
-  $column.$update(obj);
-  $point = new Point('1,1');
-  // 渲染
-  Turbox.render(<Layout />, '#app', async () => {
-  });
-}
-
-main();
-
-export const store = {
-  $point,
-};
-```
-
-### 如何链接模型和组件
-下面是一个简单的例子，详情请见上面的 API & 概念：
-```js
-import { Reactive } from 'turbox';
-import $column from '@domain/dwork/design-column/column'; // 导出的是一个实例
-import $list from '@presenter/dwork/column-list/list'; // 导出的是一个实例
-
-@Reactive() // 标记需要自动同步状态
-export default class List extends React.PureComponent {
-  componentDidMount() {
-    $list.initLayoutState();
-  }
-
-  render() {
-    return (
-      <>
-        <Radio.Group onChange={(id) => $list.changeTag(id)}></Radio.Group>
-        <Pagination
-          current={$column.current}
-          defaultPageSize={$column.pageSize}
-          totalPage={$column.totalPage}
-          onChange={(page) => $list.changePage(page)}
-          hideOnSinglePage
-        />
-      </>
-    );
-  }
-}
-```
+主要区别：
+function component 并不会等 useEffect 执行，先完成 batchUpdate 再执行 useEffect 逻辑，而 class component 会等生命周期里面的逻辑都执行完，才算执行完这次 batchUpdate
 
 ## 框架特性对比
 以下简单介绍几个业界比较流行的框架和 **turbox** 框架，让不了解状态管理的童鞋可以快速找到自己适合的框架。
@@ -1043,7 +913,7 @@ export default class List extends React.PureComponent {
 ![redux](https://qhstaticssl.kujiale.com/as/ddae6a4d54ba1e65b5833508fd59ff5c/redux.png)
 
 ### dva
-**dva** 是基于 **redux** 的状态管理框架，但它不仅仅是个状态管理框架，还包含了 cli、router 等能力，配合 **umi** 这套整体解决方案，看起来对于快速搭建应用还不错，它的能力非常强大，集合了多个框架再封装，几乎不怎么再需要添加其他三方库了，不过因为直接依赖了一些三方库，更新维护成本和难度还是挺高的，在社区上不算是很活跃，概念也非常多，适合一些对 redux 系列库比较熟悉的开发者。
+**dva** 是基于 **redux** 的状态管理框架，但它不仅仅是个状态管理框架，还捆绑了 cli、router、saga 等能力，配合 **umi** 这套整体解决方案，看起来对于快速搭建应用还不错，它的能力非常强大，集合了多个框架再封装，几乎不怎么再需要添加其他三方库了，不过因为直接依赖了一些三方库，更新维护成本和难度还是挺高的，在社区上不算是很活跃，概念也非常多，适合一些对 redux 系列库比较熟悉的开发者。
 
 [如何评价前端应用框架 dva？](https://www.zhihu.com/question/51831855?from=profile_question_card)
 
@@ -1082,3 +952,201 @@ export default class List extends React.PureComponent {
 - 支持 react hooks
 - 底层 0 依赖，框架无关，是个纯粹、精简的状态管理解决方案，升级维护都比较容易，不容易腐烂
 - 友好的文档和最佳实践，对于没有用过状态管理框架的新手来说，还算比较容易上手
+
+### 为什么不是 redux？
+这个应该比较好理解，业界也比较公认它的一些缺点。
+• 模板代码太多，使用不方便，属性要一个一个 pick，对 ts 也不友好，状态的修改重度依赖 immutable，计算属性要依赖 reselect，还有魔法字符串等一系列问题，心智负担大，用起来很麻烦容易出错，开发效率低下。
+• 触发更新的效率也比较差，connect 的组件的 listener 必须一个一个遍历，再靠浅比较去拦截不必要的更新，在大型应用里面无疑是灾难。
+• store 的推荐数据结构是 json object，这对于我们的业务来说也不太合适，我们的数据结构是图状的数据结构，互相有复杂的关联关系，比如父子兄弟层级、环状结构、链式结构、多对多等，比较偏向于后端数据模型，适合用面向对象来描述模型，描述切面，需要多实例隔离，显然用 json 或者 normalizr 强行做只会增加复杂度，和已有的代码也完全无法小成本适配。
+
+### 为什么不是 mobx？
+• 以前开发该库的时候 mobx 还是基于 defineProperty 来实现的，有很多 hack 的方式，比如监听数组变化等问题的处理，还有很多像监听 Object.keys 这种 API 根本就无法实现，而 tacky 一开始就是基于 proxy 的，我们的业务只要求兼容 chrome，所以就可以用，这样写法会简单很多不需要 hack，支持监听的 API 也会更丰富，当然目前 mobx5 也支持了 proxy。（注意：proxy 在特定浏览器比如 chrome 的性能表现非常优秀，但在 IE Edge 下面性能非常差）
+• 然后就是我们需要做一些撤销恢复，mobx 目前只能依赖于 mobx-state-tree 来做，但有非常大的语法成本，需要改数据结构和定义 schema，有点退化成 redux 的感觉。而自己实现的目标主要是为了满足特定业务场景，并在这基础上做针对性优化，而不是做什么通用方案。turbox 的做法是只保存每次修改过的属性的 diff 信息，而不是全量保存，不然内存很容易崩掉。在进入 mutation 前和执行完后，会对修改过的属性记录 beforeUpdate 和 didUpdate 的值，重复修改会被合并掉。不需要人工去写 undo redo，并且提供了丰富的相关能力，以后还会加入更多优化。
+• 另外我们需要有一些事务的机制，跟传统 web 一个同步栈或者一个 effect 就是一个事务的视角是不一样的。比如我要画点，画线，再画点，这三个行为才组成了一个事务，要回退是撤销一整个事务，而不是单个行为。另外我们在一些异步并发的场景，需要对事务池做一些调度，比如 abort、revert 掉部分事务。事务的定义就是：一个需要被记录到时间旅行器中的原子操作，我们一次操作可能会产生很多副作用，也可能分发多个 mutation，默认同步的 mutation 会被合并掉，一次性 batchUpdate 组件，用户可以自己定义事务，每个事务会影响撤销恢复的粒度和重新渲染的时机。
+• mutation/action 对于渲染时机的把握功能会更丰富，也更灵活，更符合当前业务场景，而 mobx 目前无法满足，仍然是以 web 世界的角度在做 action 机制，无法灵活控制渲染时机
+• 另外就是扩展性的问题，我加入了中间件的机制，这样可以侵入 action 的执行过程，相当于一个过滤器一样，可以加入一些内部自定义的埋点、监控、日志中间件，在每次 action 触发的时候可以做很多事情，比如对接全链路排查系统、做自动化测试状态回放等。
+• effect 会在近期重写掉，实际上在 3d 业务里面，传统的 effect 概念是个伪命题，它的发展方向应该是异步流，这样对于一些异步竞争比较复杂的场景会比较有用，并且可以简化部分事务的写法。
+• 还有就是做了不能在不是 mutation 的地方做更新的机制，强制分离更新数据操作和业务流程，做了一个分层，如果这么做会有抛错，防止数据和视图不同步。当然做这个的意义本质一个是性能考虑批量更新，一个是也会影响事务，再者是职责分离，还有在收口赋值操作，这对重构非常有帮助。
+• 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
+
+## 性能分析
+状态管理部分，turbox 和 mobx 最接近，所以做个性能对比，如下是测试代码：
+```js
+import { reactor, mutation, Domain, reactive, init, config } from 'turbox';
+import { observable, action, autorun } from 'mobx';
+class TestTurbox extends Domain {
+  @reactor() a = {
+    a: {
+      a: {
+        a: {
+          a: {
+            a: {
+              a: 0,
+            },
+          },
+        },
+      },
+    },
+  };
+  @mutation do() {
+    this.a.a.a.a.a.a.a += 1;
+  }
+  @mutation innerDo() {
+    for (let index = 0; index < 1000; index++) {
+      this.a.a.a.a.a.a.a += 1;
+    }
+  }
+}
+const td = new TestTurbox();
+(() => {
+  /** 关闭时间旅行和 logger，因为 mobx 没有，但是理论上仍然做不到完全公平，这部分是有开销的 */
+  config({
+    timeTravel: {
+      isActive: false,
+    },
+    middleware: {
+      logger: false,
+    }
+  });
+  init();
+  let start, end;
+  reactive(() => {
+    end = performance.now();
+    console.log('turbox:', end - start);
+    console.log('turbox:', td.a.a.a.a.a.a.a);
+  });
+  start = performance.now();
+  /** 1. 多次调用可复用的 mutation */
+  for (let index = 0; index < 1000; index++) {
+    td.do();
+  }
+  /** 2. 循环放在函数里面 */
+  td.innerDo();
+  console.dir(performance.memory);
+})();
+class TestMobx {
+  @observable a = {
+    a: {
+      a: {
+        a: {
+          a: {
+            a: {
+              a: 0,
+            },
+          },
+        },
+      },
+    },
+  };
+  @action do() {
+    this.a.a.a.a.a.a.a += 1;
+  }
+  @action innerDo() {
+    for (let index = 0; index < 1000; index++) {
+      this.a.a.a.a.a.a.a += 1;
+    }
+  }
+}
+const tm = new TestMobx();
+(() => {
+  let start, end;
+  autorun(() => {
+    end = performance.now();
+    console.log('mobx:', end - start);
+    console.log('mobx:', tm.a.a.a.a.a.a.a);
+  });
+  start = performance.now();
+  /** 1. 多次调用可复用的 action */
+  for (let index = 0; index < 1000; index++) {
+    tm.do();
+  }
+  /** 2. 循环放在函数里面 */
+  tm.innerDo();
+  console.dir(performance.memory);
+})();
+```
+
+### 测试结果：
+
+*** innerDo ***：
+turbox nextTick 模式：
+![innerDo](https://img.alicdn.com/tfs/TB1UY6LQkL0gK0jSZFAXXcA9pXa-502-228.png)
+
+turbox immediately 模式：
+![innerDo](https://img.alicdn.com/tfs/TB1m0AKgDM11u4jSZPxXXahcXXa-518-256.png)
+
+mobx：
+![innerDo](https://img.alicdn.com/tfs/TB10KDCQXY7gK0jSZKzXXaikpXa-506-258.png)
+
+*** do ***：
+turbox：
+![innerDo](https://img.alicdn.com/tfs/TB1PCPPQkY2gK0jSZFgXXc5OFXa-462-212.png)
+
+mobx：
+![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
+
+### 结论分析：
+性能快和慢一定是有原因的，实现机制、功能上的不一样都会造成差异。
+
+如果按照方式 1 来跑，更新 1000 次：turbox 是 13.7 ms，mobx 是 430.9 ms
+
+这是因为 turbox 的视图更新是被 merge 到了 nextTick，所以在一个同步调用栈里面，不会频繁触发重绘，因为当前同步栈执行的中间结果实际上没有重绘的必要，也不应该被重绘，它还没有得到正确的渲染结果。
+但 turbox 也支持 keepAlive 渲染，每次调用完 mutation 立即重绘，需要加一些配置参数，因为还是可能会有少数场景追求绝对实时性，由具体业务逻辑来看。
+
+而为什么这种方式 mobx 慢，是因为在 mobx 纯 web 的视角里面，一次 action 执行完就会立即重绘一次，而渲染其实是性能瓶颈，测试代码还特别简单，如果渲染逻辑复杂 mobx 会更慢。实际上，mobx 的表现是正常的，要解决这个问题，只需要把循环逻辑本身放到一个 action 里面，就会被合并：
+```js
+@action
+do() {
+  this.a.a.a.a.a.a.a += 1;
+}
+@action
+loopDo() {
+  for (let index = 0; index < 1000; index++) {
+    tm.do();
+  }
+}
+```
+这样就快了，没错，这样的确是快了，但是每次要多写一个包裹函数，而且需要时刻注意 action 的概念。而 mutation 没有这个限制，可以单独调用，也可以组合调用。
+
+如果按照方式 2 来跑，更新 1000 次：turbox nextTick 模式是 9.7 ms，immediately 模式是 9.2 ms，mobx 是 7.3 ms
+
+这是符合预期的，因为 turbox 带有撤销恢复和中间件执行的开销（即使关闭了也有），再加上是在 nextTick 重绘的，理论上是不可能比 mobx 快的，因为换取了其他优势，但是随着更新的属性越多，效率倍数上差距会越来越小，再加上 turbox 对代理的属性做了缓存，理论上重复修改深层节点会越来越快。
+
+虽然这种情况下没有 mobx 快，但是 turbox 还是做到了该有的性能优化的：
+* 在依赖收集与依赖回收的地方也有做一些优化，默认是会惰性的在访问属性的时候才会把依赖收集进去。每次重新渲染后会删除无用依赖减少内存消耗，提高更新检测时的效率，这里面用了类似新生代老生代的算法，把原本需要在重新渲染之前用 O(n2) 算法暴力清除依赖再重建依赖的方式，简化成了用标记新老节点的方式，不阻塞当次渲染，并且可重复利用已有缓存，在渲染完成之后再对老生代做垃圾收集。
+* 对代理过的嵌套对象也会做缓存。依赖收集的高效主要体现在更新，但依赖收集本身是有性能开销的，在初始化的时候实际上要比类 redux 框架要多占一些内存和时间的。
+
+关于异步 action 的性能问题
+```js
+@action
+do() {
+  this.a.a.a.a.a.a.a += 1;
+}
+@action
+async loopDo() {
+  for (let index = 0; index < 1000; index++) {
+    tm.do();
+  }
+  await wait(2000);
+  for (let index = 0; index < 1000; index++) {
+    tm.do();
+  }
+}
+```
+mobx 会先渲染一次，这个好理解，等待 2 秒后，却重绘了 1000 次：
+前面 1000 次只花了 10.39 ms（异步下性能下降了，turbox 是 9.7 ms）
+![innerDo](https://img.alicdn.com/tfs/TB10nvIQeH2gK0jSZJnXXaT1FXa-404-88.png)
+
+第 2000 次 - 第 1001 次的时间 = 248 ms
+![innerDo](https://img.alicdn.com/tfs/TB13pzLQoY1gK0jSZFCXXcwqXXa-428-86.png)
+![innerDo](https://img.alicdn.com/tfs/TB1KqnLQoY1gK0jSZFCXXcwqXXa-392-84.png)
+
+对的，你没看错，即使在外部包裹了 action，也只会对当前宏任务（macro task）做合并，但对 await 后面的执行却无法合并，这跟 mobx 同步渲染的机制其实有关系，实际上只能通过其他办法来做合并，直接这么写是实现不了的。但是 turbox 可以。
+
+turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
+* 调用一个 mutation 渲染一次，mutation 可以嵌套，以最外层的调用结束为准重渲染一次，同步的 mutation 就跟同步的函数一样，即使不用包裹也会被自动合并。
+* 如果需要调用完 mutation 立即重绘也可以支持
+* 异步的调用可以直接用普通的 async 函数去调用 mutation，也可以做到 web 场景类似”side effect“概念的天然支持，但开发者却可以不用去理解副作用是什么概念
+* 如果有些场景想等整个异步函数结束才去渲染一次，可以使用异步的 mutation，这样就会阻止掉出现”side effect“的情况
+
+综上来看，turbox 的机制在性能和功能覆盖度的权衡上会更贴合现有业务场景，实际上 web 场景根本遇不到这么复杂的情况，mobx 也完全可以胜任（不考虑中间件和时间旅行），但在 3d 场景，哪怕是结合 web 技术的时候，差异还是很大的
