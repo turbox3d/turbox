@@ -1069,9 +1069,9 @@ const tm = new TestMobx();
 })();
 ```
 
-### 测试结果：
+### 测试结果
+innerDo：
 
-*** innerDo ***：
 turbox nextTick 模式：
 
 ![innerDo](https://img.alicdn.com/tfs/TB1UY6LQkL0gK0jSZFAXXcA9pXa-502-228.png)
@@ -1084,7 +1084,8 @@ mobx：
 
 ![innerDo](https://img.alicdn.com/tfs/TB10KDCQXY7gK0jSZKzXXaikpXa-506-258.png)
 
-*** do ***：
+do：
+
 turbox：
 
 ![innerDo](https://img.alicdn.com/tfs/TB1PCPPQkY2gK0jSZFgXXc5OFXa-462-212.png)
@@ -1093,7 +1094,7 @@ mobx：
 
 ![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
 
-### 结论分析：
+### 结论分析
 性能快和慢一定是有原因的，实现机制、功能上的不一样都会造成差异。
 
 如果按照方式 1 来跑，更新 1000 次：turbox 是 13.7 ms，mobx 是 430.9 ms
