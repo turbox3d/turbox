@@ -40,7 +40,7 @@ init();
 let count = 100;
 
 const r = reactive(() => {
-  console.log('&&&&&');
+  console.log('reactive &&&&&');
   // console.log(p.position);
   console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
 });
@@ -350,6 +350,12 @@ const DemoBox = Reactive(() => {
       </div>
     </React.Fragment>
   );
+});
+
+reactive(() => {
+  console.log('reactive111 &&&&&');
+  // console.log(p.position);
+  console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
 });
 
 export default DemoBox;

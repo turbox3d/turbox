@@ -4,7 +4,6 @@ import { nextTick, includes, isPromise, batchRemoveFromSet } from '../utils/comm
 import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
-import { emitter } from './init';
 
 export let store: Store;
 
@@ -14,7 +13,6 @@ export interface ActionType {
 }
 
 export const actionTypeChain: ActionType[] = [];
-export const viewRenderStatusMap = new Map<ReactionId, boolean>();
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -118,8 +116,6 @@ export function createStore(enhancer: (createStore: any) => Store) {
     dirtyJob = void 0;
     nextTickQueue.shift();
     needClearHistory && triggerCollector.endBatch();
-    emitter.off('renderDone');
-    viewRenderStatusMap.clear();
   };
 
   function dispatch(dispatchedAction: DispatchedAction) {
@@ -148,22 +144,8 @@ export function createStore(enhancer: (createStore: any) => Store) {
       // do computed reaction first
       flushChange(computedReactionIds, false);
       const restIds = ids.filter(id => !(id instanceof Reaction && id.computed));
-      const reactIds = restIds.filter(id => !(id instanceof Reaction));
-      if (reactIds.length > 0) {
-        reactIds.forEach(id => {
-          viewRenderStatusMap.set(id, false);
-        });
-        emitter.on('renderDone', () => {
-          const allDone = [...viewRenderStatusMap.values()].every(status => status);
-          if (allDone) {
-            clean();
-          }
-        });
-        flushChange(restIds);
-      } else {
-        clean();
-        flushChange(restIds, false);
-      }
+      clean();
+      flushChange(restIds);
     };
 
     mutationDepth += 1;

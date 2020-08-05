@@ -1,9 +1,8 @@
 import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
-import { store, viewRenderStatusMap } from '../core/store';
+import { store } from '../core/store';
 import { depCollector } from '../core/collector';
 import { fail } from '../utils/error';
-import { emitter } from '../core/init';
 
 export function Reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
 export function Reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
@@ -22,9 +21,6 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       // target component don't use react.memo
       const result = fn(props);
       depCollector.end();
-      // render done
-      viewRenderStatusMap.set(_this, true);
-      emitter.emit('renderDone');
       return result;
     };
 
@@ -82,9 +78,6 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       depCollector.start(this);
       const result = baseRender.call(this);
       depCollector.end();
-      // render done
-      viewRenderStatusMap.set(this, true);
-      emitter.emit('renderDone');
       return result;
     };
 

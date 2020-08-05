@@ -17,7 +17,7 @@ export const emitter = new Emitter();
 /**
  * Includes init built-in middleware, create store, load domain tree and so on.
  */
-export function init(callback?: () => void | Promise<void>) {
+export function init(callback?: () => void | Promise<void>): void | Promise<void> {
   triggerCollector.endBatch();
 
   if (isRunning) {

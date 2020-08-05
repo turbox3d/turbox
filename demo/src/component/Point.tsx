@@ -53,30 +53,35 @@ interface IProps {
 // };
 
 // export default Reactive(PointComp);
+let flag = false;
 
 class PointComp extends React.Component<IProps> {
   componentDidMount() {
-    // console.log('point didMount');
-    // cts.countertops[0].addLine(new Line({
-    //   start: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    //   end: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    // }));
-    // cts.countertops[0].addLine(new Line({
-    //   start: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    //   end: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    // }));
+    if (flag) {
+      return;
+    }
+    console.log('point didMount');
+    cts.countertops[0].addLine(new Line({
+      start: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+      end: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+    }));
+    cts.countertops[0].addLine(new Line({
+      start: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+      end: new Point({
+        position: new Point2d(200, 200),
+        type: EPointType.NONE,
+      }),
+    }));
+    flag = true;
   }
 
   componentDidUpdate() {
