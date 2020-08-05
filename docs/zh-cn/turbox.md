@@ -881,24 +881,26 @@ web 业务：
 不同组件形式的生命周期
 
 function component 和 class component 的生命周期执行顺序表现不一致
+
 function component 的表现是：
--> batchUpdate 父组件
--> 逐个 render 子组件
--> hoc didMount
--> hoc didUpdate
--> 完成 batchUpdate
--> 逐个触发子组件 didMount（useEffect 模拟实现）
--> 回到第一步
+* batchUpdate 父组件
+* 逐个 render 子组件
+* hoc didMount
+* hoc didUpdate
+* 完成 batchUpdate
+* 逐个触发子组件 didMount（useEffect 模拟实现）
+* 回到第一步
 
 class component 的表现是：
--> batchUpdate 父组件
--> 逐个 render 子组件
--> 逐个触发（子组件 didMount -> hoc didMount）逻辑
--> hoc didUpdate
--> 完成 batchUpdate
--> 回到第一步
+* batchUpdate 父组件
+* 逐个 render 子组件
+* 逐个触发（子组件 didMount -> hoc didMount）逻辑
+* hoc didUpdate
+* 完成 batchUpdate
+* 回到第一步
 
 主要区别：
+
 function component 并不会等 useEffect 执行，先完成 batchUpdate 再执行 useEffect 逻辑，而 class component 会等生命周期里面的逻辑都执行完，才算执行完这次 batchUpdate
 
 ## 框架特性对比
@@ -954,20 +956,21 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 - 友好的文档和最佳实践，对于没有用过状态管理框架的新手来说，还算比较容易上手
 
 ### 为什么不是 redux？
-这个应该比较好理解，业界也比较公认它的一些缺点。
-• 模板代码太多，使用不方便，属性要一个一个 pick，对 ts 也不友好，状态的修改重度依赖 immutable，计算属性要依赖 reselect，还有魔法字符串等一系列问题，心智负担大，用起来很麻烦容易出错，开发效率低下。
-• 触发更新的效率也比较差，connect 的组件的 listener 必须一个一个遍历，再靠浅比较去拦截不必要的更新，在大型应用里面无疑是灾难。
-• store 的推荐数据结构是 json object，这对于我们的业务来说也不太合适，我们的数据结构是图状的数据结构，互相有复杂的关联关系，比如父子兄弟层级、环状结构、链式结构、多对多等，比较偏向于后端数据模型，适合用面向对象来描述模型，描述切面，需要多实例隔离，显然用 json 或者 normalizr 强行做只会增加复杂度，和已有的代码也完全无法小成本适配。
+这个应该比较好理解，业界也比较公认它的一些缺点
+
+* 模板代码太多，使用不方便，属性要一个一个 pick，对 ts 也不友好，状态的修改重度依赖 immutable，计算属性要依赖 reselect，还有魔法字符串等一系列问题，心智负担大，用起来很麻烦容易出错，开发效率低下
+* 触发更新的效率也比较差，connect 的组件的 listener 必须一个一个遍历，再靠浅比较去拦截不必要的更新，在大型应用里面无疑是灾难
+* store 的推荐数据结构是 json object，这对于我们的业务来说也不太合适，我们的数据结构是图状的数据结构，互相有复杂的关联关系，比如父子兄弟层级、环状结构、链式结构、多对多等，比较偏向于后端数据模型，适合用面向对象来描述模型，描述切面，需要多实例隔离，显然用 json 或者 normalizr 强行做只会增加复杂度，和已有的代码也完全无法小成本适配
 
 ### 为什么不是 mobx？
-• 以前开发该库的时候 mobx 还是基于 defineProperty 来实现的，有很多 hack 的方式，比如监听数组变化等问题的处理，还有很多像监听 Object.keys 这种 API 根本就无法实现，而 tacky 一开始就是基于 proxy 的，我们的业务只要求兼容 chrome，所以就可以用，这样写法会简单很多不需要 hack，支持监听的 API 也会更丰富，当然目前 mobx5 也支持了 proxy。（注意：proxy 在特定浏览器比如 chrome 的性能表现非常优秀，但在 IE Edge 下面性能非常差）
-• 然后就是我们需要做一些撤销恢复，mobx 目前只能依赖于 mobx-state-tree 来做，但有非常大的语法成本，需要改数据结构和定义 schema，有点退化成 redux 的感觉。而自己实现的目标主要是为了满足特定业务场景，并在这基础上做针对性优化，而不是做什么通用方案。turbox 的做法是只保存每次修改过的属性的 diff 信息，而不是全量保存，不然内存很容易崩掉。在进入 mutation 前和执行完后，会对修改过的属性记录 beforeUpdate 和 didUpdate 的值，重复修改会被合并掉。不需要人工去写 undo redo，并且提供了丰富的相关能力，以后还会加入更多优化。
-• 另外我们需要有一些事务的机制，跟传统 web 一个同步栈或者一个 effect 就是一个事务的视角是不一样的。比如我要画点，画线，再画点，这三个行为才组成了一个事务，要回退是撤销一整个事务，而不是单个行为。另外我们在一些异步并发的场景，需要对事务池做一些调度，比如 abort、revert 掉部分事务。事务的定义就是：一个需要被记录到时间旅行器中的原子操作，我们一次操作可能会产生很多副作用，也可能分发多个 mutation，默认同步的 mutation 会被合并掉，一次性 batchUpdate 组件，用户可以自己定义事务，每个事务会影响撤销恢复的粒度和重新渲染的时机。
-• mutation/action 对于渲染时机的把握功能会更丰富，也更灵活，更符合当前业务场景，而 mobx 目前无法满足，仍然是以 web 世界的角度在做 action 机制，无法灵活控制渲染时机
-• 另外就是扩展性的问题，我加入了中间件的机制，这样可以侵入 action 的执行过程，相当于一个过滤器一样，可以加入一些内部自定义的埋点、监控、日志中间件，在每次 action 触发的时候可以做很多事情，比如对接全链路排查系统、做自动化测试状态回放等。
-• effect 会在近期重写掉，实际上在 3d 业务里面，传统的 effect 概念是个伪命题，它的发展方向应该是异步流，这样对于一些异步竞争比较复杂的场景会比较有用，并且可以简化部分事务的写法。
-• 还有就是做了不能在不是 mutation 的地方做更新的机制，强制分离更新数据操作和业务流程，做了一个分层，如果这么做会有抛错，防止数据和视图不同步。当然做这个的意义本质一个是性能考虑批量更新，一个是也会影响事务，再者是职责分离，还有在收口赋值操作，这对重构非常有帮助。
-• 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
+* 以前开发该库的时候 mobx 还是基于 defineProperty 来实现的，有很多 hack 的方式，比如监听数组变化等问题的处理，还有很多像监听 Object.keys 这种 API 根本就无法实现，而 tacky 一开始就是基于 proxy 的，我们的业务只要求兼容 chrome，所以就可以用，这样写法会简单很多不需要 hack，支持监听的 API 也会更丰富，当然目前 mobx5 也支持了 proxy。（注意：proxy 在特定浏览器比如 chrome 的性能表现非常优秀，但在 IE Edge 下面性能非常差）
+* 然后就是我们需要做一些撤销恢复，mobx 目前只能依赖于 mobx-state-tree 来做，但有非常大的语法成本，需要改数据结构和定义 schema，有点退化成 redux 的感觉。而自己实现的目标主要是为了满足特定业务场景，并在这基础上做针对性优化，而不是做什么通用方案。turbox 的做法是只保存每次修改过的属性的 diff 信息，而不是全量保存，不然内存很容易崩掉。在进入 mutation 前和执行完后，会对修改过的属性记录 beforeUpdate 和 didUpdate 的值，重复修改会被合并掉。不需要人工去写 undo redo，并且提供了丰富的相关能力，以后还会加入更多优化。
+* 另外我们需要有一些事务的机制，跟传统 web 一个同步栈或者一个 effect 就是一个事务的视角是不一样的。比如我要画点，画线，再画点，这三个行为才组成了一个事务，要回退是撤销一整个事务，而不是单个行为。另外我们在一些异步并发的场景，需要对事务池做一些调度，比如 abort、revert 掉部分事务。事务的定义就是：一个需要被记录到时间旅行器中的原子操作，我们一次操作可能会产生很多副作用，也可能分发多个 mutation，默认同步的 mutation 会被合并掉，一次性 batchUpdate 组件，用户可以自己定义事务，每个事务会影响撤销恢复的粒度和重新渲染的时机。
+* mutation/action 对于渲染时机的把握功能会更丰富，也更灵活，更符合当前业务场景，而 mobx 目前无法满足，仍然是以 web 世界的角度在做 action 机制，无法灵活控制渲染时机
+* 另外就是扩展性的问题，我加入了中间件的机制，这样可以侵入 action 的执行过程，相当于一个过滤器一样，可以加入一些内部自定义的埋点、监控、日志中间件，在每次 action 触发的时候可以做很多事情，比如对接全链路排查系统、做自动化测试状态回放等。
+* effect 会在近期重写掉，实际上在 3d 业务里面，传统的 effect 概念是个伪命题，它的发展方向应该是异步流，这样对于一些异步竞争比较复杂的场景会比较有用，并且可以简化部分事务的写法。
+* 还有就是做了不能在不是 mutation 的地方做更新的机制，强制分离更新数据操作和业务流程，做了一个分层，如果这么做会有抛错，防止数据和视图不同步。当然做这个的意义本质一个是性能考虑批量更新，一个是也会影响事务，再者是职责分离，还有在收口赋值操作，这对重构非常有帮助。
+* 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
 
 ## 性能分析
 状态管理部分，turbox 和 mobx 最接近，所以做个性能对比，如下是测试代码：
@@ -1070,19 +1073,24 @@ const tm = new TestMobx();
 
 *** innerDo ***：
 turbox nextTick 模式：
+
 ![innerDo](https://img.alicdn.com/tfs/TB1UY6LQkL0gK0jSZFAXXcA9pXa-502-228.png)
 
 turbox immediately 模式：
+
 ![innerDo](https://img.alicdn.com/tfs/TB1m0AKgDM11u4jSZPxXXahcXXa-518-256.png)
 
 mobx：
+
 ![innerDo](https://img.alicdn.com/tfs/TB10KDCQXY7gK0jSZKzXXaikpXa-506-258.png)
 
 *** do ***：
 turbox：
+
 ![innerDo](https://img.alicdn.com/tfs/TB1PCPPQkY2gK0jSZFgXXc5OFXa-462-212.png)
 
 mobx：
+
 ![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
 
 ### 结论分析：
@@ -1135,10 +1143,13 @@ async loopDo() {
 ```
 mobx 会先渲染一次，这个好理解，等待 2 秒后，却重绘了 1000 次：
 前面 1000 次只花了 10.39 ms（异步下性能下降了，turbox 是 9.7 ms）
+
 ![innerDo](https://img.alicdn.com/tfs/TB10nvIQeH2gK0jSZJnXXaT1FXa-404-88.png)
 
 第 2000 次 - 第 1001 次的时间 = 248 ms
+
 ![innerDo](https://img.alicdn.com/tfs/TB13pzLQoY1gK0jSZFCXXcwqXXa-428-86.png)
+
 ![innerDo](https://img.alicdn.com/tfs/TB1KqnLQoY1gK0jSZFCXXcwqXXa-392-84.png)
 
 对的，你没看错，即使在外部包裹了 action，也只会对当前宏任务（macro task）做合并，但对 await 后面的执行却无法合并，这跟 mobx 同步渲染的机制其实有关系，实际上只能通过其他办法来做合并，直接这么写是实现不了的。但是 turbox 可以。
