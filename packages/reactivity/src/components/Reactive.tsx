@@ -3,6 +3,7 @@ import ErrorBoundary from './ErrorBoundary';
 import { store } from '../core/store';
 import { depCollector } from '../core/collector';
 import { fail } from '../utils/error';
+import { REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from '../const/symbol';
 
 export function Reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
 export function Reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
@@ -12,17 +13,8 @@ export function Reactive(): <P extends object>(Target: React.ComponentType<P>) =
  */
 export function Reactive<P extends object>(arg?: React.ComponentType<P> | Function) {
   const decorator = <P extends object>(Target: React.ComponentType<P>): React.ComponentType<P> => {
-    // const displayName: string = Target.displayName || Target.name || '<TURBOX_COMPONENT>';
+    const displayName: string = Target.displayName || Target.name || '<TURBOX_COMPONENT>';
     let _this: React.Component;
-    // Function component do not have this context
-    const ObservableTarget: React.FunctionComponent = (props: P) => {
-      depCollector.start(_this);
-      const fn = Target as React.FunctionComponent<P>;
-      // target component don't use react.memo
-      const result = fn(props);
-      depCollector.end();
-      return result;
-    };
 
     if (
       typeof Target === 'function' &&
@@ -30,6 +22,16 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       !Target.prototype.isReactClass &&
       !React.Component.isPrototypeOf(Target)
     ) {
+      // Function component do not have this context
+      const ObservableTarget: React.FunctionComponent = (props: P) => {
+        depCollector.start(_this);
+        const fn = Target as React.FunctionComponent<P>;
+        // target component don't use react.memo
+        const result = fn(props);
+        depCollector.end();
+        return result;
+      };
+
       class Wrapper extends React.PureComponent<P> {
         unsubscribeHandler?: () => void;
 
@@ -51,6 +53,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
 
         render() {
           _this = this;
+          _this[REACTIVE_COMPONENT_NAME] = displayName;
           return (
             <ErrorBoundary>
               <ObservableTarget {...this.props as P} />
@@ -67,39 +70,35 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
     // class component
     const target = Target.prototype || Target;
     const baseRender = target.render;
-    let callback: () => void;
-
-    function refreshChildComponentView() {
-      return () => React.Component.prototype.forceUpdate.call(this);
-    }
+    const baseComponentDidMount = target.componentDidMount;
+    const baseComponentWillUnmount = target.componentWillUnmount;
 
     target.render = function () {
-      callback = refreshChildComponentView.call(this);
       depCollector.start(this);
       const result = baseRender.call(this);
       depCollector.end();
       return result;
     };
 
+    target.componentDidMount = function () {
+      baseComponentDidMount && baseComponentDidMount.call(this);
+      if (!store) {
+        fail('store is not ready, please init first.');
+      }
+      this[UNSUBSCRIBE_HANDLER] = store.subscribe(() => {
+        this.forceUpdate();
+      }, this);
+    }
+
+    target.componentWillUnmount = function () {
+      if (this[UNSUBSCRIBE_HANDLER] !== void 0) {
+        this[UNSUBSCRIBE_HANDLER]();
+      }
+      depCollector.clear(this);
+      baseComponentWillUnmount && baseComponentWillUnmount.call(this);
+    }
+
     class ObservableTargetComponent extends React.PureComponent<P> {
-      unsubscribeHandler?: () => void;
-
-      componentDidMount() {
-        if (!store) {
-          fail('store is not ready, please init first.');
-        }
-        this.unsubscribeHandler = store.subscribe(() => {
-          callback();
-        }, this);
-      }
-
-      componentWillUnmount() {
-        if (this.unsubscribeHandler !== void 0) {
-          this.unsubscribeHandler();
-        }
-        depCollector.clear(this);
-      }
-
       render() {
         return (
           <ErrorBoundary>
