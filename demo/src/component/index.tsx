@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation } from 'turbox';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation, use } from 'turbox';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -20,6 +20,16 @@ config({
     perf: true,
   }
 });
+const middleware = ({ dispatch, getActionChain }) => (next) => (action) => {
+  // balabala...
+  const actionChain = getActionChain();
+  console.log('actionChain', actionChain);
+  const nextHandler = next(action); // 注意：返回值可能是个 promise
+  // peipeipei...
+  return nextHandler;
+};
+use(middleware);
+
 export const cts = new Countertops({
   countertops: [new Countertop({
     lines: [],

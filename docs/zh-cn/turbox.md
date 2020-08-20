@@ -690,13 +690,14 @@ type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 ```typescript
 type Param = {
   dispatch: (action: DispatchedAction) => any | Promise<any>;
+  getActionChain: () => ActionType[];
 }
 type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => any | Promise<any>;
 type use = (middleware: middleware | middleware[]) => void
 ```
-**turbox** 有一套中间件机制，其中内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（去掉了 getState），你可以像下面这样使用 use 方法添加中间件：
+**turbox** 有一套中间件机制，其中内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（参数不太一样），你可以像下面这样使用 use 方法添加中间件：
 ```js
-const middleware = ({ dispatch }) => (next) => (action) => {
+const middleware = ({ dispatch, getActionChain }) => (next) => (action) => {
   // balabala...
   const nextHandler = next(action); // 注意：返回值可能是个 promise
   if (isPromise(nextHandler)) {
