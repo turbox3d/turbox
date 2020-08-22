@@ -115,6 +115,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
     called = false;
     dirtyJob = void 0;
     nextTickQueue.shift();
+    actionTypeChain.length = 0;
     needClearHistory && triggerCollector.endBatch();
   };
 

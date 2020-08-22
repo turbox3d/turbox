@@ -2,15 +2,17 @@ import { Domain } from './core/domain';
 import { ReactionId } from './core/collector';
 import { EMaterialType } from './const/enums';
 import { Action } from './core/action';
+import { ActionType } from './core/store';
 
 export type Dispatch = (action: DispatchedAction) => any | Promise<any>;
 
 export type MiddlewareParam = {
   dispatch: Dispatch,
+  getActionChain: () => ActionType[],
 }
 
 export interface Middleware {
-  ({ dispatch }: MiddlewareParam): (next: Dispatch) => Dispatch;
+  ({ dispatch, getActionChain }: MiddlewareParam): (next: Dispatch) => Dispatch;
 }
 
 export interface Store {

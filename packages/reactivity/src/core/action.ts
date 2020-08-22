@@ -32,14 +32,14 @@ export class Action {
     return action;
   }
 
-  execute(runner: () => void | Promise<void>) {
+  execute(runner: () => void | Promise<void>): void | Promise<void> {
     if (this.status === ActionStatus.ABORT) {
       return;
     }
     Action.context = this;
     const result = runner();
     if (isPromise(result)) {
-      (result as Promise<void>).then(() => {
+      return (result as Promise<void>).then(() => {
         Action.context = void 0;
       });
     }

@@ -1,15 +1,21 @@
 import { Middleware, Store } from '../interfaces';
 import { compose } from '../utils/compose';
 import { fail } from '../utils/error';
+import { Action } from './action';
+import { actionTypeChain } from './store';
 
 export const middlewares: Array<Middleware> = [];
 
 /**
  * Add middleware.
  */
-export function use(middleware: Middleware | Array<Middleware>) {
+export function use(middleware: Middleware | Array<Middleware>, inner = true) {
   const arr = Array.isArray(middleware) ? middleware : [middleware];
-  middlewares.push(...arr);
+  if (inner) {
+    middlewares.unshift(...arr);
+  } else {
+    middlewares.push(...arr);
+  }
 }
 
 export function applyMiddleware() {
@@ -20,7 +26,12 @@ export function applyMiddleware() {
         `Other middleware would not be applied to this dispatch.`);
     };
     const exposedMethod = {
-      // getState: store.getState,
+      getActionChain: () => {
+        if (Action.context) {
+          return Action.context.historyNode.actionChain.slice();
+        }
+        return actionTypeChain.slice();
+      },
       dispatch: (...args: any[]) => dispatch(...args),
     };
     const runnerChain = middlewares.map(middleware => middleware(exposedMethod));
