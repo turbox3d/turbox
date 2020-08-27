@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation, use } from 'turbox';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation, use } from '@turbox3d/reactivity';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -137,6 +137,9 @@ const DemoBox = Reactive(() => {
   const updatePosition = () => {
     p.updatePosition(new Point2d(200, 200));
   };
+  const updatePositionX = () => {
+    p.updatePositionX();
+  };
   const testDisposer = () => {
     setFlag(false);
   };
@@ -246,6 +249,16 @@ const DemoBox = Reactive(() => {
   const testNickName = () => {
     cts.countertops[0].updateNickName('feifan');
   };
+  const doThreeOp = () => {
+    console.log(cts.countertops[0].threeVector);
+    cts.countertops[0].doThreeOp();
+  }
+  const doMapOp = () => {
+    cts.countertops[0].doMapOp();
+  }
+  const doSetOp = () => {
+    cts.countertops[0].doSetOp();
+  }
   console.log('***parent');
 
   React.useEffect(() => {
@@ -261,9 +274,9 @@ const DemoBox = Reactive(() => {
         </div>
       } */}
       <span>nickName: {cts.countertops[0].nickName}</span>
-      {/* {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
-        <span>key：{cts.countertops[0].info.a}</span>
-      } */}
+      {cts.countertops.length && cts.countertops[0].info && cts.countertops[0].info.a &&
+        <span>key：{cts.countertops[0].info.a}, key b：{cts.countertops[0].info.b}</span>
+      }
       <br />
       {/* {cts.countertops.length && cts.countertops[0].normalPoints.map((np, index) => (
         <NormalPoint index={index} np={np} />
@@ -280,6 +293,38 @@ const DemoBox = Reactive(() => {
       {/* {flag &&
         <DisposerTest />
       } */}
+      <div>
+        point p: {p.position.x},{p.position.y}
+      </div>
+      <div>
+        three vector3: {cts.countertops[0].threeVector.x}
+      </div>
+      <div>
+        test Map:
+        {cts.countertops[0].myMap.size}<br />
+        {cts.countertops[0].myMap.get(0)}<br />
+        {cts.countertops[0].myMap.has(0) ? 'true' : 'false'}<br />
+        {cts.countertops[0].myMap.get(1)}<br />
+        {cts.countertops[0].myMap.has(1) ? 'true' : 'false'}<br />
+        {/* {cts.countertops[0].myMap.entries()}<br /> */}
+        {cts.countertops[0].myMap.forEach((value, key) => {
+          console.log(value, '...', key);
+        })}<br />
+        {/* {cts.countertops[0].myMap.keys()}<br /> */}
+        {/* {cts.countertops[0].myMap.values()}<br /> */}
+      </div>
+      <div>
+        test Set:
+        {cts.countertops[0].mySet.size}<br />
+        {cts.countertops[0].mySet.has(0) ? 'true' : 'false'}<br />
+        {cts.countertops[0].mySet.has(1000) ? 'true' : 'false'}<br />
+        {/* {cts.countertops[0].mySet.entries()}<br /> */}
+        {cts.countertops[0].mySet.forEach((value) => {
+          console.log(value, '@@@');
+        })}<br />
+        {/* {cts.countertops[0].mySet.keys()}<br /> */}
+        {/* {cts.countertops[0].mySet.values()}<br /> */}
+      </div>
       <div
         style={{
           position: 'absolute',
@@ -338,6 +383,18 @@ const DemoBox = Reactive(() => {
                 </button>
         <button onClick={updatePosition}>
           更改位置
+                </button>
+        <button onClick={updatePositionX}>
+          更改X位置
+                </button>
+        <button onClick={doThreeOp}>
+          three setLength
+                </button>
+        <button onClick={doMapOp}>
+          do Map op
+                </button>
+        <button onClick={doSetOp}>
+          do Set op
                 </button>
         <button onClick={() => TimeTravel.pause()}>
           暂停

@@ -1,4 +1,4 @@
-import { reactor, mutation, Domain, reactive, init, config } from 'turbox';
+import { reactor, mutation, Domain, reactive, init, config } from '@turbox3d/reactivity';
 // import { observable, action, autorun } from 'mobx';
 
 class TestTurbox extends Domain {

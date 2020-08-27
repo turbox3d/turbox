@@ -20,4 +20,4 @@ export function isSupportSymbol(): boolean {
 
 export const toObjectTypeString = (value: any): string => Object.prototype.toString.call(value);
 
-export const stateDecoRegExp = /^\[object (?:Object|Array)\]$/;
+export const stateDecoRegExp = /^\[object (?:Object|Array|Map|Set|WeakMap|WeakSet)\]$/;

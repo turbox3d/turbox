@@ -14,6 +14,7 @@ export interface ComputedRef<T> {
   configurable?: boolean;
   get: () => T;
   set?: (value: any) => void;
+  dispose?: () => void;
 }
 
 export function computed(target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): any;
@@ -64,6 +65,9 @@ export function computed<T>(...args: any[]) {
         }
         depCollector.collect(computedRef, ESpecialReservedKey.COMPUTED);
         return value;
+      },
+      dispose: () => {
+        reaction.dispose();
       },
     };
 

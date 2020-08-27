@@ -1,5 +1,6 @@
+import * as THREE from 'three';
 import Point2d from '../math/Point2d';
-import { Domain, effect, mutation, reactor, computed, Action, Effect } from 'turbox';
+import { Domain, effect, mutation, reactor, computed, Action, Effect } from '@turbox3d/reactivity';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
@@ -21,12 +22,15 @@ export class Countertop extends Domain {
   }];
   @reactor(true, true) lines: Line[];
   @reactor(true, true) info: any = {
-    a: 1,
+    // a: 1,
     b: 'bbb',
   };
   @reactor() firstName = 'Jack';
   @reactor() lastName = 'Ma';
   @reactor(true, true) nickName = '';
+  @reactor() threeVector = new THREE.Vector3(1, 1, 1);
+  @reactor() myMap: Map<number, number> = new Map([[0, 0]]);
+  @reactor() mySet: Set<number> = new Set([0, 1, 2]);
 
   initDomainContext() {
     return {
@@ -60,6 +64,26 @@ export class Countertop extends Domain {
     this.nickName = value;
   }
 
+  @mutation
+  doThreeOp() {
+    this.threeVector.setLength(200);
+    console.log(this.threeVector);
+  }
+
+  @mutation
+  doMapOp() {
+    this.myMap.set(1, 1);
+    this.myMap.delete(0);
+    this.myMap.clear();
+  }
+
+  @mutation
+  doSetOp() {
+    this.mySet.delete(1);
+    this.mySet.clear();
+    this.mySet.add(1000);
+  }
+
   isClosedPath() {
     return this.lines.length === this.points.length;
   }
@@ -90,7 +114,7 @@ export class Countertop extends Domain {
 
   @mutation('测试加key')
   addKey() {
-    this.info.a += 1;
+    this.info.a = 1;
   }
 
   @mutation('测试删key')

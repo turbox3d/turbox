@@ -1,4 +1,4 @@
-import { Reactive } from 'turbox';
+import { Reactive } from '@turbox3d/reactivity';
 import React from 'react';
 import { Line } from '../domain/line';
 

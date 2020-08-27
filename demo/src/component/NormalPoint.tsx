@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Reactive } from 'turbox';
+import { Reactive } from '@turbox3d/reactivity';
 import { cts } from './index';
 
 interface IProps {

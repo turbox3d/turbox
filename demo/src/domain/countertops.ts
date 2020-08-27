@@ -1,4 +1,4 @@
-import { Domain, mutation, reactor } from 'turbox';
+import { Domain, mutation, reactor } from '@turbox3d/reactivity';
 import { Countertop } from './countertop';
 
 export class Countertops extends Domain {

@@ -1,5 +1,5 @@
 import Point2d from '../math/Point2d';
-import { Domain, mutation, reactor } from 'turbox';
+import { Domain, mutation, reactor } from '@turbox3d/reactivity';
 import { Countertop } from './countertop';
 import { Line } from './line';
 import { EPointType } from '../types/enum';
@@ -17,6 +17,11 @@ export class Point extends Domain {
   @mutation('更新点位置')
   updatePosition = (p: Point2d) => {
     this.position = p;
+  }
+
+  @mutation('更新点x位置')
+  updatePositionX = () => {
+    this.position.x = 1000;
   }
 
   constructor({

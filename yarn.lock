@@ -2017,10 +2017,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@turbox3d/reactivity@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.1.2.tgz#0989a0cb15b396fd5b9eac0ab442c18d6a406944"
-  integrity sha512-bT9ERpsmdEeAstfF69huQwQcAclF6GiXlEjstIgOjs8uwaU7ErG/fa2BoJVCmYi7Y9gtLMwbnynXxm+fG2WCmA==
+"@turbox3d/reactivity@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.2.8.tgz#d99c329897696fd309c65c8e1868f8bfd857e278"
+  integrity sha512-Q0EOSEHME8dcScEIc7kd5o4OVHQEqW4vTCNinCk1ok+DvwpixRLKFmI2aTs+6E2UPEIQ1Enj47BXHlhN8NCQIA==
 
 "@types/babel__core@^7.1.7":
   version "7.1.9"
@@ -9388,6 +9388,11 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
+three@^0.119.1:
+  version "0.119.1"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.119.1.tgz#9d979a082c4cd9622af8e3498a8dfa026a619332"
+  integrity sha512-GHyh/RiUfQ5VTiWIVRRTANYoXc1PFB1y+jDVRTb649nif1uX1F06PT1TKU3k2+F/MN4UJ3PWvQB53fY2OqKqKw==
+
 throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
@@ -9584,12 +9589,12 @@ tunnel@0.0.4:
   resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.4.tgz#2d3785a158c174c9a16dc2c046ec5fc5f1742213"
   integrity sha1-LTeFoVjBdMmhbcLARuxfxfF0IhM=
 
-turbox@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.1.2.tgz#86698cf9d88fa3efc7253aa9aae6b4f8d66eaea8"
-  integrity sha512-dPstu+4NpRZVMbocXWdKIXVupl+6Ekkxsdk4Y2JsVGcKP6ohHCP1exni3rQP3/VTay0cyMa86HDwZSdgdxtUIg==
+turbox@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/turbox/-/turbox-1.2.8.tgz#706e1726b4ccff7fef089c5f8684d64680505631"
+  integrity sha512-gld6Y+4VwxJyjIxS7E1JRl1qVolz3PkGSbcanqzsE79oOlHhcZWOaCjttUuSiByCZYkM+KzScySKtpADGCVo1g==
   dependencies:
-    "@turbox3d/reactivity" "^1.1.2"
+    "@turbox3d/reactivity" "^1.2.8"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
