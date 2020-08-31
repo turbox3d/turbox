@@ -9,11 +9,11 @@ export const meta = {
 export interface ReactorConfig {
   deepProxy: boolean;
   isNeedRecord?: boolean;
-  callback?: (target: Object, property: string | symbol | number) => void;
+  callback?: (target: Object, property: string) => void;
 }
 
-export function reactor(target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string | symbol | number) => void): (target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function reactor(target: Object, property: string, descriptor?: BabelDescriptor<any>): any;
+export function reactor(deepProxy?: boolean, isNeedRecord?: boolean, callback?: (target: Object, property: string) => void): (target: Object, property: string, descriptor?: BabelDescriptor<any>) => any;
 /**
  * reactor decorator, making the reactor observable.
  */
@@ -21,7 +21,7 @@ export function reactor(...args: any[]) {
   const config: ReactorConfig = {
     deepProxy: true,
   };
-  const decorator = function <T>(target: Object, property: string | symbol | number, descriptor?: BabelDescriptor<T>): any {
+  const decorator = function <T>(target: Object, property: string, descriptor?: BabelDescriptor<T>): any {
     const newDescriptor = {
       enumerable: true,
       configurable: true,

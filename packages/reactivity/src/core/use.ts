@@ -3,6 +3,7 @@ import { compose } from '../utils/compose';
 import { fail } from '../utils/error';
 import { Action } from './action';
 import { actionTypeChain } from './store';
+import { depCollector } from './collector';
 
 export const middlewares: Array<Middleware> = [];
 
@@ -31,6 +32,9 @@ export function applyMiddleware() {
           return Action.context.historyNode.actionChain.slice();
         }
         return actionTypeChain.slice();
+      },
+      getDependencyGraph: () => {
+        return new Map(depCollector.dependencyGraph);
       },
       dispatch: (...args: any[]) => dispatch(...args),
     };

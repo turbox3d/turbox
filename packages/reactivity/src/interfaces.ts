@@ -1,5 +1,5 @@
 import { Domain } from './core/domain';
-import { ReactionId } from './core/collector';
+import { ReactionId, DepNodeAssembly } from './core/collector';
 import { EMaterialType } from './const/enums';
 import { Action } from './core/action';
 import { ActionType } from './core/store';
@@ -9,10 +9,11 @@ export type Dispatch = (action: DispatchedAction) => any | Promise<any>;
 export type MiddlewareParam = {
   dispatch: Dispatch,
   getActionChain: () => ActionType[],
+  getDependencyGraph: () => Map<object, DepNodeAssembly>,
 }
 
 export interface Middleware {
-  ({ dispatch, getActionChain }: MiddlewareParam): (next: Dispatch) => Dispatch;
+  ({ dispatch, getActionChain, getDependencyGraph }: MiddlewareParam): (next: Dispatch) => Dispatch;
 }
 
 export interface Store {

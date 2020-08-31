@@ -10,13 +10,9 @@ import { isDomain } from '../utils/common';
 
 export type ReactionId = Component | Reaction;
 
-export interface DepNodeAssembly {
-  [prop: string]: Set<ReactionId>;
-}
+export type DepNodeAssembly = Map<any, Set<ReactionId>>;
 
-export interface DepNodeStatus {
-  [prop: string]: EDepState;
-}
+export type DepNodeStatus = Map<any, EDepState>;
 
 const isInBlackList = (propKey: string) => {
   const blackList = {
@@ -46,15 +42,15 @@ const isInBlackList = (propKey: string) => {
  * collect relation map of the dep key and the reaction ids
  */
 class DepCollector {
-  public dependencyMap = new WeakMap<object, DepNodeAssembly>();
-  private reactionIdDeps = new WeakMap<ReactionId, Map<object, DepNodeStatus>>();
+  public dependencyGraph = new Map<object, DepNodeAssembly>();
+  private reactionIdDeps = new Map<ReactionId, Map<object, DepNodeStatus>>();
   private reactionIdStack: ReactionId[] = [];
 
   start(id: ReactionId) {
     this.reactionIdStack.push(id);
   }
 
-  collect(target: object, propertyKey: string) {
+  collect(target: object, propertyKey: any) {
     if (isInBlackList(propertyKey)) {
       return;
     }
@@ -63,33 +59,32 @@ class DepCollector {
       return;
     }
     const currentReactionId = this.reactionIdStack[stackLength - 1];
-    const depNodeAssembly = this.dependencyMap.get(target);
+    const depNodeAssembly = this.dependencyGraph.get(target);
     if (depNodeAssembly !== void 0) {
-      const depNode = depNodeAssembly[propertyKey];
+      const depNode = depNodeAssembly.get(propertyKey);
       if (depNode !== void 0) {
         depNode.add(currentReactionId);
       } else {
-        depNodeAssembly[propertyKey] = new Set([currentReactionId]);
+        depNodeAssembly.set(propertyKey, new Set([currentReactionId]));
       }
     } else {
-      this.dependencyMap.set(target, {
-        [propertyKey]: new Set([currentReactionId]),
-      });
+      const map = new Map([[propertyKey, new Set([currentReactionId])]]);
+      this.dependencyGraph.set(target, map);
     }
     const reactionDeps = this.reactionIdDeps.get(currentReactionId);
     if (reactionDeps !== void 0) {
       const depNodeStatusAssembly = reactionDeps.get(target);
       if (depNodeStatusAssembly !== void 0) {
-        depNodeStatusAssembly[propertyKey] = EDepState.LATEST;
+        depNodeStatusAssembly.set(propertyKey, EDepState.LATEST);
       } else {
-        reactionDeps.set(target, {
-          [propertyKey]: EDepState.LATEST,
-        });
+        reactionDeps.set(target, new Map([[
+          propertyKey, EDepState.LATEST
+        ]]));
       }
     } else {
-      this.reactionIdDeps.set(currentReactionId, new Map([[target, {
-        [propertyKey]: EDepState.LATEST,
-      }]]));
+      this.reactionIdDeps.set(currentReactionId, new Map([[target, new Map([[
+        propertyKey, EDepState.LATEST
+      ]])]]));
     }
   }
 
@@ -102,24 +97,22 @@ class DepCollector {
     if (!map) {
       return;
     }
-    map.forEach((value, target) => {
-      const keys = Object.keys(value);
-      for (let index = 0; index < keys.length; index++) {
-        const key = keys[index];
+    map.forEach((depNode, target) => {
+      depNode.forEach((value, key) => {
         // remove stale deps
-        if (value[key] === EDepState.OBSERVED) {
-          const depNodeAssembly = this.dependencyMap.get(target);
+        if (value === EDepState.OBSERVED) {
+          const depNodeAssembly = this.dependencyGraph.get(target);
           if (depNodeAssembly) {
-            const idSet = depNodeAssembly[key];
-            idSet.delete(currentReactionId);
-            value[key] = EDepState.NOT_OBSERVED;
+            const idSet = depNodeAssembly.get(key);
+            idSet && idSet.delete(currentReactionId);
+            depNode.set(key, EDepState.NOT_OBSERVED);
           }
         }
         // reset dep status
-        if (value[key] === EDepState.LATEST) {
-          value[key] = EDepState.OBSERVED;
+        if (value === EDepState.LATEST) {
+          depNode.set(key, EDepState.OBSERVED);
         }
-      }
+      });
     });
   }
 
@@ -128,23 +121,21 @@ class DepCollector {
     if (!map) {
       return;
     }
-    map.forEach((value, target) => {
-      const keys = Object.keys(value);
-      for (let index = 0; index < keys.length; index++) {
-        const key = keys[index];
-        const depNodeAssembly = this.dependencyMap.get(target);
+    map.forEach((depNode, target) => {
+      depNode.forEach((value, key) => {
+        const depNodeAssembly = this.dependencyGraph.get(target);
         if (depNodeAssembly) {
-          const idSet = depNodeAssembly[key];
-          idSet.delete(id);
+          const idSet = depNodeAssembly.get(key);
+          idSet && idSet.delete(id);
         }
-      }
+      });
     });
     this.reactionIdDeps.delete(id);
   }
 
   isObserved(targetKey: object, propKey: string) {
-    const map = this.dependencyMap.get(targetKey);
-    return map !== void 0 && propKey in map && map[propKey].size > 0;
+    const map = this.dependencyGraph.get(targetKey);
+    return map !== void 0 && map.has(propKey) && (map.get(propKey) || new Set()).size > 0;
   }
 }
 
@@ -174,9 +165,9 @@ class TriggerCollector {
   }
 
   private collectComponentId(target: object, enhanceKey: string) {
-    const depNodeAssembly = depCollector.dependencyMap.get(target);
+    const depNodeAssembly = depCollector.dependencyGraph.get(target);
     if (depNodeAssembly !== void 0) {
-      const idSet = depNodeAssembly[enhanceKey];
+      const idSet = depNodeAssembly.get(enhanceKey);
       if (idSet !== void 0 && idSet.size > 0) {
         idSet.forEach(id => this.waitTriggerIds.add(id));
       }

@@ -29,7 +29,7 @@ export class Countertop extends Domain {
   @reactor() lastName = 'Ma';
   @reactor(true, true) nickName = '';
   @reactor() threeVector = new THREE.Vector3(1, 1, 1);
-  @reactor() myMap: Map<number, number> = new Map([[0, 0]]);
+  @reactor() myMap: Map<number, number> = new Map([[0, 0], [2, 2]]);
   @reactor() mySet: Set<number> = new Set([0, 1, 2]);
 
   initDomainContext() {
@@ -72,16 +72,18 @@ export class Countertop extends Domain {
 
   @mutation
   doMapOp() {
-    this.myMap.set(1, 1);
-    this.myMap.delete(0);
-    this.myMap.clear();
+    this.myMap.set(0, 1000);
+    // this.myMap.set(1, 1);
+    // this.myMap.delete(0);
+    // this.myMap.clear();
   }
 
   @mutation
   doSetOp() {
     this.mySet.delete(1);
-    this.mySet.clear();
-    this.mySet.add(1000);
+    // this.mySet.clear();
+    // this.mySet.add(1);
+    // this.mySet.add(1000);
   }
 
   isClosedPath() {

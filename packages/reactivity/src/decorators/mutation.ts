@@ -52,7 +52,7 @@ function createMutation(target: Object | undefined, name: string | symbol | numb
 
 export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
 export function mutation(name?: string, immediately?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
-export function mutation(name: string, original: Mutation, config?: MutationConfig): (...payload: any[]) => any;
+export function mutation(name: string | symbol | number, original: Mutation, config?: MutationConfig): (...payload: any[]) => any;
 /**
  * decorator @mutation, update state by mutation styling.
  */

@@ -12,8 +12,12 @@ export enum ESpecialReservedKey {
 
 export const enum ECollectType {
   SET = 'set',
+  MAP_SET = 'map-set',
   ADD = 'add',
+  SET_ADD = 'set-add',
   DELETE = 'delete',
+  MAP_DELETE = 'map-delete',
+  SET_DELETE = 'set-delete',
 }
 
 export enum EMaterialType {

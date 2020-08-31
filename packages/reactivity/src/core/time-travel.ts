@@ -21,8 +21,8 @@ export interface HistoryNode {
 
 export interface HistoryCollectorPayload {
   type: ECollectType;
-  beforeUpdate: any;
-  didUpdate: any;
+  beforeUpdate?: any;
+  didUpdate?: any;
 }
 
 /**

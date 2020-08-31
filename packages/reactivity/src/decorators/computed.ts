@@ -17,8 +17,8 @@ export interface ComputedRef<T> {
   dispose?: () => void;
 }
 
-export function computed(target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): any;
-export function computed(options?: Partial<ComputedOption>): (target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor) => any;
+export function computed(target: Object, property: string, descriptor?: PropertyDescriptor): any;
+export function computed(options?: Partial<ComputedOption>): (target: Object, property: string, descriptor?: PropertyDescriptor) => any;
 export function computed<T>(computeRunner: () => T, options?: Partial<ComputedOption>): ComputedRef<T>;
 
 /**
@@ -77,7 +77,7 @@ export function computed<T>(...args: any[]) {
   let computedRef: ComputedRef<T>;
   let options: ComputedOption | undefined;
 
-  const decorator = (target: Object, property: string | symbol | number, descriptor?: PropertyDescriptor): ComputedRef<T> => {
+  const decorator = (target: Object, property: string, descriptor?: PropertyDescriptor): ComputedRef<T> => {
     computedRef = {
       enumerable: true,
       configurable: true,
