@@ -57,7 +57,7 @@ const r = reactive(() => {
 });
 
 // const fullName = computed(cts.countertops[0].getFullName);
-let action;
+let action: Action;
 
 const DemoBox = Reactive(() => {
   const [flag, setFlag] = useState(true);
@@ -288,9 +288,7 @@ const DemoBox = Reactive(() => {
       {cts.countertops.length && cts.countertops[0].lines.map(line => (
         <LineTpl data={line} />
       ))}
-      {cts.countertops.length && cts.countertops[0].points.map((point, index) => (
-        <PointTpl data={point} index={index} />
-      ))}
+      {cts.countertops.length && cts.countertops[0].points.map((point, index) => <PointTpl data={point} index={index} />)}
       {/* {flag &&
         <DisposerTest />
       } */}

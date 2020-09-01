@@ -30,11 +30,11 @@ interface ComputedConfig<T> {
   reaction?: Reaction;
 }
 
-type NormalCollection = Map<any, any> | Set<any>;
-type WeakCollection = WeakMap<any, any> | WeakSet<any>;
-type Collection = NormalCollection | WeakCollection;
-type MapType = Map<any, any> | WeakMap<any, any>;
-type SetType = Set<any> | WeakSet<any>;
+export type NormalCollection = Map<any, any> | Set<any>;
+export type WeakCollection = WeakMap<any, any> | WeakSet<any>;
+export type Collection = NormalCollection | WeakCollection;
+export type MapType = Map<any, any> | WeakMap<any, any>;
+export type SetType = Set<any> | WeakSet<any>;
 
 /**
  * Framework base class 'Domain', class must be extends this base class which is need to be observable.
@@ -315,8 +315,6 @@ export class Domain<S = {}> {
         if (!hadKey) {
           triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
             type: ECollectType.MAP_SET,
-            beforeUpdate: oldValue,
-            didUpdate: value,
           }, this.reactorConfigMap[rootKey].isNeedRecord);
         }
         return set.call(target, key, value);
@@ -335,7 +333,6 @@ export class Domain<S = {}> {
           triggerCollector.trigger(target, key, {
             type: ECollectType.MAP_DELETE,
             beforeUpdate: oldValue,
-            didUpdate: undefined,
           }, this.reactorConfigMap[rootKey].isNeedRecord);
 
           triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
@@ -345,6 +342,7 @@ export class Domain<S = {}> {
         if (proto.constructor === Set || proto.constructor === WeakSet) {
           triggerCollector.trigger(target, key, {
             type: ECollectType.SET_DELETE,
+            beforeUpdate: key,
           }, this.reactorConfigMap[rootKey].isNeedRecord);
 
           triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {

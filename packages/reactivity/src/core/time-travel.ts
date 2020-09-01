@@ -1,16 +1,17 @@
-import { materialCallStack } from './domain';
+import { materialCallStack, MapType, SetType } from './domain';
 import { store, ActionType } from './store';
 import { ctx } from '../const/config';
 import { fail } from '../utils/error';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { ECollectType, EMaterialType } from '../const/enums';
 
-export interface KeyToDiffChangeMap {
-  [key: string]: {
-    beforeUpdate: any;
-    didUpdate: any;
-  };
+export interface DiffInfo {
+  type: ECollectType;
+  beforeUpdate: any;
+  didUpdate: any;
 }
+
+export type KeyToDiffChangeMap = Map<any, DiffInfo>;
 
 export type History = Map<object, KeyToDiffChangeMap>;
 
@@ -29,9 +30,6 @@ export interface HistoryCollectorPayload {
  * collect prop diff history record
  */
 export class TimeTravel {
-  currentHistory: History = new Map();
-  transactionHistories: HistoryNode[] = [];
-  cursor: number = -1;
   static currentTimeTravel?: TimeTravel;
 
   static switch = (instance: TimeTravel) => {
@@ -72,6 +70,60 @@ export class TimeTravel {
     return TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.redoable;
   }
 
+  static undoHandler(history: History) {
+    history.forEach((keyToDiffObj, target) => {
+      if (!keyToDiffObj) {
+        return;
+      }
+      keyToDiffObj.forEach((value, key) => {
+        if (!value) {
+          return;
+        }
+        if (value.type === ECollectType.MAP_SET || value.type === ECollectType.MAP_DELETE) {
+          if (value.beforeUpdate === void 0) {
+            (target as MapType).delete(key);
+          } else {
+            (target as MapType).set(key, value.beforeUpdate);
+          }
+        } else if (value.type === ECollectType.SET_ADD) {
+          (target as SetType).delete(key);
+        } else if (value.type === ECollectType.SET_DELETE) {
+          (target as SetType).add(key);
+        } else {
+          if (Array.isArray(target) && value.beforeUpdate === void 0) {
+            delete target[key];
+          } else {
+            target[key] = value.beforeUpdate;
+          }
+        }
+      });
+    });
+  }
+
+  static redoHandler(history: History) {
+    history.forEach((keyToDiffObj, target) => {
+      if (!keyToDiffObj) {
+        return;
+      }
+      keyToDiffObj.forEach((value, key) => {
+        if (!value) {
+          return;
+        }
+        if (value.type === ECollectType.MAP_SET) {
+          (target as MapType).set(key, value.didUpdate);
+        } else if (value.type === ECollectType.SET_ADD) {
+          (target as SetType).add(key);
+        } else if (value.type === ECollectType.SET_DELETE) {
+          (target as SetType).delete(key);
+        } else if (value.type === ECollectType.MAP_DELETE) {
+          (target as MapType).delete(key);
+        } else {
+          target[key] = value.didUpdate;
+        }
+      });
+    });
+  }
+
   get undoable() {
     return this.cursor >= 0;
   }
@@ -79,6 +131,10 @@ export class TimeTravel {
   get redoable() {
     return this.cursor < this.transactionHistories.length - 1;
   }
+
+  currentHistory: History = new Map();
+  transactionHistories: HistoryNode[] = [];
+  cursor: number = -1;
 
   /**
    * @todo support multiple steps
@@ -90,15 +146,7 @@ export class TimeTravel {
     }
     const currentHistory = this.transactionHistories[this.cursor];
     const original = () => {
-      currentHistory.history.forEach((keyToDiffObj, target) => {
-        if (keyToDiffObj) {
-          const keys = Object.keys(keyToDiffObj);
-          for (let i = 0; i < keys.length; i++) {
-            const propKey = keys[i];
-            target[propKey] = keyToDiffObj[propKey].beforeUpdate;
-          }
-        }
-      });
+      TimeTravel.undoHandler(currentHistory.history);
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     if (!store) {
@@ -126,15 +174,7 @@ export class TimeTravel {
     this.cursor += 1;
     const currentHistory = this.transactionHistories[this.cursor];
     const original = () => {
-      currentHistory.history.forEach((keyToDiffObj, target) => {
-        if (keyToDiffObj) {
-          const keys = Object.keys(keyToDiffObj);
-          for (let i = 0; i < keys.length; i++) {
-            const propKey = keys[i];
-            target[propKey] = keyToDiffObj[propKey].didUpdate;
-          }
-        }
-      });
+      TimeTravel.redoHandler(currentHistory.history);
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     if (!store) {

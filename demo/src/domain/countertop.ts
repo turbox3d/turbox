@@ -72,18 +72,18 @@ export class Countertop extends Domain {
 
   @mutation
   doMapOp() {
-    this.myMap.set(0, 1000);
-    // this.myMap.set(1, 1);
+    // this.myMap.set(0, 1000);
+    this.myMap.set(1, 1);
     // this.myMap.delete(0);
     // this.myMap.clear();
   }
 
   @mutation
   doSetOp() {
-    this.mySet.delete(1);
+    // this.mySet.delete(1);
     // this.mySet.clear();
     // this.mySet.add(1);
-    // this.mySet.add(1000);
+    this.mySet.add(1000);
   }
 
   isClosedPath() {

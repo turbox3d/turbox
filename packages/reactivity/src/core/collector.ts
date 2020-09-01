@@ -144,8 +144,8 @@ export const depCollector = new DepCollector();
 class TriggerCollector {
   public waitTriggerIds: Set<ReactionId> = new Set();
 
-  trigger(target: object, key: string, payload: HistoryCollectorPayload, isNeedRecord = true) {
-    const { beforeUpdate, didUpdate, type } = payload;
+  trigger(target: object, key: any, payload: HistoryCollectorPayload, isNeedRecord = true) {
+    const { type } = payload;
     const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;
     this.collectComponentId(target, enhanceKey);
     if (
@@ -158,13 +158,13 @@ class TriggerCollector {
       return;
     }
     if (Action.context) {
-      this.recordDiff(target, enhanceKey, beforeUpdate, didUpdate, Action.context.historyNode.history);
+      this.recordDiff(target, enhanceKey, payload, Action.context.historyNode.history);
       return;
     }
-    this.recordDiff(target, enhanceKey, beforeUpdate, didUpdate, TimeTravel.currentTimeTravel.currentHistory);
+    this.recordDiff(target, enhanceKey, payload, TimeTravel.currentTimeTravel.currentHistory);
   }
 
-  private collectComponentId(target: object, enhanceKey: string) {
+  private collectComponentId(target: object, enhanceKey: any) {
     const depNodeAssembly = depCollector.dependencyGraph.get(target);
     if (depNodeAssembly !== void 0) {
       const idSet = depNodeAssembly.get(enhanceKey);
@@ -174,7 +174,8 @@ class TriggerCollector {
     }
   }
 
-  private recordDiff(target: object, enhanceKey: string, beforeUpdate: any, didUpdate: any, history: History) {
+  private recordDiff(target: object, enhanceKey: any, payload: HistoryCollectorPayload, history: History) {
+    const { type, beforeUpdate, didUpdate } = payload;
     let proxyTarget: object | undefined;
     if (isDomain(target)) {
       proxyTarget = target;
@@ -186,21 +187,22 @@ class TriggerCollector {
     }
     const keyToDiffChangeMap = history.get(proxyTarget);
     if (keyToDiffChangeMap !== void 0) {
-      if (keyToDiffChangeMap[enhanceKey] !== void 0) {
-        keyToDiffChangeMap[enhanceKey].didUpdate = didUpdate;
+      const diffInfo = keyToDiffChangeMap.get(enhanceKey);
+      if (diffInfo !== void 0) {
+        diffInfo.didUpdate = didUpdate;
       } else {
-        keyToDiffChangeMap[enhanceKey] = {
+        keyToDiffChangeMap.set(enhanceKey, {
+          type,
           beforeUpdate,
           didUpdate,
-        };
+        });
       }
     } else {
-      history.set(proxyTarget, {
-        [enhanceKey]: {
-          beforeUpdate,
-          didUpdate,
-        }
-      });
+      history.set(proxyTarget, new Map([[enhanceKey, {
+        type,
+        beforeUpdate,
+        didUpdate,
+      }]]));
     }
   }
 

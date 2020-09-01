@@ -8,11 +8,11 @@ const Collection: React.FC<{}> = () => {
     <div>
       <div>
         test Map:
-        {/* {cts.countertops[0].myMap.size}<br /> */}
+        {cts.countertops[0].myMap.size}<br />
         {/* {cts.countertops[0].myMap.get(0)}<br /> */}
         {/* {cts.countertops[0].myMap.has(0) ? 'true' : 'false'}<br /> */}
-        {/* {cts.countertops[0].myMap.get(1)}<br /> */}
-        {/* {cts.countertops[0].myMap.has(1) ? 'true' : 'false'}<br /> */}
+        {cts.countertops[0].myMap.get(1)}<br />
+        {cts.countertops[0].myMap.has(1) ? 'true' : 'false'}<br />
         {/* {cts.countertops[0].myMap.forEach((value, key) => {
           console.log(value, '...', key);
         })}<br /> */}
@@ -22,10 +22,10 @@ const Collection: React.FC<{}> = () => {
       </div>
       <div>
         test Set:
-        {/* {cts.countertops[0].mySet.size}<br /> */}
+        {cts.countertops[0].mySet.size}<br />
         {/* {cts.countertops[0].mySet.has(0) ? 'true' : 'false'}<br /> */}
         {/* {cts.countertops[0].mySet.has(1) ? 'true' : 'false'}<br /> */}
-        {/* {cts.countertops[0].mySet.has(1000) ? 'true' : 'false'}<br /> */}
+        {cts.countertops[0].mySet.has(1000) ? 'true' : 'false'}<br />
         {/* {cts.countertops[0].mySet.forEach((value) => {
           console.log(value, '@@@');
         })}<br /> */}

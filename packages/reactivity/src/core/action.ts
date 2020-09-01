@@ -1,10 +1,10 @@
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { store } from './store';
 import { remove, includes, nextTick, isPromise } from '../utils/common';
-import { ActionStatus, EMaterialType } from '../const/enums';
-import { HistoryNode } from './time-travel';
+import { ActionStatus, EMaterialType, ECollectType } from '../const/enums';
+import { HistoryNode, TimeTravel } from './time-travel';
 import { triggerCollector } from './collector';
-import { materialCallStack } from './domain';
+import { materialCallStack, MapType, SetType } from './domain';
 import { fail } from '../utils/error';
 
 export const actionPool: Action[] = [];
@@ -60,15 +60,7 @@ export class Action {
 
   revert() {
     const original = () => {
-      this.historyNode.history.forEach((keyToDiffObj, target) => {
-        if (keyToDiffObj) {
-          const keys = Object.keys(keyToDiffObj);
-          for (let i = 0; i < keys.length; i++) {
-            const propKey = keys[i];
-            target[propKey] = keyToDiffObj[propKey].beforeUpdate;
-          }
-        }
-      });
+      TimeTravel.undoHandler(this.historyNode.history);
     };
     materialCallStack.push(EMaterialType.TIME_TRAVEL);
     if (!store) {
