@@ -4,11 +4,15 @@ import { cts } from './index';
 
 const Collection: React.FC<{}> = () => {
   console.log('Collection');
+  for (const [key, value] of cts.countertops[0].myMap) {
+    console.log(key, value);
+  }
   return (
     <div>
       <div>
         test Map:
         {cts.countertops[0].myMap.size}<br />
+        {Array.from(cts.countertops[0].myMap).join()}<br />
         {/* {cts.countertops[0].myMap.get(0)}<br /> */}
         {/* {cts.countertops[0].myMap.has(0) ? 'true' : 'false'}<br /> */}
         {cts.countertops[0].myMap.get(1)}<br />
@@ -23,6 +27,7 @@ const Collection: React.FC<{}> = () => {
       <div>
         test Set:
         {cts.countertops[0].mySet.size}<br />
+        {Array.from(cts.countertops[0].mySet).join()}<br />
         {/* {cts.countertops[0].mySet.has(0) ? 'true' : 'false'}<br /> */}
         {/* {cts.countertops[0].mySet.has(1) ? 'true' : 'false'}<br /> */}
         {cts.countertops[0].mySet.has(1000) ? 'true' : 'false'}<br />

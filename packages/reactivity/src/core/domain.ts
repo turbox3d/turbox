@@ -295,6 +295,14 @@ export class Domain<S = {}> {
         depCollector.collect(target, ESpecialReservedKey.ITERATE);
         return entries.call(target);
       },
+      [Symbol.iterator]: () => {
+        if (target.constructor === Set) {
+          return this.getCollectionHandlerMap(target, 'values').values();
+        }
+        if (target.constructor === Map) {
+          return this.getCollectionHandlerMap(target, 'entries').entries();
+        }
+      },
       add: (value: any) => {
         const { add, has } = Reflect.getPrototypeOf(target) as SetType;
         const rootKey = rootKeyCache.get(target)!;
