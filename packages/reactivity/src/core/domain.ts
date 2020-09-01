@@ -280,6 +280,21 @@ export class Domain<S = {}> {
         depCollector.collect(target, ESpecialReservedKey.ITERATE);
         return forEach.call(target, callbackfn);
       },
+      values: () => {
+        const { values } = Reflect.getPrototypeOf(target) as NormalCollection;
+        depCollector.collect(target, ESpecialReservedKey.ITERATE);
+        return values.call(target);
+      },
+      keys: () => {
+        const { keys } = Reflect.getPrototypeOf(target) as NormalCollection;
+        depCollector.collect(target, ESpecialReservedKey.ITERATE);
+        return keys.call(target);
+      },
+      entries: () => {
+        const { entries } = Reflect.getPrototypeOf(target) as NormalCollection;
+        depCollector.collect(target, ESpecialReservedKey.ITERATE);
+        return entries.call(target);
+      },
       add: (value: any) => {
         const { add, has } = Reflect.getPrototypeOf(target) as SetType;
         const rootKey = rootKeyCache.get(target)!;
