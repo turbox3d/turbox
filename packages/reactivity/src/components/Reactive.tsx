@@ -32,7 +32,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
         return result;
       };
 
-      class Wrapper extends React.PureComponent<P> {
+      class Wrapper extends React.Component<P> {
         unsubscribeHandler?: () => void;
 
         componentDidMount() {
@@ -98,7 +98,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       baseComponentWillUnmount && baseComponentWillUnmount.call(this);
     }
 
-    class ObservableTargetComponent extends React.PureComponent<P> {
+    class ObservableTargetComponent extends React.Component<P> {
       render() {
         return (
           <ErrorBoundary>
