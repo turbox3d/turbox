@@ -10,6 +10,7 @@ import { ReactorConfig, meta } from '../decorators/reactor';
 import { ECollectType, ESpecialReservedKey, EMaterialType } from '../const/enums';
 import { Reaction, reactive } from './reactive';
 import { ComputedOption } from '../decorators/computed';
+import { ctx } from '../const/config';
 
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
@@ -74,7 +75,7 @@ export class Domain<S = {}> {
   }
 
   propertySet(key: string, v: any, config: ReactorConfig) {
-    this.illegalAssignmentCheck(this, key);
+    ctx.strictMode && this.illegalAssignmentCheck(this, key);
     const oldValue = this.properties[key];
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
@@ -161,7 +162,7 @@ export class Domain<S = {}> {
       this.currentTarget = target;
       this.originalArrayLength = target[ESpecialReservedKey.ARRAY_LENGTH];
     }
-    this.illegalAssignmentCheck(target, key);
+    ctx.strictMode && this.illegalAssignmentCheck(target, key);
     const hadKey = hasOwn(target, key);
     const oldValue = target[key];
     const rootKey = rootKeyCache.get(target)!;

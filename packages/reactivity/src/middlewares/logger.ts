@@ -1,7 +1,18 @@
 import { Middleware } from '../interfaces';
 import { deepMerge } from '../utils/deep-merge';
-import { NAMESPACE } from '../const/symbol';
+import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { normalNextReturn } from './common';
+import { Action } from '../core/action';
+import { ctx } from '../const/config';
+import { TimeTravel, History } from '../core/time-travel';
+
+interface DiffLog {
+  name: any;
+  target: any;
+  property: any;
+  before: any;
+  after: any;
+}
 
 function createLoggerMiddleware(): Middleware {
   return () => (next) => (dispatchedAction) => {
@@ -11,23 +22,59 @@ function createLoggerMiddleware(): Middleware {
       return normalNextReturn(next, dispatchedAction);
     }
 
-    console.group(
-      `%caction: ${name}, name: ${displayName}, namespace: ${domain[NAMESPACE]}, prev state:`,
-      'color: red'
-    );
-    console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state before change.
-    console.groupEnd();
+    if (!ctx.middleware.diffLogger) {
+      console.group(
+        `%c[TURBOX LOG]: PREV ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
+        'background: #929493; color: #fff; font-weight: bold; padding: 3px 5px;'
+      );
+      console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state before change.
+      console.groupEnd();
+
+      return normalNextReturn(next, dispatchedAction, () => {
+        if (!domain) {
+          return;
+        }
+        console.group(
+          `%c[TURBOX LOG]: NEXT ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
+          'background: #218D41; color: #fff; font-weight: bold; padding: 3px 5px;'
+        );
+        console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state after change.
+        console.groupEnd();
+      });
+    }
 
     return normalNextReturn(next, dispatchedAction, () => {
       if (!domain) {
         return;
       }
-      console.group(
-        `%caction: ${name}, name: ${displayName}, namespace: ${domain[NAMESPACE]}, next state:`,
-        'color: green'
-      );
-      console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state after change.
-      console.groupEnd();
+      let diffHistory: History = new Map();
+      if (Action.context) {
+        diffHistory = new Map(Action.context.historyNode.history);
+      } else {
+        if (TimeTravel.currentTimeTravel) {
+          diffHistory = new Map(TimeTravel.currentTimeTravel.currentHistory);
+        }
+      }
+      const logArr: DiffLog[] = [];
+      diffHistory.forEach((keyToDiffChangeMap, target) => {
+        keyToDiffChangeMap.forEach((diffInfo, key) => {
+          logArr.push({
+            name: target.constructor.name,
+            target,
+            property: key,
+            before: diffInfo.beforeUpdate,
+            after: diffInfo.didUpdate
+          });
+        });
+      });
+      if (logArr.length) {
+        console.group(
+          `%c[TURBOX LOG]: DIFF ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
+          'background: #FF5F0F; color: #fff; font-weight: bold; padding: 3px 5px;'
+        );
+        console.table(logArr);
+        console.groupEnd();
+      }
     });
   }
 }

@@ -44,6 +44,7 @@ export interface DispatchedAction {
 export interface ConfigCtx {
   middleware: {
     logger?: boolean,
+    diffLogger?: boolean,
     effect?: boolean,
     perf?: boolean,
   },
@@ -51,6 +52,7 @@ export interface ConfigCtx {
     isActive: boolean,
     maxStepNumber?: number,
   },
+  strictMode: boolean,
   devTool: boolean,
 }
 

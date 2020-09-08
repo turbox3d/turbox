@@ -754,14 +754,16 @@ Turbox.render(<Layout />, '#app');
 // 下面是框架提供的默认值
 let ctx = {
   middleware: {
-    logger: false, // 默认关闭 logger 中间件，在生产环境自动关闭
+    logger: process.env.NODE_ENV !== 'production', // 默认在 dev 环境开启 logger 中间件，在生产环境关闭
+    diffLogger: true, // 默认开启 log 状态的 diff 信息
     effect: false, // 默认关闭 effect 中间件
-    perf: false, // 默认关闭 perf 中间件，性能分析用
+    perf: process.env.NODE_ENV !== 'production', // 默认在 dev 环境开启 perf 中间件，性能分析用，在生产环境关闭
   },
   timeTravel: {
     isActive: false, // 是否激活时间旅行器
     maxStepNumber: 20, // 记录操作的最大步数
   },
+  strictMode: process.env.NODE_ENV !== 'production', // 严格模式，开启非法赋值检测，默认在 dev 环境开启，生产环境关闭
   devTool: false // 默认关闭 devTool，在生产环境自动关闭
 }
 ```
