@@ -47,6 +47,8 @@ export interface ConfigCtx {
     diffLogger?: boolean,
     effect?: boolean,
     perf?: boolean,
+    skipNestLog?: boolean,
+    skipNestPerfLog?: boolean;
   },
   timeTravel: {
     isActive: boolean,

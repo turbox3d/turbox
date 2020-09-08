@@ -7,6 +7,8 @@ export let ctx: ConfigCtx = {
     diffLogger: true,
     effect: false,
     perf: process.env.NODE_ENV !== 'production',
+    skipNestLog: true,
+    skipNestPerfLog: true,
   },
   timeTravel: {
     isActive: false,

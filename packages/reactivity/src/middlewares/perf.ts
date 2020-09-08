@@ -2,6 +2,7 @@ import { Middleware } from '../interfaces';
 import { normalNextReturn } from './common';
 import { materialCallStack } from '../core/domain';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
+import { ctx } from '../const/config';
 
 function createPerfMiddleware(): Middleware {
   return () => (next) => (dispatchedAction) => {
@@ -9,7 +10,7 @@ function createPerfMiddleware(): Middleware {
     const start = performance.now();
 
     const length = materialCallStack.length;
-    if (length !== 1) {
+    if (ctx.middleware.skipNestPerfLog && length !== 1) {
       return normalNextReturn(next, dispatchedAction);
     }
 

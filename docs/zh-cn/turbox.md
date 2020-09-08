@@ -407,7 +407,7 @@ abort 会把事务池中的当前事务移除，并且阻止未完成的事务�
 action.revert();
 ```
 
-### effect（即将重做）
+### effect（即将废弃重做）
 单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个行为会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大。**turbox** 默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
 ```js
 import { throttle, bind } from 'lodash-decorators';
@@ -758,6 +758,8 @@ let ctx = {
     diffLogger: true, // 默认开启 log 状态的 diff 信息
     effect: false, // 默认关闭 effect 中间件
     perf: process.env.NODE_ENV !== 'production', // 默认在 dev 环境开启 perf 中间件，性能分析用，在生产环境关闭
+    skipNestLog: true, // 默认开启跳过被嵌套的 mutation 执行的日志
+    skipNestPerfLog: true, // 默认开启跳过被嵌套的 mutation 执行的性能日志
   },
   timeTravel: {
     isActive: false, // 是否激活时间旅行器

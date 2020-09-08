@@ -5,6 +5,8 @@ import { normalNextReturn } from './common';
 import { Action } from '../core/action';
 import { ctx } from '../const/config';
 import { TimeTravel, History } from '../core/time-travel';
+import { materialCallStack, Domain } from '../core/domain';
+import { isDomain } from '../utils/common';
 
 interface DiffLog {
   name: any;
@@ -22,6 +24,10 @@ function createLoggerMiddleware(): Middleware {
       return normalNextReturn(next, dispatchedAction);
     }
 
+    const length = materialCallStack.length;
+    if (ctx.middleware.skipNestLog && length !== 1) {
+      return normalNextReturn(next, dispatchedAction);
+    }
     if (!ctx.middleware.diffLogger) {
       console.group(
         `%c[TURBOX LOG]: PREV ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
@@ -60,7 +66,7 @@ function createLoggerMiddleware(): Middleware {
         keyToDiffChangeMap.forEach((diffInfo, key) => {
           logArr.push({
             name: target.constructor.name,
-            target,
+            target: isDomain(target) ? (target as Domain).properties : target,
             property: key,
             before: diffInfo.beforeUpdate,
             after: diffInfo.didUpdate
