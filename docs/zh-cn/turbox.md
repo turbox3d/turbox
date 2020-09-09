@@ -276,7 +276,7 @@ const f = mutation('customName', async () => {
   await cts.countertops[0].addPoint(p);
 }, {
   immediately: true,
-  name: '自定义名称',
+  displayName: '自定义名称',
 });
 await f();
 ```
@@ -313,7 +313,7 @@ class MyDomain extends Domain {
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
 ### action
-`action` 通常是用来灵活控制操作行为的 api，可以简单的理解为一种主动事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
+`action` 通常是用来灵活控制操作行为/事务的 api，可以简单的理解为一种主动事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
 ```js
 class MyDomain extends Domain {
   @reactor isLoading = false;
@@ -376,6 +376,24 @@ drawPoint();
 drawLine();
 drawPoint();
 ```
+
+当然在一些同一执行栈的场景，可能不需要这么灵活控制 action，框架也提供了语法糖，自动帮助你创建 action，execute 以及 complete：
+```js
+// 同步 action
+const actionA = action('actionA', () => {
+  domain.addPoint();
+});
+actionA();
+// 异步 action
+const actionB = action('actionB', async () => {
+  await domain.addPoint();
+});
+await actionB(); // 异步情况下一定要 await 才能保证回调里的变更合并到一个事务里面，否则如果 await 后面还有变更，会被错误的合并到当前事务里面
+```
+也支持 @action 装饰器，但是不推荐使用，因为框架希望由 action 去组合 mutation 的逻辑，并不希望 action 再去嵌套 action，使用装饰器会让用户更容易做出这种误操作
+
+> 注意：如果当前调用函数中只有一个事务的时候，使用被动事务机制即可，效果完全是一样的，使用这种方式的场景通常有两个：在一个渲染周期内需要人为分割出多次事务的场景、在一个事务中需要人为分割出多次渲染周期的场景，因为 immediately mutation 不仅会分离渲染周期也会分离事务，所以在外层包裹 action 可以保证被合并到一个事务中
+
 有些时候，我们需要更灵活的控制，可以直接获取行为池中的实例来进行控制，不传参数则获取所有，也可以根据 key 来筛选，如下所示：
 ```js
 const actions = Action.get('actionKeyA', 'actionKeyB'); // 列出所有没完成的 action
@@ -396,13 +414,13 @@ interface Action {
 ```
 有些时候我们需要做类似 takeLead、takeLast 的操作，丢弃掉前面几次未完成的事务或后面几次的，可以使用 abort：
 ```js
-action.abort(revert = true);
+action.abort(revert = true); // revert 参数默认为 true
 // 丢弃当前未完成池中的所有事务
 Action.abortAll();
 ```
 abort 会把事务池中的当前事务移除，并且阻止未完成的事务继续执行 execute 和 complete，还会根据 revert 参数来决定是否需要回退掉已经发生更改的状态，并丢弃掉 diff 记录，不进撤销恢复栈。
 
-也可以单独调用 revert api 来回滚状态：
+也可以单独调用 revert api 来回滚这个 action 已经发生过的状态，这在一些长流程 action 的取消放弃操作场景会比较有用：
 ```js
 action.revert();
 ```
@@ -1161,7 +1179,7 @@ mobx 会先渲染一次，这个好理解，等待 2 秒后，却重绘了 1000 
 
 ![innerDo](https://img.alicdn.com/tfs/TB1KqnLQoY1gK0jSZFCXXcwqXXa-392-84.png)
 
-对的，你没看错，即使在外部包裹了 action，也只会对当前宏任务（macro task）做合并，但对 await 后面的执行却无法合并，这跟 mobx 同步渲染的机制其实有关系，实际上只能通过其他办法来做合并，直接这么写是实现不了的。但是 turbox 可以。
+对的，你没看错，即使在外部包裹了 action，也只会对当前宏任务（macro task）做合并，但对 await 后面的执行却无法合并，这跟 mobx 同步渲染的机制其实有关系，实际上只能通过其他办法比如 runInAction 来做合并，直接这么写是实现不了的。但是 turbox 可以。
 
 turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 * 调用一个 mutation 渲染一次，mutation 可以嵌套，以最外层的调用结束为准重渲染一次，同步的 mutation 就跟同步的函数一样，即使不用包裹也会被自动合并。

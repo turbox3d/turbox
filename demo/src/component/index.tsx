@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action, mutation, use } from '@turbox3d/reactivity';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action, action as TurboxAction, mutation, use } from '@turbox3d/reactivity';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -50,11 +50,11 @@ init();
 
 let count = 100;
 
-const r = reactive(() => {
-  console.log('reactive &&&&&');
-  // console.log(p.position);
-  console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
-});
+// const r = reactive(() => {
+//   console.log('reactive &&&&&');
+//   // console.log(p.position);
+//   console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
+// });
 
 // const fullName = computed(cts.countertops[0].getFullName);
 let action: Action;
@@ -185,7 +185,42 @@ const DemoBox = Reactive(() => {
       cts.countertops[0].addPoint(p);
     });
   };
-  const testMutation = () => {
+  const testMutation = async () => {
+    // const action = Action.create('testImmediately');
+    // await action.execute(async () => {
+    //   const p = new Point({
+    //     position: new Point2d(100, 100),
+    //     type: EPointType.NONE,
+    //   });
+    //   const l = new Line({
+    //     start: new Point({
+    //       position: new Point2d(200, 200),
+    //       type: EPointType.NONE,
+    //     }),
+    //     end: new Point({
+    //       position: new Point2d(200, 200),
+    //       type: EPointType.NONE,
+    //     }),
+    //   });
+    //   await cts.countertops[0].testTwoMutation(p, l);
+    //   await cts.countertops[0].testTwoMutation(p, l);
+    // });
+    // action.complete();
+    // const p = new Point({
+    //   position: new Point2d(100, 100),
+    //   type: EPointType.NONE,
+    // });
+    // const l = new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // });
+    // cts.countertops[0].testTwoMutation(p, l);
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
@@ -200,7 +235,14 @@ const DemoBox = Reactive(() => {
         type: EPointType.NONE,
       }),
     });
-    cts.countertops[0].testTwoMutation(p, l);
+    const action1 = TurboxAction('testImmediately', () => {
+      cts.countertops[0].addPoint(p);
+    });
+    action1();
+    const action2 = TurboxAction('testImmediately2', () => {
+      cts.countertops[0].addPoint(p);
+    });
+    action2();
   };
   const testComputed = () => {
     const ct1 = new Countertop({
@@ -285,10 +327,10 @@ const DemoBox = Reactive(() => {
       {/* <span>fullName：{fullName.get()}</span><br/> */}
       {/* <span>fullName2：{cts.countertops[0].fullName}</span><br /> */}
       {/* <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span> */}
-      {cts.countertops.length && cts.countertops[0].lines.map(line => (
-        <LineTpl data={line} />
+      {cts.countertops.length && cts.countertops[0].lines.map((line, index) => (
+        <LineTpl key={index} data={line} />
       ))}
-      {cts.countertops.length && cts.countertops[0].points.map((point, index) => <PointTpl data={point} index={index} />)}
+      {cts.countertops.length && cts.countertops[0].points.map((point, index) => <PointTpl key={index} data={point} index={index} />)}
       {/* {flag &&
         <DisposerTest />
       } */}
@@ -326,7 +368,7 @@ const DemoBox = Reactive(() => {
           测试异步
                 </button>
         <button onClick={testMutation}>
-          测试多个Mutation
+          测试异步Mutation
                 </button>
         <button onClick={addPoint}>
           添加一个点
@@ -340,9 +382,9 @@ const DemoBox = Reactive(() => {
         <button onClick={removeKey}>
           删key
                 </button>
-        <button onClick={() => r.dispose()}>
+        {/* <button onClick={() => r.dispose()}>
           disposer
-                </button>
+                </button> */}
         <button onClick={addLine}>
           添加一根线
                 </button>
@@ -393,10 +435,10 @@ const DemoBox = Reactive(() => {
   );
 });
 
-reactive(() => {
-  console.log('reactive111 &&&&&');
-  // console.log(p.position);
-  console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
-});
+// reactive(() => {
+//   console.log('reactive111 &&&&&');
+//   // console.log(p.position);
+//   console.log(cts.countertops[0].points[0] && cts.countertops[0].points[0].position);
+// });
 
 export default DemoBox;

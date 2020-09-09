@@ -62,15 +62,17 @@ export class Action {
     const original = () => {
       TimeTravel.undoHandler(this.historyNode.history);
     };
-    materialCallStack.push(EMaterialType.TIME_TRAVEL);
+    materialCallStack.push(EMaterialType.UNDO);
     if (!store) {
       fail('store is not ready, please init first.');
     }
+    const action = this.historyNode.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__UNDO_${this.name}`,
-      displayName: EMPTY_ACTION_NAME,
+      name: `@@TURBOX__UNDO_${action.name}`,
+      displayName: `UNDO_${action.displayName}`,
       payload: [],
       original,
+      type: EMaterialType.UNDO,
       isInner: true,
     });
     materialCallStack.pop();

@@ -25,7 +25,9 @@ export enum EMaterialType {
   MUTATION = 'mutation',
   UPDATE = 'update',
   EFFECT = 'effect',
-  TIME_TRAVEL = 'timeTravel',
+  ACTION = 'action',
+  UNDO = 'undo',
+  REDO = 'redo',
 }
 
 export enum ActionStatus {

@@ -54,7 +54,7 @@ const td = new TestTurbox();
   // }
   /** 2. 循环放在函数里面 */
   td.innerDo();
-  console.dir(performance.memory);
+  // console.dir(performance.memory);
 })();
 
 // class TestMobx {

@@ -183,8 +183,18 @@ export class Countertop extends Domain {
   //   this.testEffect(p, l);
   // }
 
-  @mutation('', true)
+  @mutation('测试异步mutation')
   async testTwoMutation(p: Point, l: Line) {
+    // this.addPoint(p);
+    // await this.delay(2000);
+    // this.addPoint(p);
+    // return 'aaa';
+    await this.inner(p, l);
+    // await this.inner(p, l);
+  }
+
+  @mutation('测试异步mutation')
+  async inner(p: Point, l: Line) {
     this.addPoint(p);
     await this.delay(2000);
     this.addPoint(p);

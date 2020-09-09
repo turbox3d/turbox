@@ -411,7 +411,8 @@ export class Domain<S = {}> {
       invariant(
         firstLevelMaterial === EMaterialType.MUTATION ||
         firstLevelMaterial === EMaterialType.UPDATE ||
-        firstLevelMaterial === EMaterialType.TIME_TRAVEL,
+        firstLevelMaterial === EMaterialType.UNDO ||
+        firstLevelMaterial === EMaterialType.REDO,
         'You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({}).'
       );
     }

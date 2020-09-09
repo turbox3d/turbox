@@ -9,7 +9,7 @@ import { EMaterialType } from '../const/enums';
 
 interface MutationConfig {
   immediately: boolean;
-  name: string;
+  displayName: string;
 }
 
 function createMutation(target: Object | undefined, name: string | symbol | number, original: Mutation, config: MutationConfig) {
@@ -26,7 +26,7 @@ function createMutation(target: Object | undefined, name: string | symbol | numb
     }
     const result = store.dispatch({
       name: stringMethodName,
-      displayName: config.name || EMPTY_ACTION_NAME,
+      displayName: config.displayName || EMPTY_ACTION_NAME,
       payload,
       type: EMaterialType.MUTATION,
       domain: _this,
@@ -59,11 +59,11 @@ export function mutation(name: string | symbol | number, original: Mutation, con
 export function mutation(...args: any[]) {
   const config: MutationConfig = {
     immediately: false,
-    name: '',
+    displayName: '',
   };
   if (typeof args[0] === 'string' && typeof args[1] === 'function') {
     if (args[2] !== void 0) {
-      config.name = args[2].name;
+      config.displayName = args[2].displayName;
       config.immediately = args[2].immediately;
     }
     return createMutation(undefined, args[0], args[1], config);
@@ -107,7 +107,7 @@ export function mutation(...args: any[]) {
     return decorator.apply(null, args as any);
   }
   // @mutation(args)
-  config.name = args[0] || '';
+  config.displayName = args[0] || '';
   config.immediately = args[1] !== void 0 ? args[1] : false;
 
   return decorator;

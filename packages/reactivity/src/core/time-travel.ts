@@ -2,7 +2,6 @@ import { materialCallStack, MapType, SetType } from './domain';
 import { store, ActionType } from './store';
 import { ctx } from '../const/config';
 import { fail } from '../utils/error';
-import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { ECollectType, EMaterialType } from '../const/enums';
 
 export interface DiffInfo {
@@ -148,15 +147,17 @@ export class TimeTravel {
     const original = () => {
       TimeTravel.undoHandler(currentHistory.history);
     };
-    materialCallStack.push(EMaterialType.TIME_TRAVEL);
+    materialCallStack.push(EMaterialType.UNDO);
     if (!store) {
       fail('store is not ready, please init first.');
     }
+    const action = currentHistory.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__UNDO_${currentHistory.actionChain[0]}`,
-      displayName: EMPTY_ACTION_NAME,
+      name: `@@TURBOX__UNDO_${action.name}`,
+      displayName: `UNDO_${action.displayName}`,
       payload: [],
       original,
+      type: EMaterialType.UNDO,
       isInner: true,
     });
     materialCallStack.pop();
@@ -176,15 +177,17 @@ export class TimeTravel {
     const original = () => {
       TimeTravel.redoHandler(currentHistory.history);
     };
-    materialCallStack.push(EMaterialType.TIME_TRAVEL);
+    materialCallStack.push(EMaterialType.REDO);
     if (!store) {
       fail('store is not ready, please init first.');
     }
+    const action = currentHistory.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__REDO_${currentHistory.actionChain[0]}`,
-      displayName: EMPTY_ACTION_NAME,
+      name: `@@TURBOX__REDO_${action.name}`,
+      displayName: `REDO_${action.displayName}`,
       payload: [],
       original,
+      type: EMaterialType.REDO,
       isInner: true,
     });
     materialCallStack.pop();

@@ -16,7 +16,7 @@ const NormalPoint = Reactive<IProps>(({ index, np }) => {
 
   return (
     <div>
-      np position: { np.position.isActive ? 'true' : 'false' }
+      np position: { (np as any).position.isActive ? 'true' : 'false' }
       <button onClick={updateFirstPointPosition(index)}>point btn</button>
     </div>
   );
