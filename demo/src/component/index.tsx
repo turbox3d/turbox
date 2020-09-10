@@ -145,7 +145,7 @@ const DemoBox = Reactive(() => {
     setFlag(false);
   };
 
-  const testMouseMove = () => {
+  const testMouseMove = async () => {
     if (count === 100) {
       action = Action.create('testMouseMove', '测试鼠标移动');
     }
@@ -154,7 +154,9 @@ const DemoBox = Reactive(() => {
     }
     if (count === 200) {
       console.log(action);
-      action.revert();
+      action.undo(true);
+      await cts.countertops[0].delay(2000);
+      action.redo();
       const p = new Point({
         position: new Point2d(count, count),
         type: EPointType.NONE,
@@ -172,7 +174,7 @@ const DemoBox = Reactive(() => {
     // const actions = Action.get('nameA', 'nameB'); 列出所有没完成的 action 队列 (action.name)
     // 清空：不仅要从队列里移除掉这个 action，最后 gc
     // action.abort(); 清空指定的 action
-    // action.revert(); 回退掉未完成的已更改状态的部分
+    // action.undo(); 回退掉未完成的已更改状态的部分
     // Action.abortAll(); 清空当前 action 队列
 
     count++;

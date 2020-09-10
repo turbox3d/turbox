@@ -420,9 +420,14 @@ Action.abortAll();
 ```
 abort 会把事务池中的当前事务移除，并且阻止未完成的事务继续执行 execute 和 complete，还会根据 revert 参数来决定是否需要回退掉已经发生更改的状态，并丢弃掉 diff 记录，不进撤销恢复栈。
 
-也可以单独调用 revert api 来回滚这个 action 已经发生过的状态，这在一些长流程 action 的取消放弃操作场景会比较有用：
+也可以单独调用 undo api 来回滚这个 action 已经发生过的状态，这在一些长流程 action 的取消放弃操作场景会比较有用：
 ```js
-action.revert();
+action.undo(keepHistory = false); // keepHistory 参数默认为 false，做完操作后是否需要保留 diff 记录
+```
+
+对应也会有个 redo api 来恢复这个 action 已经发生过的状态
+```js
+action.redo(keepHistory = false);
 ```
 
 ### effect（即将废弃重做）

@@ -1,10 +1,10 @@
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { store } from './store';
 import { remove, includes, nextTick, isPromise } from '../utils/common';
-import { ActionStatus, EMaterialType, ECollectType } from '../const/enums';
+import { ActionStatus, EMaterialType } from '../const/enums';
 import { HistoryNode, TimeTravel } from './time-travel';
 import { triggerCollector } from './collector';
-import { materialCallStack, MapType, SetType } from './domain';
+import { materialCallStack } from './domain';
 import { fail } from '../utils/error';
 
 export const actionPool: Action[] = [];
@@ -58,7 +58,10 @@ export class Action {
     });
   }
 
-  revert() {
+  undo(keepHistory = false) {
+    if (!this.historyNode.actionChain.length) {
+      return;
+    }
     const original = () => {
       TimeTravel.undoHandler(this.historyNode.history);
     };
@@ -76,6 +79,39 @@ export class Action {
       isInner: true,
     });
     materialCallStack.pop();
+    if (keepHistory) {
+      return;
+    }
+    this.historyNode = {
+      actionChain: [],
+      history: new Map(),
+    };
+  }
+
+  redo(keepHistory = false) {
+    if (!this.historyNode.actionChain.length) {
+      return;
+    }
+    const original = () => {
+      TimeTravel.redoHandler(this.historyNode.history);
+    };
+    materialCallStack.push(EMaterialType.REDO);
+    if (!store) {
+      fail('store is not ready, please init first.');
+    }
+    const action = this.historyNode.actionChain[0];
+    store.dispatch({
+      name: `@@TURBOX__REDO_${action.name}`,
+      displayName: `REDO_${action.displayName}`,
+      payload: [],
+      original,
+      type: EMaterialType.REDO,
+      isInner: true,
+    });
+    materialCallStack.pop();
+    if (keepHistory) {
+      return;
+    }
     this.historyNode = {
       actionChain: [],
       history: new Map(),
@@ -100,7 +136,7 @@ export class Action {
 
   abort(revert = true) {
     if (revert) {
-      this.revert();
+      this.undo();
     }
     this.status = ActionStatus.ABORT;
     remove(actionPool, this);

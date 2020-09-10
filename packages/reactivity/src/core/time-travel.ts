@@ -144,6 +144,9 @@ export class TimeTravel {
       return;
     }
     const currentHistory = this.transactionHistories[this.cursor];
+    if (!currentHistory.actionChain.length) {
+      return;
+    }
     const original = () => {
       TimeTravel.undoHandler(currentHistory.history);
     };
@@ -174,6 +177,9 @@ export class TimeTravel {
     }
     this.cursor += 1;
     const currentHistory = this.transactionHistories[this.cursor];
+    if (!currentHistory.actionChain.length) {
+      return;
+    }
     const original = () => {
       TimeTravel.redoHandler(currentHistory.history);
     };
