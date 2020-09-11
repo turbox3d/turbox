@@ -25,7 +25,6 @@ export enum EMaterialType {
   MUTATION = 'mutation',
   UPDATE = 'update',
   EFFECT = 'effect',
-  ACTION = 'action',
   UNDO = 'undo',
   REDO = 'redo',
 }

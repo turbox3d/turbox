@@ -227,7 +227,7 @@ class TriggerCollector {
     if (history.size === 0) {
       return;
     }
-    const clonedChain = actionChain.slice();
+    const clonedChain = ctx.timeTravel.keepActionChain ? actionChain.slice() : [];
     const clonedHistory = new Map(history);
     if (ctt.cursor === ctt.transactionHistories.length - 1) {
       ctt.transactionHistories.push({

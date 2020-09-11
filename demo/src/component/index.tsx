@@ -208,21 +208,6 @@ const DemoBox = Reactive(() => {
     //   await cts.countertops[0].testTwoMutation(p, l);
     // });
     // action.complete();
-    // const p = new Point({
-    //   position: new Point2d(100, 100),
-    //   type: EPointType.NONE,
-    // });
-    // const l = new Line({
-    //   start: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    //   end: new Point({
-    //     position: new Point2d(200, 200),
-    //     type: EPointType.NONE,
-    //   }),
-    // });
-    // cts.countertops[0].testTwoMutation(p, l);
     const p = new Point({
       position: new Point2d(100, 100),
       type: EPointType.NONE,
@@ -237,14 +222,29 @@ const DemoBox = Reactive(() => {
         type: EPointType.NONE,
       }),
     });
-    const action1 = TurboxAction('testImmediately', () => {
-      cts.countertops[0].addPoint(p);
-    });
-    action1();
-    const action2 = TurboxAction('testImmediately2', () => {
-      cts.countertops[0].addPoint(p);
-    });
-    action2();
+    cts.countertops[0].testTwoMutation(p, l);
+    // const p = new Point({
+    //   position: new Point2d(100, 100),
+    //   type: EPointType.NONE,
+    // });
+    // const l = new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // });
+    // const action1 = TurboxAction('testImmediately', () => {
+    //   cts.countertops[0].addPoint(p);
+    // });
+    // action1();
+    // const action2 = TurboxAction('testImmediately2', () => {
+    //   cts.countertops[0].addPoint(p);
+    // });
+    // action2();
   };
   const testComputed = () => {
     const ct1 = new Countertop({

@@ -185,7 +185,7 @@ export class Countertop extends Domain {
 
   @mutation('测试异步mutation')
   async testTwoMutation(p: Point, l: Line) {
-    // this.addPoint(p);
+    this.addPoint(p);
     // await this.delay(2000);
     // this.addPoint(p);
     // return 'aaa';

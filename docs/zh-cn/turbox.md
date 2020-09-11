@@ -750,15 +750,20 @@ Turbox.render(<Layout />, '#app');
 ```typescript
 type Config = {
   middleware: {
-    logger: boolean = false,
-    effect: boolean = false,
-    perf: boolean = false,
+    logger?: boolean,
+    diffLogger?: boolean,
+    effect?: boolean,
+    perf?: boolean,
+    skipNestLog?: boolean,
+    skipNestPerfLog?: boolean,
   },
   timeTravel: {
-    isActive: boolean = false,
-    maxStepNumber: number = 20,
+    isActive?: boolean,
+    maxStepNumber?: number,
+    keepActionChain?: boolean,
   },
-  devTool: boolean = false
+  strictMode?: boolean,
+  devTool?: boolean,
 }
 type config = (config: Config) => void
 ```
@@ -787,6 +792,7 @@ let ctx = {
   timeTravel: {
     isActive: false, // 是否激活时间旅行器
     maxStepNumber: 20, // 记录操作的最大步数
+    keepActionChain: process.env.NODE_ENV !== 'production', // 默认开启保存 actionChain 到撤销恢复栈中，在生产环境关闭
   },
   strictMode: process.env.NODE_ENV !== 'production', // 严格模式，开启非法赋值检测，默认在 dev 环境开启，生产环境关闭
   devTool: false // 默认关闭 devTool，在生产环境自动关闭

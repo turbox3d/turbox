@@ -48,14 +48,15 @@ export interface ConfigCtx {
     effect?: boolean,
     perf?: boolean,
     skipNestLog?: boolean,
-    skipNestPerfLog?: boolean;
+    skipNestPerfLog?: boolean,
   },
   timeTravel: {
-    isActive: boolean,
+    isActive?: boolean,
     maxStepNumber?: number,
+    keepActionChain?: boolean,
   },
-  strictMode: boolean,
-  devTool: boolean,
+  strictMode?: boolean,
+  devTool?: boolean,
 }
 
 export type BabelDescriptor<T> = TypedPropertyDescriptor<T> & { initializer?: () => any }

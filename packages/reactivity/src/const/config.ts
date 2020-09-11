@@ -1,20 +1,23 @@
 import { ConfigCtx } from '../interfaces';
 import { deepMerge } from '../utils/deep-merge';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 export let ctx: ConfigCtx = {
   middleware: {
-    logger: process.env.NODE_ENV !== 'production',
+    logger: isDev,
     diffLogger: true,
     effect: false,
-    perf: process.env.NODE_ENV !== 'production',
+    perf: isDev,
     skipNestLog: true,
     skipNestPerfLog: true,
   },
   timeTravel: {
     isActive: false,
     maxStepNumber: 20,
+    keepActionChain: isDev,
   },
-  strictMode: process.env.NODE_ENV !== 'production',
+  strictMode: isDev,
   devTool: false,
 };
 
