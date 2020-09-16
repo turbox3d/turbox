@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import Point2d from '../math/Point2d';
-import { Domain, effect, mutation, reactor, computed, Action, Effect } from '@turbox3d/reactivity';
+import { Domain, mutation, reactor, computed, Action } from '@turbox3d/reactivity';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
+import axios from 'axios';
 
 export class Countertop extends Domain {
   @reactor(true) points: Point[];
@@ -189,6 +190,7 @@ export class Countertop extends Domain {
     // await this.delay(2000);
     // this.addPoint(p);
     // return 'aaa';
+    // await axios.get('dasdasd');
     await this.inner(p, l);
     // await this.inner(p, l);
   }
@@ -213,17 +215,17 @@ export class Countertop extends Domain {
     this.addPoint(p);
   }
 
-  @effect('测试effect')
-  testEffect = async (action: Action, p: Point, l: Line) => {
-    console.log(action);
-    action.execute(() => {
-      this.addPoint(p);
-    });
-    await this.delay(2000);
-    action.execute(() => {
-      this.addLine(l);
-    });
-  }
+  // @effect('测试effect')
+  // testEffect = async (action: Action, p: Point, l: Line) => {
+  //   console.log(action);
+  //   action.execute(() => {
+  //     this.addPoint(p);
+  //   });
+  //   await this.delay(2000);
+  //   action.execute(() => {
+  //     this.addLine(l);
+  //   });
+  // }
 
   @mutation('添加线')
   addLine(line: Line) {

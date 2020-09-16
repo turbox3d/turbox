@@ -4,12 +4,18 @@ import { nextTick, includes, isPromise, batchRemoveFromSet } from '../utils/comm
 import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
+import { ORIGINAL_RUNTIME_ERROR } from '../const/symbol';
 
 export let store: Store;
 
 export interface ActionType {
   name: string;
   displayName: string;
+}
+
+export interface OriginalRuntimeError {
+  type: string;
+  msg: string;
 }
 
 export const actionTypeChain: ActionType[] = [];
@@ -160,13 +166,25 @@ export function createStore(enhancer: (createStore: any) => Store) {
       dirtyJob = callback;
     }
 
-    const result = (original as Mutation)(...payload);
+    let result: any;
+    try {
+      result = (original as Mutation)(...payload);
+    } catch (error) {
+      return {
+        type: ORIGINAL_RUNTIME_ERROR,
+        msg: error,
+      } as OriginalRuntimeError;
+    }
     if (isPromise(result)) {
-      return (result as Promise<void>).then((res) => {
-        mutationDepth -= 1;
-        keepAliveComputed();
-        nextTickCaller();
-        return res;
+      return new Promise((resolve, reject) => {
+        (result as Promise<void>).then((res) => {
+          mutationDepth -= 1;
+          keepAliveComputed();
+          nextTickCaller();
+          resolve(res);
+        }).catch((error) => {
+          reject(error);
+        });
       });
     }
 

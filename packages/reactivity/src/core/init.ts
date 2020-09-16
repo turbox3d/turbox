@@ -1,6 +1,6 @@
 import { applyMiddleware, use } from './use';
 import { createStore } from './store';
-import effectMiddleware from '../middlewares/effect';
+// import effectMiddleware from '../middlewares/effect';
 import mutationMiddleware from '../middlewares/mutation';
 import loggerMiddleware from '../middlewares/logger';
 import perfMiddleware from '../middlewares/perf';
@@ -30,9 +30,9 @@ export function init(callback?: () => void | Promise<void>): void | Promise<void
   if (ctx.middleware.perf) {
     use(perfMiddleware);
   }
-  if (ctx.middleware.effect) {
-    use(effectMiddleware);
-  }
+  // if (ctx.middleware.effect) {
+  //   use(effectMiddleware);
+  // }
   use(mutationMiddleware);
   if (ctx.middleware.logger) {
     use(loggerMiddleware);

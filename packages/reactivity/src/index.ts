@@ -2,7 +2,7 @@ import { Reactive } from './components/Reactive';
 import { use } from './core/use';
 import { config } from './const/config';
 import { mutation } from './decorators/mutation';
-import { effect } from './decorators/effect';
+// import { effect } from './decorators/effect';
 import { reactor } from './decorators/reactor';
 import { computed } from './decorators/computed';
 import { Domain } from './core/domain';
@@ -16,7 +16,7 @@ import { action } from './decorators/action';
 export default {
   Reactive,
   reactive,
-  effect,
+  // effect,
   mutation,
   computed,
   use,
@@ -33,7 +33,7 @@ export default {
 export {
   Reactive,
   reactive,
-  effect,
+  // effect,
   mutation,
   computed,
   use,

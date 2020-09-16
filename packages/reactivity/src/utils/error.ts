@@ -9,3 +9,7 @@ export function fail(message: string | boolean): never {
   invariant(false, message);
   throw 'X';
 }
+
+export function warn(message: string | boolean) {
+  console.warn('[turbox]: ' + message);
+}

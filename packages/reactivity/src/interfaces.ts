@@ -25,13 +25,13 @@ export interface Mutation {
   (...restPayload: any[]): any | Promise<any>
 }
 
-export interface Effect {
-  (action: Action, ...restPayload: any[]): Promise<void>
-}
+// export interface Effect {
+//   (action: Action, ...restPayload: any[]): Promise<void>
+// }
 
 export interface DispatchedAction {
   payload: any[];
-  original: Effect | Mutation;
+  original: Mutation;
   name: string;
   displayName: string;
   action?: Action;
