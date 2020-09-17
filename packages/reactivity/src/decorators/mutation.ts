@@ -1,5 +1,5 @@
-import { store, OriginalRuntimeError } from '../core/store';
-import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME, ORIGINAL_RUNTIME_ERROR } from '../const/symbol';
+import { store } from '../core/store';
+import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
 import { bind, convert2UniqueString, isPromise } from '../utils/common';
 import { Mutation, BabelDescriptor } from '../interfaces';
 import { invariant, fail } from '../utils/error';
@@ -46,8 +46,8 @@ function createMutation(target: Object | undefined, name: string | symbol | numb
     materialCallStack.pop();
     const length = materialCallStack.length;
     _this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
-    if (result && (result as OriginalRuntimeError).type === ORIGINAL_RUNTIME_ERROR) {
-      fail((result as OriginalRuntimeError).msg);
+    if (result && result instanceof Error) {
+      throw result;
     }
     return result;
   };

@@ -1,7 +1,5 @@
 import { DispatchedAction, Dispatch } from '../interfaces';
 import { isPromise } from '../utils/common';
-import { OriginalRuntimeError } from '../core/store';
-import { ORIGINAL_RUNTIME_ERROR } from '../const/symbol';
 
 export function normalNextReturn(next: Dispatch, dispatchedAction: DispatchedAction, callback?: () => void, errorCallback?: (error: string) => void) {
   const result = next(dispatchedAction);
@@ -10,15 +8,14 @@ export function normalNextReturn(next: Dispatch, dispatchedAction: DispatchedAct
       (result as Promise<any>).then((res) => {
         callback && callback();
         resolve(res);
-      }).catch((error: string) => {
-        errorCallback && errorCallback(error);
+      }).catch((error: Error) => {
+        errorCallback && errorCallback(error.stack || error.message);
         reject(error);
       });
     });
   }
-  if (result && (result as OriginalRuntimeError).type === ORIGINAL_RUNTIME_ERROR) {
-    const errorMsg = (result as OriginalRuntimeError).msg;
-    errorCallback && errorCallback(errorMsg);
+  if (result && result instanceof Error) {
+    errorCallback && errorCallback(result.stack || result.message);
   } else {
     callback && callback();
   }
