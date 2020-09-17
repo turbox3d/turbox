@@ -1,6 +1,6 @@
 {
   "name": "turbox",
-  "version": "1.2.18",
+  "version": "1.2.19",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -31,7 +31,7 @@
     "react-dom": ">=16"
   },
   "dependencies": {
-    "@turbox3d/reactivity": "^1.2.18"
+    "@turbox3d/reactivity": "^1.2.19"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
