@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action, action as TurboxAction, mutation, use } from '@turbox3d/reactivity';
+import { config, init, Reactive, reactive, TimeTravel, computed, Action, action as TurboxAction, mutation, use, nextTick } from '@turbox3d/reactivity';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -293,6 +293,9 @@ const DemoBox = Reactive(() => {
   };
   const testNickName = () => {
     cts.countertops[0].updateNickName('feifan');
+    nextTick(() => {
+      console.log('%^%^%^%^%^');
+    });
   };
   const doThreeOp = () => {
     console.log(cts.countertops[0].threeVector);
@@ -309,7 +312,7 @@ const DemoBox = Reactive(() => {
   React.useEffect(() => {
     console.log('parent didMount');
   }, []);
-
+  console.log('nick name render');
   return (
     <React.Fragment>
       {/* {cts.countertops.length && cts.countertops[0].points.length > 0 &&

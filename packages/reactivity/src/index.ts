@@ -12,6 +12,7 @@ import { TimeTravel } from './core/time-travel';
 import { ActionStatus } from './const/enums';
 import { Action } from './core/action';
 import { action } from './decorators/action';
+import { nextTick } from './utils/common';
 
 export default {
   Reactive,
@@ -28,6 +29,7 @@ export default {
   Action,
   ActionStatus,
   action,
+  nextTick,
 }
 
 export {
@@ -45,4 +47,5 @@ export {
   Action,
   ActionStatus,
   action,
+  nextTick,
 }
