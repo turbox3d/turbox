@@ -66,7 +66,7 @@ function createLoggerMiddleware(): Middleware {
         keyToDiffChangeMap.forEach((diffInfo, key) => {
           logArr.push({
             name: target.constructor.name,
-            target: isDomain(target) ? (target as Domain).properties : target,
+            target: isDomain(target) ? (target as Domain).$$turbox_properties : target,
             property: key,
             before: diffInfo.beforeUpdate,
             after: diffInfo.didUpdate
