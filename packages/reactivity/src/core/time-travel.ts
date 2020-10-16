@@ -3,6 +3,7 @@ import { store, ActionType } from './store';
 import { ctx } from '../const/config';
 import { fail } from '../utils/error';
 import { ECollectType, EMaterialType } from '../const/enums';
+import { TURBOX_PREFIX } from '../const/symbol';
 
 export interface DiffInfo {
   type: ECollectType;
@@ -156,7 +157,7 @@ export class TimeTravel {
     }
     const action = currentHistory.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__UNDO_${action.name}`,
+      name: `${TURBOX_PREFIX}UNDO_${action.name}`,
       displayName: `UNDO_${action.displayName}`,
       payload: [],
       original,
@@ -189,7 +190,7 @@ export class TimeTravel {
     }
     const action = currentHistory.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__REDO_${action.name}`,
+      name: `${TURBOX_PREFIX}REDO_${action.name}`,
       displayName: `REDO_${action.displayName}`,
       payload: [],
       original,

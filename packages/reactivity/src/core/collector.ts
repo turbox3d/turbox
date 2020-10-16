@@ -17,7 +17,7 @@ export type DepNodeStatus = Map<any, EDepState>;
 const isInBlackList = (propKey: string) => {
   const blackList = {
     constructor: true,
-    properties: true,
+    $$turbox_properties: true,
     context: true,
     currentTarget: true,
     originalArrayLength: true,

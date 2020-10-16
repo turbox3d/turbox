@@ -1,4 +1,4 @@
-import { EMPTY_ACTION_NAME } from '../const/symbol';
+import { EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
 import { store } from './store';
 import { remove, includes, nextTick, isPromise } from '../utils/common';
 import { ActionStatus, EMaterialType } from '../const/enums';
@@ -71,7 +71,7 @@ export class Action {
     }
     const action = this.historyNode.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__UNDO_${action.name}`,
+      name: `${TURBOX_PREFIX}UNDO_${action.name}`,
       displayName: `UNDO_${action.displayName}`,
       payload: [],
       original,
@@ -101,7 +101,7 @@ export class Action {
     }
     const action = this.historyNode.actionChain[0];
     store.dispatch({
-      name: `@@TURBOX__REDO_${action.name}`,
+      name: `${TURBOX_PREFIX}REDO_${action.name}`,
       displayName: `REDO_${action.displayName}`,
       payload: [],
       original,

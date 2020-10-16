@@ -1,4 +1,4 @@
-import { CURRENT_MATERIAL_TYPE, NAMESPACE, EMPTY_ACTION_NAME } from '../const/symbol';
+import { CURRENT_MATERIAL_TYPE, NAMESPACE, EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
 import { Mutation } from '../interfaces';
 import { isPlainObject, hasOwn, isObject, bind, isDomain, includes } from '../utils/common';
 import { invariant } from '../utils/error';
@@ -42,7 +42,7 @@ export type SetType = Set<any> | WeakSet<any>;
  */
 export class Domain<S = {}> {
   // prompt: add property do not forget sync to black list
-  public properties: { [key in keyof this]?: this[key] } = {};
+  $$turbox_properties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
   private context: DomainContext;
   private computedProperties: { [key in keyof this]?: ComputedConfig<this[key]> } = {};
@@ -63,7 +63,7 @@ export class Domain<S = {}> {
   }
 
   propertyGet(key: string, config: ReactorConfig) {
-    const v = this.properties[key];
+    const v = this.$$turbox_properties[key];
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
     }, config);
@@ -76,14 +76,14 @@ export class Domain<S = {}> {
 
   propertySet(key: string, v: any, config: ReactorConfig) {
     ctx.strictMode && this.illegalAssignmentCheck(this, key);
-    const oldValue = this.properties[key];
+    const oldValue = this.$$turbox_properties[key];
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
     }, config);
     this.reactorConfigMap[key] = mergedConfig;
 
     if (oldValue !== v) {
-      this.properties[key] = v;
+      this.$$turbox_properties[key] = v;
       triggerCollector.trigger(this, key, {
         type: ECollectType.SET,
         beforeUpdate: oldValue,
@@ -153,8 +153,8 @@ export class Domain<S = {}> {
     this.computedProperties[key].computeRunner = bind(original, this);
   }
 
-  currentTarget?: any;
-  originalArrayLength?: number;
+  private currentTarget?: any;
+  private originalArrayLength?: number;
 
   private proxySet(target: any, key: string, value: any, receiver: object) {
     // array length need hack
@@ -259,7 +259,7 @@ export class Domain<S = {}> {
     return proxy;
   }
 
-  getCollectionHandlerMap = (target: Collection, proxyKey: string) => {
+  private getCollectionHandlerMap = (target: Collection, proxyKey: string) => {
     return {
       get size() {
         const proto = Reflect.getPrototypeOf(target);
@@ -438,7 +438,7 @@ export class Domain<S = {}> {
     }
     // update state after store init
     store.dispatch({
-      name: actionName || '@@TURBOX__UPDATE',
+      name: actionName || `${TURBOX_PREFIX}UPDATE`,
       displayName: displayName || EMPTY_ACTION_NAME,
       payload: [],
       type: EMaterialType.UPDATE,

@@ -2,6 +2,7 @@ import { depCollector } from './collector';
 import { store } from './store';
 import generateUUID from '../utils/uuid';
 import { emitter } from './init';
+import { TURBOX_PREFIX } from '../const/symbol';
 
 interface Options {
   name: string;
@@ -34,7 +35,7 @@ export class Reaction {
 }
 
 export function reactive(func: Function, options?: Partial<Options>) {
-  const name = (options && options.name) || func.name || `@@TURBOX__REACTIVE_${generateUUID()}`;
+  const name = (options && options.name) || func.name || `${TURBOX_PREFIX}REACTIVE_${generateUUID()}`;
   const lazy = options && options.lazy !== void 0 ? options.lazy : true;
   const reaction = new Reaction(name, function () {
     depCollector.start(this);

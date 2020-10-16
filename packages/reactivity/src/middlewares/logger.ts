@@ -33,7 +33,7 @@ function createLoggerMiddleware(): Middleware {
         `%c[TURBOX LOG]: PREV ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
         'background: #929493; color: #fff; font-weight: bold; padding: 3px 5px;'
       );
-      console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state before change.
+      console.dir(deepMerge({}, domain.$$turbox_properties, { clone: true })); // deep copy，logger current state before change.
       console.groupEnd();
 
       return normalNextReturn(next, dispatchedAction, () => {
@@ -44,7 +44,7 @@ function createLoggerMiddleware(): Middleware {
           `%c[TURBOX LOG]: NEXT ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
           'background: #218D41; color: #fff; font-weight: bold; padding: 3px 5px;'
         );
-        console.dir(deepMerge({}, domain.properties, { clone: true })); // deep copy，logger current state after change.
+        console.dir(deepMerge({}, domain.$$turbox_properties, { clone: true })); // deep copy，logger current state after change.
         console.groupEnd();
       });
     }
