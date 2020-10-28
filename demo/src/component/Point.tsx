@@ -55,6 +55,7 @@ interface IProps {
 // export default Reactive(PointComp);
 let flag = false;
 
+@Reactive
 class PointComp extends React.Component<IProps> {
   componentDidMount() {
     // if (flag) {
@@ -110,4 +111,4 @@ class PointComp extends React.Component<IProps> {
   }
 }
 
-export default Reactive(PointComp);
+export default PointComp;

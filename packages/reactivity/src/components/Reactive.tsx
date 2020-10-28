@@ -5,8 +5,8 @@ import { depCollector } from '../core/collector';
 import { fail } from '../utils/error';
 import { REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from '../const/symbol';
 
-export function Reactive<P extends object>(arg: React.ComponentType<P>): React.ComponentType<P>;
-export function Reactive(): <P extends object>(Target: React.ComponentType<P>) => React.ComponentType<P>;
+export function Reactive<T extends Function>(arg: T): T;
+export function Reactive(): <T extends Function>(Target: T) => T;
 
 /**
  * Returns a high order component with auto refresh feature.
