@@ -357,7 +357,7 @@ class MyDomain extends Domain {
     action.execute(() => {
       // mutation 更新操作放在这
       this.isLoaded({ readList });
-    });
+    }, [], true);
     action.complete();
   }
 }
@@ -385,10 +385,15 @@ const drawLine = () => {
     action.complete();
   }
 };
-const drawPoint = () => {
-  action.execute(() => {
-    drawDomain.drawPoint();
+// 一个异步的例子
+const drawPoint = async () => {
+  // do something
+  await action.execute(async () => {
+    // do something
+    await drawDomain.drawPoint();
+    // do something
   });
+  // do something
 };
 
 /* 先画一个点，再画一根线，再画一个点，完成组合操作，假设不在一个执行栈中完成 */
@@ -402,6 +407,9 @@ drawPoint();
 // 同步 action
 const actionA = action('actionA', () => {
   domain.addPoint();
+}, {
+  displayName: '',
+  isWrapMutation: true, // 是否自动包裹一个顶层 mutation，默认为 true
 });
 actionA();
 // 异步 action
@@ -538,10 +546,7 @@ fullName.get();
 
 > 计算属性只会在用到该属性的时候才会发生计算，确保性能最佳
 
-> 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时计算，默认开启惰性计算，意味着只会在重新渲染或执行之前才会做一次 dirty 检察，在这之前计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
-
-<!-- ### watch（暂未实现，敬请期待）
-某些情况需要根据数据的变化引发其他外部操作或数据的更新，这时候可以利用 watch，大部分情况并不推荐使用这种做法，因为这可能会导致程序难以测试并且不可预测，还有可能造成死循环，魔法过多对维护也会造成很大的代价。只在某些特别必要的场景，比如某些数据就是有极强的关联性，会导致外部操作或外部数据的更新，部分情况很难在所有应该触发更新的地方去手动调用触发更新，为了减少心智负担才用。 -->
+> 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时进行 dirty 检察，默认关闭。如果打开意味着只会在即将触发 reactive 或 Reactive 时才会做一次 dirty 检察，在这之前获取计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
 
 ### Domain
 在上面的例子中，我们会发现有个 Domain 的基类，在 **turbox** 中，Domain 只是类似 React.Component 这样的基类，声明这是一个领域模型，提供了一些通用方法和控制子类的能力，该类的装饰器实际也会依赖基类上的一些私有方法，所以需要配套使用，如下代码所示：
@@ -729,6 +734,14 @@ export default class Item extends React.Component {
 ```typescript
 interface Options {
   name: string;
+  /** is computed reactive function */
+  computed: boolean;
+  /** is lazy computed, only computed reactive have this option */
+  lazy: boolean;
+  /** deps */
+  deps: Function[];
+  /** trigger callback synchronously */
+  immediately: boolean;
 }
 class Reaction {
   name: string;
@@ -757,6 +770,20 @@ reactive((nickName, a) => {
 ```
 
 > 注意：如果传入 deps 监听依赖，那么 reactive 的函数第一次是不会自执行的
+
+有些时候，我们想要 reactive 的触发时机是同步的或是异步的，只需要设置 immediately 参数即可，默认为 true，即 mutation 完成就立刻同步触发，设置为 false，则使用 mutation 的异步触发机制
+```js
+reactive((nickName, a) => {
+  console.log(nickName, a);
+}, {
+  // name: 'xxx',
+  deps: [
+    () => domain.nickName,
+    () => domain.info.a,
+  ],
+  immediately: true,
+});
+```
 
 ### init
 ```typescript
