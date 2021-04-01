@@ -971,10 +971,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@turbox3d/reactivity@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.1.3.tgz#aefbbfc1e8802745848cd00e2703dd187bcfa205"
-  integrity sha512-mPdIQjoxxlqkg/Hx1TROV0DkGyM+8v2itZy+ZAWerFHWoX212Bj/XEYDXy99+gFSqe0Ds9ZzmYrWKb0qaWqQYw==
+"@turbox3d/reactivity@^1.2.23":
+  version "1.2.23"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-1.2.23.tgz#96151fc635f4a8e998759c7333dba78c6d7f4f04"
+  integrity sha512-Hz1gt1ad6iSV9zsVrh6d2SXb51Vk0yHyqmblTFrUd0vnOTZXyxfu4znG3S6j9Ene2Kn6FJLoqt16Ywk105txTA==
 
 "@types/babel__core@^7.1.0":
   version "7.1.9"
@@ -4322,9 +4322,9 @@ xml-name-validator@^3.0.0:
   integrity sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==
 
 y18n@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
-  integrity sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w==
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.1.tgz#8db2b83c31c5d75099bb890b23f3094891e247d4"
+  integrity sha512-wNcy4NvjMYL8gogWWYAO7ZFWFfHcbdbE57tZO8e4cbpj8tfUcwrwqSl3ad8HxpYWCdXcJUCeKKZS62Av1affwQ==
 
 yargs-parser@10.x:
   version "10.1.0"
