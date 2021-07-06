@@ -7,11 +7,20 @@
 [![install size](https://img.shields.io/bundlephobia/minzip/turbox?style=flat-square)](https://www.npmjs.com/package/turbox)
 
 ## 介绍
-**turbox**（涡轮）是一个适合大型生产力单页软件应用的前端框架，场景来源于复杂大型 3D 业务。
+**turbox**（涡轮）的定位是大型 web 图形业务应用的前端框架，CAX 应用开箱即用的引擎及库。场景主要来源于大型 web 3d 设计制造一体化编辑器业务。
 
-turbox 框架的定位是大型生产力应用的前端框架，但目前暂时还是以状态管理为主，turbox 是响应式流派的状态管理，但会更针对特定场景设计，而目前市面上的流行框架大多针对 web 应用，而且发展方向是足够通用，对我们之前的业务来说无疑是走歪了。为了通用这就不免会在比如性能、体积、不同风格 api、功能性、易用性上面做一些权衡，但不管是 mobx 还是 redux，在以前的业务场景中都无法较好满足，而且 mobx 的扩展性不如 redux，几乎无法在它上面做二次开发，所以诞生了 turbox。
+turbox 框架包含几个子框架：
+* 响应式数据流事务框架（有框架无关的核心部分及 for react 的版本）
+* 指令管理框架
+* 事件交互管理框架
+* 视图框架（有引擎无关的核心部分及 2d for pixi、3d for three、3d for 闭源集团引擎）
+* 设计引擎（类 web CAX 应用的通用引擎及库）
+* 生产智造引擎（在设计引擎和公式约束求解引擎上的一层封装）
+* 基于 three 扩展的数学库，主要是一些常用几何算法和容差的支持
+* 基于视图框架封装的 CAX 常用图形控件，比如尺寸标注、Gizmo 等
 
-### turbox 框架架构图
+## 响应式数据流事务框架
+### 架构图
 ![framework](https://img.alicdn.com/tfs/TB1fRl5g79l0K4jSZFKXXXFjpXa-2231-1777.png)
 
 ### 快速上手
@@ -124,9 +133,9 @@ import Layout from './component';
 Turbox.render(<Layout />, '#app');
 ```
 
-## 使用说明
+### 使用说明
 
-### 安装
+#### 安装
 ```
 $ npm install --save turbox
 
@@ -135,11 +144,11 @@ $ yarn add turbox
 
 > 本框架有依赖 decorator，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
 
-### 兼容性
+#### 兼容性
 **turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
 
-## API & 概念
-### reactor
+### API & 概念
+#### reactor
 在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，这样框架就能代理掉属性的 getter、setter 等操作，如下代码所示：
 ```js
 export class MyDomain extends Domain {
@@ -179,7 +188,249 @@ reactive(() => {
 
 > 支持基本数据类型、数组、对象、自定义 class 的实例、domain 的实例、Map、Set、WeakMap、WeakSet
 
-### mutation
+**turbox** 在几年前就已经坚持使用 Proxy 来做数据代理了，那时候主流的响应式状态框架还都是采用 hack 的方式，因为当时我们的业务只需要支持 chrome，而 web 页面通常需要考虑很多兼容性问题。用 Proxy 可以让代码变得更简单，也支持更多数据结构和方法的截持。
+
+首先，我们不会对一个 class 的所有属性做代理，肯定只是对装饰器修饰的那些属性做代理，并且不会干扰 class 本身的作用，所以在第一层级依然是通过 Object.defineProperty 来实现属性代理：
+```typescript
+const newDescriptor = {
+  enumerable: true,
+  configurable: true,
+  get: function () {
+    const current = (this as Domain);
+    if (config.callback) {
+      const f = () => {
+        meta.freeze = true;
+        config.callback && config.callback.call(current, current, property);
+        meta.freeze = false;
+      };
+      !meta.freeze && f();
+    }
+    return current.propertyGet(property, config);
+  },
+  set: function (newVal: any) {
+    const current = (this as Domain);
+    current.propertySet(property, newVal, config);
+  },
+};
+```
+
+如果代理的数据是一个基本数据类型，则把原来的值返回即可，如果代理的值是一个特殊的对象（包括数组、集合类型、plain object、自定义 class 实例）则需要特殊处理，如下所示：
+```ts
+propertyGet(key: string, config: ReactorConfig) {
+  const v = this.properties[key];
+  const mergedConfig = Object.assign({}, {
+    isNeedRecord: this.context.isNeedRecord,
+  }, config);
+  this.reactorConfigMap[key] = mergedConfig;
+
+  depCollector.collect(this, key);
+
+  return isObject(v) && !isDomain(v) && mergedConfig.deepProxy ? this.proxyReactive(v, key) : v;
+}
+```
+
+我们可以看到，如果是特殊对象，我们才使用 Proxy 来做代理，它能截持到哪些事情：
+* 比如集合类型的 set，get，delete 方法
+* 数组的 push，pop，unshift，shift
+* 给一个对象不存在的属性赋值、删属性
+* 对象的深层修改的代理
+* 一些其他特殊 API，如 new 操作符、Object.keys() 等等
+
+大家都知道 Proxy 可以截持很多原生 API 的动作，但是实际上要支持各种数据结构和场景，并没有想象的那么容易。
+
+比如 Proxy 也一样只会支持第一级 get key 的代理，如果要支持深层属性的依赖收集和代理，必须得使用递归，当然这个过程是它每次被 get 的时候才会做，并且需要做对应的双缓冲机制，防止重复创建 proxy 实例：
+```ts
+private proxyReactive(raw: object, rootKey: string) {
+  const _this = this;
+  rootKeyCache.set(raw, rootKey);
+  // different props use same ref
+  const refProxy = rawCache.get(raw);
+  if (refProxy !== void 0) {
+    return refProxy;
+  }
+  // raw is already a Proxy
+  if (proxyCache.has(raw)) {
+    return raw;
+  }
+  if (!canObserve(raw)) {
+    return raw;
+  }
+  const proxyHandler: ProxyHandler<object> = includes(collectionTypes, raw.constructor) ? {
+    get: bind(_this.collectionProxyHandler, _this),
+  } : {
+    get: bind(_this.proxyGet, _this),
+    set: bind(_this.proxySet, _this),
+    ownKeys: bind(_this.proxyOwnKeys, _this),
+    deleteProperty: bind(_this.proxyDeleteProperty, _this),
+  };
+  const proxy = new Proxy(raw, proxyHandler);
+  proxyCache.set(proxy, raw);
+  rawCache.set(raw, proxy);
+
+  return proxy;
+}
+
+private proxyGet(target: any, key: string, receiver: object) {
+  const res = Reflect.get(target, key, receiver);
+  const rootKey = rootKeyCache.get(target)!;
+
+  depCollector.collect(target, key);
+  if (this.reactorConfigMap[rootKey].callback) {
+    const f = () => {
+      meta.freeze = true;
+      this.reactorConfigMap[rootKey].callback && this.reactorConfigMap[rootKey].callback.call(this, target, key);
+      meta.freeze = false;
+    };
+    !meta.freeze && f();
+  }
+
+  return isObject(res) && !isDomain(res) ? this.proxyReactive(res, rootKey) : res;
+}
+```
+再比如数组的场景，数组你可以理解为一个以下标为 key 的对象，还会多个 length 的内置属性，深度使用过 Proxy 的童鞋应该知道，操作数组的时候，截持的 key 其实就是数组的当前 index，但还不算完，如果影响到了 length 的大小，你会发现当前这个 Proxy 的 set 会被触发两次，所以在结合具体的框架逻辑时候，你得考虑到这种情况，不然会引起一些 bug。
+
+我们要考虑一种情况，当一个属性不存在的时候，如果此时做了一个赋值，我们不仅仅需要触发该属性的 set，还需要同时触发 add，思考一下为什么？
+
+因为我们在使用这个属性的时候，不一定是通过 get 的方式，也许是通过 Object.keys 遍历，或者直接使用目标对象的情况，显然这时候的 set 不仅仅会影响到该 key 的改变，还会影响到上述说的这些情况的改变，所以我们在做依赖收集的时候，需要收集这些遍历的情况，触发的时候可以 match 上。
+
+再来看看集合类型，集合类型本身并没有对应的 Proxy API 可以代理到，比如对一个 map 做代理，你只能 get 到对应 map 的方法名，不过那也足够了，我们只要知道对应的方法名，就可以做一个映射，调用它原型上的真实 API，并且做对应的依赖收集和触发收集：
+```ts
+getCollectionHandlerMap = (target: Collection, proxyKey: string) => {
+  return {
+    get size() {
+      const proto = Reflect.getPrototypeOf(target);
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return Reflect.get(proto, proxyKey, target);
+    },
+    get: (key: any) => {
+      const { get } = Reflect.getPrototypeOf(target) as MapType;
+      depCollector.collect(target, key);
+      return get.call(target, key);
+    },
+    has: (key: any) => {
+      const { has } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, key);
+      return has.call(target, key);
+    },
+    forEach: (callbackfn: (value: any, key: any, map: Map<any, any>) => void) => {
+      const { forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return forEach.call(target, callbackfn);
+    },
+    values: () => {
+      const { values } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return values.call(target);
+    },
+    keys: () => {
+      const { keys } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return keys.call(target);
+    },
+    entries: () => {
+      const { entries } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return entries.call(target);
+    },
+    [Symbol.iterator]: () => {
+      if (target.constructor === Set) {
+        return this.getCollectionHandlerMap(target, 'values').values();
+      }
+      if (target.constructor === Map) {
+        return this.getCollectionHandlerMap(target, 'entries').entries();
+      }
+    },
+    add: (value: any) => {
+      const { add, has } = Reflect.getPrototypeOf(target) as SetType;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadValue = has.call(target, value);
+
+      if (!hadValue) {
+        triggerCollector.trigger(target, value, {
+          type: ECollectType.SET_ADD,
+          beforeUpdate: undefined,
+          didUpdate: value,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.SET_ADD,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+
+      return add.call(target, value);
+    },
+    set: (key: any, value: any) => {
+      const { set, get, has } = Reflect.getPrototypeOf(target) as MapType;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadKey = has.call(target, key);
+      const oldValue = get.call(target, key);
+
+      if (value !== oldValue) {
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.MAP_SET,
+          beforeUpdate: oldValue,
+          didUpdate: value,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      if (!hadKey) {
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.MAP_SET,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      return set.call(target, key, value);
+    },
+    delete: (key: any) => {
+      const proto = Reflect.getPrototypeOf(target) as Collection;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadKey = proto.has.call(target, key);
+
+      if (!hadKey) {
+        return proto.delete.call(target, key);
+      }
+
+      if (proto.constructor === Map || proto.constructor === WeakMap) {
+        const oldValue = proto.get.call(target, key);
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.MAP_DELETE,
+          beforeUpdate: oldValue,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.MAP_DELETE,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      if (proto.constructor === Set || proto.constructor === WeakSet) {
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.SET_DELETE,
+          beforeUpdate: key,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.SET_DELETE,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+
+      return proto.delete.call(target, key);
+    },
+    clear: () => {
+      const { clear, forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
+      forEach.call(target, (value: any, key: any) => {
+        this.getCollectionHandlerMap(target, key).delete(key);
+      });
+
+      return clear.call(target);
+    },
+  }
+}
+
+private collectionProxyHandler(target: Collection, key: string) {
+  const handlers = this.getCollectionHandlerMap(target, key);
+  const targetObj = key in target && handlers[key] ? handlers : target;
+  return Reflect.get(targetObj, key);
+}
+```
+
+#### mutation
 在 **redux** 中，我们写的最多的就是 reducer，它是用来处理数据更新操作，传统意义来说，reducer 是一个具有输入输出的纯函数，它更像是一个物料，或是一个早就定制好的流水线，任何相同的输入，一定会得到相同的输出，它的执行不会改变它所在的环境，外部环境也不应该影响它，这种特性似乎非常适合 **react** 数据状态机的思想，每一个 snapshot 都对应着一份数据，数据变了，就产生了新的 snapshot。
 
 在 **mobx** 中，没有 reducer，它从另一个思想，响应式编程的角度来试图解决状态的传递，本质上对原始引用做了一份代理，任何一次更新都会直接反馈到原始引用，并广播到所有依赖过的地方并触发它们，类似 **vuex** 中的 mutation 的概念，它是一种突变，不是一个纯函数。
@@ -307,7 +558,7 @@ await f();
 
 > mutation 是用来做变更的，符合规范的情况是它不应该有返回值，也没有必要有返回值，但如果有场景一定要返回值，也是可以接收到的
 
-#### $update
+##### $update
 上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
 ```js
 class MyDomain extends Domain {
@@ -332,7 +583,28 @@ class MyDomain extends Domain {
 
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
 
-### action
+上面提到的更新方式可能会让一些童鞋有疑问，为什么不在 mutation 或 $update 作用域内更新属性会报错，这就得先说一下背景。在框架层面，其实是不允许在 mutation 或 $update 以外的范围直接对数据做更改的，为什么要做这个限制呢？因为我们并不希望所有的数据更新零散在代码的各个角落，而是有个地方能明确收敛所有的数据更新操作，这样才会有利于组织我们的代码，也不会和非响应式的属性更新混在一起，也才能做一些撤销恢复事务的机制。
+
+基于上面的前提条件，我们是不希望用户在 mutation 以外的范围做更新的，所以我们得提供一个报错机制来约束用户，没有这个机制的话数据和视图就不同步了。
+
+所以在每一次 set 的时候，我们都会做一个检测，判断这个属性是否在指定合法范围内调用，当然这个其实只在开发时检测就够了，生产环境可以关闭以提高一丢丢性能：
+```ts
+private illegalAssignmentCheck(target: object, stringKey: string) {
+  if (depCollector.isObserved(target, stringKey)) {
+    const length = materialCallStack.length;
+    const firstLevelMaterial = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+    invariant(
+      firstLevelMaterial === EMaterialType.MUTATION ||
+      firstLevelMaterial === EMaterialType.UPDATE ||
+      firstLevelMaterial === EMaterialType.TIME_TRAVEL,
+      'You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({}).'
+    );
+  }
+}
+```
+但是光这样还不够，因为必然会存在一些 mutation 范围以外的赋值是不能去禁止的，比如初始化的时候，new 的时候，所以才为什么有上面代码里的那个判断 depCollector.isObserved 这个判断就是说当这个属性已经被代理过了，那么后面的更新必须经过检查，如果没有被视图同步过，那么可以在任何地方初始化。
+
+#### action
 `action` 通常是用来灵活控制操作行为/事务的 api，可以简单的理解为一种主动事务的机制，会影响撤销恢复的粒度。比如我们可以定义如下的一个 action：
 ```js
 class MyDomain extends Domain {
@@ -458,7 +730,35 @@ action.undo(keepHistory = false); // keepHistory 参数默认为 false，做完�
 action.redo(keepHistory = false);
 ```
 
-<!-- ### effect（即将废弃重做）
+turbox 的 action 机制指的是一个事务，一个步骤，而不是 web 场景中的一个 action 的概念。
+
+在 turbox 中有主动事务和被动事务的概念
+
+主动事务：
+举个例子，在一些建模业务中，我需要画一个轮廓，我先画一个点，再画一根线，再画一个点，直到完成一个封闭图形才算完成了这个组合操作，而这些绘制行为其实都不是在一个同步执行栈中完成的，也就是说对于渲染来说，我确实是完成一个动作就得有一份对应的视图渲染出来，但对于撤销恢复来说，显然我撤销的不是最后一次画线的操作，而是撤销整个画轮廓的步骤，这就是我们要的主动事务机制，而决定事务什么时候开始，事务什么时候结束是强依赖业务逻辑的，所以我们得提供灵活的 API，让用户可以通过调用简单的 API 完成它想要的功能。
+
+被动事务：
+主动事务可以最大化的灵活控制事务的粒度，但是对于大多数场景，一个事件触发的一个行为基本上就是一个步骤，如果每一次我都要设置开始和结束，以及调用或者初始化一堆乱七八糟的中间类和函数，那会导致开发效率非常低下，尤其是我们这种 web ui 和 3d 场景兼有的业务场景。所以比较理想的方式就是默认是被动事务，加上主动事务辅助。被动事务其实就是上面提到的更新流程一节，只要记住一个数据的 snapshot 对应一个视图的渲染，就可以了，加上副作用、控制渲染时机的机制，已经足够满足需要。
+
+当然我们业务中也会有更复杂一些的场景，比如做一个门板切割的行为，我可以连续切割，但是也有可能做了一系列操作之后放弃了，那需要退回某个节点的状态，如果要靠代码（逆向操作）去实现，是非常麻烦的，要知道模型的数据非常庞大且复杂，且一次操作不仅仅只是操作模型数据，即使是通过暴力 normalizr 也有局限性，比如性能问题、丢数据问题，只要靠“人和规范”解决的问题一定是不稳定的容易出错的，所以我们才需要通过框架提供的 Action API 来做 abort、revert 等功能，减少人工做这些事情出错的概率。
+
+另外还有一些异步竞争的场景会比较复杂，但我说的竞态复杂还没有复杂到需要动用 rxjs 或者 saga 这样的库来解决，这样的库能解决一些问题，但是也会带来新的问题，如果使用者的水平和理解没有达到同一水平线，等于是搬起石头砸自己的脚，并且在这种既有业务里，rx 的理念更多的是希望作为一个插件用进来，而不是必选项。
+
+所以我举的例子其实也比较简单，比如同时有三个异步事务在执行，这时候有这样一个需求，当满足某个条件的时候，我需要抛弃掉指定的前面几次事务，只保留最后一次，这就要求框架需要提供一个事务池，让使用者可以灵活控制这些事务。如下图：
+
+![Image](https://pic4.zhimg.com/80/v2-cb6aee237e90a74cda9f3082e12f485a.png)
+
+不仅要暂停前面两次事务往后执行，也要回退掉已经发生的变化，不然会导致状态错乱：
+
+![Image](https://pic4.zhimg.com/80/v2-caa2fc7e874b7741f2033b0b62335e74.png)
+
+等到全部完成清理掉事务池中的前面两次事务：
+
+![Image](https://pic4.zhimg.com/80/v2-07f73c81a830a3fbc51552d870883698.png)
+
+当然这只是比较简单的例子，实际场景中会有更多应用
+
+<!-- #### effect（即将废弃重做）
 单向数据流中一个操作就会产生一次数据映射，但在一些有复杂异步流的场景，一个行为会同时触发多次数据更新操作并且需要更新多次 UI，这个就是我们所说的数据流“副作用”，通常这种行为会发生在一些异步接口调用和一些分发更新操作的流程中，在 **redux** 中，会使用一些中间件来解决此类问题，比如 **redux-thunk**、**redux-saga**、**redux-observable** 等，在 **mobx** 中，side effect 统一可以交给 @action 装饰器修饰的函数处理，虽然功能没有那么强大。**turbox** 默认提供内置的 effect 中间件，这样就可以处理副作用了，使用方法如下：
 ```js
 import { throttle, bind } from 'lodash-decorators';
@@ -507,48 +807,7 @@ class MyDomain extends Domain {
 
 后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。 -->
 
-### computed
-2d、3d 业务的计算通常比较复杂，需要根据某几个原始 reactor state 的值自动触发算法或公式，计算出视图真正需要的状态，计算功能的意义在于可以收敛计算代码并且缓存计算结果以提高性能。
-
-在视图中放入太多的逻辑会让组件过重且难以维护，并且无法复用计算逻辑。如果原始 reactor state 没有发生变化，就不应该重复执行耗时的计算，因为两次计算的结果一定是一样的，直接返回上一次计算过的结果性能更佳。使用方式如下代码所示：
-
-```js
-class TestDomain extends Domain {
-  @reactor() firstName = 'Jack';
-  @reactor() lastName = 'Ma';
-
-  @computed({ lazy: true })
-  get fullName() {
-    return this.firstName + ' ' + this.lastName;
-  }
-
-  /** 这种写法虽然看起来优雅但不推荐，一个是因为只在 ts 下支持，另一个是因为做了 hack，会导致语法高亮识别为函数而不是属性，并且无法写原生 set */
-  @computed()
-  fullName = () => {
-    return this.firstName + ' ' + this.lastName;
-  }
-}
-```
-
-有时候我们不想使用装饰器，可以直接用 computed 函数：
-
-```js
-const fullName = computed(() => {
-  // 注意一下作用域，默认不会帮你绑定作用域
-  return this.firstName + ' ' + this.lastName;
-}, {
-  lazy: true,
-});
-
-// 使用属性的时候得调用 get 方法，因为没法对原始数据类型做代理，并且需要惰性求值能力
-fullName.get();
-```
-
-> 计算属性只会在用到该属性的时候才会发生计算，确保性能最佳
-
-> 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时进行 dirty 检察，默认关闭。如果打开意味着只会在即将触发 reactive 或 Reactive 时才会做一次 dirty 检察，在这之前获取计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
-
-### Domain
+#### Domain
 在上面的例子中，我们会发现有个 Domain 的基类，在 **turbox** 中，Domain 只是类似 React.Component 这样的基类，声明这是一个领域模型，提供了一些通用方法和控制子类的能力，该类的装饰器实际也会依赖基类上的一些私有方法，所以需要配套使用，如下代码所示：
 ```js
 import { Domain, reactor, reducer, mutation } from 'turbox';
@@ -650,7 +909,7 @@ reactive(() => {
 domain.changeFirst();
 ```
 
-### Reactive
+#### Reactive
 **turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
 ```js
 import $column from '@domain/dwork/design-column/column';
@@ -730,7 +989,7 @@ export default class Item extends React.Component {
 }
 ```
 
-### reactive
+#### reactive
 ```typescript
 interface Options {
   name: string;
@@ -785,7 +1044,104 @@ reactive((nickName, a) => {
 });
 ```
 
-### init
+#### computed
+2d、3d 业务的计算通常比较复杂，需要根据某几个原始 reactor state 的值自动触发算法或公式，计算出视图真正需要的状态，计算功能的意义在于可以收敛计算代码并且缓存计算结果以提高性能。
+
+在视图中放入太多的逻辑会让组件过重且难以维护，并且无法复用计算逻辑。如果原始 reactor state 没有发生变化，就不应该重复执行耗时的计算，因为两次计算的结果一定是一样的，直接返回上一次计算过的结果性能更佳。使用方式如下代码所示：
+
+```js
+class TestDomain extends Domain {
+  @reactor() firstName = 'Jack';
+  @reactor() lastName = 'Ma';
+
+  @computed({ lazy: true })
+  get fullName() {
+    return this.firstName + ' ' + this.lastName;
+  }
+
+  /** 这种写法虽然看起来优雅但不推荐，一个是因为只在 ts 下支持，另一个是因为做了 hack，会导致语法高亮识别为函数而不是属性，并且无法写原生 set */
+  @computed()
+  fullName = () => {
+    return this.firstName + ' ' + this.lastName;
+  }
+}
+```
+
+有时候我们不想使用装饰器，可以直接用 computed 函数：
+
+```js
+const fullName = computed(() => {
+  // 注意一下作用域，默认不会帮你绑定作用域
+  return this.firstName + ' ' + this.lastName;
+}, {
+  lazy: true,
+});
+
+// 使用属性的时候得调用 get 方法，因为没法对原始数据类型做代理，并且需要惰性求值能力
+fullName.get();
+```
+
+> 计算属性只会在用到该属性的时候才会发生计算，确保性能最佳
+
+> 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时进行 dirty 检察，默认关闭。如果打开意味着只会在即将触发 reactive 或 Reactive 时才会做一次 dirty 检察，在这之前获取计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
+
+计算属性其实就是一种特殊的 reactive，有依赖变化需要重新计算，没有则直接用上一次的值，区别就在于它有返回值，需要缓存计算值，需要做惰性求值，脏值标记和 keepAlive 的功能：
+```ts
+if (typeof args[0] === 'function') {
+  let value: T;
+  let dirty = true;
+  let needReComputed = false;
+  let needTrigger = false;
+  let computedRef: ComputedRef<T>;
+  const computeRunner = args[0];
+  const options = args[1];
+  const lazy = options && options.lazy !== void 0 ? options.lazy : true;
+
+  const reaction = reactive(() => {
+    dirty = true;
+    if (needReComputed) {
+      value = computeRunner();
+    }
+    if (needTrigger) {
+      triggerCollector.trigger(computedRef, ESpecialReservedKey.COMPUTED, {
+        type: ECollectType.SET,
+        beforeUpdate: void 0,
+        didUpdate: void 0,
+      });
+    }
+  }, {
+    name: 'computed',
+    computed: true,
+    lazy,
+  });
+
+  computedRef = {
+    get: () => {
+      if (dirty) {
+        needReComputed = true;
+        needTrigger = false;
+        reaction.runner();
+        dirty = false;
+        needReComputed = false;
+        needTrigger = true;
+      }
+      depCollector.collect(computedRef, ESpecialReservedKey.COMPUTED);
+      return value;
+    },
+    dispose: () => {
+      reaction.dispose();
+    },
+  };
+
+  return computedRef;
+}
+```
+看代码可以知道第一次会执行计算函数，收集依赖，后面如果有依赖变化，reactive 中的回调会被再次执行，这时候该计算属性就被标记为 dirty 了，但是并不会立即求值，等到下一次被 get 的时候，发现是脏值才会重新计算，如果不是脏值，就直接返回之前计算过的 value。
+
+当然计算属性本身也是需要被收集的，这样当视图依赖了计算属性，而没有直接依赖更底层的属性时，也能因为底层依赖的变化触发该视图的重新渲染。
+
+
+#### init
 ```typescript
 type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 ```
@@ -806,7 +1162,8 @@ type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 
 > 为什么要放到 init 函数里面做初始化状态操作？原因是需要在 render 之前清理一些由 new、或异步接口产生的不可控的第一次的数据更改记录，只有收到 init 函数里才能集中控制，并在初始化完成后还会清理当前撤销恢复栈，因为初始状态并不应该被记录到撤销恢复栈中，只有后续操作才应该被记录，这是一种默认行为。而因为在初始化过程中也有可能产生状态记录，所以 init 函数默认会做清理。
 
-### middleware
+#### middleware
+中间件机制，我们想要的其实就是类似 koa 的洋葱模型，实现原理就不用多说了，通过 reduce 和 middleware chain 来做，turbox reactivity 的中间件机制是支持异步的，当然传入的参数也会不太一样，提供了获取行为链、依赖图、dispatch 等能力，同时也内置了一些基本的中间件，部分可通过配置开关。接口如下：
 ```typescript
 type Param = {
   dispatch: (action: DispatchedAction) => any | Promise<any>;
@@ -816,7 +1173,7 @@ type Param = {
 type middleware = (param: Param) => (next) => (action: DispatchedAction) => (action: DispatchedAction) => any | Promise<any>;
 type use = (middleware: middleware | middleware[]) => void
 ```
-**turbox** 有一套中间件机制，其中内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（参数不太一样），你可以像下面这样使用 use 方法添加中间件：
+**turbox** 内置了 logger 中间件，logger 默认关闭，在生产环境根据环境变量关闭，是用来打日志的，可以看到变化前后的 reactor state 值，你还可以提供自定义的中间件来触达 action 的执行过程，中间件的写法保留了 **redux** 中间件的写法（参数不太一样），你可以像下面这样使用 use 方法添加中间件：
 ```js
 const middleware = ({ dispatch, getActionChain, getDependencyGraph }) => (next) => (action) => {
   // balabala...
@@ -841,7 +1198,7 @@ Turbox.render(<Layout />, '#app');
 
 > use 函数的参数 middleware 可以是一个数组，一次性加载多个中间件，也可以 use 多次，效果和数组是一样的，中间件名称不能重复，否则会报错，注意载入中间件必须先于 Turbox.render 执行
 
-### config
+#### config
 ```typescript
 type Config = {
   middleware: {
@@ -857,6 +1214,7 @@ type Config = {
     maxStepNumber?: number,
     keepActionChain?: boolean,
   },
+  disableReactive?: boolean,
   strictMode?: boolean,
   devTool?: boolean,
 }
@@ -890,6 +1248,7 @@ let ctx = {
     isNeedRecord: false, // 所有状态是否需要被记录的全局配置，默认全不记录
     keepActionChain: process.env.NODE_ENV !== 'production', // 默认开启保存 actionChain 到撤销恢复栈中，在生产环境关闭
   },
+  disableReactive: false, // 是否禁用响应式
   strictMode: process.env.NODE_ENV !== 'production', // 严格模式，开启非法赋值检测，默认在 dev 环境开启，生产环境关闭
   devTool: false // 默认关闭 devTool，在生产环境自动关闭
 }
@@ -897,11 +1256,53 @@ let ctx = {
 
 > 必须在 Turbox.render 之前调用
 
-### exception
+#### exception
 **turbox** 默认在 Reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
-### time travelling
-框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、撤销恢复状态变更的钩子函数，动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。
+#### 响应式原理
+上面说了很多响应式的 API 和设计思路，这一小节主要是介绍原理，响应式的核心原理就是依赖收集与如何触发：
+* 利用 defineProperty 和 Proxy 来做代理，劫持访问符和赋值，收集依赖、触发依赖
+* 利用栈来存储 reaction id，结束时出栈，跟执行栈保持一致，react 下可以改写 render，触发时调用 forceUpdate，普通回调就是重新执行该回调
+
+建立组件树实例 id 和对应依赖的关系，跟执行栈保持一致：
+
+![Image](https://pic4.zhimg.com/80/v2-3fdc61967e0ada486deed870c3b05d54.png)
+
+依赖树的数据结构：
+
+![Image](https://pic4.zhimg.com/80/v2-72b85933305c1987c5d7b1b66f77718d.png)
+
+触发依赖只需要去依赖树中找到对应的 reactionId，即可触发对应的重新渲染或回调
+
+有依赖收集必然有依赖淘汰机制，当属性不再被依赖到这个 reactive 视图或函数后，就应该移除依赖，不然会触发不该触发的重绘，为了不阻塞渲染，我们通过反向建立一颗状态树来存储依赖的状态，这样我们就可以把依赖淘汰移动到渲染完成后再去做，而不是每次暴力清除再重建：
+
+第一次我们都标记为 latest：
+
+![Image](https://pic4.zhimg.com/80/v2-56180b3e4825497f97bb6c989ba023c6.png)
+
+收集后我们把依赖都标记为 observed：
+
+![Image](https://pic4.zhimg.com/80/v2-59e0adf7d9ce1b25f4eb589aedd3e6f2.png)
+
+再次更新后，把这次依赖到的属性标记为 latest：
+
+![Image](https://pic4.zhimg.com/80/v2-70b7df24d78d952554ac5e8e9780b6d1.png)
+
+那么在这次收集完成后，我们只要把 latest 置为 observed，把 observed 的置为 not observed 的，然后把 not observed 的依赖清除掉即可：
+
+![Image](https://pic4.zhimg.com/80/v2-968ae78cc27e91ad594d9bd151e67c03.png)
+
+#### 数据更新原理
+虽然是响应式数据流，但是并不希望那么灵活，在实际的业务开发中，我们依然还是需要类似 action 或者说指令的概念，之前也有提到为什么需要包在 mutation 里做更新，因为底层我仍然需要有撤销恢复、渲染时机的控制、中间件等机制，所以不管你怎么响应式，我底层就是个 store.dispatch 只不过那肯定是要比 redux 复杂的多，才能实现这些能力，流程图如下：
+
+![Image](https://pic4.zhimg.com/80/v2-541564db26c835c43c16c323e78d8dc8.png)
+
+这里简单提一下副作用这个概念，这个概念应该是 redux 提出来的，有这个概念的原因是一次数据的 snapshot 对应一个视图状态，当一次 action 操作产生了两次或多次对应的视图状态，则被认为是副作用，通常发生在异步场景。而在 turbox reactivity 中，所谓的副作用其实用个 async 函数就能体现，await 之前比如是一次数据更新，await 之后是另一次，甚至都不应该叫做副作用。
+
+但有时候我们也需要忽略副作用，比如我们有一些改柜子参数的场景，改参数会触发拉取公式，然后通过公式进行耗时的复杂计算，最后才算完成，这个过程是个异步的，但是这个过程本身计算的中间结果我们并不希望立刻反馈到视图或回调逻辑上，这就需要忽略这个副作用，等到这个完整操作执行完才反馈到视图，作为一个独立的步骤。这种情况可以使用异步的 mutation 来支持。
+
+#### time travelling
+框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、撤销恢复状态变更的钩子函数，动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。对应的接口：
 ```typescript
 export class TimeTravel {
   static create: () => TimeTravel;
@@ -918,10 +1319,9 @@ export class TimeTravel {
   undo: () => void;
   redo: () => void;
   clear: () => void;
-  onChange: (undoable: boolean, redoable: boolean) => void;
+  onChange: (undoable: boolean, redoable: boolean, type: HistoryOperationType, action?: Action) => void;
 }
 ```
-撤销恢复的每一步的定义跟上面章节提到的事务有关
 
 你可以创建多个时间旅行器，并切换应用它，这时相应的操作会自动记录到当前最新被切换的时间旅行器实例中，如果要退出当前的，只要切换到其他旅行器即可
 ```js
@@ -933,7 +1333,67 @@ TimeTravel.switch(mainTimeTravel);
 
 > 时间旅行也会记录调用路径的函数名或自定义函数名
 
-## 最佳实践
+撤销恢复依赖于前面我们提到的属性修改的代理，每一次修改我们都会记录状态修改的类型和修改之前的值、修改之后的值，将修改记录暂存，当然在一个步骤内的修改是会被合并的。
+
+框架提供的撤销恢复操作其实是一种特殊的 mutation（不记录 actionChain 和 history），根据修改类型执行不同的赋值或还原操作：
+```typescript
+static undoHandler(history: History) {
+  history.forEach((keyToDiffObj, target) => {
+    if (!keyToDiffObj) {
+      return;
+    }
+    keyToDiffObj.forEach((value, key) => {
+      if (!value) {
+        return;
+      }
+      if (value.type === ECollectType.MAP_SET || value.type === ECollectType.MAP_DELETE) {
+        if (value.beforeUpdate === void 0) {
+          (target as MapType).delete(key);
+        } else {
+          (target as MapType).set(key, value.beforeUpdate);
+        }
+      } else if (value.type === ECollectType.SET_ADD) {
+        (target as SetType).delete(key);
+      } else if (value.type === ECollectType.SET_DELETE) {
+        (target as SetType).add(key);
+      } else {
+        if (Array.isArray(target) && value.beforeUpdate === void 0) {
+          delete target[key];
+        } else {
+          target[key] = value.beforeUpdate;
+        }
+      }
+    });
+  });
+}
+```
+要注意的是，撤销恢复一定是有最大步数限制的，毕竟内存是有上限的，即便是只存了 diff 而不是全量的值，所以当达到了步数上限后，将最后的记录加入队列，将最早的操作记录就得相应移出、清除，所以撤销恢复严格来说并不是一个栈，而是一个队列，需要满足先进先出。
+
+有时候我们会做撤销恢复操作，回退到中间某一步，然后这时候开始做新的操作，这种情况就得考虑到覆盖当前指针以后的记录了，替换为当前操作。
+
+看到这里，一定有童鞋有疑问，撤销恢复记录的是引用类型怎么办？直接赋值引用类型难道没有问题吗？
+
+这个其实是个惯性思维，因为以前我们认为要做撤销恢复，必须得 normalizr 转成扁平化的 plain object 数据才可以做，这个思路其实是对的，这是做一个完美的撤销恢复机制的方案，虽然看上去挺粗暴的，但至少可以保证解决引用值被修改的问题。缺点就是如果要拷贝的整个引用类型数据量很大，一方面会牺牲很多转换过程中的时间性能，另一方面也会占用很多额外内存空间（在 3d 业务中除了本身的模型数据，还有大量生产参数数据，这种做法在这种业务场景中是完全不可用的，随便做一二个复杂步骤，就有内存直接崩溃的案例）。
+
+所以问题的点在于我们到底需不需要一个完美的撤销恢复方案，对于我遇到的实际业务场景，我的回答是不需要。我希望通过实现一个满足业务但所谓”不完美“的撤销恢复方案来换取性能上的优势。
+
+实际上我们操作具体状态的变更的时候，大部分情况都是在赋值基本数据类型，因为只有这些数据，才能真实的在需要渲染的场景被读取出来或拿来用，比如一个嵌套对象 ```{ a: { b: { c: 1 } } }``` 我们肯定不会直接去用 a.b 因为它是一个对象，但是我们一定会去读 a.b.c 比如在界面显示一个数量，这是一个具体的值，即使你真的需要使用一个引用类型的属性的时候，也一定是类似这样的场景：
+
+```parent = new Cabinet()``` 然后这时候更新了 parent，```parent = new Door()```，撤销恢复的时候，退到了 parent 为 cabinet 实例引用的情况，如果这时候有别的地方把 cabinet 实例的值修改了，下一次再退回来的时候，有的童鞋会担心两次结果不一样，不符合预期。其实完全不用担心这种情况，因为修改 cabinet 实例上的属性这个操作本身也会被记录下来，所以只要叠加上去，引用的值也会被正确的撤销恢复，只要这个属性是被 reactor 装饰器修饰为响应式的。
+
+只有一种情况会出现差异，就是这个引用值不在框架的控制范围，是一个自己外部创建的引用类型，并且不是响应式的，比如把 reactor 的第一个参数 deepProxy 设置成了 false，那么框架肯定代理不到引用内部的结构了，比如某个模型渲染所需要的 metadata 或者顶点材质数据，这时候你去改这个对象，是不会被记录的，两次撤销的结果自然也会不一样，但这种问题实际上根本不存在，因为既然你都取消了深度代理，还想改属性引发变更，一定是要通过 immer.js 或者 immutable.js 来做拷贝赋值的，把引用改掉，不然的话当然不起作用了。
+
+另一个要注意的点是，基于 diff 的撤销恢复，始终是在当前一个已知应用程序状态下进行前进后退的，除了不能跳步以外，如果你要通过 diff 数据来恢复现场也是做不到的，因为丢失了其他数据，所以要完整还原，肯定还是要做序列化操作持久化到后端。实际上很多竞技游戏也会用类似的办法来做现场恢复、断线重连、replay 等，虽然我没做过游戏，但实现思路基本也是差不多的，实时发送下一帧的 diff 数据包，或是全量数据包来传输对方玩家的动作，这也是为啥网游非常依赖带宽和传输稳定性。
+
+另外，即使是基于 diff，依然还是会有内存占满的可能，diff 只对修改部分状态起到较大的优化效果，如果是类似一些替换、重算轮廓等几乎更新了所有数据的场景，并没有什么优势。真实场景中的撤销恢复还是要结合前后端一起来做，以达到释放端上内存压力的效果。
+
+当然撤销恢复也得支持暂停、重启，多个撤销恢复队列，切换队列，清空等功能，这都是我们业务需要的场景。
+
+最后附上一张简单的图：
+
+![Image](https://pic4.zhimg.com/80/v2-cdc19140bdcc1cd3190743ee22aec6e3.png)
+
+### 最佳实践
 3d 业务，以单插件为例：
 ```
 ├── src
@@ -1037,40 +1497,40 @@ class component 的表现是：
 
 function component 并不会等 useEffect 执行，先完成 batchUpdate 再执行 useEffect 逻辑，而 class component 会等生命周期里面的逻辑都执行完，才算执行完这次 batchUpdate
 
-## 框架特性对比
+### 框架特性对比
 以下简单介绍几个业界比较流行的框架和 **turbox** 框架，让不了解状态管理的童鞋可以快速找到自己适合的框架。
 
-### react-redux
+#### react-redux
 **react-redux** 是比较经典的状态管理框架，最优秀的地方在于可扩展性和可预测性，个人使用感受来说适合一些复杂稳定的业务，并且还是比较考验架构设计的，**redux**（以下代指 **react-redux**） 相对来说还是给了开发者比较多折腾的空间，核心代码不多，扩展能力强，但直接裸用 **redux** 开发链路较长，心智负担较多，效率不算很高。
 
 [如何评价数据流管理框架 redux？](https://www.zhihu.com/question/38591713)
 
-### react-redux 架构图
+#### react-redux 架构图
 ![redux](https://qhstaticssl.kujiale.com/as/ddae6a4d54ba1e65b5833508fd59ff5c/redux.png)
 
-### dva
+#### dva
 **dva** 是基于 **redux** 的状态管理框架，但它不仅仅是个状态管理框架，还捆绑了 cli、router、saga 等能力，配合 **umi** 这套整体解决方案，看起来对于快速搭建应用还不错，它的能力非常强大，集合了多个框架再封装，几乎不怎么再需要添加其他三方库了，不过因为直接依赖了一些三方库，更新维护成本和难度还是挺高的，在社区上不算是很活跃，概念也非常多，适合一些对 redux 系列库比较熟悉的开发者。
 
 [如何评价前端应用框架 dva？](https://www.zhihu.com/question/51831855?from=profile_question_card)
 
-### dva架构图
+#### dva架构图
 ![dva](https://qhstaticssl.kujiale.com/as/99322f8bdbfcaa47da9ce3cdd5854075/dva.png)
 
-### mobx
+#### mobx
 响应式数据流的代表 **mobx** 和 **vue** 的写法有相似之处。很多人说，**mobx-react** 是给 **vue** 的狂热粉丝用来写 **react** 的，这个说法很有趣，但在实际普通 web 业务开发中，不可否认它们的写法确实更无脑也更方便，很惊艳也很容易上手，概念也比较少，还是挺适合大部分 web 项目的。不过会比较难测试、难调试，流程复杂的项目自描述能力也比较差，更容易写出过程式代码，扩展和生态都不算是很好，但 mobx 的作者更新还是比较频繁，现在能力也越来越强大了。
 
 [如何评价数据流管理框架 mobx？](https://www.zhihu.com/question/52219898)
 
-### mobx-react架构图
+#### mobx-react架构图
 ![mobx](https://qhstaticssl.kujiale.com/as/654ae258534c4b8c8f5b21f8f1282e52/mobx.png)
 
-### vuex
+#### vuex
 **vuex** 是 **vue** 的状态管理框架，整个流程上的理念基本和 **redux** 没有太大区别，主要的区别是在 **vue** 中可以直接更新 state，不需要拷贝，因为这个过程并没有像 reducer 纯函数那样具有明确的输入输出，所以 **vuex** 给它起了个名字，叫做 mutation，因为概念上任何一次相同的输入都得到相同的输出才更符合 reducer 纯函数的特性，所以“突变”更加适合 **vuex** 中的更新行为。
 
-### vuex架构图
+#### vuex架构图
 ![vuex](https://qhstaticssl.kujiale.com/as/e738c068c874a74d0192c83b039980e9/vuex.png)
 
-### turbox
+#### turbox
 **turbox** 是一个包含了状态管理的大型生产力应用框架，它的灵感主要还是来源于社区和部分复杂业务场景，**turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收图形与 web 领域的优秀思想，解决复杂通用问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，这就是 **turbox** 框架的意义所在。
 
 - 基于 Proxy 的响应式状态管理
@@ -1089,14 +1549,14 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 - 底层 0 依赖，框架无关，是个纯粹、精简的状态管理解决方案，升级维护都比较容易，不容易腐烂
 - 友好的文档和最佳实践，对于没有用过状态管理框架的新手来说，还算比较容易上手
 
-### 为什么不是 redux？
+#### 为什么不是 redux？
 这个应该比较好理解，业界也比较公认它的一些缺点
 
 * 模板代码太多，使用不方便，属性要一个一个 pick，对 ts 也不友好，状态的修改重度依赖 immutable，计算属性要依赖 reselect，还有魔法字符串等一系列问题，心智负担大，用起来很麻烦容易出错，开发效率低下
 * 触发更新的效率也比较差，connect 的组件的 listener 必须一个一个遍历，再靠浅比较去拦截不必要的更新，在大型应用里面无疑是灾难
 * store 的推荐数据结构是 json object，这对于我们的业务来说也不太合适，我们的数据结构是图状的数据结构，互相有复杂的关联关系，比如父子兄弟层级、环状结构、链式结构、多对多等，比较偏向于后端数据模型，适合用面向对象来描述模型，描述切面，需要多实例隔离，显然用 json 或者 normalizr 强行做只会增加复杂度，和已有的代码也完全无法小成本适配
 
-### 为什么不是 mobx？
+#### 为什么不是 mobx？
 * 以前开发该库的时候 mobx 还是基于 defineProperty 来实现的，有很多 hack 的方式，比如监听数组变化等问题的处理，还有很多像监听 Object.keys 这种 API 根本就无法实现，而 tacky 一开始就是基于 proxy 的，我们的业务只要求兼容 chrome，所以就可以用，这样写法会简单很多不需要 hack，支持监听的 API 也会更丰富，当然目前 mobx5 也支持了 proxy。（注意：proxy 在特定浏览器比如 chrome 的性能表现非常优秀，但在 IE Edge 下面性能非常差）
 * 然后就是我们需要做一些撤销恢复，mobx 目前只能依赖于 mobx-state-tree 来做，但有非常大的语法成本，需要改数据结构和定义 schema，有点退化成 redux 的感觉。而自己实现的目标主要是为了满足特定业务场景，并在这基础上做针对性优化，而不是做什么通用方案。turbox 的做法是只保存每次修改过的属性的 diff 信息，而不是全量保存，不然内存很容易崩掉。在进入 mutation 前和执行完后，会对修改过的属性记录 beforeUpdate 和 didUpdate 的值，重复修改会被合并掉。不需要人工去写 undo redo，并且提供了丰富的相关能力，以后还会加入更多优化。
 * 另外我们需要有一些事务的机制，跟传统 web 一个同步栈或者一个 effect 就是一个事务的视角是不一样的。比如我要画点，画线，再画点，这三个行为才组成了一个事务，要回退是撤销一整个事务，而不是单个行为。另外我们在一些异步并发的场景，需要对事务池做一些调度，比如 abort、revert 掉部分事务。事务的定义就是：一个需要被记录到时间旅行器中的原子操作，我们一次操作可能会产生很多副作用，也可能分发多个 mutation，默认同步的 mutation 会被合并掉，一次性 batchUpdate 组件，用户可以自己定义事务，每个事务会影响撤销恢复的粒度和重新渲染的时机。
@@ -1106,7 +1566,7 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 * 还有就是做了不能在不是 mutation 的地方做更新的机制，强制分离更新数据操作和业务流程，做了一个分层，如果这么做会有抛错，防止数据和视图不同步。当然做这个的意义本质一个是性能考虑批量更新，一个是也会影响事务，再者是职责分离，还有在收口赋值操作，这对重构非常有帮助。
 * 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
 
-## 性能分析
+### 性能分析
 状态管理部分，turbox 和 mobx 最接近，所以做个性能对比，如下是测试代码：
 ```js
 import { reactor, mutation, Domain, reactive, init, config } from 'turbox';
@@ -1203,7 +1663,7 @@ const tm = new TestMobx();
 })();
 ```
 
-### 测试结果
+#### 测试结果
 innerDo：
 
 turbox nextTick 模式：
@@ -1228,7 +1688,7 @@ mobx：
 
 ![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
 
-### 结论分析
+#### 结论分析
 性能快和慢一定是有原因的，实现机制、功能上的不一样都会造成差异。
 
 如果按照方式 1 来跑，更新 1000 次：turbox 是 13.7 ms，mobx 是 430.9 ms
@@ -1296,3 +1756,373 @@ turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 * 如果有些场景想等整个异步函数结束才去渲染一次，可以使用异步的 mutation，这样就会阻止掉出现”side effect“的情况
 
 综上来看，turbox 的机制在性能和功能覆盖度的权衡上会更贴合现有业务场景，实际上 web 场景根本遇不到这么复杂的情况，mobx 也完全可以胜任（不考虑中间件和时间旅行），但在 3d 场景，哪怕是结合 web 技术的时候，差异还是很大的
+
+## 指令管理框架
+简单来说，这是一个处理图形 entity 交互逻辑的管理器，不同于 web，图形业务中的交互事件通常会比较复杂，由多个事件组合完成，并且也会处理比较多的临时计算、事务等逻辑，有些临时计算还需要反馈到界面上，该框架主要目的是解决如何更好的内聚、扩展、启用卸载交互模块，以达到复用、组合出不同的交互指令，让业务开发更高效、可维护性更高，不耦合视图层和 model 层。
+
+指令管理主要就两个概念 BaseCommand 以及 BaseCommandBox。前者是指令组件的基本单元，要声明一个指令只需要继承 BaseCommand 即可，指令可以通过 compose 方法组合出一个新的指令，组合过的指令还可以继续自由组合，指令组件可以理解成一个物料，此时它还没生效。而后者就是用来装载指令使其生效的，通常一个场景对应一个 BaseCommandBox，Box 中可以添加不同的指令，但要特别注意的是，同一时间只有一个指令会被激活，也就是说假如有 ABC 三个指令，你激活了 A，那么 BC 自动会被卸载，激活了 B，AC 自动会被卸载，他们之间是互斥的。
+
+这么设计的原因主要是以下场景：比如在刚进入一个场景时，就默认激活一个 default 指令（可能组合了不同的子指令，比如提供了选择、hint 等默认能力），此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令下，不然事件显然会容易混乱冲突，有了 Box 的能力后，就可以轻松交给框架管理，用户只需要关心我当前需要激活什么指令环境。
+
+上面这个案例是图形业务里面必然要解决的。除此之外，指令也提供了重写 active 和 dispose 方法的接口，与之对应的，用户也可以通过指令的实例来调用对应的 active 和 dispose 方法来主动执行激活或卸载方法。
+
+> 指令可以通过链式访问的方式来访问指令的子指令、孙子指令上面暴露的方法。
+
+> active、dispose 方法可以传参，从而实现配置化使用指令组件的效果
+
+> 指令对应的事件回调可以参考 ts 提示的接口，这里不再罗列
+
+> 通常指令跟响应式框架中的 action 一起配合使用，来方便的做到一个可撤销恢复的步骤
+
+下面是使用案例：
+```ts
+class ACommand extends BaseCommand {
+  action?: Action;
+
+  active(param: IActiveParam) {
+    this.action = Action.create('doSomething');
+  }
+
+  onCarriageEnd(ev: IViewEntity, event: SceneMouseEvent) {
+  }
+
+  onDragEnd(ev: IViewEntity, event: SceneMouseEvent) {
+    this.action.complete();
+  }
+
+  onRightClick() {
+  }
+
+  onCarriageMove(ev: IViewEntity, event: SceneMouseEvent) {
+  }
+
+  onDragMove(ev: IViewEntity, event: SceneMouseEvent) {
+    await this.action.execute(async () => {
+      // do something...
+      await this.domain.addProduct();
+    });
+  }
+}
+
+class BCommand extends BaseCommand {}
+
+class DCommand extends BaseCommand {}
+
+class ECommand extends BaseCommand {}
+
+// 组合单个 Command
+class ABCommand extends compose({
+  aCommand: ACommand,
+  bCommand: BCommand,
+}) {
+  active(name: string, age: number) {
+    this.aCommand.active(name)；
+  }
+
+  dispose() {}
+}
+
+// 组合以后的 Command 依然可以被组合
+// 不等同于 compose([ACommand, BCommand, DCommand])
+class ABDCommand extends compose({
+  abCommand: ABCommand,
+  dCommand: DCommand,
+}) {
+
+}
+
+// 创建应用唯一的 Box
+class DemoCommandBox extends BaseCommandBox {
+  // 使用独立的 Command
+  aCommand = new ACommand(this);
+
+  eCommand = new ECommand(this);
+
+  // 使用合成的 Command
+  abdCommand =  new ABDCommand(this);
+
+  constructor() {
+    super();
+    // 默认启用一个指令
+    this.aCommand.apply();
+  }
+
+  disposeAll() {
+    this.aCommand.select.clearAllSelected();
+    this.eCommand.dispose();
+    // 可以访问到下层的指令实例
+    this.abdCommand.abCommand.bCommand.dispose();
+  }
+}
+
+const demoCommandBox = new DemoCommandBox();
+```
+
+## 事件交互管理框架
+主要实现了 2d、3d 场景中的交互系统、快捷键系统、坐标系系统、自定义合成事件的实现及管理
+
+此框架对于用户来说通常只会用到快捷键系统，其他功能一般是和其他子框架配合使用
+
+快捷键的使用方式：
+```ts
+HotKey.on({
+  /**
+   * 快捷键字符
+   *
+   * 单个：'ctrl+a'
+   *
+   * 多个：['ctrl+a', 'ctrl+b', 'meta+a']
+   */
+  key: Key.Escape,
+  handler: () => {},
+});
+
+HotKey.off(Key.Escape, () => {});
+```
+
+## 视图层框架
+顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层是基于 react 封装的框架，后期也许会替换掉内核进一步提升性能。
+
+它的目的就是如何利用数据驱动视图的思路来做图形业务，以达到类似于做 web 页面的开发体感，它把上面的几个子框架全部串联了起来，将事件传递到交互层，交互层及 model 层处理数据，数据自动响应式驱动视图更新。甚至基于视图层框架的 API，还可以封装很多图形基础组件及业务组件，进一步提效。
+
+基于这套框架，开发者也不需要关心图形相关的知识，不需要自己去实现繁琐的功能，比如相机、灯光、场景、父子视图关联创建与卸载、坐标系转换、事件冒泡机制、图形组件与 web 组件混用、如何利用离屏渲染模拟多视口及处理对应交互、抗锯齿、resize、对象拾取、基于响应式数据框架的精细化更新渲染任务队列等等功能。所有能力可以通过简单的声明和调用方式完成。
+
+图形学及 2d、3d 编程的门槛较高较垂直，市面上的人才较少。利用这套框架最终达到降低入门门槛、上手成本，将职责分离，让业务跑的更快更好（开发者学一些基本的几何及代数知识即可上手）
+
+视图层框架有一个核心库 graphic-view，它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
+
+视图层框架对用户来说常用的就 Scene、Mesh、ViewEntity 三个概念，其余的细节看 ts 提示及注释，这里不再罗列。
+
+Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scene3D 的实现；Mesh 则是一个图形或模型的最小物理表达单元，通常它是只处理模型显示逻辑，它是不可交互的；而 ViewEntity 则是一个最小可交互实体单元，一个 ViewEntity 对应的交互单元可能会包含 N 个 Mesh 来显示它，比如一个门窗是一个交互实体，但是门窗是由玻璃、型材、扇组件、以及一些对应的交互控件如选中框、hint 框等 Mesh 组件组成的。
+
+理解了基本概念之后，我们来看一下它的使用方式：
+```tsx
+// 2d 下的立面场景
+@Reactive
+export class FrontView extends React.Component {
+  render() {
+    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
+    if (!wall) {
+        return null;
+    }
+    const viewport = doorWindowStore.scene.viewStyles.front;
+    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
+    return (
+      <Scene2D
+        id="front-scene-2d"
+        commandBox={appCommandBox}
+        container={SCENE_2D}
+        viewport={viewport}
+        camera2dSize={{ x: wall.size.x, y: wall.size.y + 1000 }}
+        coordinateType="front"
+        cameraPosition={cameraPos}
+        transparent={false}
+        backgroundColor={0xE6E9EB}
+        resizeTo={SCENE_2D}
+      >
+        <Axis2d type="front" />
+        {/** 使用 ViewEntity 组件需要传 id 和 type，标识它是什么类型的实体，对应的 id 是什么 */}
+        <DoorWindowView key={model.id} model={model} id={model.id} type={DoorWindowEntityType.DoorWindowVirtual} />
+      </Scene2D>
+    );
+  }
+}
+
+interface IProps extends IViewEntity {
+  model: DoorWindowPDMEntity;
+  zIndex?: RenderOrder;
+}
+// 一个 ViewEntity2D 交互实体单元
+@Reactive
+export class DoorWindowView extends ViewEntity2D<IProps> {
+  // 响应式管线，组件第一次 mount 或重新 render 时会按照顺序执行，管线中的每个任务都被 reactive 函数包裹，拥有响应式的能力，也就是说只有当依赖的属性变化时，才会触发该任务的重新执行，以此达到视图层的精细化更新，提高性能（比如只是材质变了，就重新计算材质相关的任务，只是位置变了就计算位置相关的任务
+  protected reactivePipeLine = [
+    this.updatePosition,
+    this.updateRotation,
+    this.updateScale,
+  ];
+
+  render() {
+    const { model } = this.props;
+    // 实体可能还会包含其他可交互实体（如子部件、连接点交互控件等），也可能包含其他 Mesh 组件（如选中或 hint、碰撞展示的边框图形控件）
+    const mullions: JSX.Element[] = [];
+    const areas: JSX.Element[] = [];
+    const linkNode: JSX.Element[] = [];
+    model.linkVertexes.forEach((child) => {
+      linkNode.push(<LinkVertexView key={child.id} model={child} id={child.id} type={DoorWindowEntityType.LinkVertex} />);
+    });
+    model.children.forEach((child) => {
+      if (PDMCategory.isMullion(child) && !child.isHidden) {
+        mullions.push(<MullionView key={child.id} model={child} id={child.id} type={DoorWindowEntityType.Mullion} />);
+      } else if (PDMCategory.isAreaVirtual(child)) {
+        areas.push(<AreaView key={child.id} model={child} id={child.id} type={DoorWindowEntityType.AreaVirtual} />);
+      }
+    });
+    this.view.alpha = model.isInteractive ? 1 : 0.3;
+    const isSelected = appCommandBox.defaultCommand.select.getSelectedEntities().includes(model);
+    const isHinted = appCommandBox.defaultCommand.hint.getHintedEntity() === model;
+    if (isSelected) {
+      this.view.zIndex = RenderOrder.SelectionWireFrame;
+    } else if (isHinted) {
+      this.view.zIndex = RenderOrder.HintWireFrame;
+    } else {
+      this.view.zIndex = RenderOrder.DEFAULT;
+    }
+    const collisional = doorWindowStore.collision.entities.includes(model);
+    return (
+      <React.Fragment>
+        {areas}
+        {mullions}
+        {linkNode}
+        {isSelected &&
+          <Polygon
+            path={model.box2Front}
+            fillAlpha={0}
+            lineWidth={8}
+            lineColor={0x327DFF}
+          />
+        }
+        {isHinted &&
+          <Polygon
+            path={model.box2Front}
+            fillAlpha={0}
+            lineWidth={8}
+            lineColor={0x27FFFF}
+          />
+        }
+        {collisional &&
+          <Polygon
+            path={model.box2Front}
+            fillAlpha={0}
+            lineWidth={8}
+            lineColor={0xff0000}
+          />
+        }
+      </React.Fragment>
+    );
+  }
+
+  private updatePosition() {
+    const { position } = this.props.model;
+    this.view.position.set(position.x, position.y);
+  }
+
+  private updateRotation() {
+    const { rotation } = this.props.model;
+    this.view.rotation = rotation.z * MathUtils.DEG2RAD;
+  }
+
+  private updateScale() {
+    const { scale } = this.props.model;
+    this.view.scale.set(scale.x, scale.y);
+  }
+}
+
+// 一个 Mesh2D 图形单元物理表达
+// 多边形组件
+export default class Polygon extends Mesh2D<IProps> {
+  static defaultProps: Partial<IProps> = {
+    position: { x: 0, y: 0 },
+    rotation: 0,
+    scale: { x: 0, y: 0 },
+  };
+  protected view = new PIXI.Graphics();
+  // 同样具有响应式管线
+  protected reactivePipeLine = [
+    this.updateGeometry,
+    this.updateMaterial,
+    this.updatePosition,
+    this.updateRotation,
+    this.updateScale,
+  ];
+
+  updateGeometry() {
+    this.view.clear();
+    const {
+      path,
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      fillColor,
+      fillAlpha,
+      zIndex,
+    } = this.props;
+    zIndex && (this.view.zIndex = zIndex);
+    DrawUtils.drawPolygon(this.view, {
+      path: path.map(p => ({ x: p.x, y: p.y })),
+    }, {
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      fillColor,
+      fillAlpha,
+    });
+  }
+
+  updateMaterial() {
+    //
+  }
+
+  updatePosition() {
+    // const { position } = this.props;
+    // this.view.position.set(position!.x, position!.y);
+  }
+
+  updateRotation() {
+    // this.view.rotation = this.props.rotation!;
+  }
+
+  updateScale() {
+    // const { scale } = this.props;
+    // this.view.scale.set(scale!.x, scale!.y);
+  }
+
+  // onClickable() {
+  //   return true;
+  // }
+
+  // onDraggable() {
+  //   return true;
+  // }
+
+  // onHoverable() {
+  //   return true;
+  // }
+}
+
+// 另一种方式，直接重写 draw 接口，每次重新 render 都会驱动 draw 重新执行，但不推荐使用，尤其在复杂图形情况下，尽量采用上面那种响应式精细化更新的写法
+@Reactive
+export class MullionMesh2D extends Mesh2D<IMeshProps> {
+  protected view = new PIXI.Graphics();
+
+  draw() {
+    this.view.clear();
+    drawMullion(this.view, this.props.model);
+  }
+
+  // onClickable() {
+  //   return false;
+  // }
+
+  // onDraggable() {
+  //   return false;
+  // }
+
+  // onHoverable() {
+  //   return false;
+  // }
+}
+```
+
+> 场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景
+
+> ViewEntity 本身也有对应的一个容器节点（可能是 THREE.Group 或者 PIXI.Container 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问，它 render 的内容的坐标系是相对于这个容器节点的，这跟图形领域的父子节点关系相对应，可以简化视图层的显示逻辑
+
+> Mesh 本身也有对应的一个图形展示对象节点（可能是 THREE.Object3D 或者 PIXI.DisplayObject 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问
+
+> 你还可以通过 onClickable，onDraggable，onHoverable 等钩子来实现该实体的动态交互功能，比如有时候需要禁用某些实体的可交互能力，那么可能它就不会在场景中被 pick 出来，有时候根据某些逻辑又要动态开放出来
+
+主要的使用方式就是上面这些，还有一些细节能力，通过 ts 的注释提示来查看，不再罗列
+
+## 其他
+剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和组件库，文档看 README 和注释，其中部分内容闭源也不再展开介绍
