@@ -19,6 +19,9 @@ turbox 框架包含几个子框架：
 * 基于 three 扩展的数学库，主要是一些常用几何算法和容差的支持
 * 基于视图框架封装的 CAX 常用图形控件，比如尺寸标注、Gizmo 等
 
+## API 手册
+[API 手册](https://geoffgu.github.io/doc/)
+
 ## 响应式数据流事务框架
 ### 架构图
 ![framework](https://img.alicdn.com/tfs/TB1fRl5g79l0K4jSZFKXXXFjpXa-2231-1777.png)
