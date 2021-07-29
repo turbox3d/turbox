@@ -70,7 +70,7 @@
     "url": "git+https://github.com/turbox3d/turbox.git"
   },
   "scripts": {
-    "test": "npx jest --forceExit --coverage --verbose",
+    "test": "npx jest --forceExit --coverage --verbose --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
     "build:ts": "rm -rf ts && tsc -outDir ./ts && copyfiles -u 1 src/**/*.less ./ts",
     "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es && copyfiles -u 1 src/**/*.less ./es",
