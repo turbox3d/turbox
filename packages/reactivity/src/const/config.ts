@@ -1,5 +1,5 @@
+import { deepMerge } from '@turbox3d/shared';
 import { ConfigCtx } from '../interfaces';
-import { deepMerge } from '../utils/deep-merge';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -14,9 +14,11 @@ export let ctx: ConfigCtx = {
   },
   timeTravel: {
     isActive: false,
+    isNeedRecord: false,
     maxStepNumber: 20,
     keepActionChain: isDev,
   },
+  disableReactive: false,
   strictMode: isDev,
   devTool: false,
 };

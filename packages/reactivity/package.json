@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/reactivity",
-  "version": "1.2.23",
+  "version": "2.0.45",
   "description": "Large-scale reactive state management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -20,16 +20,15 @@
     "taobao",
     "state-management"
   ],
+  "tnpm": {
+    "mode": "npm"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
-  "peerDependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
-  },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
@@ -42,10 +41,11 @@
     "@types/react": "^16.9.14",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "react": "^16.14.0",
     "ts-jest": "^24.1.0",
-    "typescript": "^3.6.4"
+    "typescript": "^4.3.5",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.12"
   },
   "files": [
     "src/",
@@ -61,15 +61,19 @@
   "scripts": {
     "test": "npx jest --forceExit --coverage --verbose",
     "test:watch": "npm run test -- --watchAll",
-    "build:ts": "rm -rf ts && tsc -target es2018 -declarationDir ./typings -types node -outDir ./ts",
+    "build:ts": "rm -rf ts && tsc -target es2018 -declarationDir ./typings -outDir ./ts",
     "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es",
     "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib",
-    "build:watch": "tsc -w -target es2018 -declarationDir ./typings -types node -outDir ./ts & npx babel ts -w --out-dir es",
+    "build:watch": "tsc -w -target es2018 -declarationDir ./typings -outDir ./ts & npx babel ts -w --out-dir es",
     "build:umd": "npx webpack --mode='development' -o dist/turbox-reactivity.js",
     "build:umd:min": "npx webpack --mode='production' -o dist/turbox-reactivity.min.js",
-    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
+    "build:all": "npm i --no-package-lock && npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "prepublishOnly": "npm run build:all"
   },
   "bugs": {
     "url": "https://github.com/turbox3d/turbox/issues"
+  },
+  "dependencies": {
+    "@turbox3d/shared": "^1.0.7"
   }
 }

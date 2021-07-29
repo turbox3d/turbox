@@ -19,9 +19,13 @@
     "target": "es5",
     "moduleResolution": "node",
     "lib": [
-      "dom",
-      "es2018"
-    ]
+      "DOM",
+      "ESNext",
+    ],
+    "types": [
+      "node"
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "packages/**/src/**/*"

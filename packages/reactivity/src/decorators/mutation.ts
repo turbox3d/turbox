@@ -1,26 +1,25 @@
+import { bind, convert2UniqueString, isPromise, invariant, fail, quacksLikeADecorator } from '@turbox3d/shared';
 import { store } from '../core/store';
-import { CURRENT_MATERIAL_TYPE, EMPTY_ACTION_NAME } from '../const/symbol';
-import { bind, convert2UniqueString, isPromise } from '../utils/common';
+import { EMPTY_ACTION_NAME, MATERIAL_TYPE } from '../const/symbol';
 import { Mutation, BabelDescriptor } from '../interfaces';
-import { invariant, fail } from '../utils/error';
-import { quacksLikeADecorator } from '../utils/decorator';
-import { materialCallStack, Domain } from '../core/domain';
+import { Domain } from '../core/domain';
 import { EMaterialType } from '../const/enums';
+import { materialCallStack } from '../utils/materialCallStack';
 
 interface MutationConfig {
   immediately: boolean;
-  displayName: string;
+  displayName?: string;
 }
 
-function createMutation(target: Object | undefined, name: string | symbol | number, original: Mutation, config: MutationConfig) {
+function createMutation(target: object | undefined, name: string | symbol | number, original: Mutation, config: MutationConfig) {
   const stringMethodName = convert2UniqueString(name);
-  return function (...payload: any[]) {
+  const mutationWp = function (...payload: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let _this = this;
     if (!target) {
       _this = new Domain();
     }
-    _this[CURRENT_MATERIAL_TYPE] = EMaterialType.MUTATION;
-    materialCallStack.push(_this[CURRENT_MATERIAL_TYPE]);
+    const stackId = materialCallStack.push({ type: EMaterialType.MUTATION, method: stringMethodName, domain: _this.constructor.name });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -32,29 +31,28 @@ function createMutation(target: Object | undefined, name: string | symbol | numb
       domain: _this,
       original: bind(original, _this) as Mutation,
       immediately: !!config.immediately,
+      stackId
     });
     if (isPromise(result)) {
       return new Promise((resolve) => {
         (result as Promise<any>).then((res) => {
           materialCallStack.pop();
-          const length = materialCallStack.length;
-          _this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
           resolve(res);
         });
       });
     }
     materialCallStack.pop();
-    const length = materialCallStack.length;
-    _this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
     if (result && result instanceof Error) {
       throw result;
     }
     return result;
   };
+  mutationWp[MATERIAL_TYPE] = EMaterialType.MUTATION;
+  return mutationWp;
 }
 
-export function mutation(target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
-export function mutation(name?: string, immediately?: boolean): (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
+export function mutation(target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
+export function mutation(displayName?: string, immediately?: boolean): (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
 export function mutation(name: string | symbol | number, original: Mutation, config?: MutationConfig): (...payload: any[]) => any;
 /**
  * decorator @mutation, update state by mutation styling.
@@ -69,20 +67,29 @@ export function mutation(...args: any[]) {
       config.displayName = args[2].displayName;
       config.immediately = args[2].immediately;
     }
-    return createMutation(undefined, args[0], args[1], config);
+    const name = args[0];
+    const original = args[1];
+    if (original[MATERIAL_TYPE] === EMaterialType.MUTATION) {
+      return original;
+    }
+    return createMutation(undefined, name, original, config);
   }
-  const decorator = (target: Object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): BabelDescriptor<Mutation> => {
+  const decorator = (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): BabelDescriptor<Mutation> => {
     // typescript only: @mutation method = () => {}
     if (descriptor === void 0) {
       let mutationFunc: Function;
       return Object.defineProperty(target, name, {
         enumerable: true,
         configurable: true,
-        get: function () {
+        get() {
           return mutationFunc;
         },
-        set: function (original: Mutation) {
-          mutationFunc = createMutation(target, name, original, config);
+        set(original: Mutation) {
+          if (original[MATERIAL_TYPE] === EMaterialType.MUTATION) {
+            mutationFunc = original;
+          } else {
+            mutationFunc = createMutation(target, name, original, config);
+          }
         },
       });
     }
@@ -90,7 +97,11 @@ export function mutation(...args: any[]) {
     // babel/typescript: @mutation method() {}
     if (descriptor.value !== void 0) {
       const original: Mutation = descriptor.value;
-      descriptor.value = createMutation(target, name, original, config);
+      if (original[MATERIAL_TYPE] === EMaterialType.MUTATION) {
+        descriptor.value = original;
+      } else {
+        descriptor.value = createMutation(target, name, original, config);
+      }
       return descriptor;
     }
 
@@ -98,15 +109,19 @@ export function mutation(...args: any[]) {
     const { initializer } = descriptor;
     descriptor.initializer = function () {
       invariant(!!initializer, 'The initializer of the descriptor doesn\'t exist, please compile it by using babel and correspond decorator plugin.');
-
-      return createMutation(target, name, (initializer && initializer.call(this)) as Mutation, config);
+      const original = (initializer && initializer.call(this)) as Mutation;
+      if (original[MATERIAL_TYPE] === EMaterialType.MUTATION) {
+        return original;
+      }
+      return createMutation(target, name, original, config);
     };
 
     return descriptor;
-  }
+  };
 
   if (quacksLikeADecorator(args)) {
     // @mutation
+    // eslint-disable-next-line prefer-spread
     return decorator.apply(null, args as any);
   }
   // @mutation(args)

@@ -1,18 +1,26 @@
 var path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+const plugins = [];
+if (process.env.NODE_ENV !== 'production') {
+  plugins.push(new BundleAnalyzerPlugin());
+}
 
 module.exports = {
   entry: {
     app: [path.resolve(__dirname, './src/main.tsx')]
   },
+  mode: 'development',
   output: {
-    path: path.resolve(__dirname, './build'),
+    path: path.join(process.cwd(), process.env.BUILD_DEST || '../build'),
     filename: 'bundle.js',
     publicPath: "/build/",
   },
   devServer: {
     contentBase: path.resolve(__dirname),
     compress: true,
-    port: 9000
+    port: 9000,
+    host: '0.0.0.0'
   },
   externals: {
     // turbox: {
@@ -39,6 +47,34 @@ module.exports = {
   },
   module: {
     rules: [{
+      // include: [
+      //   path.resolve(__dirname, 'es')
+      // ],
+      test: /\.less$/,
+      use: [{
+        loader: 'css-loader',
+      }, {
+        loader: 'postcss-loader',
+        options: {
+          postcssOptions: {
+            parser: 'postcss',
+            plugins: () => [
+              require('postcss-flexbugs-fixes'),
+              require('autoprefixer')({
+                flexbox: 'no-2009',
+              }),
+            ],
+          }
+        }
+      }, {
+        loader: 'less-loader',
+        options: {
+          lessOptions: {
+            javascriptEnabled: true,
+          }
+        }
+      }]
+    }, {
       test: /\.js[x]?$/,
       exclude: /node_modules/,
       use: {
@@ -66,4 +102,5 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
   },
+  plugins,
 };

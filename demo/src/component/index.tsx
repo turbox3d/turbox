@@ -1,4 +1,4 @@
-import { config, init, Reactive, reactive, TimeTravel, computed, Action, action as TurboxAction, mutation, use, nextTick } from '@turbox3d/reactivity';
+import { config, init, reactive, createDomain, Reactive, TimeTravel, computed, Action, action as TurboxAction, mutation, use, reactor } from '@turbox3d/reactivity-react';
 import React, { useState } from 'react';
 import { Countertop } from '../domain/countertop';
 import { Countertops } from '../domain/countertops';
@@ -35,7 +35,7 @@ export const cts = new Countertops({
   countertops: [new Countertop({
     lines: [],
     points: [],
-    nickName: '',
+    nickName: 'xxx',
   })],
 });
 const p = new Point({
@@ -58,6 +58,70 @@ let count = 100;
 
 // const fullName = computed(cts.countertops[0].getFullName);
 let action: Action;
+
+interface IObj {
+  test: string;
+  xxx: string;
+}
+
+// const t = reactor<IObj>({
+//   test: {
+//     a: 111111,
+//     b: 222222,
+//   },
+//   xxx: 'reactor xxx',
+// });
+// const t = reactor<Array<string>>(['111']);
+
+// reactive(() => {
+//   t.map(name => console.log(name));
+// });
+
+// const t = reactor<Map<string, string>>(new Map());
+
+// reactive((nickName, a) => {
+//   // console.log(t.get('222'));
+//   console.log('$&$%^$^%%^$%^', nickName, a);
+// }, {
+//   // name: 'xxx',
+//   deps: [
+//     () => cts.countertops[0].nickName,
+//     () => cts.countertops[0].info.a,
+//   ],
+// });
+
+// const testReactorMutation = mutation('testReactor', () => {
+//   t.set('111', '2222');
+//   t.set('222', '2222A');
+// });
+
+// const domain = createDomain({
+//   reactor: {
+//     first: 'xxx',
+//     last: 'vvv',
+//   },
+//   mutation: {
+//     changeFirst() {
+//       this.first = 'ddd';
+//     }
+//   },
+//   computed: {
+//     cp() {
+//       return this.first + '***' + this.last;
+//     }
+//   },
+//   action: {
+//     ac() {
+//       console.log('A*C');
+//       this.changeFirst();
+//     }
+//   }
+// });
+
+// reactive(() => {
+//   // console.log(domain.first, domain.last);
+//   // console.log(domain.cp.get());
+// });
 
 const DemoBox = Reactive(() => {
   const [flag, setFlag] = useState(true);
@@ -188,41 +252,27 @@ const DemoBox = Reactive(() => {
     });
   };
   const testMutation = async () => {
-    // const action = Action.create('testImmediately');
-    // await action.execute(async () => {
-    //   const p = new Point({
-    //     position: new Point2d(100, 100),
-    //     type: EPointType.NONE,
-    //   });
-    //   const l = new Line({
-    //     start: new Point({
-    //       position: new Point2d(200, 200),
-    //       type: EPointType.NONE,
-    //     }),
-    //     end: new Point({
-    //       position: new Point2d(200, 200),
-    //       type: EPointType.NONE,
-    //     }),
-    //   });
-    //   await cts.countertops[0].testTwoMutation(p, l);
-    //   await cts.countertops[0].testTwoMutation(p, l);
-    // });
-    // action.complete();
-    const p = new Point({
-      position: new Point2d(100, 100),
-      type: EPointType.NONE,
-    });
-    const l = new Line({
-      start: new Point({
-        position: new Point2d(200, 200),
+    const action = Action.create('testImmediately');
+    await action.execute(async () => {
+      const p = new Point({
+        position: new Point2d(100, 100),
         type: EPointType.NONE,
-      }),
-      end: new Point({
-        position: new Point2d(200, 200),
-        type: EPointType.NONE,
-      }),
+      });
+      const l = new Line({
+        start: new Point({
+          position: new Point2d(200, 200),
+          type: EPointType.NONE,
+        }),
+        end: new Point({
+          position: new Point2d(200, 200),
+          type: EPointType.NONE,
+        }),
+      });
+      await cts.countertops[0].testTwoMutation(p, l);
+      console.log('________');
+      await cts.countertops[0].testTwoMutation(p, l);
     });
-    cts.countertops[0].testTwoMutation(p, l);
+    action.complete();
     // const p = new Point({
     //   position: new Point2d(100, 100),
     //   type: EPointType.NONE,
@@ -237,10 +287,26 @@ const DemoBox = Reactive(() => {
     //     type: EPointType.NONE,
     //   }),
     // });
-    // const action1 = TurboxAction('testImmediately', () => {
+    // cts.countertops[0].testTwoMutation(p, l);
+    // const p = new Point({
+    //   position: new Point2d(100, 100),
+    //   type: EPointType.NONE,
+    // });
+    // const l = new Line({
+    //   start: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    //   end: new Point({
+    //     position: new Point2d(200, 200),
+    //     type: EPointType.NONE,
+    //   }),
+    // });
+    // const action1 = TurboxAction('testImmediately', (a, b, c) => {
+    //   console.log(a, b, c);
     //   cts.countertops[0].addPoint(p);
     // });
-    // action1();
+    // action1(1, 2, 3);
     // const action2 = TurboxAction('testImmediately2', () => {
     //   cts.countertops[0].addPoint(p);
     // });
@@ -293,9 +359,9 @@ const DemoBox = Reactive(() => {
   };
   const testNickName = () => {
     cts.countertops[0].updateNickName('feifan');
-    nextTick(() => {
-      console.log('%^%^%^%^%^');
-    });
+    // nextTick(() => {
+    //   console.log('%^%^%^%^%^');
+    // });
   };
   const doThreeOp = () => {
     console.log(cts.countertops[0].threeVector);
@@ -306,6 +372,14 @@ const DemoBox = Reactive(() => {
   }
   const doSetOp = () => {
     cts.countertops[0].doSetOp();
+  }
+  const testReactor = () => {
+    // testReactorMutation();
+    // domain.ac();
+    // domain.changeFirst();
+  }
+  const testActionDeco = () => {
+    cts.countertops[0].testActionDeco(1, 2, 3);
   }
   console.log('***parent');
 
@@ -331,7 +405,7 @@ const DemoBox = Reactive(() => {
       ))} */}
       {/* <span>fullName：{fullName.get()}</span><br/> */}
       {/* <span>fullName2：{cts.countertops[0].fullName}</span><br /> */}
-      {/* <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span> */}
+      <span>firstName，lastName：{cts.countertops[0].firstName},{cts.countertops[0].lastName}</span>
       {cts.countertops.length && cts.countertops[0].lines.map((line, index) => (
         <LineTpl key={index} data={line} />
       ))}
@@ -354,6 +428,9 @@ const DemoBox = Reactive(() => {
           transform: 'translateX(-50%)',
         }}
       >
+        <button onClick={testReactor}>
+          测试函数式 reactor
+                </button>
         <button onClick={testNickName}>
           测试nickname
                 </button>
@@ -416,6 +493,9 @@ const DemoBox = Reactive(() => {
                 </button>
         <button onClick={doSetOp}>
           do Set op
+                </button>
+        <button onClick={testActionDeco}>
+          测试 Action 装饰器
                 </button>
         <button onClick={() => TimeTravel.pause()}>
           暂停

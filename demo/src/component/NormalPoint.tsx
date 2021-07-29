@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Reactive } from '@turbox3d/reactivity';
+import { Reactive } from '@turbox3d/reactivity-react';
 import { cts } from './index';
 
 interface IProps {
@@ -8,7 +8,7 @@ interface IProps {
   np: object;
 }
 
-const NormalPoint = Reactive<IProps>(({ index, np }) => {
+const NormalPoint: React.FC<IProps> = Reactive(({ index, np }) => {
   console.log(index, np, '&(*(&(*&(&');
   const updateFirstPointPosition = (index) => () => {
     cts.countertops[0].updatePointByIndex(index, false);

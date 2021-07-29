@@ -1,7 +1,7 @@
-import { reactive } from '../core/reactive';
+import { quacksLikeADecorator } from '@turbox3d/shared';
+import { createReaction } from '../core/reactive';
 import { depCollector, triggerCollector } from '../core/collector';
 import { ECollectType, ESpecialReservedKey } from '../const/enums';
-import { quacksLikeADecorator } from '../utils/decorator';
 import { Domain } from '../core/domain';
 
 export interface ComputedOption {
@@ -12,18 +12,17 @@ export interface ComputedOption {
 export interface ComputedRef<T> {
   enumerable?: boolean;
   configurable?: boolean;
-  get: () => T;
+  get?: () => T;
   set?: (value: any) => void;
   dispose?: () => void;
 }
 
-export function computed(target: Object, property: string, descriptor?: PropertyDescriptor): any;
-export function computed(options?: Partial<ComputedOption>): (target: Object, property: string, descriptor?: PropertyDescriptor) => any;
-export function computed<T>(computeRunner: () => T, options?: Partial<ComputedOption>): ComputedRef<T>;
-
 /**
  * decorator @computed, computed(() => {}), handle computed value.
  */
+export function computed(target: object, property: string, descriptor?: PropertyDescriptor): any;
+export function computed(options?: Partial<ComputedOption>): (target: object, property: string, descriptor?: PropertyDescriptor) => any;
+export function computed<T>(computeRunner: () => T, options?: Partial<ComputedOption>): ComputedRef<T>;
 export function computed<T>(...args: any[]) {
   if (typeof args[0] === 'function') {
     let value: T;
@@ -33,9 +32,9 @@ export function computed<T>(...args: any[]) {
     let computedRef: ComputedRef<T>;
     const computeRunner = args[0];
     const options = args[1];
-    const lazy = options && options.lazy !== void 0 ? options.lazy : true;
+    const lazy = options && options.lazy !== void 0 ? options.lazy : false;
 
-    const reaction = reactive(() => {
+    const reaction = createReaction(() => {
       dirty = true;
       if (needReComputed) {
         value = computeRunner();
@@ -77,17 +76,17 @@ export function computed<T>(...args: any[]) {
   let computedRef: ComputedRef<T>;
   let options: ComputedOption | undefined;
 
-  const decorator = (target: Object, property: string, descriptor?: PropertyDescriptor): ComputedRef<T> => {
+  const decorator = (target: object, property: string, descriptor?: PropertyDescriptor): ComputedRef<T> => {
     computedRef = {
       enumerable: true,
       configurable: true,
-      get: function () {
+      get() {
         const current = (this as Domain);
         return current.computedPropertyGet<T>(property, options);
       },
-      set: function (original) {
+      set(original) {
         const current = (this as Domain);
-        current.computedPropertySet<T>(property, original, options);
+        current.computedPropertySet<T>(property, original);
       },
     };
 
@@ -100,7 +99,7 @@ export function computed<T>(...args: any[]) {
     computedRef = {
       enumerable: true,
       configurable: true,
-      get: function () {
+      get() {
         const current = (this as Domain);
         return current.computedPropertyGet<T>(property, options, descriptor);
       },
@@ -112,6 +111,7 @@ export function computed<T>(...args: any[]) {
 
   if (quacksLikeADecorator(args)) {
     // @computed
+    // eslint-disable-next-line prefer-spread
     return decorator.apply(null, args as any);
   }
   // @computed(args)

@@ -1,6 +1,5 @@
+import { compose, fail } from '@turbox3d/shared';
 import { Middleware, Store } from '../interfaces';
-import { compose } from '../utils/compose';
-import { fail } from '../utils/error';
 import { Action } from './action';
 import { actionTypeChain } from './store';
 import { depCollector } from './collector';
@@ -23,8 +22,8 @@ export function applyMiddleware() {
   return (createStore: any): Store => {
     const store = createStore();
     let dispatch: any = () => {
-      fail(`Dispatching while constructing your middleware is not allowed. ` +
-        `Other middleware would not be applied to this dispatch.`);
+      fail('Dispatching while constructing your middleware is not allowed. ' +
+        'Other middleware would not be applied to this dispatch.');
     };
     const exposedMethod = {
       getActionChain: () => {
@@ -33,9 +32,7 @@ export function applyMiddleware() {
         }
         return actionTypeChain.slice();
       },
-      getDependencyGraph: () => {
-        return new Map(depCollector.dependencyGraph);
-      },
+      getDependencyGraph: () => new Map(depCollector.dependencyGraph),
       dispatch: (...args: any[]) => dispatch(...args),
     };
     const runnerChain = middlewares.map(middleware => middleware(exposedMethod));
@@ -44,7 +41,7 @@ export function applyMiddleware() {
 
     return {
       ...store,
-      dispatch
+      dispatch,
     };
-  }
+  };
 }

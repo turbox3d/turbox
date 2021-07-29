@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import Point2d from '../math/Point2d';
-import { Domain, mutation, reactor, computed, Action } from '@turbox3d/reactivity';
+import { Domain, mutation, reactor, computed, Action, action } from '@turbox3d/reactivity-react';
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
 import axios from 'axios';
 
 export class Countertop extends Domain {
-  @reactor(true) points: Point[];
+  @reactor() points: Point[];
   @reactor() normalPoints = [{
     position: {
       isActive: true,
@@ -62,7 +62,7 @@ export class Countertop extends Domain {
   // }
   @mutation
   updateNickName(value: string) {
-    this.nickName = value;
+    this.nickName += value;
   }
 
   @mutation
@@ -172,7 +172,7 @@ export class Countertop extends Domain {
   delay = (time: number) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve();
+        resolve(undefined);
       }, time);
     });
   }
@@ -230,6 +230,12 @@ export class Countertop extends Domain {
   @mutation('添加线')
   addLine(line: Line) {
     this.lines.push(line);
+  }
+
+  @action
+  testActionDeco = (a, b, c) => {
+    console.log(a, b, c);
+    this.updateNickName('feifan gu');
   }
 
   constructor({

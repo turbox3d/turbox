@@ -7,9 +7,9 @@ import { ActionType } from './core/store';
 export type Dispatch = (action: DispatchedAction) => any | Promise<any>;
 
 export type MiddlewareParam = {
-  dispatch: Dispatch,
-  getActionChain: () => ActionType[],
-  getDependencyGraph: () => Map<object, DepNodeAssembly>,
+  dispatch: Dispatch;
+  getActionChain: () => ActionType[];
+  getDependencyGraph: () => Map<object, DepNodeAssembly>;
 }
 
 export interface Middleware {
@@ -22,7 +22,7 @@ export interface Store {
 }
 
 export interface Mutation {
-  (...restPayload: any[]): any | Promise<any>
+  (...restPayload: any[]): any | Promise<any>;
 }
 
 // export interface Effect {
@@ -39,24 +39,29 @@ export interface DispatchedAction {
   domain?: Domain;
   immediately?: boolean;
   isInner?: boolean;
+  stackId: number;
 }
 
 export interface ConfigCtx {
   middleware: {
-    logger?: boolean,
-    diffLogger?: boolean,
-    effect?: boolean,
-    perf?: boolean,
-    skipNestLog?: boolean,
-    skipNestPerfLog?: boolean,
-  },
+    logger?: boolean;
+    diffLogger?: boolean;
+    effect?: boolean;
+    perf?: boolean;
+    skipNestLog?: boolean;
+    skipNestPerfLog?: boolean;
+  };
   timeTravel: {
-    isActive?: boolean,
-    maxStepNumber?: number,
-    keepActionChain?: boolean,
-  },
-  strictMode?: boolean,
-  devTool?: boolean,
+    isActive?: boolean;
+    isNeedRecord?: boolean;
+    maxStepNumber?: number;
+    keepActionChain?: boolean;
+  };
+  disableReactive?: boolean;
+  strictMode?: boolean;
+  devTool?: boolean;
 }
 
-export type BabelDescriptor<T> = TypedPropertyDescriptor<T> & { initializer?: () => any }
+export type BabelDescriptor<T> = TypedPropertyDescriptor<T> & { initializer?: () => any };
+
+export type HistoryOperationType = 'save' | 'undo' | 'redo' | 'clear';

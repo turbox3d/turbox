@@ -1,5 +1,5 @@
 import Point2d from '../math/Point2d';
-import { Domain, mutation, reactor } from '@turbox3d/reactivity';
+import { Domain, mutation, reactor } from '@turbox3d/reactivity-react';
 import { Countertop } from './countertop';
 import { Line } from './line';
 import { EPointType } from '../types/enum';

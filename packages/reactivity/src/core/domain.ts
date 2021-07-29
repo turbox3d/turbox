@@ -1,21 +1,22 @@
-import { CURRENT_MATERIAL_TYPE, NAMESPACE, EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
+import { isPlainObject, hasOwn, isObject, bind, includes, invariant, generateUUID, canObserve } from '@turbox3d/shared';
+import { NAMESPACE, EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
 import { Mutation } from '../interfaces';
-import { isPlainObject, hasOwn, isObject, bind, isDomain, includes } from '../utils/common';
-import { invariant } from '../utils/error';
-import generateUUID from '../utils/uuid';
 import { depCollector, triggerCollector } from './collector';
-import { canObserve } from '../utils/decorator';
 import { store } from './store';
 import { ReactorConfig, meta } from '../decorators/reactor';
 import { ECollectType, ESpecialReservedKey, EMaterialType } from '../const/enums';
-import { Reaction, reactive } from './reactive';
-import { ComputedOption } from '../decorators/computed';
+import { Reaction, createReaction } from './reactive';
+import { ComputedOption, computed } from '../decorators/computed';
 import { ctx } from '../const/config';
+import { mutation } from '../decorators/mutation';
+import { action } from '../decorators/action';
+import { EEventName, emitter, SetPropertyEvent } from '../utils/event';
+import { materialCallStack } from '../utils/materialCallStack';
+import { isDomain } from '../utils/common';
 
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
 export const rootKeyCache = new WeakMap<any, string>();
-export const materialCallStack: EMaterialType[] = [];
 export const collectionTypes = [Map, Set, WeakMap, WeakSet];
 
 interface DomainContext {
@@ -42,28 +43,29 @@ export type SetType = Set<any> | WeakSet<any>;
  */
 export class Domain<S = {}> {
   // prompt: add property do not forget sync to black list
-  $$turbox_properties: { [key in keyof this]?: this[key] } = {};
+  $$turboxProperties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
   private context: DomainContext;
   private computedProperties: { [key in keyof this]?: ComputedConfig<this[key]> } = {};
+  private currentTarget?: any;
+  private originalArrayLength?: number;
 
   constructor() {
     const target = Object.getPrototypeOf(this);
     const domainName = target.constructor.name || 'TURBOX_DOMAIN';
     const namespace = `${domainName}_${generateUUID()}`;
-    this[CURRENT_MATERIAL_TYPE] = EMaterialType.DEFAULT;
     this[NAMESPACE] = namespace;
     this.context = this.initDomainContext();
   }
 
   initDomainContext(): DomainContext {
     return {
-      isNeedRecord: true,
+      isNeedRecord: ctx.timeTravel.isNeedRecord!,
     };
   }
 
   propertyGet(key: string, config: ReactorConfig) {
-    const v = this.$$turbox_properties[key];
+    const v = this.$$turboxProperties[key];
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
     }, config);
@@ -76,14 +78,24 @@ export class Domain<S = {}> {
 
   propertySet(key: string, v: any, config: ReactorConfig) {
     ctx.strictMode && this.illegalAssignmentCheck(this, key);
-    const oldValue = this.$$turbox_properties[key];
+    const oldValue = this.$$turboxProperties[key];
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
     }, config);
     this.reactorConfigMap[key] = mergedConfig;
 
     if (oldValue !== v) {
-      this.$$turbox_properties[key] = v;
+      if (ctx.devTool) {
+        const event: SetPropertyEvent = {
+          domain: this.constructor.name,
+          property: key,
+          newValue: v,
+          oldValue,
+          isNewlyAdded: false,
+        };
+        emitter.emit(EEventName.setProperty, event);
+      }
+      this.$$turboxProperties[key] = v;
       triggerCollector.trigger(this, key, {
         type: ECollectType.SET,
         beforeUpdate: oldValue,
@@ -101,9 +113,9 @@ export class Domain<S = {}> {
       };
     }
     const cc = this.computedProperties[key] as ComputedConfig<T>;
-    const lazy = options && options.lazy !== void 0 ? options.lazy : true;
+    const lazy = options && options.lazy !== void 0 ? options.lazy : false;
     if (!cc.reaction) {
-      cc.reaction = reactive(() => {
+      cc.reaction = createReaction(() => {
         cc.dirty = true;
         if (cc.needReComputed) {
           cc.value = cc.computeRunner!();
@@ -116,7 +128,7 @@ export class Domain<S = {}> {
           }, false);
         }
       }, {
-        name: 'computed',
+        name: key,
         computed: true,
         lazy,
       });
@@ -128,17 +140,20 @@ export class Domain<S = {}> {
     if (cc.dirty) {
       cc.needReComputed = true;
       cc.needTrigger = false;
-      cc.reaction.runner();
-      cc.dirty = false;
-      cc.needReComputed = false;
-      cc.needTrigger = true;
+      try {
+        cc.reaction.runner();
+      } finally {
+        cc.dirty = false;
+        cc.needReComputed = false;
+        cc.needTrigger = true;
+      }
     }
     depCollector.collect(this, key);
 
     return cc.value;
   }
 
-  computedPropertySet<T>(key: string, original: any, options?: ComputedOption) {
+  computedPropertySet<T>(key: string, original: any) {
     if (!this.computedProperties[key]) {
       this.computedProperties[key] = {
         dirty: true,
@@ -153,8 +168,13 @@ export class Domain<S = {}> {
     this.computedProperties[key].computeRunner = bind(original, this);
   }
 
-  private currentTarget?: any;
-  private originalArrayLength?: number;
+  /**
+   * the syntax sweet of updating state out of mutation
+   */
+  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string): void {
+    invariant(isPlainObject(obj), 'resetState(...) param type error. Param should be a plain object.');
+    this.dispatch(obj as object, actionName, displayName);
+  }
 
   private proxySet(target: any, key: string, value: any, receiver: object) {
     // array length need hack
@@ -187,6 +207,17 @@ export class Domain<S = {}> {
         }, this.reactorConfigMap[rootKey].isNeedRecord);
       }
       const result = Reflect.set(target, key, value, receiver);
+      // if (ctx.devTool) {
+      //   const oldRootValue = deepMerge({}, this.$$turboxProperties[rootKey], { clone: true });
+      //   const event: SetPropertyEvent = {
+      //     domain: this.constructor.name,
+      //     property: rootKey,
+      //     newValue: this.$$turboxProperties[rootKey],
+      //     oldValue: oldRootValue,
+      //     isNewlyAdded: !hadKey,
+      //   };
+      //   emitter.emit(EEventName.setProperty, event);
+      // }
       return result;
     }
 
@@ -227,9 +258,11 @@ export class Domain<S = {}> {
   }
 
   /**
-   * proxy value could be boolean, string, number, undefined, null, custom instance, array[], plainObject{}, Map, Set, WeakMap, WeakSet
+   * proxy value could be
+   * boolean, string, number, undefined, null, custom instance, array[], plainObject{}, Map, Set, WeakMap, WeakSet
    */
   private proxyReactive(raw: object, rootKey: string) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
     rootKeyCache.set(raw, rootKey);
     // different props use same ref
@@ -259,133 +292,131 @@ export class Domain<S = {}> {
     return proxy;
   }
 
-  private getCollectionHandlerMap = (target: Collection, proxyKey: string) => {
-    return {
-      get size() {
-        const proto = Reflect.getPrototypeOf(target);
-        depCollector.collect(target, ESpecialReservedKey.ITERATE);
-        return Reflect.get(proto, proxyKey, target);
-      },
-      get: (key: any) => {
-        const { get } = Reflect.getPrototypeOf(target) as MapType;
-        depCollector.collect(target, key);
-        return get.call(target, key);
-      },
-      has: (key: any) => {
-        const { has } = Reflect.getPrototypeOf(target) as NormalCollection;
-        depCollector.collect(target, key);
-        return has.call(target, key);
-      },
-      forEach: (callbackfn: (value: any, key: any, map: Map<any, any>) => void) => {
-        const { forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
-        depCollector.collect(target, ESpecialReservedKey.ITERATE);
-        return forEach.call(target, callbackfn);
-      },
-      values: () => {
-        const { values } = Reflect.getPrototypeOf(target) as NormalCollection;
-        depCollector.collect(target, ESpecialReservedKey.ITERATE);
-        return values.call(target);
-      },
-      keys: () => {
-        const { keys } = Reflect.getPrototypeOf(target) as NormalCollection;
-        depCollector.collect(target, ESpecialReservedKey.ITERATE);
-        return keys.call(target);
-      },
-      entries: () => {
-        const { entries } = Reflect.getPrototypeOf(target) as NormalCollection;
-        depCollector.collect(target, ESpecialReservedKey.ITERATE);
-        return entries.call(target);
-      },
-      [Symbol.iterator]: () => {
-        if (target.constructor === Set) {
-          return this.getCollectionHandlerMap(target, 'values').values();
-        }
-        if (target.constructor === Map) {
-          return this.getCollectionHandlerMap(target, 'entries').entries();
-        }
-      },
-      add: (value: any) => {
-        const { add, has } = Reflect.getPrototypeOf(target) as SetType;
-        const rootKey = rootKeyCache.get(target)!;
-        const hadValue = has.call(target, value);
+  private getCollectionHandlerMap = (target: Collection, proxyKey: string) => ({
+    get size() {
+      const proto = Reflect.getPrototypeOf(target) as Collection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return Reflect.get(proto, proxyKey, target);
+    },
+    get: (key: any) => {
+      const { get } = Reflect.getPrototypeOf(target) as MapType;
+      depCollector.collect(target, key);
+      return get.call(target, key);
+    },
+    has: (key: any) => {
+      const { has } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, key);
+      return has.call(target, key);
+    },
+    forEach: (callbackfn: (value: any, key: any, map: Map<any, any>) => void) => {
+      const { forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return forEach.call(target, callbackfn);
+    },
+    values: () => {
+      const { values } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return values.call(target);
+    },
+    keys: () => {
+      const { keys } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return keys.call(target);
+    },
+    entries: () => {
+      const { entries } = Reflect.getPrototypeOf(target) as NormalCollection;
+      depCollector.collect(target, ESpecialReservedKey.ITERATE);
+      return entries.call(target);
+    },
+    [Symbol.iterator]: () => {
+      if (target.constructor === Set) {
+        return this.getCollectionHandlerMap(target, 'values').values();
+      }
+      if (target.constructor === Map) {
+        return this.getCollectionHandlerMap(target, 'entries').entries();
+      }
+    },
+    add: (value: any) => {
+      const { add, has } = Reflect.getPrototypeOf(target) as SetType;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadValue = has.call(target, value);
 
-        if (!hadValue) {
-          triggerCollector.trigger(target, value, {
-            type: ECollectType.SET_ADD,
-            beforeUpdate: undefined,
-            didUpdate: value,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
+      if (!hadValue) {
+        triggerCollector.trigger(target, value, {
+          type: ECollectType.SET_ADD,
+          beforeUpdate: void 0,
+          didUpdate: value,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
 
-          triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-            type: ECollectType.SET_ADD,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-        }
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.SET_ADD,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
 
-        return add.call(target, value);
-      },
-      set: (key: any, value: any) => {
-        const { set, get, has } = Reflect.getPrototypeOf(target) as MapType;
-        const rootKey = rootKeyCache.get(target)!;
-        const hadKey = has.call(target, key);
-        const oldValue = get.call(target, key);
+      return add.call(target, value);
+    },
+    set: (key: any, value: any) => {
+      const { set, get, has } = Reflect.getPrototypeOf(target) as MapType;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadKey = has.call(target, key);
+      const oldValue = get.call(target, key);
 
-        if (value !== oldValue) {
-          triggerCollector.trigger(target, key, {
-            type: ECollectType.MAP_SET,
-            beforeUpdate: oldValue,
-            didUpdate: value,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-        }
-        if (!hadKey) {
-          triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-            type: ECollectType.MAP_SET,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-        }
-        return set.call(target, key, value);
-      },
-      delete: (key: any) => {
-        const proto = Reflect.getPrototypeOf(target) as Collection;
-        const rootKey = rootKeyCache.get(target)!;
-        const hadKey = proto.has.call(target, key);
+      if (value !== oldValue) {
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.MAP_SET,
+          beforeUpdate: oldValue,
+          didUpdate: value,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      if (!hadKey) {
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.MAP_SET,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      return set.call(target, key, value);
+    },
+    delete: (key: any) => {
+      const proto = Reflect.getPrototypeOf(target) as Collection;
+      const rootKey = rootKeyCache.get(target)!;
+      const hadKey = proto.has.call(target, key);
 
-        if (!hadKey) {
-          return proto.delete.call(target, key);
-        }
-
-        if (proto.constructor === Map || proto.constructor === WeakMap) {
-          const oldValue = proto.get.call(target, key);
-          triggerCollector.trigger(target, key, {
-            type: ECollectType.MAP_DELETE,
-            beforeUpdate: oldValue,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-
-          triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-            type: ECollectType.MAP_DELETE,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-        }
-        if (proto.constructor === Set || proto.constructor === WeakSet) {
-          triggerCollector.trigger(target, key, {
-            type: ECollectType.SET_DELETE,
-            beforeUpdate: key,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-
-          triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-            type: ECollectType.SET_DELETE,
-          }, this.reactorConfigMap[rootKey].isNeedRecord);
-        }
-
+      if (!hadKey) {
         return proto.delete.call(target, key);
-      },
-      clear: () => {
-        const { clear, forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
-        forEach.call(target, (value: any, key: any) => {
-          this.getCollectionHandlerMap(target, key).delete(key);
-        });
+      }
 
-        return clear.call(target);
-      },
-    }
-  }
+      if (proto.constructor === Map || proto.constructor === WeakMap) {
+        const oldValue = proto.get.call(target, key);
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.MAP_DELETE,
+          beforeUpdate: oldValue,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.MAP_DELETE,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+      if (proto.constructor === Set || proto.constructor === WeakSet) {
+        triggerCollector.trigger(target, key, {
+          type: ECollectType.SET_DELETE,
+          beforeUpdate: key,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+
+        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
+          type: ECollectType.SET_DELETE,
+        }, this.reactorConfigMap[rootKey].isNeedRecord);
+      }
+
+      return proto.delete.call(target, key);
+    },
+    clear: () => {
+      const { clear, forEach } = Reflect.getPrototypeOf(target) as NormalCollection;
+      forEach.call(target, (value: any, key: any) => {
+        this.getCollectionHandlerMap(target, key).delete(key);
+      });
+
+      return clear.call(target);
+    },
+  });
 
   private collectionProxyHandler(target: Collection, key: string) {
     const handlers = this.getCollectionHandlerMap(target, key);
@@ -394,26 +425,18 @@ export class Domain<S = {}> {
   }
 
   /**
-   * the syntax sweet of updating state out of mutation
-   */
-  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string): void {
-    invariant(isPlainObject(obj), 'resetState(...) param type error. Param should be a plain object.');
-    this.dispatch(obj as object, actionName, displayName);
-  }
-
-  /**
    * observed value could be assigned value to @reactor only in @mutation/$update, otherwise throw error.
    */
   private illegalAssignmentCheck(target: object, stringKey: string) {
     if (depCollector.isObserved(target, stringKey)) {
-      const length = materialCallStack.length;
-      const firstLevelMaterial = materialCallStack[length - 1] || EMaterialType.DEFAULT;
+      const length = materialCallStack.stack.length;
+      const firstLevelMaterial = materialCallStack.stack[length - 1] || EMaterialType.DEFAULT;
       invariant(
-        firstLevelMaterial === EMaterialType.MUTATION ||
-        firstLevelMaterial === EMaterialType.UPDATE ||
-        firstLevelMaterial === EMaterialType.UNDO ||
-        firstLevelMaterial === EMaterialType.REDO,
-        'You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({}).'
+        firstLevelMaterial.type === EMaterialType.MUTATION ||
+        firstLevelMaterial.type === EMaterialType.UPDATE ||
+        firstLevelMaterial.type === EMaterialType.UNDO ||
+        firstLevelMaterial.type === EMaterialType.REDO,
+        'You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({}).',
       );
     }
   }
@@ -426,14 +449,15 @@ export class Domain<S = {}> {
         this[key] = obj[key];
       }
     };
-    this[CURRENT_MATERIAL_TYPE] = EMaterialType.UPDATE;
-    materialCallStack.push(this[CURRENT_MATERIAL_TYPE]);
+    const stackId = materialCallStack.push({
+      type: EMaterialType.UPDATE,
+      method: actionName ?? displayName ?? '$update',
+      domain: this.constructor.name
+    });
     // update state before store init
     if (store === void 0) {
       original.call(this);
       materialCallStack.pop();
-      const length = materialCallStack.length;
-      this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
       return;
     }
     // update state after store init
@@ -443,10 +467,63 @@ export class Domain<S = {}> {
       payload: [],
       type: EMaterialType.UPDATE,
       domain: this,
-      original: bind(original, this) as Mutation
+      original: bind(original, this) as Mutation,
+      stackId
     });
     materialCallStack.pop();
-    const length = materialCallStack.length;
-    this[CURRENT_MATERIAL_TYPE] = materialCallStack[length - 1] || EMaterialType.DEFAULT;
   }
+}
+
+interface DomainConfig<R, M, C, A> {
+  reactor: R;
+  mutation: M;
+  computed?: C;
+  action?: A;
+}
+
+export function createDomain<R, M, C = {}, A = {}>(domainConfig: DomainConfig<R, M, C, A>) {
+  const { reactor, mutation: domainMutation, computed: domainComputed, action: domainAction } = domainConfig;
+  const domain = new Domain<R>();
+  const config: ReactorConfig = {
+    deepProxy: true,
+    displayName: '',
+    isNeedRecord: true,
+  };
+
+  Object.keys(reactor).forEach((property) => {
+    const value = reactor[property];
+    Object.defineProperty(domain, property, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        const current = (this as Domain);
+        return current.propertyGet(property, config);
+      },
+      set(newVal: any) {
+        const current = (this as Domain);
+        current.propertySet(property, newVal, config);
+      },
+    });
+    domain[property] = value;
+  });
+
+  Object.keys(domainMutation).forEach((methodKey) => {
+    const original = domainMutation[methodKey];
+    const f = mutation(methodKey, bind(original, domain));
+    domain[methodKey] = f;
+  });
+
+  domainComputed && Object.keys(domainComputed).forEach((property) => {
+    const original = domainComputed[property] as Pick<C, keyof C>;
+    const ref = computed(bind(original, domain));
+    domain[property] = ref;
+  });
+
+  domainAction && Object.keys(domainAction).forEach((methodKey) => {
+    const original = domainAction[methodKey];
+    const f = action(methodKey, bind(original, domain));
+    domain[methodKey] = f;
+  });
+
+  return domain;
 }

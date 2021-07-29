@@ -23,6 +23,7 @@ export const enum ECollectType {
 export enum EMaterialType {
   DEFAULT = 'default',
   MUTATION = 'mutation',
+  ACTION = 'action',
   UPDATE = 'update',
   EFFECT = 'effect',
   UNDO = 'undo',

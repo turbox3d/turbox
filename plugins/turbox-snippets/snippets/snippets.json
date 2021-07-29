@@ -1,81 +1,81 @@
 {
   "Create entry with turbox": {
-		"prefix": "ten",
-		"body": [
-			"import Turbox from 'turbox';",
-			"",
-			"async function main() {",
-			"\tTurbox.config({",
-			"\t\tdevTool: false,",
-			"\t\tmiddleware: {",
-			"\t\t\tlogger: false,",
+    "prefix": "ten",
+    "body": [
+      "import Turbox from 'turbox';",
+      "",
+      "async function main() {",
+      "\tTurbox.config({",
+      "\t\tdevTool: false,",
+      "\t\tmiddleware: {",
+      "\t\t\tlogger: false,",
       "\t\t}",
       "\t\ttimeTravel: {",
       "\t\t\tisActive: false,",
       "\t\t\tmaxStepNumber: 20,",
       "\t\t}",
-			"\t});",
-			"\tTurbox.render(",
-			"\t\t<Layout />,",
-			"\t\t'#app',",
-			"\t);",
-			"}",
-			"",
-			"main();",
-			""
-		],
-		"description": "Create entry with turbox"
-	},
-	"Create Domain": {
-		"prefix": "tdm",
-		"body": [
-			"import { Domain, reactor, effect, mutation, computed } from 'turbox';",
-			"",
-			"export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
-			"\t@reactor() example = '';",
-			"",
-			"\t@mutation()",
-			"\tupdateExample(example) {",
-			"\t\tthis.example = example;",
+      "\t});",
+      "\tTurbox.render(",
+      "\t\t<Layout />,",
+      "\t\t'#app',",
+      "\t);",
+      "}",
+      "",
+      "main();",
+      ""
+    ],
+    "description": "Create entry with turbox"
+  },
+  "Create Domain": {
+    "prefix": "tdm",
+    "body": [
+      "import { Domain, reactor, effect, mutation, computed } from 'turbox';",
+      "",
+      "export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
+      "\t@reactor() example = '';",
+      "",
+      "\t@mutation()",
+      "\tupdateExample(example) {",
+      "\t\tthis.example = example;",
       "\t}",
       "",
       "\t@computed()",
       "\tget computedProp() {",
       "\t\treturn this.example;",
       "\t}",
-			"",
-			"\t@effect()",
-			"\tasync fetch() {",
-			"\t\tthis.updateExample('example');",
-			"\t}",
-			"}",
-			""
-		],
-		"description": "Create Domain"
-	},
-	"Create reactor": {
-		"prefix": "trc",
-		"body": [
-			"@reactor() ${1:state} = ${0:initValue};"
-		],
-		"description": "Create reactor"
-	},
-	"Update state": {
-		"prefix": "tu",
-		"body": [
-			"this.\\$update({$0});"
-		],
-		"description": "Update state"
-	},
-	"Create mutation": {
-		"prefix": "tmu",
-		"body": [
-			"@mutation()",
-			"${1:updateState}(${2:newState}) {",
-			"\tthis.${3:state} = ${2:newState};",
-			"}"
-		],
-		"description": "Create mutation for update state"
+      "",
+      "\t@effect()",
+      "\tasync fetch() {",
+      "\t\tthis.updateExample('example');",
+      "\t}",
+      "}",
+      ""
+    ],
+    "description": "Create Domain"
+  },
+  "Create reactor": {
+    "prefix": "trc",
+    "body": [
+      "@reactor() ${1:state} = ${0:initValue};"
+    ],
+    "description": "Create reactor"
+  },
+  "Update state": {
+    "prefix": "tu",
+    "body": [
+      "this.\\$update({$0});"
+    ],
+    "description": "Update state"
+  },
+  "Create mutation": {
+    "prefix": "tmu",
+    "body": [
+      "@mutation()",
+      "${1:updateState}(${2:newState}) {",
+      "\tthis.${3:state} = ${2:newState};",
+      "}"
+    ],
+    "description": "Create mutation for update state"
   },
   "Create computed": {
     "prefix": "tcp",
@@ -98,78 +98,78 @@
     ],
     "description": "Create computed function"
   },
-	"Create effect": {
-		"prefix": "tef",
-		"body": [
-			"@effect()",
-			"async ${1:fetch}() {",
-			"\t$0",
-			"}"
-		],
-		"description": "Create effect"
-	},
-	"Create a Class Component with turbox": {
-		"prefix": "tcc",
-		"body": [
-			"import React, { Component } from 'react';",
-			"import { Reactive } from 'turbox';",
-			"",
-			"@Reactive()",
-			"class ${1:${TM_FILENAME_BASE}} extends Component {",
-			"\trender() {",
-			"\t\treturn (",
-			"\t\t\t<div>",
-			"\t\t\t\t$0",
-			"\t\t\t</div>",
-			"\t\t);",
-			"\t}",
-			"}",
-			"",
-			"export default ${1:${TM_FILENAME_BASE}};",
-			""
-		],
-		"description": "Create a Class Component with turbox"
-	},
-	"Create a Function Component with turbox": {
-		"prefix": "tfc",
-		"body": [
-			"import React from 'react';",
-			"import { Reactive } from 'turbox';",
-			"",
-			"const ${1:${TM_FILENAME_BASE}} = Reactive(() => {",
-			"\treturn (",
-			"\t\t<div>",
-			"\t\t\t$0",
-			"\t\t</div>",
-			"\t);",
-			"});",
-			"",
-			"export default ${1:${TM_FILENAME_BASE}};",
-			""
-		],
-		"description": "Create a Function Component with turbox"
-	},
-	"Create a PureComponent with turbox": {
-		"prefix": "tcpc",
-		"body": [
-			"import React, { PureComponent } from 'react';",
-			"import { Reactive } from 'turbox';",
-			"",
-			"@Reactive()",
-			"class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
-			"\trender() {",
-			"\t\treturn (",
-			"\t\t\t<div>",
-			"\t\t\t\t$0",
-			"\t\t\t</div>",
-			"\t\t);",
-			"\t}",
-			"}",
-			"",
-			"export default ${1:${TM_FILENAME_BASE}};",
-			""
-		],
-		"description": "Create a PureComponent with turbox"
+  "Create effect": {
+    "prefix": "tef",
+    "body": [
+      "@effect()",
+      "async ${1:fetch}() {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create effect"
+  },
+  "Create a Class Component with turbox": {
+    "prefix": "tcc",
+    "body": [
+      "import React, { Component } from 'react';",
+      "import { Reactive } from 'turbox';",
+      "",
+      "@Reactive()",
+      "class ${1:${TM_FILENAME_BASE}} extends Component {",
+      "\trender() {",
+      "\t\treturn (",
+      "\t\t\t<div>",
+      "\t\t\t\t$0",
+      "\t\t\t</div>",
+      "\t\t);",
+      "\t}",
+      "}",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};",
+      ""
+    ],
+    "description": "Create a Class Component with turbox"
+  },
+  "Create a Function Component with turbox": {
+    "prefix": "tfc",
+    "body": [
+      "import React from 'react';",
+      "import { Reactive } from 'turbox';",
+      "",
+      "const ${1:${TM_FILENAME_BASE}} = Reactive(() => {",
+      "\treturn (",
+      "\t\t<div>",
+      "\t\t\t$0",
+      "\t\t</div>",
+      "\t);",
+      "});",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};",
+      ""
+    ],
+    "description": "Create a Function Component with turbox"
+  },
+  "Create a PureComponent with turbox": {
+    "prefix": "tcpc",
+    "body": [
+      "import React, { PureComponent } from 'react';",
+      "import { Reactive } from 'turbox';",
+      "",
+      "@Reactive()",
+      "class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
+      "\trender() {",
+      "\t\treturn (",
+      "\t\t\t<div>",
+      "\t\t\t\t$0",
+      "\t\t\t</div>",
+      "\t\t);",
+      "\t}",
+      "}",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};",
+      ""
+    ],
+    "description": "Create a PureComponent with turbox"
   },
   "Create a reactive function with turbox": {
     "prefix": "trf",
@@ -185,17 +185,17 @@
     ],
     "description": "Create a reactive function with turbox"
   },
-	"Create middleware": {
-		"prefix": "tmw",
-		"body": [
-			"const ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware} = ({ dispatch }) => (next) => (action) => {",
-			"\t$0",
-			"\treturn next(action);",
-			"};",
-			"",
-			"export default ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware};",
-			""
-		],
-		"description": "Create middleware"
-	}
+  "Create middleware": {
+    "prefix": "tmw",
+    "body": [
+      "const ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware} = ({ dispatch }) => (next) => (action) => {",
+      "\t$0",
+      "\treturn next(action);",
+      "};",
+      "",
+      "export default ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware};",
+      ""
+    ],
+    "description": "Create middleware"
+  }
 }

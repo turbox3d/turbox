@@ -1,0 +1,139 @@
+{
+  "extends": [
+    "eslint-config-airbnb",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "react-hooks"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "es6": true
+  },
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "react/jsx-indent": [
+      "error",
+      2
+    ],
+    "react/no-access-state-in-setstate": 0,
+    "react/destructuring-assignment": 0,
+    "lines-between-class-members": 0,
+    "arrow-parens": 0,
+    "prefer-object-spread": 0,
+    "operator-linebreak": 0,
+    "import/prefer-default-export": 0,
+    "import/extensions": 0,
+    "no-mixed-operators": 0,
+    "react/prefer-stateless-function": 0,
+    "react/jsx-filename-extension": 0,
+    "react/forbid-prop-types": 0,
+    "react/no-unused-prop-types": 1,
+    "react/jsx-one-expression-per-line": 0,
+    "react/state-in-constructor": 0,
+    "react/jsx-props-no-spreading": 0,
+    "react/static-property-placement": 0,
+    "jsx-a11y/anchor-is-valid": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "jsx-a11y/click-events-have-key-events": 0,
+    "function-paren-newline": 0,
+    "no-unused-vars": "warn",
+    "max-classes-per-file": 0,
+    "no-param-reassign": 0,
+    "no-unused-expressions": 0,
+    "max-len": "off",
+    "react/sort-comp": 0,
+    "no-restricted-syntax": 0,
+    "import/no-named-as-default-member": 0,
+    "class-methods-use-this": 0,
+    "import/no-named-as-default": 0,
+    "prefer-destructuring": 0,
+    "no-underscore-dangle": 0,
+    "no-bitwise": 0,
+    "no-prototype-builtins": 0,
+    "no-plusplus": ["error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/explicit-member-accessibility": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-unused-vars": [
+      1,
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": false
+      }
+    ],
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/member-ordering": [
+      1,
+      {
+        "default": [
+          "signature",
+
+          "public-static-field",
+          "protected-static-field",
+          "private-static-field",
+          "public-static-method",
+          "protected-static-method",
+          "private-static-method",
+
+          "public-instance-field",
+          "protected-instance-field",
+          "private-instance-field",
+
+          "public-constructor",
+          "protected-constructor",
+          "private-constructor",
+
+          "public-abstract-method",
+          "protected-abstract-method",
+          "private-abstract-method",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "object-curly-newline": [
+      "error",
+      {
+        "ObjectPattern": {
+          "multiline": true
+        },
+        "ExportDeclaration": {
+          "multiline": true,
+          "minProperties": 2
+        }
+      }
+    ],
+    "no-void": "off",
+    "react/no-multi-comp": "off",
+    "func-names": "off",
+    "comma-dangle": [
+      "error",
+      "only-multiline"
+    ],
+    "import/no-mutable-exports": "off",
+    "consistent-return": "off",
+    "no-dupe-class-members": "off",
+    "@typescript-eslint/no-dupe-class-members": ["error"]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
+}

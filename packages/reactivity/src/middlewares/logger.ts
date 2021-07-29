@@ -1,12 +1,13 @@
+import { deepMerge } from '@turbox3d/shared';
 import { Middleware } from '../interfaces';
-import { deepMerge } from '../utils/deep-merge';
 import { EMPTY_ACTION_NAME } from '../const/symbol';
 import { normalNextReturn } from './common';
 import { Action } from '../core/action';
 import { ctx } from '../const/config';
 import { TimeTravel, History } from '../core/time-travel';
-import { materialCallStack, Domain } from '../core/domain';
+import { Domain } from '../core/domain';
 import { isDomain } from '../utils/common';
+import { materialCallStack } from '../utils/materialCallStack';
 
 interface DiffLog {
   name: any;
@@ -17,23 +18,23 @@ interface DiffLog {
 }
 
 function createLoggerMiddleware(): Middleware {
-  return () => (next) => (dispatchedAction) => {
+  return () => next => (dispatchedAction) => {
     const { name, displayName, domain } = dispatchedAction;
 
-    if (!domain) {
+    if (!domain || !ctx.middleware.logger) {
       return normalNextReturn(next, dispatchedAction);
     }
 
-    const length = materialCallStack.length;
+    const length = materialCallStack.stack.length;
     if (ctx.middleware.skipNestLog && length !== 1) {
       return normalNextReturn(next, dispatchedAction);
     }
     if (!ctx.middleware.diffLogger) {
       console.group(
         `%c[TURBOX LOG]: PREV ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
-        'background: #929493; color: #fff; font-weight: bold; padding: 3px 5px;'
+        'background: #929493; color: #fff; font-weight: bold; padding: 3px 5px;',
       );
-      console.dir(deepMerge({}, domain.$$turbox_properties, { clone: true })); // deep copy，logger current state before change.
+      console.dir(deepMerge({}, domain.$$turboxProperties, { clone: true })); // deep copy，logger current state before change.
       console.groupEnd();
 
       return normalNextReturn(next, dispatchedAction, () => {
@@ -42,9 +43,9 @@ function createLoggerMiddleware(): Middleware {
         }
         console.group(
           `%c[TURBOX LOG]: NEXT ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
-          'background: #218D41; color: #fff; font-weight: bold; padding: 3px 5px;'
+          'background: #218D41; color: #fff; font-weight: bold; padding: 3px 5px;',
         );
-        console.dir(deepMerge({}, domain.$$turbox_properties, { clone: true })); // deep copy，logger current state after change.
+        console.dir(deepMerge({}, domain.$$turboxProperties, { clone: true })); // deep copy，logger current state after change.
         console.groupEnd();
       });
     }
@@ -56,33 +57,31 @@ function createLoggerMiddleware(): Middleware {
       let diffHistory: History = new Map();
       if (Action.context) {
         diffHistory = new Map(Action.context.historyNode.history);
-      } else {
-        if (TimeTravel.currentTimeTravel) {
-          diffHistory = new Map(TimeTravel.currentTimeTravel.currentHistory);
-        }
+      } else if (TimeTravel.currentTimeTravel) {
+        diffHistory = new Map(TimeTravel.currentTimeTravel.currentHistory);
       }
       const logArr: DiffLog[] = [];
       diffHistory.forEach((keyToDiffChangeMap, target) => {
         keyToDiffChangeMap.forEach((diffInfo, key) => {
           logArr.push({
             name: target.constructor.name,
-            target: isDomain(target) ? (target as Domain).$$turbox_properties : target,
+            target: isDomain(target) ? (target as Domain).$$turboxProperties : target,
             property: key,
             before: diffInfo.beforeUpdate,
-            after: diffInfo.didUpdate
+            after: diffInfo.didUpdate,
           });
         });
       });
       if (logArr.length) {
         console.group(
           `%c[TURBOX LOG]: DIFF ${domain.constructor.name} ${name} ${displayName !== EMPTY_ACTION_NAME ? displayName : ''}`,
-          'background: #FF5F0F; color: #fff; font-weight: bold; padding: 3px 5px;'
+          'background: #FF5F0F; color: #fff; font-weight: bold; padding: 3px 5px;',
         );
         console.table(logArr);
         console.groupEnd();
       }
     });
-  }
+  };
 }
 
 export default createLoggerMiddleware();

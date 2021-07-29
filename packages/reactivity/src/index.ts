@@ -1,39 +1,25 @@
-import { Reactive } from './components/Reactive';
 import { use } from './core/use';
 import { config } from './const/config';
 import { mutation } from './decorators/mutation';
 // import { effect } from './decorators/effect';
 import { reactor } from './decorators/reactor';
 import { computed } from './decorators/computed';
-import { Domain } from './core/domain';
+import { Domain, createDomain } from './core/domain';
 import { init } from './core/init';
-import { reactive } from './core/reactive';
+import { reactive, Reaction } from './core/reactive';
 import { TimeTravel } from './core/time-travel';
 import { ActionStatus } from './const/enums';
 import { Action } from './core/action';
 import { action } from './decorators/action';
-import { nextTick } from './utils/common';
+import { depCollector } from './core/collector';
+import { store, registerExternalBatchUpdate } from './core/store';
+import { REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from './const/symbol';
 
-export default {
-  Reactive,
-  reactive,
-  // effect,
-  mutation,
-  computed,
-  use,
-  config,
-  reactor,
-  init,
-  Domain,
-  TimeTravel,
-  Action,
-  ActionStatus,
-  action,
-  nextTick,
-}
+export * from './utils/event';
+
+init();
 
 export {
-  Reactive,
   reactive,
   // effect,
   mutation,
@@ -43,9 +29,15 @@ export {
   reactor,
   init,
   Domain,
+  createDomain,
   TimeTravel,
   Action,
   ActionStatus,
   action,
-  nextTick,
-}
+  depCollector,
+  Reaction,
+  store,
+  REACTIVE_COMPONENT_NAME,
+  UNSUBSCRIBE_HANDLER,
+  registerExternalBatchUpdate,
+};

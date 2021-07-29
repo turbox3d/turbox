@@ -1,4 +1,4 @@
-import { Domain, reactor } from '@turbox3d/reactivity';
+import { Domain, reactor } from '@turbox3d/reactivity-react';
 import { Countertop } from './countertop';
 import { Point } from './point';
 

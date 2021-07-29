@@ -1,0 +1,4 @@
+plugins/
+node_modules/
+demo/
+*.js

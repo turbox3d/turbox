@@ -1,9 +1,12 @@
-import { materialCallStack, MapType, SetType } from './domain';
+import { fail, nextTick } from '@turbox3d/shared';
+import { MapType, SetType } from './domain';
 import { store, ActionType } from './store';
 import { ctx } from '../const/config';
-import { fail } from '../utils/error';
 import { ECollectType, EMaterialType } from '../const/enums';
 import { TURBOX_PREFIX } from '../const/symbol';
+import { HistoryOperationType } from '../interfaces';
+import { Action } from './action';
+import { materialCallStack } from '../utils/materialCallStack';
 
 export interface DiffInfo {
   type: ECollectType;
@@ -79,6 +82,9 @@ export class TimeTravel {
         if (!value) {
           return;
         }
+        if (value.beforeUpdate === value.didUpdate) {
+          return;
+        }
         if (value.type === ECollectType.MAP_SET || value.type === ECollectType.MAP_DELETE) {
           if (value.beforeUpdate === void 0) {
             (target as MapType).delete(key);
@@ -89,12 +95,10 @@ export class TimeTravel {
           (target as SetType).delete(key);
         } else if (value.type === ECollectType.SET_DELETE) {
           (target as SetType).add(key);
+        } else if (Array.isArray(target) && value.beforeUpdate === void 0) {
+          delete target[key];
         } else {
-          if (Array.isArray(target) && value.beforeUpdate === void 0) {
-            delete target[key];
-          } else {
-            target[key] = value.beforeUpdate;
-          }
+          target[key] = value.beforeUpdate;
         }
       });
     });
@@ -107,6 +111,9 @@ export class TimeTravel {
       }
       keyToDiffObj.forEach((value, key) => {
         if (!value) {
+          return;
+        }
+        if (value.beforeUpdate === value.didUpdate) {
           return;
         }
         if (value.type === ECollectType.MAP_SET) {
@@ -134,28 +141,32 @@ export class TimeTravel {
 
   currentHistory: History = new Map();
   transactionHistories: HistoryNode[] = [];
-  cursor: number = -1;
+  cursor = -1;
+
+  onChange(undoable: boolean, redoable: boolean, type: HistoryOperationType, action?: Action) {
+    //
+  }
 
   /**
    * @todo support multiple steps
    * revert to the previous history status
    */
-  undo(stepNum: number = 1) {
+  undo() {
     if (!this.undoable) {
       return;
     }
     const currentHistory = this.transactionHistories[this.cursor];
-    if (!currentHistory.actionChain.length) {
-      return;
-    }
     const original = () => {
       TimeTravel.undoHandler(currentHistory.history);
     };
-    materialCallStack.push(EMaterialType.UNDO);
+    const stackId = materialCallStack.push({ type: EMaterialType.UNDO, method: EMaterialType.UNDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
-    const action = currentHistory.actionChain[0];
+    const action = currentHistory.actionChain[0] || {
+      name: '',
+      displayName: '',
+    };
     store.dispatch({
       name: `${TURBOX_PREFIX}UNDO_${action.name}`,
       displayName: `UNDO_${action.displayName}`,
@@ -163,32 +174,36 @@ export class TimeTravel {
       original,
       type: EMaterialType.UNDO,
       isInner: true,
+      stackId
     });
     materialCallStack.pop();
     this.cursor -= 1;
+    nextTick(() => {
+      this.onChange(this.undoable, this.redoable, 'undo');
+    });
   }
 
   /**
    * @todo support multiple steps
    * apply the next history status
    */
-  redo(stepNum: number = 1) {
+  redo() {
     if (!this.redoable) {
       return;
     }
     this.cursor += 1;
     const currentHistory = this.transactionHistories[this.cursor];
-    if (!currentHistory.actionChain.length) {
-      return;
-    }
     const original = () => {
       TimeTravel.redoHandler(currentHistory.history);
     };
-    materialCallStack.push(EMaterialType.REDO);
+    const stackId = materialCallStack.push({ type: EMaterialType.REDO, method: EMaterialType.REDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
-    const action = currentHistory.actionChain[0];
+    const action = currentHistory.actionChain[0] || {
+      name: '',
+      displayName: '',
+    };
     store.dispatch({
       name: `${TURBOX_PREFIX}REDO_${action.name}`,
       displayName: `REDO_${action.displayName}`,
@@ -196,13 +211,20 @@ export class TimeTravel {
       original,
       type: EMaterialType.REDO,
       isInner: true,
+      stackId
     });
     materialCallStack.pop();
+    nextTick(() => {
+      this.onChange(this.undoable, this.redoable, 'redo');
+    });
   }
 
   clear() {
     this.currentHistory = new Map();
-    this.transactionHistories = [];
+    this.transactionHistories.length = 0;
     this.cursor = -1;
+    nextTick(() => {
+      this.onChange(this.undoable, this.redoable, 'clear');
+    });
   }
 }

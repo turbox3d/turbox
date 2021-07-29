@@ -1,9 +1,10 @@
+import { nextTick, includes, isPromise, batchRemoveFromSet } from '@turbox3d/shared';
 import { Store, DispatchedAction, Mutation } from '../interfaces';
 import { ReactionId, triggerCollector } from './collector';
-import { nextTick, includes, isPromise, batchRemoveFromSet } from '../utils/common';
-import * as ReactDOM from 'react-dom';
 import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
+import { ctx } from '../const/config';
+import { AfterStoreChangeEvent, BeforeStoreChangeEvent, EEventName, emitter } from '../utils/event';
 
 export let store: Store;
 
@@ -13,6 +14,12 @@ export interface ActionType {
 }
 
 export const actionTypeChain: ActionType[] = [];
+
+let batchedUpdates: Function | undefined;
+
+export const registerExternalBatchUpdate = (externalMethod: Function) => {
+  batchedUpdates = externalMethod;
+};
 
 export function createStore(enhancer: (createStore: any) => Store) {
   if (enhancer !== void 0) {
@@ -28,10 +35,8 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     if (listeners === void 0) {
       componentUUIDToListeners.set(uuid, [listener]);
-    } else {
-      if (!includes(listeners, listener)) {
-        componentUUIDToListeners.set(uuid, listeners.concat(listener));
-      }
+    } else if (!includes(listeners, listener)) {
+      componentUUIDToListeners.set(uuid, listeners.concat(listener));
     }
 
     return function unsubscribe() {
@@ -44,15 +49,15 @@ export function createStore(enhancer: (createStore: any) => Store) {
       if (componentUUIDToListeners.has(uuid)) {
         componentUUIDToListeners.delete(uuid);
       }
-    }
+    };
   }
 
   let dirtyJob: Function | undefined;
   let mutationDepth = 0;
   let called = false;
 
-  const flushChange = (ids: ReactionId[], needBatchUpdate = true) => {
-    if (!ids.length) {
+  const flushChange = (ids: ReactionId[], useExternalBatchUpdate: boolean, isInner: boolean) => {
+    if (!ids.length || ctx.disableReactive) {
       return;
     }
     const pendingListeners: Function[] = [];
@@ -66,25 +71,42 @@ export function createStore(enhancer: (createStore: any) => Store) {
     const flush = () => {
       for (let index = 0; index < pendingListeners.length; index++) {
         const listener = pendingListeners[index];
-        listener();
+        listener(isInner);
       }
     };
 
-    if (needBatchUpdate) {
-      ReactDOM.unstable_batchedUpdates(flush);
+    if (useExternalBatchUpdate) {
+      if (batchedUpdates) {
+        batchedUpdates(flush);
+      } else {
+        flush();
+      }
     } else {
+      // reverse
       flush();
     }
   };
 
-  const keepAliveComputed = () => {
-    const computedReactionIds = [...triggerCollector.waitTriggerIds.values()].filter(id => id instanceof Reaction && !id.lazy && id.computed);
+  const keepAliveComputed = (isInner: boolean) => {
+    const computedReactionIds = [...triggerCollector.waitTriggerIds.values()]
+      .filter(id => id instanceof Reaction && !id.lazy && id.computed);
     if (!computedReactionIds.length) {
       return;
     }
-    flushChange(computedReactionIds, false);
+    flushChange(computedReactionIds, false, isInner);
     // clean wait queue keep alive
     batchRemoveFromSet(triggerCollector.waitTriggerIds, computedReactionIds);
+  };
+
+  const immediatelyReactive = (isInner: boolean) => {
+    const immediatelyReactionIds = [...triggerCollector.waitTriggerIds.values()]
+      .filter(id => id instanceof Reaction && !id.computed && id.immediately);
+    if (!immediatelyReactionIds.length) {
+      return;
+    }
+    // clean wait queue
+    batchRemoveFromSet(triggerCollector.waitTriggerIds, immediatelyReactionIds);
+    flushChange(immediatelyReactionIds, false, isInner);
   };
 
   const nextTickQueue: Function[] = [];
@@ -126,6 +148,9 @@ export function createStore(enhancer: (createStore: any) => Store) {
       original,
       immediately,
       isInner = false,
+      domain,
+      name,
+      stackId
     } = dispatchedAction;
 
     if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
@@ -142,11 +167,11 @@ export function createStore(enhancer: (createStore: any) => Store) {
         triggerCollector.save();
       }
       const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
-      // do computed reaction first
-      flushChange(computedReactionIds, false);
-      const restIds = ids.filter(id => !(id instanceof Reaction && id.computed));
+      // do lazy computed reaction first，PS：maybe add new trigger ids
+      flushChange(computedReactionIds, false, isInner);
+      const restIds = [...triggerCollector.waitTriggerIds.values()].filter(id => !(id instanceof Reaction && id.computed));
       clean();
-      flushChange(restIds);
+      flushChange(restIds, true, isInner);
     };
 
     mutationDepth += 1;
@@ -161,16 +186,55 @@ export function createStore(enhancer: (createStore: any) => Store) {
     }
 
     let result: any;
+
+    if (ctx.devTool) {
+      const event: BeforeStoreChangeEvent = {
+        domain: domain?.constructor.name ?? 'UNKNOWN',
+        method: name,
+        args: payload,
+        state: domain?.$$turboxProperties,
+        time: Date.now(),
+        stackId
+      };
+      emitter.emit(EEventName.beforeStoreChange, event);
+    }
+
     try {
       result = (original as Mutation)(...payload);
     } catch (error) {
       return error;
     }
+
+    if (ctx.devTool) {
+      const event: AfterStoreChangeEvent = {
+        domain: domain?.constructor.name ?? 'UNKNOWN',
+        method: name,
+        args: payload,
+        state: domain?.$$turboxProperties,
+        async: false,
+        time: Date.now(),
+        stackId
+      };
+      emitter.emit(EEventName.afterStoreChange, event);
+    }
+
     if (isPromise(result)) {
       return new Promise((resolve, reject) => {
         (result as Promise<void>).then((res) => {
+          if (ctx.devTool) {
+            emitter.emit(EEventName.asyncAfterStoreChange, {
+              domain: domain?.constructor.name ?? 'UNKNOWN',
+              method: name,
+              args: payload,
+              state: domain?.$$turboxProperties,
+              async: true,
+              time: Date.now(),
+              stackId
+            });
+          }
+          keepAliveComputed(isInner);
+          immediatelyReactive(isInner);
           mutationDepth -= 1;
-          keepAliveComputed();
           nextTickCaller();
           resolve(res);
         }).catch((error) => {
@@ -179,9 +243,9 @@ export function createStore(enhancer: (createStore: any) => Store) {
       });
     }
 
+    keepAliveComputed(isInner);
+    immediatelyReactive(isInner);
     mutationDepth -= 1;
-
-    keepAliveComputed();
 
     if (isInner || immediately) {
       // immediately execute

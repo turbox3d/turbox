@@ -1,0 +1,109 @@
+// import { Key } from '../keyboard/keyCode';
+
+enum Key {
+  Shift = 'Shift',
+  Alt = 'Alt',
+  Control = 'Control',
+  Meta = 'Meta',
+}
+
+export const Modifiers = {
+  Node: {
+    key: 'none',
+    code: 0b0000,
+  },
+  Shift: {
+    key: 'shift',
+    code: 0b0001,
+  },
+  Ctrl: {
+    key: 'ctrl',
+    code: 0b0010,
+  },
+  Alt: {
+    key: 'alt',
+    code: 0b0100,
+  },
+  Meta: {
+    key: 'meta',
+    code: 0b1000,
+  },
+};
+
+const { Node, Shift, Ctrl, Alt, Meta } = Modifiers;
+
+/**
+ * 根据快捷键构建 标示key
+ */
+export function createKeyByHotKey(hotkey: string) {
+  const keys = hotkey.replace(/[ +]*\+[ +]*/g, '+').toLowerCase().split('+');
+  const length = keys.length;
+
+  let modifiers = Node.code;
+
+  for (let i = 0; i < length; i++) {
+    // eslint-disable-next-line default-case
+    switch (keys[i]) {
+    case Shift.key:
+      modifiers |= Shift.code;
+      break;
+    case Ctrl.key:
+      modifiers |= Ctrl.code;
+      break;
+    case Alt.key:
+      modifiers |= Alt.code;
+      break;
+    case Meta.key:
+      modifiers |= Meta.code;
+      break;
+    }
+  }
+
+  return `${keys[length - 1]}@${modifiers}`;
+}
+
+/**
+ * 根据键盘事件构建 标示key
+ */
+export function createKeyByEvent(event: KeyboardEvent) {
+  let modifiers = Node.code;
+
+  if (event.shiftKey) {
+    modifiers |= Shift.code;
+  }
+
+  if (event.altKey) {
+    modifiers |= Alt.code;
+  }
+
+  if (event.ctrlKey) {
+    modifiers |= Ctrl.code;
+  }
+
+  if (event.metaKey) {
+    modifiers |= Meta.code;
+  }
+
+  const key = event.key.toLowerCase();
+
+  return `${key}@${modifiers}`;
+}
+
+export function isValidEvent(event: KeyboardEvent) {
+  const key = event.key;
+  // 忽略 'shift' 'alt' 'ctrl' 'meta' 等辅助按键
+  if (key === Key.Shift ||
+    key === Key.Alt ||
+    key === Key.Control ||
+    key === Key.Meta) {
+    return false;
+  }
+
+  const target = event.target;
+  // 忽略要改变输入的表单元素
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+    return false;
+  }
+
+  return true;
+}

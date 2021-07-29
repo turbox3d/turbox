@@ -1,4 +1,4 @@
-import { Reactive } from '@turbox3d/reactivity';
+import { Reactive } from '@turbox3d/reactivity-react';
 import React from 'react';
 import { cts } from './index';
 

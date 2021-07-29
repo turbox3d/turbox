@@ -1,0 +1,89 @@
+{
+  "name": "@turbox3d/graphic-component-pixi",
+  "version": "1.0.47",
+  "description": "Graphic component library based on pixi",
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "types": "./index.d.ts",
+  "keywords": [
+    "framework",
+    "front-end",
+    "turbox3d",
+    "turbox",
+    "alibaba",
+    "taobao",
+    "graphic-component-pixi"
+  ],
+  "tnpm": {
+    "mode": "npm"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": "feifan <darknight3@vip.qq.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "pixi.js": ">=5.3",
+    "react": ">=16",
+    "three": "0.x"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/runtime": "^7.6.3",
+    "@types/jest": "^24.0.19",
+    "@types/node": "^12.11.5",
+    "@types/react": "^16.14.6",
+    "autoprefixer": "^10.1.0",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^6.0.3",
+    "css-loader": "^5.0.1",
+    "file-loader": "^6.2.0",
+    "jest": "^24.9.0",
+    "less": "^4.0.0",
+    "less-loader": "^7.2.0",
+    "pixi.js": "^5.3.6",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-loader": "^4.1.0",
+    "sass-loader": "^10.1.0",
+    "style-loader": "^2.0.0",
+    "three": "^0.128.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^4.3.5",
+    "url-loader": "^4.1.1",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "files": [
+    "src/",
+    "lib/",
+    "es/",
+    "index.d.ts",
+    "typings"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turbox3d/turbox.git"
+  },
+  "scripts": {
+    "test": "npx jest --forceExit --coverage --verbose",
+    "test:watch": "npm run test -- --watchAll",
+    "build:ts": "rm -rf ts && tsc -outDir ./ts && copyfiles -u 1 src/**/*.less ./ts",
+    "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es && copyfiles -u 1 src/**/*.less ./es",
+    "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib && copyfiles -u 1 src/**/*.less ./lib",
+    "build:watch": "tsc -w -outDir ./ts & npx babel ts -w --out-dir es & copyfiles -u 1 src/**/*.less ./es",
+    "build:umd": "npx webpack --mode='development' -o dist/turbox-graphic-component-pixi.js",
+    "build:umd:min": "npx webpack --mode='production' -o dist/turbox-graphic-component-pixi.min.js",
+    "build:all": "npm i --no-package-lock && npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "prepublishOnly": "npm run build:all"
+  },
+  "dependencies": {
+    "@turbox3d/event-manager": "^1.0.26",
+    "@turbox3d/graphic-view-pixi": "^1.0.41",
+    "@turbox3d/shared": "^1.0.7"
+  }
+}

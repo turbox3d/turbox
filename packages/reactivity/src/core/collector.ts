@@ -1,5 +1,7 @@
-import { ctx } from '../const/config';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Component } from 'react';
+import { nextTick } from '@turbox3d/shared';
+import { ctx } from '../const/config';
 import { Reaction } from './reactive';
 import { HistoryCollectorPayload, TimeTravel, History } from './time-travel';
 import { actionTypeChain, ActionType } from './store';
@@ -17,7 +19,7 @@ export type DepNodeStatus = Map<any, EDepState>;
 const isInBlackList = (propKey: string) => {
   const blackList = {
     constructor: true,
-    $$turbox_properties: true,
+    $$turboxProperties: true,
     context: true,
     currentTarget: true,
     originalArrayLength: true,
@@ -78,12 +80,12 @@ class DepCollector {
         depNodeStatusAssembly.set(propertyKey, EDepState.LATEST);
       } else {
         reactionDeps.set(target, new Map([[
-          propertyKey, EDepState.LATEST
+          propertyKey, EDepState.LATEST,
         ]]));
       }
     } else {
       this.reactionIdDeps.set(currentReactionId, new Map([[target, new Map([[
-        propertyKey, EDepState.LATEST
+        propertyKey, EDepState.LATEST,
       ]])]]));
     }
   }
@@ -164,6 +166,38 @@ class TriggerCollector {
     this.recordDiff(target, enhanceKey, payload, TimeTravel.currentTimeTravel.currentHistory);
   }
 
+  endBatch(isClearHistory = true, action?: Action) {
+    if (!action) {
+      this.waitTriggerIds.clear();
+    }
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
+      return;
+    }
+    if (action) {
+      action.historyNode.actionChain.length = 0;
+      action.historyNode.history.clear();
+      nextTick(() => {
+        const ctt = TimeTravel.currentTimeTravel;
+        ctt && ctt.onChange(ctt.undoable, ctt.redoable, 'clear', action);
+      });
+      return;
+    }
+    actionTypeChain.length = 0;
+    TimeTravel.currentTimeTravel.currentHistory.clear();
+  }
+
+  save(action?: Action) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
+      return;
+    }
+    const ctt = TimeTravel.currentTimeTravel;
+    if (action) {
+      this.saveHistory(ctt, action.historyNode.actionChain, action.historyNode.history, action);
+      return;
+    }
+    this.saveHistory(ctt, actionTypeChain, ctt.currentHistory);
+  }
+
   private collectComponentId(target: object, enhanceKey: any) {
     const depNodeAssembly = depCollector.dependencyGraph.get(target);
     if (depNodeAssembly !== void 0) {
@@ -206,21 +240,7 @@ class TriggerCollector {
     }
   }
 
-  endBatch(isClearHistory = true, action?: Action) {
-    this.waitTriggerIds.clear();
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || !isClearHistory) {
-      return;
-    }
-    if (action) {
-      action.historyNode.actionChain.length = 0;
-      action.historyNode.history.clear();
-      return;
-    }
-    actionTypeChain.length = 0;
-    TimeTravel.currentTimeTravel.currentHistory.clear();
-  }
-
-  private saveHistory(ctt: TimeTravel, actionChain: ActionType[], history?: History) {
+  private saveHistory(ctt: TimeTravel, actionChain: ActionType[], history?: History, action?: Action) {
     if (!history) {
       return;
     }
@@ -248,18 +268,9 @@ class TriggerCollector {
       ctt.transactionHistories.shift();
       ctt.cursor -= 1;
     }
-  }
-
-  save(action?: Action) {
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
-      return;
-    }
-    const ctt = TimeTravel.currentTimeTravel;
-    if (action) {
-      this.saveHistory(ctt, action.historyNode.actionChain, action.historyNode.history);
-      return;
-    }
-    this.saveHistory(ctt, actionTypeChain, ctt.currentHistory);
+    nextTick(() => {
+      ctt.onChange(ctt.undoable, ctt.redoable, 'save', action);
+    });
   }
 }
 

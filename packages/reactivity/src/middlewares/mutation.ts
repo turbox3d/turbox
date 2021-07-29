@@ -5,7 +5,7 @@ import { Action } from '../core/action';
 import { normalNextReturn } from './common';
 
 function createMutationMiddleware(): Middleware {
-  return () => (next) => (dispatchedAction) => {
+  return () => next => (dispatchedAction) => {
     const { name, displayName, type, isInner } = dispatchedAction;
     if (isInner || (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
       return normalNextReturn(next, dispatchedAction);

@@ -5,16 +5,17 @@
       "ignoreChanges": [
         "*.md",
         "*.txt",
-        "test/**"
+        "test/**",
+        "package-lock.json"
       ]
     }
   },
   "packages": [
     "packages/*"
   ],
-  "npmClient": "yarn",
+  "npmClient": "npm",
   "npmClientArgs": [
     "--no-lockfile"
-  ]
+  ],
+  "lerna": "2.11.0"
 }
-

@@ -1,5 +1,5 @@
+import { isPromise } from '@turbox3d/shared';
 import { DispatchedAction, Dispatch } from '../interfaces';
-import { isPromise } from '../utils/common';
 
 export function normalNextReturn(next: Dispatch, dispatchedAction: DispatchedAction, callback?: () => void, errorCallback?: (error: string) => void) {
   const result = next(dispatchedAction);
