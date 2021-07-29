@@ -20,7 +20,7 @@ turbox 框架包含几个子框架：
 * 基于视图框架封装的 CAX 常用图形控件，比如尺寸标注、Gizmo 等
 
 ## API 手册
-[API 手册](https://geoffgu.github.io/doc/)
+[API 手册](https://turbox3d.github.io/turbox-type-doc/)
 
 ## 响应式数据流事务框架
 ### 架构图

@@ -4,4 +4,4 @@
 
 * [Changelog](CHANGELOG.md)
 
-* [API List](https://geoffgu.github.io/doc/)
+* [API List](https://turbox3d.github.io/turbox-type-doc/)
