@@ -21,7 +21,11 @@
     "lib": [
       "dom",
       "es2018"
-    ]
+    ],
+    "types": [
+      "node",
+      "jest"
+    ],
   },
   "include": [
     "src/**/*"

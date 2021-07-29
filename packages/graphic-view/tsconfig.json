@@ -23,8 +23,9 @@
       "es2018"
     ],
     "types": [
-      "node"
-    ]
+      "node",
+      "jest"
+    ],
   },
   "include": [
     "src/**/*"
