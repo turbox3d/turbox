@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-view-pixi",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "description": "Large-scale declarative 2d graphic ui framework based on pixi",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -72,9 +72,9 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "^1.0.20",
-    "@turbox3d/event-manager": "^1.0.26",
-    "@turbox3d/graphic-view": "^1.0.30",
-    "@turbox3d/shared": "^1.0.7"
+    "@turbox3d/command-manager": "^1.0.21",
+    "@turbox3d/event-manager": "^1.0.27",
+    "@turbox3d/graphic-view": "^1.0.31",
+    "@turbox3d/shared": "^1.0.8"
   }
 }

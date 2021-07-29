@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-component-pixi",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "Graphic component library based on pixi",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -82,8 +82,8 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/event-manager": "^1.0.26",
-    "@turbox3d/graphic-view-pixi": "^1.0.41",
-    "@turbox3d/shared": "^1.0.7"
+    "@turbox3d/event-manager": "^1.0.27",
+    "@turbox3d/graphic-view-pixi": "^1.0.42",
+    "@turbox3d/shared": "^1.0.8"
   }
 }

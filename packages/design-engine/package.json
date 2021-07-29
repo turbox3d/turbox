@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/design-engine",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "Large-scale design application engine library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -76,11 +76,11 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "^1.0.20",
-    "@turbox3d/event-manager": "^1.0.26",
-    "@turbox3d/math": "^1.0.10",
-    "@turbox3d/reactivity": "^2.0.45",
-    "@turbox3d/reactivity-react": "^1.0.49",
-    "@turbox3d/shared": "^1.0.7"
+    "@turbox3d/command-manager": "^1.0.21",
+    "@turbox3d/event-manager": "^1.0.27",
+    "@turbox3d/math": "^1.0.11",
+    "@turbox3d/reactivity": "^2.0.46",
+    "@turbox3d/reactivity-react": "^1.0.50",
+    "@turbox3d/shared": "^1.0.8"
   }
 }
