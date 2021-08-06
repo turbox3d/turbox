@@ -2,9 +2,9 @@
 
 [![build status](https://img.shields.io/travis/com/turbox3d/turbox/master.svg?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
 [![license](https://img.shields.io/github/license/turbox3d/turbox?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
-[![npm version](https://img.shields.io/npm/v/turbox.svg?style=flat-square)](https://www.npmjs.com/package/turbox)
-[![npm downloads](https://img.shields.io/npm/dm/turbox.svg?style=flat-square)](https://www.npmjs.com/package/turbox)
-[![install size](https://img.shields.io/bundlephobia/minzip/turbox?style=flat-square)](https://www.npmjs.com/package/turbox)
+[![npm version](https://img.shields.io/npm/v/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
+[![npm downloads](https://img.shields.io/npm/dm/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
+[![install size](https://img.shields.io/bundlephobia/minzip/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
 
 ## 介绍
 **turbox**（涡轮）的定位是大型 web 图形业务应用的前端框架，CAX 应用开箱即用的引擎及库。场景主要来源于大型 web 3d 设计制造一体化编辑器业务。
