@@ -18,8 +18,7 @@
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react": ">=16",
-    "@turbox3d/reactivity": ">=2"
+    "react": ">=16"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
@@ -28,7 +27,6 @@
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
     "@babel/runtime": "^7.6.3",
-    "@turbox3d/reactivity": "^2.0.46",
     "@types/jest": "^24.0.19",
     "@types/node": "^12.11.5",
     "@types/react": "^16.9.14",
@@ -63,5 +61,8 @@
     "build:umd:min": "npx webpack --mode='production' -o dist/turbox-hot-loader.min.js",
     "build:all": "npm i --no-package-lock && npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
     "prepublishOnly": "npm run build:all"
+  },
+  "dependencies": {
+    "@turbox3d/reactivity": "^2.0.46"
   }
 }
