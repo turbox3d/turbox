@@ -40,6 +40,7 @@ export function hot(sourceModule: NodeModule) {
         const newIns = stores[key];
         const oldIns = sourceModule.hot!.data.stores[key];
 
+        // eslint-disable-next-line guard-for-in
         for (const k in oldIns.$$turboxProperties) {
           const element = oldIns.$$turboxProperties[k];
           newIns[k] = element;

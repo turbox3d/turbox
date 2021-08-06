@@ -24,7 +24,8 @@
     ],
     "types": [
       "node",
-      "jest"
+      "jest",
+      "webpack-env"
     ],
     "skipLibCheck": true
   },

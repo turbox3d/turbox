@@ -385,7 +385,7 @@ export class Domain<S = {}> {
       }
 
       if (proto.constructor === Map || proto.constructor === WeakMap) {
-        const oldValue = proto.get.call(target, key);
+        const oldValue = (proto as MapType).get.call(target, key);
         triggerCollector.trigger(target, key, {
           type: ECollectType.MAP_DELETE,
           beforeUpdate: oldValue,

@@ -29,6 +29,7 @@ export function hot<P extends object>(sourceModule: NodeModule): (Target: React.
     sourceModule.hot.dispose((data) => {
       data.instances = newModule.instances;
       if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line @typescript-eslint/camelcase
         window.$$turbox_hot = true;
       }
     });
