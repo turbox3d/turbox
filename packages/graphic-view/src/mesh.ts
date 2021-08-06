@@ -2,16 +2,18 @@
 import { reactive, Reaction } from '@turbox3d/reactivity';
 import { InteractiveConfig, SceneMouseEvent } from '@turbox3d/event-manager';
 import React from 'react';
-import { SceneContext, BaseScene } from './scene';
+import { SceneContext, BaseScene, SceneType } from './scene';
 import { getMeshParent } from './utils';
 
-export abstract class BaseMesh<Props, State, ApplicationContext, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
+export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
   static contextType: React.Context<SceneContext<any, any>>;
 
   context: SceneContext<DisplayObject, Point>;
 
   /** 当前组件的视图对象 */
   protected view: DisplayObject;
+  /** 视图对象的类型（有相机、灯光、模型三类，默认为 model） */
+  protected viewType: 'camera' | 'light' | 'model' = 'model';
 
   /** 响应式的渲染任务管线，与 draw 互斥，有任务就不会执行 draw */
   protected reactivePipeLine: Function[] = [];
@@ -20,7 +22,7 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Container exten
   protected autoAppendToWorld = true;
 
   /** 当前组件上层组件 */
-  private parentMesh?: BaseMesh<Props, State, ApplicationContext, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Container, DisplayObject, Viewport>;
+  private parentMesh?: BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport>;
 
   private reactions: Reaction[] = [];
 
@@ -179,12 +181,26 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Container exten
       const parent = getMeshParent(this);
       if (parent) {
         this.parentMesh = parent;
-        (parent as BaseMesh<Props, State, ApplicationContext, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Container, DisplayObject, Viewport>).addChildView(this.view);
+        const isCameraOrLight = (this.viewType === 'camera' || this.viewType === 'light');
+        if (isCameraOrLight) {
+          let parentNode = (parent as BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport> | undefined);
+          while (parentNode && !(parentNode instanceof BaseScene && parentNode.sceneType === SceneType.Scene3D)) {
+            parentNode = getMeshParent(parentNode);
+          }
+          if (parentNode && parentNode.scene) {
+            this.addViewToScene(parentNode, this.view);
+          }
+        } else {
+          parent.addChildView(this.view);
+        }
       } else {
         console.warn('Cannot retrieve parent Mesh2D.');
       }
     }
   }
+
+  /** 往场景中添加对象 */
+  abstract addViewToScene(scene: BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport>, view: DisplayObject): void;
 
   /**
    * 清除当前视图

@@ -54,7 +54,7 @@ class CoordinateControllerPixi extends CoordinateController {
   }
 }
 
-export class Scene2D extends BaseScene<PIXI.Application, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
+export class Scene2D extends BaseScene<PIXI.Application, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
 
   sceneType = SceneType.Scene2D;
@@ -228,6 +228,14 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.Container, PIXI.Di
     return app;
   }
 
+  updateCameraTarget() {
+    //
+  }
+
+  updateCameraPosition() {
+    //
+  }
+
   /**
    * 修复 PIXI bug，改写 resizeFramebuffer，解决 pixi frame buffer 只能由大变小但不能由小变大 resize 的问题
    * 因为修复此 bug 会导致性能问题，所以只在必要的时候使用，通过参数控制改写的内容
@@ -377,14 +385,14 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.Container, PIXI.Di
 
   canvasDragImpl(event: SceneMouseEvent, type: 'start' | 'move' | 'end') {
     if (type === 'start') {
-      const { x: offsetX, y: offsetY } = event.layerPosition;
+      const { x: offsetX, y: offsetY } = event.canvasPosition;
       const { x, y } = this.getViewInfo().position;
       this.offsetCenter = {
         x: x - offsetX,
         y: y - offsetY,
       };
     } else if (type === 'move') {
-      const { x, y } = event.layerPosition;
+      const { x, y } = event.canvasPosition;
       this.setViewPosition({ x: this.offsetCenter.x + x, y: this.offsetCenter.y + y });
     }
   }

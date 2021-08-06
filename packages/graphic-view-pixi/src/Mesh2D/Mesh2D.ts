@@ -3,7 +3,7 @@ import { Vec2 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 import { Scene2dContext } from '../Scene2D/context';
 
-export abstract class Mesh2D<Props = {}, State = never> extends BaseMesh<Props, State, PIXI.Application, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite, Vec2> {
+export abstract class Mesh2D<Props = {}, State = never> extends BaseMesh<Props, State, PIXI.Application, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite, Vec2> {
   static contextType = Scene2dContext;
 
   constructor(props: Props) {

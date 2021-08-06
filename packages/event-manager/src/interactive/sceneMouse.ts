@@ -17,7 +17,7 @@ export class SceneMouseEvent {
   }
 
   /**
-   * 画布坐标
+   * @deprecated 画布坐标
    */
   get layerPosition() {
     return {
@@ -27,9 +27,26 @@ export class SceneMouseEvent {
   }
 
   /**
-   * 真实世界坐标
+   * 画布坐标
+   */
+  get canvasPosition() {
+    return {
+      x: this.event.offsetX,
+      y: this.event.offsetY,
+    };
+  }
+
+  /**
+   * @deprecated 场景世界坐标
    */
   get modelPosition() {
-    return this.transform(this.layerPosition);
+    return this.transform(this.canvasPosition);
+  }
+
+  /**
+   * 场景世界坐标
+   */
+  get scenePosition() {
+    return this.transform(this.canvasPosition);
   }
 }

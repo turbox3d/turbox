@@ -126,7 +126,7 @@ export interface SceneContext<DisplayObject, Point> {
   getScreenShot: () => string;
 }
 
-export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Viewport> extends React.Component<BaseSceneProps> {
+export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport> extends React.Component<BaseSceneProps> {
   /** 默认背景色 */
   static BACKGROUND_COLOR = 0xffffff;
   /** 默认是否透明 */
@@ -152,6 +152,10 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
   viewport?: Viewport;
   /** 场景类型，标识是 2d 还是 3d 场景 */
   abstract sceneType: SceneType;
+  /** 场景实例，仅 3d 下有 */
+  scene?: Scene;
+  /** 相机实例，仅 3d 下有 */
+  camera?: Camera;
 
   width: number = BaseScene.DEFAULT_WIDTH;
 
@@ -185,7 +189,7 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
     const ctrl = this.getCurrentInteractiveController();
     this.sceneContext = {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => {},
+      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => { },
       updateCursor: this.getCursor,
       getCommandBox: () => this.props.commandBox,
       getTools: this.getTools,
@@ -207,6 +211,11 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
     if (resizeByContainerStyle && app) {
       this.resizeStageByCanvas(app);
     }
+    this.resolution = this.props.resolution || window.devicePixelRatio;
+    this.updateResolution(app);
+    if (this.sceneType === SceneType.Scene3D) {
+      this.updateCameraInfo();
+    }
     if (!viewport) {
       return;
     }
@@ -214,11 +223,7 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
     if (ctrl) {
       ctrl.updateViewportInfo(viewport);
     }
-    if (this.props.viewport) {
-      this.resolution = this.props.viewport.resolution || window.devicePixelRatio;
-    } else {
-      this.resolution = this.props.resolution || window.devicePixelRatio;
-    }
+    this.resolution = viewport.resolution || window.devicePixelRatio;
     this.updateResolution(app);
     this.resizeViewport(app);
     // 重新计算原始 view
@@ -366,6 +371,7 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       hitTarget: ctrl ? ctrl.hitTarget : (() => { }) as (point: Vec2) => undefined,
       coordinateTransform: this.coordinateTransform,
+      getCamera: () => this.camera,
     };
   };
 
@@ -408,8 +414,10 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
     this.resizeStageByCanvas(app);
     // 初始化背景图
     this.initBackGroundImage(app);
-    // 初始化天空盒
     if (this.sceneType === SceneType.Scene3D) {
+      // 更新相机信息
+      this.updateCameraInfo();
+      // 初始化天空盒
       this.initSkyBox(app);
     }
     // 初始化模型容器
@@ -420,13 +428,33 @@ export abstract class BaseScene<ApplicationContext, Container, DisplayObject, Vi
     window.addEventListener('resize', this.resizeHandler, false);
   };
 
+  private updateCameraInfo() {
+    const { cameraTarget, cameraPosition } = this.props;
+    this.updateCameraTarget({
+      x: cameraTarget?.x || 0,
+      y: cameraTarget?.y || 0,
+      z: cameraTarget?.z || 0,
+    });
+    this.updateCameraPosition({
+      x: cameraPosition?.x || 0,
+      y: cameraPosition?.y || 0,
+      z: (cameraPosition as Vec3)?.z || 0,
+    });
+  }
+
+  /** 更新相机位置 */
+  abstract updateCameraPosition(position: Vec3): void;
+
+  /** 更新相机看向的点 */
+  abstract updateCameraTarget(position: Vec3): void;
+
   private resizeHandler = () => {
     const app = this.getCurrentApp();
     if (!app) {
       return;
     }
     this.resizeStageByCanvas(app);
-  }
+  };
 
   /** 初始化坐标系控制系统 */
   abstract createCoordinateController(app: ApplicationContext): CoordinateController;

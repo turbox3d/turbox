@@ -28,7 +28,7 @@ class CoordinateControllerThree extends CoordinateController {
     }
     const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
     const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
-    const p = new THREE.Vector3(pX, pY, -1).unproject(this.scene3d.perspectiveCamera);
+    const p = new THREE.Vector3(pX, pY, -1).unproject(this.scene3d.camera!);
     return {
       x: p.x,
       y: p.y,
@@ -38,7 +38,7 @@ class CoordinateControllerThree extends CoordinateController {
 
   sceneToCanvasImpl(point: Vec3) {
     const scenePointVector = new THREE.Vector3(point.x, point.y, point.z);
-    const vector = scenePointVector.project(this.scene3d.perspectiveCamera);
+    const vector = scenePointVector.project(this.scene3d.camera!);
     const app = this.scene3d.getCurrentApp();
     if (!app) {
       return {
@@ -55,13 +55,12 @@ class CoordinateControllerThree extends CoordinateController {
   }
 }
 
-export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.Object3D, THREE.Sprite> {
+export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
   sceneContext: SceneContext<THREE.Object3D, Vec3>;
-  perspectiveCamera: THREE.PerspectiveCamera;
-  scene: THREE.Scene;
   raycaster = new THREE.Raycaster();
+  controls: OrbitControls;
 
   render() {
     if (!Scene3dContext) {
@@ -110,34 +109,34 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
   }
 
   setViewportPosition(position: Partial<Vec3>) {
-    if (!this.viewport) {
-      return;
-    }
-    if (position.x !== void 0) {
-      this.viewport.position.x = position.x;
-    }
-    if (position.y !== void 0) {
-      this.viewport.position.y = position.y;
-    }
+    // if (!this.viewport) {
+    //   return;
+    // }
+    // if (position.x !== void 0) {
+    //   this.viewport.position.x = position.x;
+    // }
+    // if (position.y !== void 0) {
+    //   this.viewport.position.y = position.y;
+    // }
   }
 
   setViewportScale(scale: Partial<Vec3>) {
-    if (!this.viewport) {
-      return;
-    }
-    if (scale.x !== void 0) {
-      this.viewport.scale.x = scale.x;
-    }
-    if (scale.y !== void 0) {
-      this.viewport.scale.y = scale.y;
-    }
+    // if (!this.viewport) {
+    //   return;
+    // }
+    // if (scale.x !== void 0) {
+    //   this.viewport.scale.x = scale.x;
+    // }
+    // if (scale.y !== void 0) {
+    //   this.viewport.scale.y = scale.y;
+    // }
   }
 
   setViewportVisible(visible: boolean) {
-    if (!this.viewport) {
-      return;
-    }
-    this.viewport.visible = visible;
+    // if (!this.viewport) {
+    //   return;
+    // }
+    // this.viewport.visible = visible;
   }
 
   createViewport() {
@@ -161,14 +160,15 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
   }
 
   addRootViewContainer() {
-    this.scene.add(this.view);
+    this.scene!.add(this.view);
   }
 
   createApp() {
     const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, width = BaseScene.DEFAULT_WIDTH, height = BaseScene.DEFAULT_HEIGHT, cameraPosition, cameraTarget } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
-    this.perspectiveCamera = new THREE.PerspectiveCamera(70, width / height, 1, 30000);
+    // 默认提供一个相机，可在检测到相机组件后替换掉
+    this.camera = new THREE.PerspectiveCamera(70, width / height, 1, 30000);
     const app = new THREE.WebGLRenderer({
       alpha: transparent,
       antialias: true,
@@ -176,18 +176,24 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
     app.setSize(width, height);
     app.setClearColor(backgroundColor);
     app.setPixelRatio(this.resolution);
-    const v = cameraPosition as Vec3;
-    this.perspectiveCamera.position.set(v.x || 0, v.y || 0, v.z || 0);
-    const controls = new OrbitControls(this.perspectiveCamera, app.domElement);
-    controls.target = new THREE.Vector3(cameraTarget?.x || 0, cameraTarget?.y || 0, cameraTarget?.z || 0);
-    controls.update();
+    this.updateCameraPosition(cameraPosition as Vec3);
+    this.controls = new OrbitControls(this.camera, app.domElement);
+    this.updateCameraTarget(cameraTarget as Vec3);
     const animate = () => {
       requestAnimationFrame(animate);
-      controls.update();
-      app.render(this.scene, this.perspectiveCamera);
+      this.controls.update();
+      app.render(this.scene!, this.camera!);
     };
     animate();
     return app;
+  }
+
+  updateCameraPosition(v: Vec3) {
+    this.camera?.position.set(v.x || 0, v.y || 0, v.z || 0);
+  }
+
+  updateCameraTarget(cameraTarget: Vec3) {
+    this.controls.target = new THREE.Vector3(cameraTarget?.x || 0, cameraTarget?.y || 0, cameraTarget?.z || 0);
   }
 
   addChildView(view: THREE.Object3D) {
@@ -217,9 +223,9 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
       }
       mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
       mouse.y = -(point.y / app.domElement.clientHeight) * 2 + 1;
-      this.raycaster.setFromCamera(mouse, this.perspectiveCamera);
+      this.raycaster.setFromCamera(mouse, this.camera!);
       // 可交互的过滤出来
-      const objects = this.raycaster.intersectObjects(this.scene.children, true);
+      const objects = this.raycaster.intersectObjects(this.scene!.children, true);
       const originalTarget = objects[0]; // closest first
       if (!originalTarget) {
         return {
@@ -255,15 +261,28 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
     const { resizeTo } = this.props;
     const resizeContainer = typeof resizeTo === 'string' ? document.getElementById(resizeTo) : resizeTo;
     if (resizeContainer && !(resizeContainer instanceof Window)) {
-      this.perspectiveCamera.aspect = resizeContainer.clientWidth / resizeContainer.clientHeight;
-      this.perspectiveCamera.updateProjectionMatrix();
-      app.setSize(resizeContainer.clientWidth, resizeContainer.clientHeight);
+      this.resizeStageBySize(app, resizeContainer.clientWidth, resizeContainer.clientHeight);
     } else {
-      this.perspectiveCamera.aspect = window.innerWidth / window.innerHeight;
-      this.perspectiveCamera.updateProjectionMatrix();
-      app.setSize(window.innerWidth, window.innerHeight);
+      this.resizeStageBySize(app, window.innerWidth, window.innerHeight);
     }
   };
+
+  private resizeStageBySize(app: THREE.WebGLRenderer, width: number, height: number) {
+    const aspect = width / height;
+    if (this.camera && this.camera instanceof THREE.PerspectiveCamera) {
+      this.camera.aspect = aspect;
+      this.camera.updateProjectionMatrix();
+    } else if (this.camera && this.camera instanceof THREE.OrthographicCamera) {
+      /** @todo 暂时先写死 */
+      const frustumSize = 1000;
+      this.camera.left = -frustumSize * aspect / 2;
+      this.camera.right = frustumSize * aspect / 2;
+      this.camera.top = frustumSize / 2;
+      this.camera.bottom = -frustumSize / 2;
+      this.camera.updateProjectionMatrix();
+    }
+    app.setSize(width, height);
+  }
 
   initBackGroundImage() {
     const { width, height, props: { backgroundImage } } = this;
@@ -272,7 +291,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
       const material = new THREE.SpriteMaterial({ map, color: 0xffffff });
       const image = new THREE.Sprite(material);
       image.scale.set(width, height, 1);
-      this.scene.add(image);
+      this.scene!.add(image);
     }
   }
 
@@ -281,7 +300,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
     if (skyBoxImages && skyBoxImages.length) {
       new THREE.CubeTextureLoader()
         .load(skyBoxImages, (texture) => {
-          this.scene.background = texture;
+          this.scene!.background = texture;
         });
     }
   }
@@ -295,7 +314,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
   }
 
   removeAppChildrenView() {
-    this.scene.clear();
+    this.scene!.clear();
   }
 
   /** 获取截图 */
@@ -304,7 +323,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Group, THREE.O
     if (!app) {
       return '';
     }
-    app.render(this.scene, this.perspectiveCamera);
+    app.render(this.scene!, this.camera!);
     const imgData = app.domElement.toDataURL('image/jpeg');
     return imgData;
   }

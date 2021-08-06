@@ -120,7 +120,7 @@ export default class Dimension extends Mesh2D<IProps> {
   protected onClick = (e: SceneMouseEvent) => {
     let targetG = this._interactContainer.children[0];
     this._interactContainer.children.forEach(c => {
-      if (this._distance2(c.position, e.modelPosition) < this._distance2(targetG.position, e.modelPosition)) targetG = c;
+      if (this._distance2(c.position, e.scenePosition) < this._distance2(targetG.position, e.scenePosition)) targetG = c;
     });
     this.props.clickCallback?.(this.graphic2endPsMap.get(targetG as PIXI.Graphics));
   }
