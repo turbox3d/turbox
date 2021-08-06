@@ -16,7 +16,9 @@ export abstract class Mesh3D<Props = {}, State = never> extends BaseMesh<Props, 
   }
 
   clearView() {
-    this.view.parent?.clear();
+    // if (this.view instanceof THREE.Mesh) {
+    //   this.view.clear();
+    // }
   }
 
   removeFromWorld() {
@@ -32,6 +34,7 @@ export abstract class Mesh3D<Props = {}, State = never> extends BaseMesh<Props, 
     const isCamera = this.viewType === 'camera';
     if (isCamera) {
       scene3d.camera = view as THREE.Camera;
+      scene3d.controls.object = view as THREE.Camera;
     }
   }
 }
