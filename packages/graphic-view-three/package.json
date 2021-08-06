@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-view-three",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Large-scale declarative 3d graphic ui framework based on three",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -73,9 +73,9 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "^1.0.21",
-    "@turbox3d/event-manager": "^1.0.27",
-    "@turbox3d/graphic-view": "^1.0.31",
-    "@turbox3d/shared": "^1.0.8"
+    "@turbox3d/command-manager": "^1.0.22",
+    "@turbox3d/event-manager": "^1.0.28",
+    "@turbox3d/graphic-view": "^1.0.32",
+    "@turbox3d/shared": "^1.0.9"
   }
 }
