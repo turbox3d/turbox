@@ -35,8 +35,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@turbox3d/reactivity-react": "^1.0.14",
-    "@turbox3d/turbox3d": "^1.0.5",
     "@ant-design/icons": "^4.3.0",
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
@@ -45,6 +43,8 @@
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.9.4",
     "@babel/runtime": "^7.6.3",
+    "@turbox3d/reactivity-react": "^1.0.14",
+    "@turbox3d/turbox3d": "^1.0.5",
     "@types/jest": "^24.0.19",
     "@types/node": "^12.11.5",
     "@types/react": "^16.9.14",
@@ -67,7 +67,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.0",
     "jest": "^25.3.0",
-    "lerna": "^2.11.0",
+    "lerna": "^3.22.1",
     "less": "^4.0.0",
     "less-loader": "^7.2.1",
     "lint-staged": "^10.5.1",
