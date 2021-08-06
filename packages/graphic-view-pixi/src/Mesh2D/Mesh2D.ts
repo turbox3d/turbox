@@ -46,4 +46,8 @@ export abstract class Mesh2D<Props = {}, State = never> extends BaseMesh<Props, 
   setViewInteractive(interactive: boolean) {
     this.view.interactive = interactive;
   }
+
+  addViewToScene() {
+    //
+  }
 }
