@@ -13,7 +13,7 @@
   "packages": [
     "packages/*"
   ],
-  "npmClient": "npm",
+  "npmClient": "yarn",
   "npmClientArgs": [
     "--no-lockfile"
   ]
