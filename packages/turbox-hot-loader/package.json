@@ -29,7 +29,7 @@
     "@babel/runtime": "^7.6.3",
     "@types/jest": "^24.0.19",
     "@types/node": "^12.11.5",
-    "@types/react": "^16.9.14",
+    "@types/react": "^16.14.12",
     "@types/webpack-env": "^1.16.0",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
