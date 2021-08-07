@@ -77,7 +77,7 @@
     "build:watch": "tsc -w -outDir ./ts & npx babel ts -w --out-dir es & copyfiles -u 1 src/**/*.less ./es",
     "build:umd": "npx webpack --mode='development' -o dist/turbox-graphic-component-three.js",
     "build:umd:min": "npx webpack --mode='production' -o dist/turbox-graphic-component-three.min.js",
-    "build:all": "npm i --no-package-lock && npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {

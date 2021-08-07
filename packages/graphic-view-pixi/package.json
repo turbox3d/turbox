@@ -68,7 +68,7 @@
     "build:watch": "tsc -w -target es2018 -declarationDir ./typings -outDir ./ts & npx babel ts -w --out-dir es",
     "build:umd": "npx webpack --mode='development' -o dist/turbox-graphic-view-pixi.js",
     "build:umd:min": "npx webpack --mode='production' -o dist/turbox-graphic-view-pixi.min.js",
-    "build:all": "npm i --no-package-lock && npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
