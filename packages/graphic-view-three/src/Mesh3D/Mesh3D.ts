@@ -22,7 +22,7 @@ export abstract class Mesh3D<Props = {}, State = never> extends BaseMesh<Props, 
   }
 
   removeFromWorld() {
-    this.view.parent?.clear();
+    this.view.removeFromParent();
   }
 
   setViewInteractive(interactive: boolean) {
