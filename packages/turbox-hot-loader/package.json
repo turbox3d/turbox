@@ -9,7 +9,7 @@
     "hot loader"
   ],
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "publishConfig": {
     "access": "public",

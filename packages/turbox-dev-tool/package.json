@@ -9,7 +9,7 @@
     "dev tool"
   ],
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "publishConfig": {
     "access": "public",

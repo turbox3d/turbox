@@ -11,10 +11,11 @@
     "build:main-doc": "npx typedoc packages/turbox/src/index.ts packages/turbox3d/src/index.ts --out typedocs",
     "prerelease": "npx lerna version --no-push",
     "release": "npx lerna publish from-git --yes",
-    "post-release": "git push --follow-tags origin"
+    "post-release": "git push --follow-tags origin",
+    "deploy": "npx lerna bootstrap && npx lerna run test && npx lerna publish"
   },
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "repository": {
     "type": "git",

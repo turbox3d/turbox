@@ -14,7 +14,7 @@
     "command-manager"
   ],
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "publishConfig": {
     "access": "public",

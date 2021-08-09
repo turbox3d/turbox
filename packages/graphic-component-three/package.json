@@ -15,7 +15,7 @@
     "graphic-component-three"
   ],
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "publishConfig": {
     "access": "public",

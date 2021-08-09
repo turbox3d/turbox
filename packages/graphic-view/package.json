@@ -20,7 +20,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",

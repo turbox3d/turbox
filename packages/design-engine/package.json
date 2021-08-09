@@ -15,7 +15,7 @@
     "design-engine"
   ],
   "tnpm": {
-    "mode": "npm"
+    "mode": "yarn"
   },
   "publishConfig": {
     "access": "public",
