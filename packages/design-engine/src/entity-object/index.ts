@@ -22,7 +22,7 @@ export enum EPerspectiveType {
  *      /
  *     /
  *    /z
- * 按照跟 three、luban 一致的右手坐标系
+ * 右手坐标系
  */
 export default class EntityObject extends Domain {
   static EPerspectiveType = EPerspectiveType;
