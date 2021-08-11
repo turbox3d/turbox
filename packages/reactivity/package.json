@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/reactivity",
-  "version": "2.0.49",
+  "version": "2.0.50",
   "description": "Large-scale reactive state management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -74,6 +74,6 @@
     "url": "https://github.com/turbox3d/turbox/issues"
   },
   "dependencies": {
-    "@turbox3d/shared": "^1.0.11"
+    "@turbox3d/shared": "^1.0.12"
   }
 }

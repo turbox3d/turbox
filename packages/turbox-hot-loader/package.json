@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox-hot-loader",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Turbox hot loader",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -63,6 +63,6 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/reactivity": "^2.0.49"
+    "@turbox3d/reactivity": "^2.0.50"
   }
 }
