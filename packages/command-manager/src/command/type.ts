@@ -19,6 +19,7 @@ export interface ITool {
   hitTarget: (point: { x: number; y: number }) => IViewEntity | undefined;
   coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType) => Vec2 | Vec3;
   getCamera: () => any;
+  getRaycaster: () => any;
 }
 
 export interface IDeclaredMap<T> {

@@ -5,7 +5,7 @@ import React from 'react';
 import { SceneContext, BaseScene, SceneType } from './scene';
 import { getMeshParent } from './utils';
 
-export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
+export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
   static contextType: React.Context<SceneContext<any, any>>;
 
   context: SceneContext<DisplayObject, Point>;
@@ -22,7 +22,7 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
   protected autoAppendToWorld = true;
 
   /** 当前组件上层组件 */
-  private parentMesh?: BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport>;
+  private parentMesh?: BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>;
 
   private reactions: Reaction[] = [];
 
@@ -183,7 +183,7 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
         this.parentMesh = parent;
         const isCameraOrLight = (this.viewType === 'camera' || this.viewType === 'light');
         if (isCameraOrLight) {
-          let parentNode = (parent as BaseMesh<Props, State, ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport> | undefined);
+          let parentNode = (parent as BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> | undefined);
           while (parentNode && !(parentNode instanceof BaseScene && parentNode.sceneType === SceneType.Scene3D)) {
             parentNode = getMeshParent(parentNode);
           }
@@ -200,7 +200,7 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
   }
 
   /** 往场景中添加对象 */
-  abstract addViewToScene(scene: BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport>, view: DisplayObject): void;
+  abstract addViewToScene(scene: BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>, view: DisplayObject): void;
 
   /**
    * 清除当前视图

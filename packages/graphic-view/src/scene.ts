@@ -107,6 +107,8 @@ export interface BaseSceneProps {
   allowUseData?: boolean;
   /** resizeFramebuffer */
   resizeFramebuffer?: boolean;
+  /** 颜色输出模式 renderer.outputEncoding */
+  outputEncoding?: number;
 }
 
 export interface IViewInfo {
@@ -126,7 +128,7 @@ export interface SceneContext<DisplayObject, Point> {
   getScreenShot: () => string;
 }
 
-export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, DisplayObject, Viewport> extends React.Component<BaseSceneProps> {
+export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> extends React.Component<BaseSceneProps> {
   /** 默认背景色 */
   static BACKGROUND_COLOR = 0xffffff;
   /** 默认是否透明 */
@@ -156,6 +158,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
   scene?: Scene;
   /** 相机实例，仅 3d 下有 */
   camera?: Camera;
+  /** 射线实例，仅 3d 下有 */
+  raycaster?: Raycaster;
 
   width: number = BaseScene.DEFAULT_WIDTH;
 
@@ -184,12 +188,17 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
       BaseScene.appMap.set(this.props.container, app);
     }
     this.view = this.createView();
+    // 初始化坐标系系统
+    const tempApp = this.getCurrentApp();
+    if (tempApp) {
+      this.coordinate = this.createCoordinateController(tempApp);
+    }
     // 初始化交互控制器
     this.initInteractiveController();
     const ctrl = this.getCurrentInteractiveController();
     this.sceneContext = {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => { },
+      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => {},
       updateCursor: this.getCursor,
       getCommandBox: () => this.props.commandBox,
       getTools: this.getTools,
@@ -294,6 +303,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
     originalTarget?: DisplayObject;
     /** originalTarget 或 originalTarget 的祖先中的第一个可被交互的元素 */
     target?: DisplayObject;
+    /** 选中对象的具体场景鼠标位置 */
+    originalTargetPoint?: Vec2 | Vec3;
   });
 
   /** 更新分辨率 */
@@ -309,7 +320,6 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
       container: this.view,
       viewport: this.props.viewport,
       coordinateType: this.props.coordinateType,
-      transformPos: this.transformPos,
       canvasHandler: {
         onClick: this.onClick,
         onRightClick: this.onRightClick,
@@ -320,7 +330,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
         onMouseUp: this.onMouseUp,
         onWheel: this.onWheel,
       },
-      hitTargetOriginal: this.getHitTargetOriginal(),
+      getCoordinateCtrl: this.getCoordinateCtrl,
+      getHitTargetOriginal: this.getHitTargetOriginal(),
     });
     const obj = BaseScene.interactiveMap.get(app);
     if (!obj) {
@@ -334,6 +345,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
     }
   }
 
+  private getCoordinateCtrl = () => this.coordinate;
+
   private getViewEntity() {
     return {
       id: this.props.id,
@@ -341,7 +354,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
     };
   }
 
-  private getCurrentInteractiveController = () => {
+  getCurrentInteractiveController = () => {
     const app = this.getCurrentApp();
     if (!app) {
       return;
@@ -372,6 +385,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
       hitTarget: ctrl ? ctrl.hitTarget : (() => { }) as (point: Vec2) => undefined,
       coordinateTransform: this.coordinateTransform,
       getCamera: () => this.camera,
+      getRaycaster: () => this.raycaster,
     };
   };
 
@@ -379,12 +393,6 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
    * 坐标转化
    */
   private coordinateTransform = (point: Vec2, type: CoordinateType) => (this.coordinate ? this.coordinate.transform(point, type) : { x: 0, y: 0 });
-
-  /**
-   * 从画布坐标转化为场景世界坐标
-   * @param point 画布坐标
-   */
-  private transformPos = (point: Vec2) => (this.coordinate ? this.coordinate.transform(point, CoordinateType.CanvasToScene) : { x: 0, y: 0 });
 
   /**
    * 挂在画布到容器上
@@ -408,8 +416,6 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
       }
       container.appendChild(this.getCanvasView(app));
     }
-    // 初始化坐标系系统
-    this.coordinate = this.createCoordinateController(app);
     // 根据容器大小确定画布大小
     this.resizeStageByCanvas(app);
     // 初始化背景图
@@ -454,7 +460,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
       return;
     }
     this.resizeStageByCanvas(app);
-  };
+  }
 
   /** 初始化坐标系控制系统 */
   abstract createCoordinateController(app: ApplicationContext): CoordinateController;
@@ -628,8 +634,9 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Container, Di
     if (scalable) {
       this.canvasScaleImpl(event);
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onZoom, this.getViewEntity(), SceneMouseEvent.create(event, this.transformPos), this.getTools());
+    const ctrl = this.getCurrentInteractiveController();
+    if (commandBox && ctrl) {
+      commandBox.distributeEvent(CommandEventType.onZoom, this.getViewEntity(), SceneMouseEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint), this.getTools());
     }
   };
 

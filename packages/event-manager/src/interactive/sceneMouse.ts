@@ -1,13 +1,28 @@
-import { getEventClientPos } from '@turbox3d/shared';
-import { ITransformPos } from './type';
+import { getEventClientPos, Vec2 } from '@turbox3d/shared';
+import { CoordinateController } from './coordinate';
+import { HitResult } from './index';
+import { CoordinateType } from './type';
 
-export class SceneMouseEvent {
-  static create(event: MouseEvent, transform: ITransformPos) {
-    return new SceneMouseEvent(event, transform);
+export class SceneMouseEvent<DisplayObject = any> {
+  static create<DisplayObject = any>(event: MouseEvent, getCoordinateCtrl: () => CoordinateController, hitTargetOriginalByPoint: (
+    point: Vec2,
+  ) => HitResult<DisplayObject>) {
+    return new SceneMouseEvent<DisplayObject>(event, getCoordinateCtrl, hitTargetOriginalByPoint);
   }
 
-  // eslint-disable-next-line no-useless-constructor
-  constructor(protected event: MouseEvent, private transform: ITransformPos) { }
+  event: MouseEvent;
+  getCoordinateCtrl: () => CoordinateController;
+  hitTargetOriginalByPoint: (
+    point: Vec2,
+  ) => HitResult<DisplayObject>;
+
+  constructor(event: MouseEvent, getCoordinateCtrl: () => CoordinateController, hitTargetOriginalByPoint: (
+    point: Vec2,
+  ) => HitResult<DisplayObject>) {
+    this.event = event;
+    this.getCoordinateCtrl = getCoordinateCtrl;
+    this.hitTargetOriginalByPoint = hitTargetOriginalByPoint;
+  }
 
   /**
    * 屏幕坐标
@@ -30,23 +45,20 @@ export class SceneMouseEvent {
    * 画布坐标
    */
   get canvasPosition() {
-    return {
-      x: this.event.offsetX,
-      y: this.event.offsetY,
-    };
+    return this.getCoordinateCtrl().transform(this.screenPosition, CoordinateType.ScreenToCanvas);
   }
 
   /**
    * @deprecated 场景世界坐标
    */
   get modelPosition() {
-    return this.transform(this.canvasPosition);
+    return this.getCoordinateCtrl().transform(this.screenPosition, CoordinateType.ScreenToScene);
   }
 
   /**
    * 场景世界坐标
    */
   get scenePosition() {
-    return this.transform(this.canvasPosition);
+    return this.getCoordinateCtrl().transform(this.screenPosition, CoordinateType.ScreenToScene);
   }
 }

@@ -1,24 +1,28 @@
-import { TaskPriority, throttleInAFrame, Vec2, getEventClientPos, getRelativePositionFromEvent } from '@turbox3d/shared';
-import { CanvasHandlers, InteractiveConfig, InteractiveType, IViewportInfo, ITransformPos } from './type';
+/* eslint-disable @typescript-eslint/member-ordering */
+import { TaskPriority, throttleInAFrame, Vec2, getEventClientPos, Vec3, getRelativePositionFromEvent } from '@turbox3d/shared';
+import { CanvasHandlers, InteractiveConfig, InteractiveType, IViewportInfo } from './type';
 import { InteractiveListener } from './listener/index';
 import { InteractiveEvent } from './listener/type';
 import { SceneMouseEvent } from './sceneMouse';
+import { CoordinateController } from './coordinate';
 
-interface HitResult<DisplayObject> {
+export interface HitResult<DisplayObject> {
   /** event 的直接对象 */
   originalTarget?: DisplayObject;
   /** originalTarget 或 originalTarget 的祖先中的第一个可被交互的元素 */
   target?: DisplayObject;
+  /** 选中对象的具体场景鼠标位置 */
+  originalTargetPoint?: Vec2 | Vec3;
 }
 
 interface Option<Container, DisplayObject> {
   renderer: HTMLCanvasElement;
   container: Container;
-  transformPos: ITransformPos;
   canvasHandler: CanvasHandlers;
   coordinateType?: string;
   viewport?: IViewportInfo;
-  hitTargetOriginal: (
+  getCoordinateCtrl: () => CoordinateController;
+  getHitTargetOriginal: (
     point: Vec2,
     container: Container,
     configMap: Map<DisplayObject, InteractiveConfig>,
@@ -31,7 +35,6 @@ export class InteractiveController<Container, DisplayObject> {
   private renderer: HTMLCanvasElement;
   /** 根容器 */
   private container: Container;
-  private transformPos: ITransformPos;
   private interactiveListener: InteractiveListener;
   /** 交互对象的配置 */
   private interactiveConfig: Map<DisplayObject, InteractiveConfig> = new Map();
@@ -52,21 +55,22 @@ export class InteractiveController<Container, DisplayObject> {
   /** 坐标系类型 */
   private coordinateType?: string;
   /** hitTarget 的实现，不同渲染引擎不一样 */
-  private hitTargetOriginal: (
+  private getHitTargetOriginal: (
     point: Vec2,
     container: Container,
     configMap: Map<DisplayObject, InteractiveConfig>,
     interactiveType: InteractiveType,
   ) => HitResult<DisplayObject>;
+  private getCoordinateCtrl: () => CoordinateController;
 
   constructor(option: Option<Container, DisplayObject>) {
     this.renderer = option.renderer;
     this.container = option.container;
-    this.transformPos = option.transformPos;
     this.canvasHandlers = option.canvasHandler;
     this.viewport = option.viewport;
     this.coordinateType = option.coordinateType;
-    this.hitTargetOriginal = option.hitTargetOriginal;
+    this.getCoordinateCtrl = option.getCoordinateCtrl;
+    this.getHitTargetOriginal = option.getHitTargetOriginal;
   }
 
   /**
@@ -133,10 +137,11 @@ export class InteractiveController<Container, DisplayObject> {
 
   /**
    * 用于给外部发起一次点击拾取
+   * @param point 是相对于 canvas 左上角的点击位置
    */
   hitTarget = (point: Vec2) => {
     const originalPoint = this.revisePointByViewPort(point);
-    const { target } = this.hitTargetOriginal(originalPoint, this.container, this.interactiveConfig, 'isClickable');
+    const { target } = this.getHitTargetOriginal(originalPoint, this.container, this.interactiveConfig, 'isClickable');
     if (target) {
       const config = this.interactiveConfig.get(target);
       if (config && config.getViewEntity) {
@@ -157,7 +162,22 @@ export class InteractiveController<Container, DisplayObject> {
       return {};
     }
     originalPoint = this.revisePointByViewPort(originalPoint);
-    return this.hitTargetOriginal(originalPoint, this.container, this.interactiveConfig, type);
+    return this.getHitTargetOriginal(originalPoint, this.container, this.interactiveConfig, type);
+  }
+
+  /**
+   * 主动传入一个点位做一次 hitTest，返回结果
+   * @param point 是相对于屏幕左上角的点击位置
+   */
+  hitTargetOriginalByPoint(point: Vec2) {
+    // 相对于 canvas 左上角的点击位置，量度与事件点击相同
+    let originalPoint = getRelativePositionFromEvent(point, this.renderer);
+    // 无法根据事件和 renderer 获取合法的点击位置
+    if (!originalPoint) {
+      return {};
+    }
+    originalPoint = this.revisePointByViewPort(originalPoint);
+    return this.getHitTargetOriginal(originalPoint, this.container, this.interactiveConfig, 'isClickable');
   }
 
   private revisePointByViewPort(point: Vec2) {
@@ -175,14 +195,14 @@ export class InteractiveController<Container, DisplayObject> {
       const config = this.interactiveConfig.get(target);
       if (config && config.isClickable) {
         if (config.onClick) {
-          config.onClick(SceneMouseEvent.create(event, this.transformPos));
+          config.onClick(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
         }
         return;
       }
     }
     this.lastClickTarget = undefined;
     // 点击在画布上，没有命中任何目标
-    this.canvasHandlers.onClick(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onClick(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
   private onDBClick = (event: MouseEvent) => {
@@ -190,7 +210,7 @@ export class InteractiveController<Container, DisplayObject> {
     if (this.lastClickTarget) {
       const config = this.interactiveConfig.get(this.lastClickTarget);
       if (config && config.isClickable && config.onDBClick) {
-        config.onDBClick(SceneMouseEvent.create(event, this.transformPos));
+        config.onDBClick(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
       }
     }
   };
@@ -200,11 +220,11 @@ export class InteractiveController<Container, DisplayObject> {
     if (target) {
       const config = this.interactiveConfig.get(target);
       if (config && config.onRightClick) {
-        config.onRightClick(SceneMouseEvent.create(event, this.transformPos));
+        config.onRightClick(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
         return;
       }
     }
-    this.canvasHandlers.onRightClick(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onRightClick(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }
 
   private onDragStart = (event: MouseEvent) => {
@@ -214,12 +234,12 @@ export class InteractiveController<Container, DisplayObject> {
       const config = this.interactiveConfig.get(target);
       if (config && config.isDraggable && config.dragStart) {
         this.dragTarget = target;
-        config.dragStart(SceneMouseEvent.create(event, this.transformPos));
+        config.dragStart(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
       }
       return;
     }
 
-    this.canvasHandlers.onDragStart(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onDragStart(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -227,11 +247,11 @@ export class InteractiveController<Container, DisplayObject> {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isDraggable && config.dragMove) {
-        config.dragMove(SceneMouseEvent.create(event, this.transformPos));
+        config.dragMove(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
       }
       return;
     }
-    this.canvasHandlers.onDragMove(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onDragMove(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }, TaskPriority.UserAction);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -239,21 +259,21 @@ export class InteractiveController<Container, DisplayObject> {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isDraggable && config.dragEnd) {
-        config.dragEnd(SceneMouseEvent.create(event, this.transformPos));
+        config.dragEnd(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
       }
       this.dragTarget = undefined;
       return;
     }
-    this.canvasHandlers.onDragEnd(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onDragEnd(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }, TaskPriority.UserAction);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   private onCarriage = throttleInAFrame((event: MouseEvent) => {
-    this.canvasHandlers.onMouseMove(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onMouseMove(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }, TaskPriority.UserAction);
 
   private onCarriageEnd = (event: MouseEvent) => {
-    this.canvasHandlers.onMouseUp(SceneMouseEvent.create(event, this.transformPos));
+    this.canvasHandlers.onMouseUp(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -282,14 +302,14 @@ export class InteractiveController<Container, DisplayObject> {
     const config = this.interactiveConfig.get(target);
     if (config && config.isHoverable && config.onHoverIn) {
       this.hoverTarget = target;
-      config.onHoverIn(SceneMouseEvent.create(event, this.transformPos));
+      config.onHoverIn(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
     }
   }
 
   private onHoverOut(target: DisplayObject, event: MouseEvent) {
     const config = this.interactiveConfig.get(target);
     if (config && config.isHoverable && config.onHoverOut) {
-      config.onHoverOut(SceneMouseEvent.create(event, this.transformPos));
+      config.onHoverOut(SceneMouseEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
     }
   }
 

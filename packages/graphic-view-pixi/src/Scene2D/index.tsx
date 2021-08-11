@@ -54,7 +54,7 @@ class CoordinateControllerPixi extends CoordinateController {
   }
 }
 
-export class Scene2D extends BaseScene<PIXI.Application, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
+export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
 
   sceneType = SceneType.Scene2D;

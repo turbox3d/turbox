@@ -19,5 +19,4 @@ export {
   InteractiveConfig,
   CoordinateType,
   IViewEntity,
-  ITransformPos,
 } from './interactive/type';

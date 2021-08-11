@@ -26,19 +26,36 @@ class CoordinateControllerThree extends CoordinateController {
         z: 0,
       };
     }
-    const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
-    const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
-    const p = new THREE.Vector3(pX, pY, -1).unproject(this.scene3d.camera!);
+    // const camera = this.scene3d.camera!;
+    // const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
+    // const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
+    // const v = new THREE.Vector3(pX, pY, 0.5);
+    // v.unproject(camera);
+    // // 点击的点相对于相机位置的基向量
+    // v.sub(camera.position).normalize();
+    // // 因为相机位置是确定的，可以靠指定想要的场景 z 、相机的 z 和基向量的 z 倒推，算出放大倍数，再把基向量同比放大，用相机位置去加放大的偏移量
+    // const distance = -camera.position.z / v.z;
+    // const pos = new THREE.Vector3();
+    // pos.copy(camera.position).add(v.multiplyScalar(distance));
+    // return {
+    //   x: pos.x,
+    //   y: pos.y,
+    //   z: pos.z,
+    // };
+    const ctrl = this.scene3d.getCurrentInteractiveController();
+    if (ctrl) {
+      return ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3;
+    }
     return {
-      x: p.x,
-      y: p.y,
-      z: p.z,
+      x: 0,
+      y: 0,
+      z: 0,
     };
   }
 
   sceneToCanvasImpl(point: Vec3) {
     const scenePointVector = new THREE.Vector3(point.x, point.y, point.z);
-    const vector = scenePointVector.project(this.scene3d.camera!);
+    scenePointVector.project(this.scene3d.camera!);
     const app = this.scene3d.getCurrentApp();
     if (!app) {
       return {
@@ -49,18 +66,18 @@ class CoordinateControllerThree extends CoordinateController {
     const halfWidth = app.domElement.clientWidth / 2;
     const halfHeight = app.domElement.clientHeight / 2;
     return {
-      x: Math.round(vector.x * halfWidth + halfWidth),
-      y: Math.round(-vector.y * halfHeight + halfHeight),
+      x: Math.round(scenePointVector.x * halfWidth + halfWidth),
+      y: Math.round(-scenePointVector.y * halfHeight + halfHeight),
     };
   }
 }
 
-export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Group, THREE.Object3D, THREE.Sprite> {
+export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
   sceneContext: SceneContext<THREE.Object3D, Vec3>;
-  raycaster = new THREE.Raycaster();
   controls: OrbitControls;
+  raycaster = new THREE.Raycaster();
 
   render() {
     if (!Scene3dContext) {
@@ -168,7 +185,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
-    this.camera = new THREE.PerspectiveCamera(70, width / height, 1, 30000);
+    this.camera = new THREE.PerspectiveCamera(60, width / height, 1, 30000);
     const app = new THREE.WebGLRenderer({
       alpha: transparent,
       antialias: true,
@@ -176,6 +193,9 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     app.setSize(width, height);
     app.setClearColor(backgroundColor);
     app.setPixelRatio(this.resolution);
+    if (this.props.outputEncoding) {
+      app.outputEncoding = this.props.outputEncoding;
+    }
     this.updateCameraPosition(cameraPosition as Vec3);
     this.controls = new OrbitControls(this.camera, app.domElement);
     this.updateCameraTarget(cameraTarget as Vec3);
@@ -219,6 +239,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
         return {
           originalTarget: undefined,
           target: undefined,
+          originalTargetPoint: undefined,
         };
       }
       mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
@@ -231,6 +252,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
         return {
           originalTarget: undefined,
           target: undefined,
+          originalTargetPoint: undefined,
         };
       }
       let obj = originalTarget.object;
@@ -245,7 +267,15 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
           break;
         }
       }
-      return { originalTarget: obj, target: hitTarget };
+      return {
+        originalTarget: obj,
+        target: hitTarget,
+        originalTargetPoint: {
+          x: originalTarget.point.x,
+          y: originalTarget.point.y,
+          z: originalTarget.point.z,
+        },
+      };
     };
   }
 

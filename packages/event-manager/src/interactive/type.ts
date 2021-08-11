@@ -1,4 +1,3 @@
-import { Vec2, Vec3 } from '@turbox3d/shared';
 import { SceneMouseEvent } from './sceneMouse';
 
 export enum CoordinateType {
@@ -19,10 +18,6 @@ export enum CoordinateType {
 export interface IViewEntity {
   id: string;
   type: symbol;
-}
-
-export interface ITransformPos {
-  (point: Vec2): Vec2 | Vec3;
 }
 
 export interface InteractiveConfig {

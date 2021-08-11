@@ -4,7 +4,7 @@ import { Vec2 } from '@turbox3d/shared';
 import { Scene3dContext } from '../Scene3D/context';
 import { Scene3D } from '../Scene3D/index';
 
-export abstract class Mesh3D<Props = {}, State = never> extends BaseMesh<Props, State, THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Group, THREE.Object3D, THREE.Sprite, Vec2> {
+export abstract class Mesh3D<Props = {}, State = never> extends BaseMesh<Props, State, THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite, Vec2> {
   static contextType = Scene3dContext;
 
   createDefaultView() {
