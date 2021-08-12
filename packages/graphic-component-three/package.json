@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-component-three",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Graphic component library based on three",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -81,7 +81,7 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/graphic-view-three": "^1.0.23",
+    "@turbox3d/graphic-view-three": "^1.0.24",
     "@turbox3d/shared": "^1.0.12"
   }
 }
