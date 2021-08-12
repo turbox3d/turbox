@@ -259,7 +259,13 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       let obj = originalTarget.object;
       while (!obj.userData.interactive) {
         i += 1;
-        obj = objects[i].object;
+        const inter = objects[i];
+        if (inter) {
+          obj = inter.object;
+        } else {
+          obj = this.view;
+          break;
+        }
       }
       let hitTarget: THREE.Object3D | undefined;
       // 有可能只是其中一项可交互，如果当前 interactiveType 不满足则向其父级节点冒泡
