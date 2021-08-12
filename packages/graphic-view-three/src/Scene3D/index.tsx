@@ -245,9 +245,9 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
       mouse.y = -(point.y / app.domElement.clientHeight) * 2 + 1;
       this.raycaster.setFromCamera(mouse, this.camera!);
-      // 可交互的过滤出来
       const objects = this.raycaster.intersectObjects(this.scene!.children, true);
-      const originalTarget = objects[0]; // closest first
+      let i = 0;
+      const originalTarget = objects[i]; // closest first
       if (!originalTarget) {
         return {
           originalTarget: undefined,
@@ -255,11 +255,14 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
           originalTargetPoint: undefined,
         };
       }
+      // 找到最近的一个可交互的对象
       let obj = originalTarget.object;
-      while (!obj.userData.interactive && obj.parent) {
-        obj = obj.parent;
+      while (!obj.userData.interactive) {
+        i += 1;
+        obj = objects[i].object;
       }
       let hitTarget: THREE.Object3D | undefined;
+      // 有可能只是其中一项可交互，如果当前 interactiveType 不满足则向其父级节点冒泡
       for (let target = obj; target && target !== container; target = target.parent!) {
         const config = configMap.get(target);
         if (config && config[interactiveType]) {
