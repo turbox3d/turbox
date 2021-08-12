@@ -258,6 +258,13 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       // 找到最近的一个可交互的对象
       let obj = originalTarget.object;
       while (!obj.userData.interactive) {
+        // 如果不可交互就找它的父节点，当整条路径都不可交互，则选择下一个被射线穿过的对象
+        while (!obj.userData.interactive && obj.parent) {
+          obj = obj.parent;
+        }
+        if (obj.userData.interactive) {
+          break;
+        }
         i += 1;
         const inter = objects[i];
         if (inter) {
@@ -268,7 +275,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
         }
       }
       let hitTarget: THREE.Object3D | undefined;
-      // 有可能只是其中一项可交互，如果当前 interactiveType 不满足则向其父级节点冒泡
+      // 有可能只是其中一项可交互，如果当前 interactiveType 对应的值为 false，则向其父级节点冒泡
       for (let target = obj; target && target !== container; target = target.parent!) {
         const config = configMap.get(target);
         if (config && config[interactiveType]) {
