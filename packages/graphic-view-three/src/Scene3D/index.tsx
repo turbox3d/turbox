@@ -180,8 +180,14 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     this.scene!.add(this.view);
   }
 
+  componentDidUpdate() {
+    super.componentDidUpdate();
+    const { cameraControls = true } = this.props;
+    this.controls.enabled = cameraControls;
+  }
+
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, width = BaseScene.DEFAULT_WIDTH, height = BaseScene.DEFAULT_HEIGHT, cameraPosition, cameraTarget } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, width = BaseScene.DEFAULT_WIDTH, height = BaseScene.DEFAULT_HEIGHT, cameraPosition, cameraTarget, cameraControls = true } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
@@ -198,6 +204,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     }
     this.updateCameraPosition(cameraPosition as Vec3);
     this.controls = new OrbitControls(this.camera, app.domElement);
+    this.controls.enabled = cameraControls;
     this.updateCameraTarget(cameraTarget as Vec3);
     const animate = () => {
       requestAnimationFrame(animate);

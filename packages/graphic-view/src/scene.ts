@@ -95,6 +95,8 @@ export interface BaseSceneProps {
   cameraPosition: Vec3 | Vec2;
   /** 相机看向的位置，只有 3d 下有 */
   cameraTarget?: Vec3;
+  /** 相机控制器的开关，只有 3d 下有 */
+  cameraControls?: boolean;
   /** 坐标系类型 */
   coordinateType?: 'top' | 'front' | 'left';
   /** resizeTo 适配的 dom id 或元素引用 */
