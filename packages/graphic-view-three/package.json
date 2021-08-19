@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-view-three",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "Large-scale declarative 3d graphic ui framework based on three",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -75,7 +75,7 @@
   "dependencies": {
     "@turbox3d/command-manager": "^1.0.25",
     "@turbox3d/event-manager": "^1.0.31",
-    "@turbox3d/graphic-view": "^1.0.35",
+    "@turbox3d/graphic-view": "^1.0.36",
     "@turbox3d/shared": "^1.0.12"
   }
 }

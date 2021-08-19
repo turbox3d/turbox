@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-view",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "Large-scale declarative graphic ui core framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
