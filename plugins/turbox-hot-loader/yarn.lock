@@ -31,16 +31,16 @@
   integrity sha1-Lbr4uFM0eWyvuw9Xk6kKL8AQsXY=
 
 "@babel/core@^7.1.0", "@babel/core@^7.6.4":
-  version "7.15.4"
-  resolved "https://registry.npm.alibaba-inc.com/@babel/core/download/@babel/core-7.15.4.tgz#a70d06c58ae1fce39c23f8efd79f9d5eb8b2f397"
-  integrity sha1-pw0GxYrh/OOcI/jv15+dXriy85c=
+  version "7.15.5"
+  resolved "https://registry.npm.alibaba-inc.com/@babel/core/download/@babel/core-7.15.5.tgz#f8ed9ace730722544609f90c9bb49162dc3bf5b9"
+  integrity sha1-+O2aznMHIlRGCfkMm7SRYtw79bk=
   dependencies:
     "@babel/code-frame" "^7.14.5"
     "@babel/generator" "^7.15.4"
     "@babel/helper-compilation-targets" "^7.15.4"
     "@babel/helper-module-transforms" "^7.15.4"
     "@babel/helpers" "^7.15.4"
-    "@babel/parser" "^7.15.4"
+    "@babel/parser" "^7.15.5"
     "@babel/template" "^7.15.4"
     "@babel/traverse" "^7.15.4"
     "@babel/types" "^7.15.4"
@@ -267,10 +267,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.15.4", "@babel/parser@^7.4.3":
-  version "7.15.4"
-  resolved "https://registry.npm.alibaba-inc.com/@babel/parser/download/@babel/parser-7.15.4.tgz#02f2931b822512d3aad17d475ae83da74a255a84"
-  integrity sha1-AvKTG4IlEtOq0X1HWug9p0olWoQ=
+"@babel/parser@^7.1.0", "@babel/parser@^7.15.4", "@babel/parser@^7.15.5", "@babel/parser@^7.4.3":
+  version "7.15.5"
+  resolved "https://registry.npm.alibaba-inc.com/@babel/parser/download/@babel/parser-7.15.5.tgz#d33a58ca69facc05b26adfe4abebfed56c1c2dac"
+  integrity sha1-0zpYymn6zAWyat/kq+v+1WwcLaw=
 
 "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@^7.15.4":
   version "7.15.4"
@@ -1152,9 +1152,9 @@
   integrity sha1-/PcgXCXf95Xuea8eMNosl5CAjxE=
 
 "@types/react@16.x":
-  version "16.14.14"
-  resolved "https://registry.npm.alibaba-inc.com/@types/react/download/@types/react-16.14.14.tgz#853de95a32a6a0e719192e222eacad024add2b8e"
-  integrity sha1-hT3pWjKmoOcZGS4iLqytAkrdK44=
+  version "16.14.15"
+  resolved "https://registry.npm.alibaba-inc.com/@types/react/download/@types/react-16.14.15.tgz#95d8fa3148050e94bcdc5751447921adbe19f9e6"
+  integrity sha1-ldj6MUgFDpS83FdRRHkhrb4Z+eY=
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -1774,13 +1774,13 @@ browserify-zlib@^0.2.0:
     pako "~1.0.5"
 
 browserslist@^4.16.6, browserslist@^4.16.8:
-  version "4.16.8"
-  resolved "https://registry.npm.alibaba-inc.com/browserslist/download/browserslist-4.16.8.tgz#cb868b0b554f137ba6e33de0ecff2eda403c4fb0"
-  integrity sha1-y4aLC1VPE3um4z3g7P8u2kA8T7A=
+  version "4.17.0"
+  resolved "https://registry.npm.alibaba-inc.com/browserslist/download/browserslist-4.17.0.tgz#1fcd81ec75b41d6d4994fb0831b92ac18c01649c"
+  integrity sha1-H82B7HW0HW1JlPsIMbkqwYwBZJw=
   dependencies:
-    caniuse-lite "^1.0.30001251"
+    caniuse-lite "^1.0.30001254"
     colorette "^1.3.0"
-    electron-to-chromium "^1.3.811"
+    electron-to-chromium "^1.3.830"
     escalade "^3.1.1"
     node-releases "^1.1.75"
 
@@ -1881,10 +1881,10 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   resolved "https://registry.npm.alibaba-inc.com/camelcase/download/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha1-48mzFWnhBoEd8kL3FXJaH0xJQyA=
 
-caniuse-lite@^1.0.30001251:
-  version "1.0.30001252"
-  resolved "https://registry.npm.alibaba-inc.com/caniuse-lite/download/caniuse-lite-1.0.30001252.tgz#cb16e4e3dafe948fc4a9bb3307aea054b912019a"
-  integrity sha1-yxbk49r+lI/EqbszB66gVLkSAZo=
+caniuse-lite@^1.0.30001254:
+  version "1.0.30001255"
+  resolved "https://registry.npm.alibaba-inc.com/caniuse-lite/download/caniuse-lite-1.0.30001255.tgz#f3b09b59ab52e39e751a569523618f47c4298ca0"
+  integrity sha1-87CbWatS4551GlaVI2GPR8QpjKA=
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -2245,9 +2245,9 @@ decode-uri-component@^0.2.0:
   integrity sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
 
 deep-is@~0.1.3:
-  version "0.1.3"
-  resolved "https://registry.npm.alibaba-inc.com/deep-is/download/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
-  integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
+  version "0.1.4"
+  resolved "https://registry.npm.alibaba-inc.com/deep-is/download/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
+  integrity sha1-pvLc5hL63S7x9Rm3NVHxfoUZmDE=
 
 define-properties@^1.1.3:
   version "1.1.3"
@@ -2345,10 +2345,10 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-electron-to-chromium@^1.3.811:
-  version "1.3.828"
-  resolved "https://registry.npm.alibaba-inc.com/electron-to-chromium/download/electron-to-chromium-1.3.828.tgz#0dee975b5bf45d6357af266f350fcdb6736a5e40"
-  integrity sha1-De6XW1v0XWNXryZvNQ/NtnNqXkA=
+electron-to-chromium@^1.3.830:
+  version "1.3.830"
+  resolved "https://registry.npm.alibaba-inc.com/electron-to-chromium/download/electron-to-chromium-1.3.830.tgz#40e3144204f8ca11b2cebec83cf14c20d3499236"
+  integrity sha1-QOMUQgT4yhGyzr7IPPFMINNJkjY=
 
 elliptic@^6.5.3:
   version "6.5.4"
