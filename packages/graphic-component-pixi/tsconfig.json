@@ -28,6 +28,7 @@
       "node",
       "jest"
     ],
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"

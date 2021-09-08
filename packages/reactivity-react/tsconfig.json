@@ -26,7 +26,8 @@
       "webpack-env",
       "node",
       "jest"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"
