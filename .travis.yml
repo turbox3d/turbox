@@ -15,10 +15,12 @@ jobs:
   include:
     - stage: test
       script:
+        - lerna run build:ts
         - lerna bootstrap
         - lerna run test
     - stage: deploy
       script:
+        - lerna run build:ts
         - lerna bootstrap
         - lerna run build:all
         - cp .npmrc.template $HOME/.npmrc
