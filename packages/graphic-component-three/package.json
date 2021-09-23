@@ -82,6 +82,7 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
+    "@turbox3d/design-engine": "^1.0.35",
     "@turbox3d/graphic-view-three": "^1.0.25",
     "@turbox3d/shared": "^1.0.12"
   }

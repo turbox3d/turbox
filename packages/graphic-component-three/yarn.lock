@@ -1077,6 +1077,18 @@
     "@turbox3d/event-manager" "^1.0.31"
     "@turbox3d/shared" "^1.0.12"
 
+"@turbox3d/design-engine@^1.0.35":
+  version "1.0.35"
+  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/design-engine/download/@turbox3d/design-engine-1.0.35.tgz#64ad873e61b088217320b4b1da6241a573252c24"
+  integrity sha1-ZK2HPmGwiCFzILSx2mJBpXMlLCQ=
+  dependencies:
+    "@turbox3d/command-manager" "^1.0.25"
+    "@turbox3d/event-manager" "^1.0.31"
+    "@turbox3d/math" "^1.0.15"
+    "@turbox3d/reactivity" "^2.0.50"
+    "@turbox3d/reactivity-react" "^1.0.54"
+    "@turbox3d/shared" "^1.0.12"
+
 "@turbox3d/event-manager@^1.0.31":
   version "1.0.31"
   resolved "https://registry.npm.alibaba-inc.com/@turbox3d/event-manager/download/@turbox3d/event-manager-1.0.31.tgz#56af093f5e2ba8fe170088920191ca435d63cc92"
@@ -1101,6 +1113,19 @@
   dependencies:
     "@turbox3d/command-manager" "^1.0.25"
     "@turbox3d/event-manager" "^1.0.31"
+    "@turbox3d/reactivity" "^2.0.50"
+    "@turbox3d/shared" "^1.0.12"
+
+"@turbox3d/math@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/math/download/@turbox3d/math-1.0.15.tgz#9cfa76a0a5db3e3422122a38a732f3528235748f"
+  integrity sha1-nPp2oKXbPjQiEio4pzLzUoI1dI8=
+
+"@turbox3d/reactivity-react@^1.0.54":
+  version "1.0.54"
+  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/reactivity-react/download/@turbox3d/reactivity-react-1.0.54.tgz#070bcf3c7f6c8815d2a31d6be7a38b8c26513bfd"
+  integrity sha1-BwvPPH9siBXSox1r56OLjCZRO/0=
+  dependencies:
     "@turbox3d/reactivity" "^2.0.50"
     "@turbox3d/shared" "^1.0.12"
 
