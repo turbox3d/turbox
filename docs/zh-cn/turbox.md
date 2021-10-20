@@ -1799,20 +1799,20 @@ class ACommand extends BaseCommand {
     this.action = Action.create('doSomething');
   }
 
-  onCarriageEnd(ev: IViewEntity, event: SceneMouseEvent) {
+  onCarriageEnd(ev: IViewEntity, event: SceneEvent) {
   }
 
-  onDragEnd(ev: IViewEntity, event: SceneMouseEvent) {
+  onDragEnd(ev: IViewEntity, event: SceneEvent) {
     this.action.complete();
   }
 
   onRightClick() {
   }
 
-  onCarriageMove(ev: IViewEntity, event: SceneMouseEvent) {
+  onCarriageMove(ev: IViewEntity, event: SceneEvent) {
   }
 
-  onDragMove(ev: IViewEntity, event: SceneMouseEvent) {
+  onDragMove(ev: IViewEntity, event: SceneEvent) {
     await this.action.execute(async () => {
       // do something...
       await this.domain.addProduct();

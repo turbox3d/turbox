@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HintCommand, SelectionCommand, BaseCommandBox, compose, Scene3D, IViewEntity, SceneMouseEvent, Reactive, EntityObject } from '@turbox3d/turbox3d';
+import { HintCommand, SelectionCommand, BaseCommandBox, compose, Scene3D, IViewEntity, SceneEvent, Reactive, EntityObject } from '@turbox3d/turbox3d';
 import { Box, BoxViewEntity } from './box';
 
 class Entity extends EntityObject {
@@ -32,7 +32,7 @@ class DefaultCommand extends compose({
     this.hint.active(this.select);
   }
 
-  // onClick(viewEntity: IViewEntity, event: SceneMouseEvent) {
+  // onClick(viewEntity: IViewEntity, event: SceneEvent) {
   //   console.log('***', viewEntity);
   // }
 }
