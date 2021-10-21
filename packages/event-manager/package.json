@@ -62,6 +62,7 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
+    "@turbox3d/math": "^1.0.15",
     "@turbox3d/shared": "^1.0.12"
   }
 }

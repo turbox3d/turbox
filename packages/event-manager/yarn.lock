@@ -1069,6 +1069,11 @@
     readdirp "^2.2.1"
     upath "^1.1.1"
 
+"@turbox3d/math@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/math/download/@turbox3d/math-1.0.15.tgz#9cfa76a0a5db3e3422122a38a732f3528235748f"
+  integrity sha1-nPp2oKXbPjQiEio4pzLzUoI1dI8=
+
 "@turbox3d/shared@^1.0.12":
   version "1.0.12"
   resolved "https://registry.npm.alibaba-inc.com/@turbox3d/shared/download/@turbox3d/shared-1.0.12.tgz#1b71647b3481d287927124d53566dcb5626df714"
