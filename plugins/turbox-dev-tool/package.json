@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox-dev-tool",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Turbox dev tool",
   "main": "./lib/index.js",
   "module": "./es/index.js",

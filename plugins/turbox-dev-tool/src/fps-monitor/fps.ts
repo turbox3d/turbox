@@ -2,6 +2,7 @@ export class FPSMonitor {
   costTimes: number[] = [];
   prevTime?: number;
   raf?: number;
+  maxFPS = 120;
 
   getAverageCostTimePerFrame() {
     const length = this.costTimes.length;
@@ -13,20 +14,30 @@ export class FPSMonitor {
 
   record(costTime: number) {
     this.costTimes.push(costTime);
-    if (this.costTimes.length > 60) {
+    if (this.costTimes.length > this.maxFPS) {
       this.costTimes.shift();
     }
   }
 
-  start() {
+  start(maxFPS = 120) {
+    this.maxFPS = maxFPS;
     this.end();
-    this.raf = requestAnimationFrame(this.monitor);
+    if (this.maxFPS === 60) {
+      this.raf = requestAnimationFrame(this.monitor);
+    } else {
+      this.raf = window.setTimeout(this.monitor, 1000 / this.maxFPS);
+    }
   }
 
   end() {
-    this.raf && cancelAnimationFrame(this.raf);
+    if (this.maxFPS === 60) {
+      this.raf && cancelAnimationFrame(this.raf);
+    } else {
+      this.raf && window.clearTimeout(this.raf);
+    }
     this.costTimes = [];
     this.prevTime = void 0;
+    this.maxFPS = 120;
   }
 
   monitor = () => {
@@ -35,12 +46,15 @@ export class FPSMonitor {
       this.record(now - this.prevTime);
     }
     this.prevTime = now;
-    this.raf = requestAnimationFrame(this.monitor);
-  }
+    if (this.maxFPS === 60) {
+      this.raf = requestAnimationFrame(this.monitor);
+    } else {
+      this.raf = window.setTimeout(this.monitor, 1000 / this.maxFPS);
+    }
+  };
 
   getFPS() {
-    const frame = Math.ceil(1000 / this.getAverageCostTimePerFrame());
-    return Math.min(frame, 60);
+    return Math.ceil(1000 / this.getAverageCostTimePerFrame());
   }
 }
 
