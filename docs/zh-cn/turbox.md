@@ -460,7 +460,7 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @mutation('xxx', true)
+  @mutation('xxx', true, false)
   changeIdx1(idx) {
     this.currentIdx = idx;
     this.array.push('aaa');
@@ -488,7 +488,7 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @mutation('xxx', true)
+  @mutation('xxx', true, false)
   changeIdx1(idx) {
     this.currentIdx = idx;
     this.array.push('aaa');
@@ -523,7 +523,7 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @mutation('xxx', true)
+  @mutation('xxx', true, false)
   async changeIdx1(idx) {
     this.currentIdx = idx;
     const res = await fetch();
@@ -562,13 +562,14 @@ class MyDomain extends Domain {
 const f = mutation('customName', async () => {
   await cts.countertops[0].addPoint(p);
 }, {
-  immediately: true,
+  immediately: false,
   displayName: '自定义名称',
+  forceSaveHistory: false,
 });
 await f();
 ```
 
-> 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中
+> 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中，第三个参数用来强制把当前操作保存为一个历史记录，默认情况框架会根据一定策略来优化是否需要保存历史记录（如会影响 Reactive/reactive 依赖数据变化的操作，但是 immediatelyReactive 和 keepAliveComputed 的影响会被忽略直到下一次有影响的操作到来），极少数情况我们希望即使是纯数据无视图响应或 keepAlive 的部分也要存成一个历史记录，这时候就可以设置为 true
 
 > mutation 里面可以嵌套 mutation，但不可以嵌套 action
 
