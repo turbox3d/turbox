@@ -460,7 +460,7 @@ class MyDomain extends Domain {
   @reactor() currentIdx = 0;
   @reactor() array = [];
 
-  @mutation('xxx', true, false)
+  @mutation('xxx', true, false, true)
   changeIdx1(idx) {
     this.currentIdx = idx;
     this.array.push('aaa');
@@ -565,11 +565,12 @@ const f = mutation('customName', async () => {
   immediately: false,
   displayName: '自定义名称',
   forceSaveHistory: false,
+  isNeedRecord: true,
 });
 await f();
 ```
 
-> 注意下 mutation 装饰器的参数，第一个参数可以自定义 mutation 的名称，如未指定则默认使用函数名，第二个参数代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中，第三个参数用来强制把当前操作保存为一个历史记录，默认情况框架会根据一定策略来优化是否需要保存历史记录（如会影响 Reactive/reactive 依赖数据变化的操作，但是 immediatelyReactive 和 keepAliveComputed 的影响会被忽略直到下一次有影响的操作到来），极少数情况我们希望即使是纯数据无视图响应或 keepAlive 的部分也要存成一个历史记录，这时候就可以设置为 true
+> 注意下 mutation 装饰器的参数，第一个参数 immediately 可以自定义 mutation 的名称，如未指定则默认使用函数名；第二个参数 displayName 代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的操作记录到时间旅行器中；第三个参数 forceSaveHistory 用来强制把当前操作保存为一个历史记录，默认情况框架会根据一定策略来优化是否需要保存历史记录（如会影响 Reactive/reactive 依赖数据变化的操作，但是 immediatelyReactive 和 keepAliveComputed 的影响会被忽略直到下一次有影响的操作到来），极少数情况我们希望即使是纯数据无视图响应或 keepAlive 的部分也要存成一个历史记录，这时候就可以设置为 true；第四个参数 isNeedRecord 表示该次操作的变更是否需要记录到撤销恢复栈中，默认为 true，跟 reactor 装饰器的参数功能是一样的，只不过一个针对函数一个针对属性，但仍然受全局配置影响
 
 > mutation 里面可以嵌套 mutation，但不可以嵌套 action
 
@@ -1260,9 +1261,9 @@ let ctx = {
     skipNestPerfLog: true, // 默认开启跳过被嵌套的 mutation 执行的性能日志
   },
   timeTravel: {
-    isActive: false, // 是否激活时间旅行器
+    isActive: false, // 是否激活时间旅行器，该配置的优先级为最高，关闭时所有可产生历史记录的操作都不会被记录
     maxStepNumber: 20, // 记录操作的最大步数
-    isNeedRecord: false, // 所有状态是否需要被记录的全局配置，默认全不记录
+    isNeedRecord: false, // 所有属性状态是否需要被记录的全局配置，默认全不记录（注意：只针对属性）
     keepActionChain: process.env.NODE_ENV !== 'production', // 默认开启保存 actionChain 到撤销恢复栈中，在生产环境关闭
   },
   disableReactive: false, // 是否禁用响应式
