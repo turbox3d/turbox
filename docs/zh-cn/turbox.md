@@ -647,7 +647,7 @@ class MyDomain extends Domain {
     action.execute(() => {
       // mutation 更新操作放在这
       this.isLoaded({ readList });
-    }, [], true);
+    }, [], true, {});
     action.complete();
   }
 }
@@ -700,6 +700,12 @@ const actionA = action('actionA', () => {
 }, {
   displayName: '',
   isWrapMutation: true, // 是否自动包裹一个顶层 mutation，默认为 true
+  mutationConfig: {
+    immediately: boolean;
+    displayName?: string;
+    forceSaveHistory?: boolean;
+    isNeedRecord?: boolean;
+  }; // 自动包裹的 mutation 的配置
 });
 actionA();
 // 异步 action
