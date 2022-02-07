@@ -13,11 +13,11 @@ turbox 框架包含几个子框架：
 * 响应式数据流事务框架（有框架无关的核心部分及 for react 的版本）
 * 指令管理框架
 * 事件交互管理框架
-* 视图框架（有引擎无关的核心部分及 2d for pixi、3d for three、3d for 闭源集团引擎）
+* 视图渲染框架（有引擎无关的核心部分及 2d for pixi、3d for three 的实现，renderer-* 对应的无 react 依赖的渲染框架，graphic-view-* 是使用 react 来渲染的视图框架）
 * 设计引擎（类 web CAX 应用的通用引擎及库）
-* 生产智造引擎（在设计引擎和公式约束求解引擎上的一层封装）
 * 基于 three 扩展的数学库，主要是一些常用几何算法和容差的支持
 * 基于视图框架封装的 CAX 常用图形控件，比如尺寸标注、Gizmo 等
+* 生产智造引擎（在设计引擎和公式约束求解引擎上的一层封装，闭源）
 
 ## API 手册
 [API 手册](https://turbox3d.github.io/turbox-type-doc/)
@@ -43,8 +43,6 @@ turbox 框架包含几个子框架：
 一个最简单的例子：
 ```js
 // line.js
-import { Domain, reactor, mutation } from 'turbox';
-
 class Line extends Domain {
   @reactor start?: Point;
   @reactor end?: Point;
@@ -63,8 +61,6 @@ class Line extends Domain {
 
 export default Line;
 // point.js
-import { Domain, reactor, mutation } from 'turbox';
-
 class Point extends Domain {
   @reactor prevLine?: Line;
   @reactor nextLine?: Line;
@@ -85,8 +81,6 @@ class Point extends Domain {
 export default Point;
 
 // component.jsx
-import { Component } from 'react';
-import { Reactive } from 'turbox';
 import Point from './point';
 import Line from './line';
 
@@ -94,8 +88,8 @@ const p1 = new Point(new Point2d(1, 1));
 const p2 = new Point(new Point2d(2, 2));
 const $line = new Line(p1, p2);
 
-@Reactive()
-export default class extends Component {
+@ReactiveReact()
+export default class extends React.Component {
   render() {
     return (
       <div>
@@ -107,8 +101,6 @@ export default class extends Component {
 }
 
 // function-component.jsx
-import * as React from 'react';
-import { Reactive, reactive } from 'turbox';
 import Point from './point';
 import Line from './line';
 
@@ -116,7 +108,7 @@ const p1 = new Point(new Point2d(1, 1));
 const p2 = new Point(new Point2d(2, 2));
 const $line = new Line(p1, p2);
 
-const Layout = Reactive(() => {
+const Layout = ReactiveReact(() => {
   const test = () => {
     $line.updateLine(new Point(new Point2d(4, 4)));
   };
@@ -134,6 +126,18 @@ const Layout = Reactive(() => {
 });
 
 export default Layout;
+
+// render graphic component without react
+@Reactive
+class GraphicComponent extends Component {
+  render() {
+    return [{
+      component: A,
+      props: {},
+      key: '',
+    }];
+  }
+}
 
 // normal function
 reactive(() => {
@@ -153,9 +157,9 @@ Turbox.render(<Layout />, '#app');
 
 #### 安装
 ```
-$ npm install --save turbox
+$ npm install --save @turbox3d/turbox3d
 
-$ yarn add turbox
+$ yarn add @turbox3d/turbox3d
 ```
 
 > 本框架有依赖 decorator，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
@@ -832,7 +836,7 @@ class MyDomain extends Domain {
 后续 **turbox** 会把一些特殊的操作符挂载到 effect 修饰过的函数里，专门处理异步流程，如果所有操作都是同步的，那就没有 operator（操作符）什么事情了，但现实情况是某些场景异步任务非常多，虽然说大多数场景 async 函数和默认的基础中间件就已经足够了，但在一些异步任务竞争的场景还是不够用的，比如在异步任务还没完成的时候，下几次触发又开始了，并且这几个异步任务之间还有关联逻辑，如何控制调度这些异步任务，就需要通过各种 operator 来处理了。 -->
 
 #### Domain
-在上面的例子中，我们会发现有个 Domain 的基类，在 **turbox** 中，Domain 只是类似 React.Component 这样的基类，声明这是一个领域模型，提供了一些通用方法和控制子类的能力，该类的装饰器实际也会依赖基类上的一些私有方法，所以需要配套使用，如下代码所示：
+在上面的例子中，我们会发现有个 Domain 的基类，在 **turbox** 中，Domain 用来声明这是一个领域模型，提供了一些通用方法和控制子类的能力，该类的装饰器实际也会依赖基类上的一些私有方法，所以需要配套使用，如下代码所示：
 ```js
 import { Domain, reactor, reducer, mutation } from 'turbox';
 
@@ -933,14 +937,14 @@ reactive(() => {
 domain.changeFirst();
 ```
 
-#### Reactive
-**turbox** 中的 @Reactive 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
+#### Reactive/ReactiveReact
+**turbox** 中的 @Reactive/@ReactiveReact 装饰器，有点类似于 **mobx** 的 @observer，它的作用就是标记这个 react 组件需要自动同步状态的变更。它实际上是包裹了原始组件，返回了一个新的组件，将大部分响应式同步状态的链接细节给隐藏起来。要使用 domain 中的状态和函数，只需要将 domain 实例化，并直接访问实例上的属性和函数，如下所示：
 ```js
 import $column from '@domain/dwork/design-column/column';
 import $tag from '@domain/dwork/design-column/tag';
 import $list from '@presenter/dwork/column-list/list';
 
-@Reactive()
+@ReactiveReact()
 export default class Banner extends React.Component {
   componentDidMount() {
     $list.initLayoutState();
@@ -979,17 +983,17 @@ export default class Banner extends React.Component {
 
 当然你也可以把实例挂载到组件的 props 上来向下传递，这个取决于你是如何设计一个复用的业务组件的，以及复用的粒度是怎么样的，挂载到 props 上复用能力无疑是更好的，大部分情况都推荐使用，但如果不使用 ts，这样做也会带来很多麻烦，比如丧失了编辑器的提示和 navigation。
 
-> 你也可以将 Reactive 使用在搭配 react hooks 的函数式组件上，使用方式见快速入门一节
+> 你也可以将 ReactiveReact 使用在搭配 react hooks 的函数式组件上，使用方式见快速入门一节
 
-> 任何访问到 domain 状态的组件都必须用 Reactive 修饰，否则不会同步到这个组件
+> 任何访问到 domain 状态的组件都必须用 ReactiveReact 修饰，否则不会同步到这个组件
 
-> 如果你只想在父级组件加 Reactive 装饰器，又想同步子组件状态，你就只能通过触发父级组件依赖到的状态的变更来重新渲染引起子组件的重新渲染
+> 如果你只想在父级组件加 ReactiveReact 装饰器，又想同步子组件状态，你就只能通过触发父级组件依赖到的状态的变更来重新渲染引起子组件的重新渲染
 
-在一些有列表的地方，建议父子组件都加上 Reactive 装饰器，这样当只更新列表中某一或某几项时，只会触发对应子组件的重新渲染，不会触发所有组件的重新渲染，这样性能更佳，如下所示：
+在一些有列表的地方，建议父子组件都加上 ReactiveReact 装饰器，这样当只更新列表中某一或某几项时，只会触发对应子组件的重新渲染，不会触发所有组件的重新渲染，这样性能更佳，如下所示：
 ```js
 import $list from '@domain/list';
 
-@Reactive()
+@ReactiveReact()
 export default class List extends React.Component {
   componentDidMount() {
     $list.initLayoutState();
@@ -1002,7 +1006,7 @@ export default class List extends React.Component {
   }
 }
 
-@Reactive()
+@ReactiveReact()
 export default class Item extends React.Component {
   render() {
     const { data } = this.props;
@@ -1012,6 +1016,8 @@ export default class Item extends React.Component {
   }
 }
 ```
+
+> ReactiveReact 是针对 React 组件的响应式装饰器实现，而 Reactive 是针对图形渲染框架（renderer-core）组件的响应式装饰器实现，你也可以基于 turbox reactivity 的基础 API 来实现其他自定义装饰器
 
 #### reactive
 ```typescript
@@ -1281,7 +1287,7 @@ let ctx = {
 > 必须在 Turbox.render 之前调用
 
 #### exception
-**turbox** 默认在 Reactive 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
+**turbox** 默认在 ReactiveReact 函数返回的 react 高阶组件中加了 ErrorBoundary 组件来 catch 组件异常，防止整个应用全部崩溃。
 
 #### 响应式原理
 上面说了很多响应式的 API 和设计思路，这一小节主要是介绍原理，响应式的核心原理就是依赖收集与如何触发：
@@ -1555,8 +1561,9 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 ![vuex](https://qhstaticssl.kujiale.com/as/e738c068c874a74d0192c83b039980e9/vuex.png)
 
 #### turbox
-**turbox** 是一个包含了状态管理的大型生产力应用框架，它的灵感主要还是来源于社区和部分复杂业务场景，**turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收图形与 web 领域的优秀思想，解决复杂通用问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，这就是 **turbox** 框架的意义所在。
+**turbox** 是一个包含了状态管理的大型 3d/web 应用开发框架，它的灵感主要还是来源于社区和部分复杂业务场景，**turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收图形与 web 领域的优秀思想，解决复杂通用问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，这就是 **turbox** 框架的意义所在。
 
+- 面向 web/3d 应用友好，拥有较多大型复杂 web 2d/3d 多人项目的线上实践案例与针对性优化
 - 基于 Proxy 的响应式状态管理
 - 支持复杂图状数据结构，而不仅仅是 plain object
 - 更好的分层，将数据更新与业务流程隔离
@@ -1565,12 +1572,11 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 - 内存占用更小更灵活的时间旅行机制，轻松实现撤销恢复、指令流链路跟踪重放等功能
 - 丰富的配置，在不同场景下轻松平衡易用与性能
 - 默认提供处理副作用的装饰器，对异步场景更友好
-- 提供各种描述符，来处理竞态和复杂更新流程（待做）
 - 提供了计算属性和属性钩子，来处理复杂计算与特殊场景
 - 更加简易的初始化 API，只暴露修改配置的能力
 - 完美支持并推荐使用 typescript，没有任何魔法字符串，完备的类型推导，充分利用编辑器的 navigation 与反向依赖分析使开发和维护效率更上一层楼
 - 支持 react hooks
-- 底层 0 依赖，框架无关，是个纯粹、精简的状态管理解决方案，升级维护都比较容易，不容易腐烂
+- 基础库 0 依赖，外部框架无关，是个纯粹、精简的解决方案，有较好的抽象分层，可基于基础库扩展不同的自定义实现，升级维护都比较容易，不容易腐烂
 - 友好的文档和最佳实践，对于没有用过状态管理框架的新手来说，还算比较容易上手
 
 #### 为什么不是 redux？
@@ -1579,6 +1585,7 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 * 模板代码太多，使用不方便，属性要一个一个 pick，对 ts 也不友好，状态的修改重度依赖 immutable，计算属性要依赖 reselect，还有魔法字符串等一系列问题，心智负担大，用起来很麻烦容易出错，开发效率低下
 * 触发更新的效率也比较差，connect 的组件的 listener 必须一个一个遍历，再靠浅比较去拦截不必要的更新，在大型应用里面无疑是灾难
 * store 的推荐数据结构是 json object，这对于我们的业务来说也不太合适，我们的数据结构是图状的数据结构，互相有复杂的关联关系，比如父子兄弟层级、环状结构、链式结构、多对多等，比较偏向于后端数据模型，适合用面向对象来描述模型，描述切面，需要多实例隔离，显然用 json 或者 normalizr 强行做只会增加复杂度，和已有的代码也完全无法小成本适配
+* 无法适应复杂 web 2d/3d 应用场景
 
 #### 为什么不是 mobx？
 * 以前开发该库的时候 mobx 还是基于 defineProperty 来实现的，有很多 hack 的方式，比如监听数组变化等问题的处理，还有很多像监听 Object.keys 这种 API 根本就无法实现，而 tacky 一开始就是基于 proxy 的，我们的业务只要求兼容 chrome，所以就可以用，这样写法会简单很多不需要 hack，支持监听的 API 也会更丰富，当然目前 mobx5 也支持了 proxy。（注意：proxy 在特定浏览器比如 chrome 的性能表现非常优秀，但在 IE Edge 下面性能非常差）
@@ -1586,9 +1593,10 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 * 另外我们需要有一些事务的机制，跟传统 web 一个同步栈或者一个 effect 就是一个事务的视角是不一样的。比如我要画点，画线，再画点，这三个行为才组成了一个事务，要回退是撤销一整个事务，而不是单个行为。另外我们在一些异步并发的场景，需要对事务池做一些调度，比如 abort、revert 掉部分事务。事务的定义就是：一个需要被记录到时间旅行器中的原子操作，我们一次操作可能会产生很多副作用，也可能分发多个 mutation，默认同步的 mutation 会被合并掉，一次性 batchUpdate 组件，用户可以自己定义事务，每个事务会影响撤销恢复的粒度和重新渲染的时机。
 * mutation/action 对于渲染时机的把握功能会更丰富，也更灵活，更符合当前业务场景，而 mobx 目前无法满足，仍然是以 web 世界的角度在做 action 机制，无法灵活控制渲染时机
 * 另外就是扩展性的问题，我加入了中间件的机制，这样可以侵入 action 的执行过程，相当于一个过滤器一样，可以加入一些内部自定义的埋点、监控、日志中间件，在每次 action 触发的时候可以做很多事情，比如对接全链路排查系统、做自动化测试状态回放等。
-* effect 会在近期重写掉，实际上在 3d 业务里面，传统的 effect 概念是个伪命题，它的发展方向应该是异步流，这样对于一些异步竞争比较复杂的场景会比较有用，并且可以简化部分事务的写法。
+* 实际上在 3d 业务里面，传统的 effect 概念是个伪命题，它的发展方向应该是异步流，这样对于一些异步竞争比较复杂的场景会比较有用，并且可以简化部分事务的写法。
 * 还有就是做了不能在不是 mutation 的地方做更新的机制，强制分离更新数据操作和业务流程，做了一个分层，如果这么做会有抛错，防止数据和视图不同步。当然做这个的意义本质一个是性能考虑批量更新，一个是也会影响事务，再者是职责分离，还有在收口赋值操作，这对重构非常有帮助。
 * 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
+* 无法适应复杂 web 2d/3d 应用场景
 
 ### 性能分析
 状态管理部分，turbox 和 mobx 最接近，所以做个性能对比，如下是测试代码：
@@ -1904,16 +1912,18 @@ HotKey.on({
 HotKey.off(Key.Escape, () => {});
 ```
 
-## 视图层框架
-顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层是基于 react 封装的框架，后期也许会替换掉内核进一步提升性能。
+## 视图渲染框架
+顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层有基于 react 封装的框架，也有无 react 依赖的渲染框架。
 
-它的目的就是如何利用数据驱动视图的思路来做图形业务，以达到类似于做 web 页面的开发体感，它把上面的几个子框架全部串联了起来，将事件传递到交互层，交互层及 model 层处理数据，数据自动响应式驱动视图更新。甚至基于视图层框架的 API，还可以封装很多图形基础组件及业务组件，进一步提效。
+> 推荐使用无 react 依赖的版本，性能更好、内存开销更小，是个纯粹的针对图形场景的渲染器。
+
+它的目的就是利用数据驱动视图、声明式、响应式表达的思路来做图形业务，以达到类似于做 web 页面的开发体感，低成本上手 web 2d/3d 业务，它把上面的几个子框架全部串联了起来，将事件传递到交互层，交互层及 model 层处理数据，数据自动响应式驱动视图更新。甚至基于视图层框架的 API，还可以封装很多图形基础组件及业务组件，进一步提效。
 
 基于这套框架，开发者也不需要关心图形相关的知识，不需要自己去实现繁琐的功能，比如相机、灯光、场景、父子视图关联创建与卸载、坐标系转换、事件冒泡机制、图形组件与 web 组件混用、如何利用离屏渲染模拟多视口及处理对应交互、抗锯齿、resize、对象拾取、基于响应式数据框架的精细化更新渲染任务队列等等功能。所有能力可以通过简单的声明和调用方式完成。
 
-图形学及 2d、3d 编程的门槛较高较垂直，市面上的人才较少。利用这套框架最终达到降低入门门槛、上手成本，将职责分离，让业务跑的更快更好（开发者学一些基本的几何及代数知识即可上手）
+web 3d 工程领域是一个小众领域，市面上大部分 web 3d 业务并不复杂在业务逻辑本身，更多是追求离线渲染、效果，不像游戏领域有那么多业务逻辑要写。图形学及 2d、3d 编程的门槛较高较垂直，而 web 2d/3d 更是一个小分支，市面上的人才较少，做渲染、写 shader、做端游的不屑于做 web 3d 工程/业务，而 web 前端想要做 3d 业务还是有一些陡峭的学习曲线和踩坑成本。开发这套框架的初衷是希望能达到降低入门门槛、上手成本，将职责分离，让业务跑的更快更好（开发者学一些基本的几何及代数知识即可上手）
 
-视图层框架有一个核心库 graphic-view，它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
+视图层框架有一个核心库 renderer-core/graphic-view，它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
 
 视图层框架对用户来说常用的就 Scene、Mesh、ViewEntity 三个概念，其余的细节看 ts 提示及注释，这里不再罗列。
 
@@ -1921,8 +1931,8 @@ Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scen
 
 理解了基本概念之后，我们来看一下它的使用方式：
 ```tsx
-// 2d 下的立面场景
-@Reactive
+// 2d 下的立面场景，用 react 来渲染
+@ReactiveReact
 export class FrontView extends React.Component {
   render() {
     const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
@@ -1951,13 +1961,56 @@ export class FrontView extends React.Component {
     );
   }
 }
+// 用无 react 依赖的渲染器来渲染
+@Reactive
+export class FrontView extends Component {
+  render() {
+    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
+    if (!wall) {
+        return null;
+    }
+    const viewport = doorWindowStore.scene.viewStyles.front;
+    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
+    return [{
+      component: Scene2D,
+      props: {
+        id: 'front-scene-2d'
+        commandBox: appCommandBox,
+        container: SCENE_2D,
+        viewport,
+        camera2dSize: { x: wall.size.x, y: wall.size.y + 1000 },
+        coordinateType: 'front',
+        cameraPosition: cameraPos,
+        transparent: false,
+        backgroundColor: 0xE6E9EB,
+        resizeTo: SCENE_2D,
+        children: [{
+          component: Axis2d,
+          props: {
+            type: 'front',
+          }
+        }, {
+          component: DoorWindowView,
+          props: {
+            model,
+            id: model.id,
+            type: DoorWindowEntityType.DoorWindowVirtual,
+          },
+          key: model.id,
+        }],
+      },
+      key: 'xxx',
+    }];
+  }
+}
 
+// 一个 ViewEntity2D 交互实体单元
 interface IProps extends IViewEntity {
   model: DoorWindowPDMEntity;
   zIndex?: RenderOrder;
 }
-// 一个 ViewEntity2D 交互实体单元
-@Reactive
+
+@ReactiveReact
 export class DoorWindowView extends ViewEntity2D<IProps> {
   // 响应式管线，组件第一次 mount 或重新 render 时会按照顺序执行，管线中的每个任务都被 reactive 函数包裹，拥有响应式的能力，也就是说只有当依赖的属性变化时，才会触发该任务的重新执行，以此达到视图层的精细化更新，提高性能（比如只是材质变了，就重新计算材质相关的任务，只是位置变了就计算位置相关的任务
   protected reactivePipeLine = [
@@ -1993,6 +2046,7 @@ export class DoorWindowView extends ViewEntity2D<IProps> {
       this.view.zIndex = RenderOrder.DEFAULT;
     }
     const collisional = doorWindowStore.collision.entities.includes(model);
+    // 使用无 react 依赖的渲染器，需要改成对应的语法
     return (
       <React.Fragment>
         {areas}
@@ -2138,13 +2192,13 @@ export class MullionMesh2D extends Mesh2D<IMeshProps> {
 }
 ```
 
-> 场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景
-
 > ViewEntity 本身也有对应的一个容器节点（可能是 THREE.Group 或者 PIXI.Container 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问，它 render 的内容的坐标系是相对于这个容器节点的，这跟图形领域的父子节点关系相对应，可以简化视图层的显示逻辑
 
 > Mesh 本身也有对应的一个图形展示对象节点（可能是 THREE.Object3D 或者 PIXI.DisplayObject 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问
 
 > 你还可以通过 onClickable，onDraggable，onHoverable 等钩子来实现该实体的动态交互功能，比如有时候需要禁用某些实体的可交互能力，那么可能它就不会在场景中被 pick 出来，有时候根据某些逻辑又要动态开放出来
+
+> 在使用 react 渲染的框架下，场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景（无 react 依赖的框架不能混用）
 
 主要的使用方式就是上面这些，还有一些细节能力，通过 ts 的注释提示来查看，不再罗列
 
