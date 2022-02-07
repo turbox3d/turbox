@@ -51,7 +51,7 @@ export class FPSMonitor {
     } else {
       this.raf = window.setTimeout(this.monitor, 1000 / this.maxFPS);
     }
-  };
+  }
 
   getFPS() {
     return Math.ceil(1000 / this.getAverageCostTimePerFrame());
