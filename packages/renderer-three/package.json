@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/renderer-three",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Large-scale declarative 3d graphic ui framework based on three",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@turbox3d/event-manager": "^1.1.0",
-    "@turbox3d/renderer-core": "^0.0.2",
+    "@turbox3d/renderer-core": "^0.0.1",
     "@turbox3d/shared": "^1.1.0"
   }
 }
