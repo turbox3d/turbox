@@ -1102,32 +1102,38 @@
   resolved "https://registry.npm.alibaba-inc.com/@nicolo-ribaudo/chokidar-2/download/@nicolo-ribaudo/chokidar-2-2.1.8-no-fsevents.3.tgz#323d72dd25103d0c4fbdce89dadf574a787b1f9b"
   integrity sha1-Mj1y3SUQPQxPvc6J2t9XSnh7H5s=
 
-"@turbox3d/command-manager@^1.0.25":
-  version "1.0.25"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/command-manager/download/@turbox3d/command-manager-1.0.25.tgz#e3ed541d525ae3aa047fd265e0c0c99176c15880"
-  integrity sha1-4+1UHVJa46oEf9Jl4MDJkXbBWIA=
+"@turbox3d/command-manager@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/command-manager/-/command-manager-1.1.0.tgz#469385a621acfb4923b8ae6b6273af29afee1a93"
+  integrity sha512-onYS9/LpJ8qf53bTmtZuhFFmRf7WuXyUrW6Qbz8dCRohGMRPb6HEN7Cg1lQDd35MUs1MMb2p0gezMjeO8gY1rQ==
   dependencies:
-    "@turbox3d/event-manager" "^1.0.31"
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/event-manager" "^1.1.0"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/event-manager@^1.0.31":
-  version "1.0.31"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/event-manager/download/@turbox3d/event-manager-1.0.31.tgz#56af093f5e2ba8fe170088920191ca435d63cc92"
-  integrity sha1-Vq8JP14rqP4XAIiSAZHKQ11jzJI=
+"@turbox3d/event-manager@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/event-manager/-/event-manager-1.1.0.tgz#ce70af70a935c57f8e42df2d52ec257adf170848"
+  integrity sha512-42Xuuo0/CffmB0051TRTIjkm8KNVNVKGaN9irPRSN4PzZo0oA/amDAoYkFPFpXMaYfz3oi9WmSaMTx9FAWcHMg==
   dependencies:
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/math" "^1.1.0"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/reactivity@^2.0.50":
-  version "2.0.50"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/reactivity/download/@turbox3d/reactivity-2.0.50.tgz#d2a86845f0b4a3bad9f6e92a1a1c6392e167bf3c"
-  integrity sha1-0qhoRfC0o7rZ9ukqGhxjkuFnvzw=
+"@turbox3d/math@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/math/-/math-1.1.0.tgz#245399c4c7b4bf7e3e951944d63a49dded1dff9c"
+  integrity sha512-sicVRnizJVLt5CGbGWxKOUs8mHoErEIKAzxWSUG9+X2xATuPioRUc3x9e+zPSTMnIz5Oh77hBnRkDV2MoZN+LA==
+
+"@turbox3d/reactivity@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-2.1.0.tgz#5474ddac751bbf538b728eee26cec6e8129db753"
+  integrity sha512-t/dFutsN0R37DPtiIhZu9Bsstu4ClgpBdWbKUh6eM1LmzVyfclYbho1pNZ2H/Y6Hemf314SnupbMFC25Ei+Uaw==
   dependencies:
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/shared@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/shared/download/@turbox3d/shared-1.0.12.tgz#1b71647b3481d287927124d53566dcb5626df714"
-  integrity sha1-G3FkezSB0oeScSTVNWbctWJt9xQ=
+"@turbox3d/shared@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/shared/-/shared-1.1.0.tgz#9b06d4fbb5316a000e867e58819fe0bcff5e6915"
+  integrity sha512-wpnpo8/hDhRxRlJMm4DJ4HAxi7zruxienxDBOpoXJ4d2piVDHprpGZB2p0KSE8eER9kJcj7paD/kd53ArYkSdQ==
 
 "@types/babel__core@^7.1.0":
   version "7.1.18"

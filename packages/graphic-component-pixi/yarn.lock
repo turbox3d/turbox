@@ -1381,52 +1381,57 @@
     eventemitter3 "^3.1.0"
     url "^0.11.0"
 
-"@turbox3d/command-manager@^1.0.25":
-  version "1.0.25"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/command-manager/download/@turbox3d/command-manager-1.0.25.tgz#e3ed541d525ae3aa047fd265e0c0c99176c15880"
-  integrity sha1-4+1UHVJa46oEf9Jl4MDJkXbBWIA=
+"@turbox3d/command-manager@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/command-manager/-/command-manager-1.1.0.tgz#469385a621acfb4923b8ae6b6273af29afee1a93"
+  integrity sha512-onYS9/LpJ8qf53bTmtZuhFFmRf7WuXyUrW6Qbz8dCRohGMRPb6HEN7Cg1lQDd35MUs1MMb2p0gezMjeO8gY1rQ==
   dependencies:
-    "@turbox3d/event-manager" "^1.0.31"
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/event-manager" "^1.1.0"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/event-manager@^1.0.31":
-  version "1.0.31"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/event-manager/download/@turbox3d/event-manager-1.0.31.tgz#56af093f5e2ba8fe170088920191ca435d63cc92"
-  integrity sha1-Vq8JP14rqP4XAIiSAZHKQ11jzJI=
+"@turbox3d/event-manager@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/event-manager/-/event-manager-1.1.0.tgz#ce70af70a935c57f8e42df2d52ec257adf170848"
+  integrity sha512-42Xuuo0/CffmB0051TRTIjkm8KNVNVKGaN9irPRSN4PzZo0oA/amDAoYkFPFpXMaYfz3oi9WmSaMTx9FAWcHMg==
   dependencies:
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/math" "^1.1.0"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/graphic-view-pixi@^1.0.47":
-  version "1.0.47"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/graphic-view-pixi/download/@turbox3d/graphic-view-pixi-1.0.47.tgz#e7917d4efbfcd15ef2e302082d2d1cb23d94c822"
-  integrity sha1-55F9Tvv80V7y4wIILS0csj2UyCI=
+"@turbox3d/math@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/math/-/math-1.1.0.tgz#245399c4c7b4bf7e3e951944d63a49dded1dff9c"
+  integrity sha512-sicVRnizJVLt5CGbGWxKOUs8mHoErEIKAzxWSUG9+X2xATuPioRUc3x9e+zPSTMnIz5Oh77hBnRkDV2MoZN+LA==
+
+"@turbox3d/reactivity@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-2.1.0.tgz#5474ddac751bbf538b728eee26cec6e8129db753"
+  integrity sha512-t/dFutsN0R37DPtiIhZu9Bsstu4ClgpBdWbKUh6eM1LmzVyfclYbho1pNZ2H/Y6Hemf314SnupbMFC25Ei+Uaw==
   dependencies:
-    "@turbox3d/command-manager" "^1.0.25"
-    "@turbox3d/event-manager" "^1.0.31"
-    "@turbox3d/graphic-view" "^1.0.36"
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/graphic-view@^1.0.36":
-  version "1.0.36"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/graphic-view/download/@turbox3d/graphic-view-1.0.36.tgz#24a3a8e90de81bd37e0f88b3453e3559351a9f9a"
-  integrity sha1-JKOo6Q3oG9N+D4izRT41WTUan5o=
+"@turbox3d/renderer-core@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@turbox3d/renderer-core/-/renderer-core-0.0.1.tgz#d48b653c68f74336f30ff13efb67b53f480cde93"
+  integrity sha512-BdNj/XBFWh1xECxmjCQuGwQgui8Ed8N4MwyAzDkvWEaTBSpFQbrqXPll8KW7q6IJhn6lx5t6V1kBu3Pf523VMg==
   dependencies:
-    "@turbox3d/command-manager" "^1.0.25"
-    "@turbox3d/event-manager" "^1.0.31"
-    "@turbox3d/reactivity" "^2.0.50"
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/command-manager" "^1.1.0"
+    "@turbox3d/event-manager" "^1.1.0"
+    "@turbox3d/reactivity" "^2.1.0"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/reactivity@^2.0.50":
-  version "2.0.50"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/reactivity/download/@turbox3d/reactivity-2.0.50.tgz#d2a86845f0b4a3bad9f6e92a1a1c6392e167bf3c"
-  integrity sha1-0qhoRfC0o7rZ9ukqGhxjkuFnvzw=
+"@turbox3d/renderer-pixi@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@turbox3d/renderer-pixi/-/renderer-pixi-0.0.1.tgz#7a2bf96ad7a76df1b5cfa26e7c42421d0c2e8b71"
+  integrity sha512-cxS5XaoLIRAHLPxBC8YqJ+FrN8FhMUvjrjVSAMARLiDgbnbxCT8IURb6rZ+CBrw8q2Fv7jDPajTXfB2Cqfb2GA==
   dependencies:
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/event-manager" "^1.1.0"
+    "@turbox3d/renderer-core" "^0.0.1"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/shared@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/shared/download/@turbox3d/shared-1.0.12.tgz#1b71647b3481d287927124d53566dcb5626df714"
-  integrity sha1-G3FkezSB0oeScSTVNWbctWJt9xQ=
+"@turbox3d/shared@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/shared/-/shared-1.1.0.tgz#9b06d4fbb5316a000e867e58819fe0bcff5e6915"
+  integrity sha512-wpnpo8/hDhRxRlJMm4DJ4HAxi7zruxienxDBOpoXJ4d2piVDHprpGZB2p0KSE8eER9kJcj7paD/kd53ArYkSdQ==
 
 "@types/babel__core@^7.1.0":
   version "7.1.15"
@@ -1502,25 +1507,6 @@
   version "4.0.0"
   resolved "https://registry.npm.alibaba-inc.com/@types/parse-json/download/@types/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha1-L4u0QUNNFjs1+4/9zNcTiSf/uMA=
-
-"@types/prop-types@*":
-  version "15.7.4"
-  resolved "https://registry.npm.alibaba-inc.com/@types/prop-types/download/@types/prop-types-15.7.4.tgz#fcf7205c25dff795ee79af1e30da2c9790808f11"
-  integrity sha1-/PcgXCXf95Xuea8eMNosl5CAjxE=
-
-"@types/react@16.x":
-  version "16.14.14"
-  resolved "https://registry.npm.alibaba-inc.com/@types/react/download/@types/react-16.14.14.tgz#853de95a32a6a0e719192e222eacad024add2b8e"
-  integrity sha1-hT3pWjKmoOcZGS4iLqytAkrdK44=
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
-"@types/scheduler@*":
-  version "0.16.2"
-  resolved "https://registry.npm.alibaba-inc.com/@types/scheduler/download/@types/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
-  integrity sha1-GmL4lSVyPd4kuhsBsJK/XfitTTk=
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -2647,11 +2633,6 @@ cssstyle@^1.0.0:
   integrity sha1-nTEyginTxWXGHlhrAgQaKPzNzPE=
   dependencies:
     cssom "0.3.x"
-
-csstype@^3.0.2:
-  version "3.0.8"
-  resolved "https://registry.npm.alibaba-inc.com/csstype/download/csstype-3.0.8.tgz#d2266a792729fb227cd216fb572f43728e1ad340"
-  integrity sha1-0iZqeScp+yJ80hb7Vy9Dco4a00A=
 
 cyclist@^1.0.1:
   version "1.0.1"
@@ -4536,7 +4517,7 @@ lodash@^4.17.19:
   resolved "https://registry.npm.alibaba-inc.com/lodash/download/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha1-Z5WRxWTDv/quhFTPCz3zcMPWkRw=
 
-loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
+loose-envify@^1.0.0:
   version "1.4.0"
   resolved "https://registry.npm.alibaba-inc.com/loose-envify/download/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   integrity sha1-ce5R+nvkyuwaY4OffmgtgTLTDK8=
@@ -5349,15 +5330,6 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.2:
-  version "15.7.2"
-  resolved "https://registry.npm.alibaba-inc.com/prop-types/download/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
-  integrity sha1-UsQedbjIfnK52TYOAga5ncv/psU=
-  dependencies:
-    loose-envify "^1.4.0"
-    object-assign "^4.1.1"
-    react-is "^16.8.1"
-
 prr@~1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.alibaba-inc.com/prr/download/prr-1.0.1.tgz#d3fc114ba06995a45ec6893f484ceb1d78f5f476"
@@ -5450,19 +5422,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-is@^16.8.1, react-is@^16.8.4:
+react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.npm.alibaba-inc.com/react-is/download/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha1-eJcppNw23imZ3BVt1sHZwYzqVqQ=
-
-react@16.x:
-  version "16.14.0"
-  resolved "https://registry.npm.alibaba-inc.com/react/download/react-16.14.0.tgz#94d776ddd0aaa37da3eda8fc5b6b18a4c9a3114d"
-  integrity sha1-lNd23dCqo32j7aj8W2sYpMmjEU0=
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
 
 read-pkg-up@^4.0.0:
   version "4.0.0"

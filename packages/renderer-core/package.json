@@ -63,9 +63,9 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "^1.0.25",
-    "@turbox3d/event-manager": "^1.0.31",
-    "@turbox3d/reactivity": "^2.0.50",
-    "@turbox3d/shared": "^1.0.12"
+    "@turbox3d/command-manager": "^1.1.0",
+    "@turbox3d/event-manager": "^1.1.0",
+    "@turbox3d/reactivity": "^2.1.0",
+    "@turbox3d/shared": "^1.1.0"
   }
 }
