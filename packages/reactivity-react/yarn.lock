@@ -1069,17 +1069,17 @@
     readdirp "^2.2.1"
     upath "^1.1.1"
 
-"@turbox3d/reactivity@^2.0.50":
-  version "2.0.50"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/reactivity/download/@turbox3d/reactivity-2.0.50.tgz#d2a86845f0b4a3bad9f6e92a1a1c6392e167bf3c"
-  integrity sha1-0qhoRfC0o7rZ9ukqGhxjkuFnvzw=
+"@turbox3d/reactivity@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/reactivity/-/reactivity-2.1.0.tgz#5474ddac751bbf538b728eee26cec6e8129db753"
+  integrity sha512-t/dFutsN0R37DPtiIhZu9Bsstu4ClgpBdWbKUh6eM1LmzVyfclYbho1pNZ2H/Y6Hemf314SnupbMFC25Ei+Uaw==
   dependencies:
-    "@turbox3d/shared" "^1.0.12"
+    "@turbox3d/shared" "^1.1.0"
 
-"@turbox3d/shared@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.npm.alibaba-inc.com/@turbox3d/shared/download/@turbox3d/shared-1.0.12.tgz#1b71647b3481d287927124d53566dcb5626df714"
-  integrity sha1-G3FkezSB0oeScSTVNWbctWJt9xQ=
+"@turbox3d/shared@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@turbox3d/shared/-/shared-1.1.0.tgz#9b06d4fbb5316a000e867e58819fe0bcff5e6915"
+  integrity sha512-wpnpo8/hDhRxRlJMm4DJ4HAxi7zruxienxDBOpoXJ4d2piVDHprpGZB2p0KSE8eER9kJcj7paD/kd53ArYkSdQ==
 
 "@types/babel__core@^7.1.0":
   version "7.1.15"
