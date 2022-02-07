@@ -17,34 +17,54 @@ export enum MouseDealType {
    * 作为一次 Click 事件处理
    */
   Click,
+  /** 多点触控事件 */
+  MultiTouch,
+  /** 按压 */
+  Press,
 }
 
 /**
  * 可监听的交互事件类型
  */
 export enum InteractiveEvent {
-  Click,
+  Click, // 涵盖移动端的 tap
   DBClick,
   RightClick,
-  DragStart,
-  DragMove,
-  DragEnd,
+  DragStart, // 涵盖移动端的 pan
+  DragMove, // 涵盖移动端的 pan
+  DragEnd, // 涵盖移动端的 pan
   Carriage,
   CarriageEnd,
   Hover,
   Wheel,
+  PinchStart,
+  Pinch,
+  PinchEnd,
+  RotateStart,
+  Rotate,
+  RotateEnd,
+  Press,
+  PressUp,
 }
 
-interface MouseEventFunc {
-  (event: MouseEvent): void;
+interface PointerEventFunc {
+  (event: PointerEvent | Touch, extra?: IGesturesExtra): void;
 }
 
 interface WheelEventFunc {
   (event: WheelEvent): void;
 }
 
-export type ICallBack<E extends InteractiveEvent> = E extends InteractiveEvent.Wheel ? WheelEventFunc : MouseEventFunc;
+export type ICallBack<E extends InteractiveEvent> = E extends InteractiveEvent.Wheel ? WheelEventFunc : PointerEventFunc;
+
+export interface IGesturesExtra {
+  scale?: number;
+  deltaScale?: number;
+  rotate?: number;
+  deltaRotate?: number;
+  eventCache?: (PointerEvent | Touch)[];
+}
 
 export interface IFunc {
-  (event: MouseEvent | WheelEvent): void;
+  (event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra): void;
 }

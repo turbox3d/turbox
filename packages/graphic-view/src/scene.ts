@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommandBox, CommandEventType, ITool } from '@turbox3d/command-manager';
-import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneMouseEvent } from '@turbox3d/event-manager';
+import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent } from '@turbox3d/event-manager';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import React from 'react';
 
@@ -48,14 +48,6 @@ export interface BaseSceneProps {
    */
   viewport?: IViewportInfo;
   /**
-   * 创建画布的宽度。默认：600
-   */
-  width?: number;
-  /**
-   * 创建画布的高度。默认：400
-   */
-  height?: number;
-  /**
    * 画布背景色，使用十六进制。默认：0xffffff
    */
   backgroundColor?: number;
@@ -82,7 +74,7 @@ export interface BaseSceneProps {
   /**
    * 点击场景未选中任何目标的回调
    */
-  onClickNothing?: (event: SceneMouseEvent) => void;
+  onClickNothing?: (event: SceneEvent) => void;
   /**
    * 处理本场景的 commandBox
    */
@@ -97,20 +89,28 @@ export interface BaseSceneProps {
   cameraTarget?: Vec3;
   /** 相机控制器的开关，只有 3d 下有 */
   cameraControls?: boolean;
+  /** 视椎体的大小（高度），只供 3d 正交相机使用 */
+  frustumSize?: number;
   /** 坐标系类型 */
   coordinateType?: 'top' | 'front' | 'left';
   /** resizeTo 适配的 dom id 或元素引用 */
   resizeTo?: string | HTMLElement | Window;
-  /** 根据 container 容器的实际大小实时适配，不推荐使用 */
-  resizeByContainerStyle?: boolean;
   /** 分辨率 */
   resolution?: number;
-  /** 是否允许使用允许 toDataUrl 获取画布数据 */
-  allowUseData?: boolean;
+  /** 保留绘制缓存数据，用来截图 */
+  preserveDrawingBuffer?: boolean;
   /** resizeFramebuffer */
   resizeFramebuffer?: boolean;
   /** 颜色输出模式 renderer.outputEncoding */
   outputEncoding?: number;
+  /** SSAO */
+  openSSAO?: boolean;
+  /** 最大帧率限制 */
+  maxFPS?: number;
+  /** 禁用 resize */
+  disableResize?: boolean;
+  /** 渲染标志（用来打开或关闭渲染 ticker，若为 false，则当前帧不渲染） */
+  renderFlag?: boolean;
 }
 
 export interface IViewInfo {
@@ -126,8 +126,10 @@ export interface SceneContext<DisplayObject, Point> {
   updateCursor: (cursor?: string) => void;
   getCommandBox: () => BaseCommandBox | undefined;
   getTools: () => ITool;
-  coordinateTransform: (point: Point, type: CoordinateType) => Point;
-  getScreenShot: () => string;
+  /** @deprecated 放到 tools 里面了，不要再用 */
+  coordinateTransform: (point: Point, type: CoordinateType, z?: number) => Point;
+  /** @deprecated 放到 tools 里面了，不要再用 */
+  getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => Promise<string | Blob>;
 }
 
 export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> extends React.Component<BaseSceneProps> {
@@ -175,13 +177,21 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
 
   resolution: number;
 
+  backgroundImage: DisplayObject;
+
+  maxFPS: number;
+
+  renderFlag = true;
+
   constructor(props: BaseSceneProps) {
     super(props);
+    this.maxFPS = props.maxFPS || 60;
     if (this.props.viewport) {
       this.resolution = this.props.viewport.resolution || window.devicePixelRatio;
     } else {
       this.resolution = this.props.resolution || window.devicePixelRatio;
     }
+    this.updateRenderFlag(this.props.renderFlag);
     if (!BaseScene.appMap.has(this.props.container)) {
       const app = this.createApp();
       // 关闭默认交互
@@ -205,7 +215,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       getCommandBox: () => this.props.commandBox,
       getTools: this.getTools,
       coordinateTransform: this.coordinateTransform,
-      getScreenShot: () => this.getScreenShot(),
+      getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
     };
   }
 
@@ -214,20 +224,20 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
   }
 
   componentDidUpdate() {
-    const { resizeByContainerStyle = false, viewport } = this.props;
+    const { viewport, disableResize = false, renderFlag = true } = this.props;
     const app = this.getCurrentApp();
     if (!app) {
       return;
     }
-    if (resizeByContainerStyle && app) {
-      this.resizeStageByCanvas(app);
-    }
-    this.resolution = this.props.resolution || window.devicePixelRatio;
-    this.updateResolution(app);
+    this.updateRenderFlag(renderFlag);
+    this.setBackGroundImage(app);
     if (this.sceneType === SceneType.Scene3D) {
       this.updateCameraInfo();
     }
     if (!viewport) {
+      this.resolution = this.props.resolution || window.devicePixelRatio;
+      this.updateResolution(app);
+      !disableResize && this.resizeStageByCanvas(app);
       return;
     }
     const ctrl = this.getCurrentInteractiveController();
@@ -236,11 +246,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
     this.resolution = viewport.resolution || window.devicePixelRatio;
     this.updateResolution(app);
-    this.resizeViewport(app);
-    // 重新计算原始 view
-    if (this.sceneType === SceneType.Scene2D) {
-      this.compute2dOriginView();
-    }
+    !disableResize && this.resizeStageByCanvas(app);
     // 重新计算 viewport
     this.computeViewport();
   }
@@ -324,16 +330,26 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       coordinateType: this.props.coordinateType,
       canvasHandler: {
         onClick: this.onClick,
+        onDBClick: this.onDBClick,
         onRightClick: this.onRightClick,
         onDragStart: this.onDragStart,
         onDragMove: this.onDragMove,
         onDragEnd: this.onDragEnd,
-        onMouseMove: this.onMouseMove,
-        onMouseUp: this.onMouseUp,
+        onPinchStart: this.onPinchStart,
+        onPinch: this.onPinch,
+        onPinchEnd: this.onPinchEnd,
+        onRotateStart: this.onRotateStart,
+        onRotate: this.onRotate,
+        onRotateEnd: this.onRotateEnd,
+        onPress: this.onPress,
+        onPressUp: this.onPressUp,
+        onPointerMove: this.onPointerMove,
+        onPointerUp: this.onPointerUp,
         onWheel: this.onWheel,
       },
       getCoordinateCtrl: this.getCoordinateCtrl,
       getHitTargetOriginal: this.getHitTargetOriginal(),
+      maxFPS: this.maxFPS,
     });
     const obj = BaseScene.interactiveMap.get(app);
     if (!obj) {
@@ -345,6 +361,11 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       ic && ic.removeAllListener();
       obj[this.props.id] = interactiveController;
     }
+  }
+
+  /** 更新渲染状态 */
+  private updateRenderFlag(flag = true) {
+    this.renderFlag = flag;
   }
 
   private getCoordinateCtrl = () => this.coordinate;
@@ -388,21 +409,26 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       coordinateTransform: this.coordinateTransform,
       getCamera: () => this.camera,
       getRaycaster: () => this.raycaster,
+      getScene: () => this.scene,
+      getRootView: () => this.view,
+      getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
+      getApp: () => this.getCurrentApp(),
     };
   };
 
   /**
    * 坐标转化
    */
-  private coordinateTransform = (point: Vec2, type: CoordinateType) => (this.coordinate ? this.coordinate.transform(point, type) : { x: 0, y: 0 });
+  private coordinateTransform = (point: Vec2, type: CoordinateType, z?: number) => (this.coordinate ? this.coordinate.transform(point, type, z) : { x: 0, y: 0 });
 
   /**
    * 挂在画布到容器上
    */
   private mountCanvas = () => {
-    const container = typeof this.props.container === 'string' ? document.getElementById(this.props.container) : this.props.container;
+    const { container } = this.props;
+    const el = typeof container === 'string' ? document.getElementById(container) : container;
     // 如果容器 DOM 没有准备好，留到下一帧再检测
-    if (!container) {
+    if (!el) {
       this.mountTimer = requestAnimationFrame(this.mountCanvas);
       return;
     }
@@ -411,17 +437,17 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       return;
     }
     // 挂载
-    if (!BaseScene.appMountedStatus.has(this.props.container)) {
-      BaseScene.appMountedStatus.set(this.props.container, true);
+    if (!BaseScene.appMountedStatus.has(container)) {
+      BaseScene.appMountedStatus.set(container, true);
       if (window.$$turbox_hot) {
-        container.innerHTML = '';
+        el.innerHTML = '';
       }
-      container.appendChild(this.getCanvasView(app));
+      el.appendChild(this.getCanvasView(app));
     }
     // 根据容器大小确定画布大小
     this.resizeStageByCanvas(app);
     // 初始化背景图
-    this.initBackGroundImage(app);
+    this.setBackGroundImage(app);
     if (this.sceneType === SceneType.Scene3D) {
       // 更新相机信息
       this.updateCameraInfo();
@@ -457,11 +483,12 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
   abstract updateCameraTarget(position: Vec3): void;
 
   private resizeHandler = () => {
+    const { disableResize = false } = this.props;
     const app = this.getCurrentApp();
     if (!app) {
       return;
     }
-    this.resizeStageByCanvas(app);
+    !disableResize && this.resizeStageByCanvas(app);
   }
 
   /** 初始化坐标系控制系统 */
@@ -475,6 +502,9 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     this.resizeStage(app);
     this.width = this.getCanvasView(app).width / this.resolution;
     this.height = this.getCanvasView(app).height / this.resolution;
+    if (this.sceneType === SceneType.Scene2D) {
+      this.compute2dOriginView();
+    }
   }
 
   /** 初始化天空盒 */
@@ -485,8 +515,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
    */
   abstract resizeStage(app: ApplicationContext): void;
 
-  /** 初始化背景图 */
-  abstract initBackGroundImage(app: ApplicationContext): void;
+  /** 设置背景图 */
+  abstract setBackGroundImage(app: ApplicationContext): void;
 
   /**
    * 计算2d原始视图的缩放和位置
@@ -561,16 +591,13 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     if (!app) {
       return;
     }
-    if (this.sceneType === SceneType.Scene2D) {
-      this.compute2dOriginView();
-    }
     this.addRootViewContainer(app);
   }
 
   /** 添加根视图容器到 app stage 的实现 */
   abstract addRootViewContainer(app: ApplicationContext): void;
 
-  onClick = (event: SceneMouseEvent) => {
+  onClick = (event: SceneEvent) => {
     const { onClickNothing, commandBox } = this.props;
     if (onClickNothing) {
       onClickNothing(event);
@@ -580,14 +607,27 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
   };
 
-  onRightClick = (event: SceneMouseEvent) => {
-    const { commandBox } = this.props;
+  onDBClick = (event: SceneEvent) => {
+    const { onClickNothing, commandBox } = this.props;
+    if (onClickNothing) {
+      onClickNothing(event);
+    }
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onDBClick, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onRightClick = (event: SceneEvent) => {
+    const { onClickNothing, commandBox } = this.props;
+    if (onClickNothing) {
+      onClickNothing(event);
+    }
     if (commandBox) {
       commandBox.distributeEvent(CommandEventType.onRightClick, this.getViewEntity(), event, this.getTools());
     }
   };
 
-  onDragStart = (event: SceneMouseEvent) => {
+  onDragStart = (event: SceneEvent) => {
     const { draggable = true, commandBox } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'start');
@@ -597,7 +637,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
   };
 
-  onDragMove = (event: SceneMouseEvent) => {
+  onDragMove = (event: SceneEvent) => {
     const { draggable = true, commandBox } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'move');
@@ -607,8 +647,8 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
   };
 
-  onDragEnd = (event: SceneMouseEvent) => {
-    const { draggable, commandBox } = this.props;
+  onDragEnd = (event: SceneEvent) => {
+    const { draggable = true, commandBox } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'end');
     }
@@ -617,14 +657,73 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
   };
 
-  onMouseMove = (event: SceneMouseEvent) => {
+  onPinchStart = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onPinchStart, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onPinch = (event: SceneEvent) => {
+    const { scalable = true, commandBox } = this.props;
+    if (scalable) {
+      this.canvasScaleImpl(event);
+    }
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onPinch, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onPinchEnd = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onPinchEnd, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onRotateStart = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onRotateStart, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onRotate = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onRotate, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onRotateEnd = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onRotateEnd, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onPress = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onPress, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onPressUp = (event: SceneEvent) => {
+    const { commandBox } = this.props;
+    if (commandBox) {
+      commandBox.distributeEvent(CommandEventType.onPressUp, this.getViewEntity(), event, this.getTools());
+    }
+  };
+
+  onPointerMove = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
       commandBox.distributeEvent(CommandEventType.onCarriageMove, this.getViewEntity(), event, this.getTools());
     }
   };
 
-  onMouseUp = (event: SceneMouseEvent) => {
+  onPointerUp = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
       commandBox.distributeEvent(CommandEventType.onCarriageEnd, this.getViewEntity(), event, this.getTools());
@@ -638,15 +737,15 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
     const ctrl = this.getCurrentInteractiveController();
     if (commandBox && ctrl) {
-      commandBox.distributeEvent(CommandEventType.onZoom, this.getViewEntity(), SceneMouseEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint), this.getTools());
+      commandBox.distributeEvent(CommandEventType.onZoom, this.getViewEntity(), SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint), this.getTools());
     }
   };
 
   /** 画布拖拽功能的实现，注意：如果已经引入其他交互插件则无需重复实现，避免实现上的冲突 */
-  abstract canvasDragImpl(event: SceneMouseEvent, type: 'start' | 'move' | 'end'): void;
+  abstract canvasDragImpl(event: SceneEvent, type: 'start' | 'move' | 'end'): void;
 
   /** 画布缩放功能的实现，注意：如果已经引入其他交互插件则无需重复实现，避免实现上的冲突 */
-  abstract canvasScaleImpl(event: WheelEvent): void;
+  abstract canvasScaleImpl(event: WheelEvent | SceneEvent): void;
 
   /** 获取视口的实现 */
   abstract getViewport(): Viewport | undefined;
@@ -667,5 +766,5 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
   abstract setViewportVisible(visible: boolean): void;
 
   /** 获取截图 */
-  abstract getScreenShot(): string;
+  abstract getScreenShot(sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean): Promise<string | Blob>;
 }

@@ -82,7 +82,7 @@
   },
   "dependencies": {
     "@turbox3d/event-manager": "^1.0.31",
-    "@turbox3d/graphic-view-pixi": "^1.0.47",
+    "@turbox3d/renderer-pixi": "^0.0.1",
     "@turbox3d/shared": "^1.0.12"
   }
 }

@@ -4,11 +4,12 @@ import { EMPTY_ACTION_NAME, MATERIAL_TYPE } from '../const/symbol';
 import { Mutation, BabelDescriptor } from '../interfaces';
 import { Domain } from '../core/domain';
 import { EMaterialType } from '../const/enums';
-import { materialCallStack } from '../utils/materialCallStack';
 
-interface MutationConfig {
+export interface MutationConfig {
   immediately: boolean;
   displayName?: string;
+  forceSaveHistory?: boolean;
+  isNeedRecord?: boolean;
 }
 
 function createMutation(target: object | undefined, name: string | symbol | number, original: Mutation, config: MutationConfig) {
@@ -19,7 +20,6 @@ function createMutation(target: object | undefined, name: string | symbol | numb
     if (!target) {
       _this = new Domain();
     }
-    const stackId = materialCallStack.push({ type: EMaterialType.MUTATION, method: stringMethodName, domain: _this.constructor.name });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -31,17 +31,18 @@ function createMutation(target: object | undefined, name: string | symbol | numb
       domain: _this,
       original: bind(original, _this) as Mutation,
       immediately: !!config.immediately,
-      stackId
+      forceSaveHistory: !!config.forceSaveHistory,
+      isNeedRecord: !!config.isNeedRecord,
     });
     if (isPromise(result)) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         (result as Promise<any>).then((res) => {
-          materialCallStack.pop();
           resolve(res);
+        }, (err) => {
+          reject(err);
         });
       });
     }
-    materialCallStack.pop();
     if (result && result instanceof Error) {
       throw result;
     }
@@ -52,7 +53,7 @@ function createMutation(target: object | undefined, name: string | symbol | numb
 }
 
 export function mutation(target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>): any;
-export function mutation(displayName?: string, immediately?: boolean): (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
+export function mutation(displayName?: string, immediately?: boolean, forceSaveHistory?: boolean, isNeedRecord?: boolean): (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<Mutation>) => any;
 export function mutation(name: string | symbol | number, original: Mutation, config?: MutationConfig): (...payload: any[]) => any;
 /**
  * decorator @mutation, update state by mutation styling.
@@ -61,11 +62,15 @@ export function mutation(...args: any[]) {
   const config: MutationConfig = {
     immediately: false,
     displayName: '',
+    forceSaveHistory: false,
+    isNeedRecord: true,
   };
   if (typeof args[0] === 'string' && typeof args[1] === 'function') {
     if (args[2] !== void 0) {
       config.displayName = args[2].displayName;
       config.immediately = args[2].immediately;
+      config.forceSaveHistory = !!args[2].forceSaveHistory;
+      config.isNeedRecord = !!args[2].isNeedRecord;
     }
     const name = args[0];
     const original = args[1];
@@ -127,6 +132,8 @@ export function mutation(...args: any[]) {
   // @mutation(args)
   config.displayName = args[0] || '';
   config.immediately = args[1] !== void 0 ? args[1] : false;
+  config.forceSaveHistory = args[2] !== void 0 ? args[2] : false;
+  config.isNeedRecord = args[3] !== void 0 ? args[3] : true;
 
   return decorator;
 }

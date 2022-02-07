@@ -4,8 +4,7 @@ import { store } from './store';
 import { ActionStatus, EMaterialType } from '../const/enums';
 import { HistoryNode, TimeTravel } from './time-travel';
 import { triggerCollector } from './collector';
-import { mutation } from '../decorators/mutation';
-import { materialCallStack } from '../utils/materialCallStack';
+import { mutation, MutationConfig } from '../decorators/mutation';
 
 export const actionPool: Action[] = [];
 
@@ -49,20 +48,22 @@ export class Action {
     history: new Map(),
   };
 
-  execute(runner: (...payload: any[]) => void | Promise<void>, payload: any[] = [], isWrapMutation = true): Promise<void> | void {
+  execute(runner: (...payload: any[]) => void | Promise<void>, payload: any[] = [], isWrapMutation = true, options?: MutationConfig): Promise<void> | void {
     if (this.status === ActionStatus.ABORT) {
       return;
     }
     Action.context = this;
     let wp: (...payload: any[]) => void | Promise<void>;
     if (isWrapMutation) {
-      wp = mutation(this.name, runner);
+      wp = mutation(this.name, runner, options);
     } else {
       wp = runner;
     }
     const result = wp(...payload);
     if (isPromise(result)) {
       return (result as Promise<void>).then(() => {
+        Action.context = void 0;
+      }, () => {
         Action.context = void 0;
       });
     }
@@ -83,7 +84,6 @@ export class Action {
     const original = () => {
       TimeTravel.undoHandler(this.historyNode.history);
     };
-    const stackId = materialCallStack.push({ type: EMaterialType.UNDO, method: EMaterialType.UNDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -98,9 +98,7 @@ export class Action {
       original,
       type: EMaterialType.UNDO,
       isInner: true,
-      stackId
     });
-    materialCallStack.pop();
     if (keepHistory) {
       return;
     }
@@ -118,7 +116,6 @@ export class Action {
     const original = () => {
       TimeTravel.redoHandler(this.historyNode.history);
     };
-    const stackId = materialCallStack.push({ type: EMaterialType.REDO, method: EMaterialType.REDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -133,9 +130,7 @@ export class Action {
       original,
       type: EMaterialType.REDO,
       isInner: true,
-      stackId
     });
-    materialCallStack.pop();
     if (keepHistory) {
       return;
     }

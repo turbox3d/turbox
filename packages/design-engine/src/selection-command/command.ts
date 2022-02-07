@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommand } from '@turbox3d/command-manager';
-import { IViewEntity } from '@turbox3d/event-manager';
+import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import EntityObject from '../entity-object';
 import { Selection } from './domain';
 import HintCommand from '../hint-command/index';
@@ -58,9 +59,20 @@ export class SelectionCommand extends BaseCommand {
     return this.selection.selectMode;
   }
 
+  /**
+   * 设置事件的多选状态，每次事件行为都会根据此状态判断是否为多选行为
+   *
+   * 注意：每次选择事件之前都需要设置，因为事件完成后状态会被清除，这只在需要自定义多选按键/状态的情况下才会用到（默认情况下按 shift 会设置）
+   */
+  setMultiSelect(isMultiple: boolean) {
+    this.selection.setMultiSelect(isMultiple);
+  }
+
   /** 选中指定模型 */
-  select(models: EntityObject[]) {
-    this.selection.clearAllSelected(this.onUnselectHandler);
+  select(models: EntityObject[], clearExisted = true) {
+    if (clearExisted) {
+      this.selection.clearAllSelected(this.onUnselectHandler);
+    }
     this.selection.select(models, this.onSelectHandler);
   }
 
@@ -114,11 +126,10 @@ export class SelectionCommand extends BaseCommand {
     }
   }
 
-  protected onClick(viewEntity: IViewEntity) {
-    if (!this.selection.selectEntityTypes || !this.selection.selectEntityTypes.includes(viewEntity.type)) {
-      this.selection.setLayerDepth(this.modeMap[this.selection.selectMode]);
+  protected onClick(viewEntity: IViewEntity, event: SceneEvent) {
+    if ((event.event as any).shiftKey) {
+      this.setMultiSelect(true);
     }
-    /** @todo 多选 */
     this.selectHandler(viewEntity, EClickAction.CLICK);
   }
 
@@ -126,16 +137,32 @@ export class SelectionCommand extends BaseCommand {
     this.selectHandler(viewEntity, EClickAction.DOUBLE_CLICK);
   }
 
-  private selectHandler(viewEntity: IViewEntity, action: EClickAction) {
-    this.selection.clearAllSelected(this.onUnselectHandler);
-    this.hint?.unHint();
+  /** 选中实体通用逻辑 */
+  selectHandler(viewEntity: IViewEntity, action: EClickAction) {
+    if (action === EClickAction.CLICK) {
+      if (!this.selection.selectEntityTypes || !this.selection.selectEntityTypes.includes(viewEntity.type)) {
+        this.selection.setLayerDepth(this.modeMap[this.selection.selectMode]);
+      }
+    }
     const model = EntityObject.getEntityById(viewEntity.id);
+    const isMultiSelect = this.selection.isMultiSelectMode;
+    if (!isMultiSelect) {
+      this.selection.clearAllSelected(this.onUnselectHandler);
+    }
+    this.hint?.unHint();
     if (!model) {
       this.selection.setLayerDepth(this.modeMap[this.selection.selectMode]);
+      this.setMultiSelect(false);
       return;
     }
     if (this.selection.selectEntityTypes && !this.selection.selectEntityTypes.includes(viewEntity.type)) {
       this.selection.setLayerDepth(this.modeMap[this.selection.selectMode]);
+      this.setMultiSelect(false);
+      return;
+    }
+    if (isMultiSelect && this.getSelectedEntities().includes(model)) {
+      this.unselect([model]);
+      this.setMultiSelect(false);
       return;
     }
     const path = model.getParentPathChain();
@@ -157,5 +184,6 @@ export class SelectionCommand extends BaseCommand {
       this.selection.select([path[0]], this.onSelectHandler);
     }
     this.targetRootEntity = path[0];
+    this.setMultiSelect(false);
   }
 }

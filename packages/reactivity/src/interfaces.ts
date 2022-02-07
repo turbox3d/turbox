@@ -18,7 +18,7 @@ export interface Middleware {
 
 export interface Store {
   dispatch: Dispatch;
-  subscribe: (listener: Function, componentInstanceUid: ReactionId) => () => void;
+  subscribe: (listener: Function, componentInstanceUid: ReactionId, idCustomType?: string) => () => void;
 }
 
 export interface Mutation {
@@ -39,7 +39,8 @@ export interface DispatchedAction {
   domain?: Domain;
   immediately?: boolean;
   isInner?: boolean;
-  stackId: number;
+  forceSaveHistory?: boolean;
+  isNeedRecord?: boolean;
 }
 
 export interface ConfigCtx {

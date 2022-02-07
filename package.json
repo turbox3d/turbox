@@ -6,13 +6,13 @@
     "start": "webpack-dev-server --config ./demo/webpack.config.js",
     "build": "NODE_ENV=production webpack ./demo/src/main --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
-    "build:doc": "npx typedoc packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/graphic-view/src/index.ts packages/graphic-view-pixi/src/index.ts packages/graphic-view-three/src/index.ts packages/math/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts --out typedocs",
-    "build:doc-inner": "npx typedoc packages/app-plugin-manager/src/index.ts packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/graphic-view/src/index.ts packages/graphic-view-pixi/src/index.ts packages/graphic-view-t3d/src/index.ts packages/graphic-view-three/src/index.ts packages/math/src/index.ts packages/production-engine/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts packages/turbox-dev-core/src/index.ts packages/web-ui/src/index.ts --out typedocs",
+    "build:doc": "npx typedoc packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/renderer-core/src/index.ts packages/renderer-pixi/src/index.ts packages/renderer-three/src/index.ts packages/math/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts --out typedocs",
+    "build:doc-inner": "npx typedoc packages/app-plugin-manager/src/index.ts packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/renderer-core/src/index.ts packages/renderer-pixi/src/index.ts packages/renderer-three/src/index.ts packages/math/src/index.ts packages/production-engine/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts packages/turbox-dev-core/src/index.ts packages/web-ui/src/index.ts --out typedocs",
     "build:main-doc": "npx typedoc packages/turbox/src/index.ts packages/turbox3d/src/index.ts --out typedocs",
     "prerelease": "npx lerna version --no-push",
     "release": "npx lerna publish from-git --yes",
     "post-release": "git push --follow-tags origin",
-    "deploy": "npx lerna bootstrap && npx lerna run build:ts && npx lerna run test && npx lerna publish"
+    "deploy": "npx lerna bootstrap && npx lerna run build:ts && npx lerna publish"
   },
   "tnpm": {
     "mode": "yarn"
@@ -92,5 +92,16 @@
     "webpack-bundle-analyzer": "^3.9.0",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.10.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run lint-tsc"
+    }
   }
 }

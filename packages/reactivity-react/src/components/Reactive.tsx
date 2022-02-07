@@ -2,7 +2,7 @@ import { fail } from '@turbox3d/shared';
 import { store, depCollector, REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from '@turbox3d/reactivity';
 import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
-import { copyStaticProperties } from '../utils/index';
+import { copyStaticProperties, IdCustomType } from '../utils/index';
 
 export const TURBOX_PREFIX = '@@TURBOX__';
 const IS_INNER = `${TURBOX_PREFIX}isInner`;
@@ -51,7 +51,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
           this.unsubscribeHandler = store.subscribe((isInner: boolean) => {
             _this[IS_INNER] = isInner;
             this.forceUpdate();
-          }, this);
+          }, this, IdCustomType);
         }
 
         componentWillUnmount() {
@@ -106,7 +106,7 @@ export function Reactive<P extends object>(arg?: React.ComponentType<P> | Functi
       this[UNSUBSCRIBE_HANDLER] = store.subscribe((isInner: boolean) => {
         this[IS_INNER] = isInner;
         this.forceUpdate();
-      }, this);
+      }, this, IdCustomType);
     };
 
     target.componentWillUnmount = function () {

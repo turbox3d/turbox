@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Component } from 'react';
 import { nextTick } from '@turbox3d/shared';
 import { ctx } from '../const/config';
 import { Reaction } from './reactive';
@@ -7,10 +6,12 @@ import { HistoryCollectorPayload, TimeTravel, History } from './time-travel';
 import { actionTypeChain, ActionType } from './store';
 import { EDepState, ECollectType, ESpecialReservedKey } from '../const/enums';
 import { Action } from './action';
-import { rawCache } from './domain';
+import { KeyPathType, rawCache } from './domain';
 import { isDomain } from '../utils/common';
+import { EEventName, emitter, SetPropertyEvent } from '../utils/event';
+import { materialCallStack } from '../utils/materialCallStack';
 
-export type ReactionId = Component | Reaction;
+export type ReactionId = any | Reaction;
 
 export type DepNodeAssembly = Map<any, Set<ReactionId>>;
 
@@ -146,14 +147,41 @@ export const depCollector = new DepCollector();
 class TriggerCollector {
   public waitTriggerIds: Set<ReactionId> = new Set();
 
-  trigger(target: object, key: any, payload: HistoryCollectorPayload, isNeedRecord = true) {
-    const { type } = payload;
+  trigger(
+    target: object,
+    key: any,
+    payload: HistoryCollectorPayload,
+    isNeedRecord = true,
+    devToolInfo?: {
+      keyPath: Array<{ type: KeyPathType; value: string }>;
+      domain: string;
+    }
+  ) {
+    const { type, beforeUpdate, didUpdate } = payload;
+    if (ctx.devTool && devToolInfo) {
+      try {
+        const stringify = (window && (window as any).__TURBOX_DEVTOOL_GOLBAL_STRINGIFY__) ?? JSON.stringify;
+        const event: SetPropertyEvent = {
+          time: Date.now(),
+          stackId: materialCallStack.currentStack?.stackId,
+          domain: devToolInfo.domain,
+          keyPath: devToolInfo.keyPath,
+          newValue: stringify(didUpdate),
+          oldValue: stringify(beforeUpdate),
+          type
+        };
+        emitter.emit(EEventName.setProperty, event);
+      } catch (e) {
+        console.error(e);
+      }
+    }
     const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;
     this.collectComponentId(target, enhanceKey);
     if (
       !ctx.timeTravel.isActive ||
       !TimeTravel.currentTimeTravel ||
       !isNeedRecord ||
+      TimeTravel.processing ||
       enhanceKey === ESpecialReservedKey.ITERATE ||
       enhanceKey === ESpecialReservedKey.COMPUTED
     ) {
@@ -187,7 +215,7 @@ class TriggerCollector {
   }
 
   save(action?: Action) {
-    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel) {
+    if (!ctx.timeTravel.isActive || !TimeTravel.currentTimeTravel || Action.context) {
       return;
     }
     const ctt = TimeTravel.currentTimeTravel;

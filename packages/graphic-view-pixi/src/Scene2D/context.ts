@@ -15,5 +15,5 @@ export const Scene2dContext = React.createContext && React.createContext<SceneCo
   getCommandBox: throwErr as () => BaseCommandBox | undefined,
   getTools: throwErr as () => ITool,
   coordinateTransform: throwErr as any as (point: Vec2, type: CoordinateType) => Vec2,
-  getScreenShot: () => '',
+  getScreenShot: throwErr as any,
 });

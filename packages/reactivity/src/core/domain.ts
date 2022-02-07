@@ -10,13 +10,16 @@ import { ComputedOption, computed } from '../decorators/computed';
 import { ctx } from '../const/config';
 import { mutation } from '../decorators/mutation';
 import { action } from '../decorators/action';
-import { EEventName, emitter, SetPropertyEvent } from '../utils/event';
 import { materialCallStack } from '../utils/materialCallStack';
 import { isDomain } from '../utils/common';
 
+export enum KeyPathType {
+  property = 'property',
+  index = 'index'
+}
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
-export const rootKeyCache = new WeakMap<any, string>();
+export const keyPathCache = new WeakMap<any, Array<{ type: KeyPathType; value: string }>>();
 export const collectionTypes = [Map, Set, WeakMap, WeakSet];
 
 interface DomainContext {
@@ -64,8 +67,14 @@ export class Domain<S = {}> {
     };
   }
 
-  propertyGet(key: string, config: ReactorConfig) {
-    const v = this.$$turboxProperties[key];
+  propertyGet(key: string, config: ReactorConfig, hasInitializer = false, defaultValue?: any) {
+    const hasKey = key in this.$$turboxProperties; // if first initialize, will be false
+    const useDefault = hasInitializer && !hasKey;
+    const v = useDefault ? defaultValue : this.$$turboxProperties[key];
+    if (useDefault) {
+      // hasInitializer won't trigger setter when first init value, need trigger it manually
+      this.propertySet(key, v, config);
+    }
     const mergedConfig = Object.assign({}, {
       isNeedRecord: this.context.isNeedRecord,
     }, config);
@@ -73,7 +82,7 @@ export class Domain<S = {}> {
 
     depCollector.collect(this, key);
 
-    return isObject(v) && !isDomain(v) && mergedConfig.deepProxy ? this.proxyReactive(v, key) : v;
+    return isObject(v) && !isDomain(v) && mergedConfig.deepProxy ? this.proxyReactive(v, [{ type: KeyPathType.property, value: key }]) : v;
   }
 
   propertySet(key: string, v: any, config: ReactorConfig) {
@@ -85,22 +94,15 @@ export class Domain<S = {}> {
     this.reactorConfigMap[key] = mergedConfig;
 
     if (oldValue !== v) {
-      if (ctx.devTool) {
-        const event: SetPropertyEvent = {
-          domain: this.constructor.name,
-          property: key,
-          newValue: v,
-          oldValue,
-          isNewlyAdded: false,
-        };
-        emitter.emit(EEventName.setProperty, event);
-      }
       this.$$turboxProperties[key] = v;
       triggerCollector.trigger(this, key, {
         type: ECollectType.SET,
         beforeUpdate: oldValue,
         didUpdate: v,
-      }, mergedConfig.isNeedRecord);
+      }, mergedConfig.isNeedRecord, {
+        keyPath: [{ type: KeyPathType.property, value: key }],
+        domain: this.constructor.name
+      });
     }
   }
 
@@ -171,9 +173,9 @@ export class Domain<S = {}> {
   /**
    * the syntax sweet of updating state out of mutation
    */
-  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string): void {
+  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string, forceSaveHistory?: boolean, isNeedRecord?: boolean, immediately?: boolean): void {
     invariant(isPlainObject(obj), 'resetState(...) param type error. Param should be a plain object.');
-    this.dispatch(obj as object, actionName, displayName);
+    this.dispatch(obj as object, actionName, displayName, forceSaveHistory, isNeedRecord, immediately);
   }
 
   private proxySet(target: any, key: string, value: any, receiver: object) {
@@ -185,7 +187,8 @@ export class Domain<S = {}> {
     ctx.strictMode && this.illegalAssignmentCheck(target, key);
     const hadKey = hasOwn(target, key);
     const oldValue = target[key];
-    const rootKey = rootKeyCache.get(target)!;
+    const keyPath = keyPathCache.get(target)!;
+    const rootKey = keyPath[0].value;
     // do nothing if target is in the prototype chain
     if (target === proxyCache.get(receiver)) {
       if (key === ESpecialReservedKey.ARRAY_LENGTH || value !== oldValue) {
@@ -193,7 +196,10 @@ export class Domain<S = {}> {
           type: ECollectType.SET,
           beforeUpdate: key === ESpecialReservedKey.ARRAY_LENGTH ? this.originalArrayLength : oldValue,
           didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath: [{ type: KeyPathType.property, value: key }],
+          domain: this.constructor.name
+        });
         if (key === ESpecialReservedKey.ARRAY_LENGTH) {
           this.currentTarget = void 0;
           this.originalArrayLength = void 0;
@@ -204,20 +210,12 @@ export class Domain<S = {}> {
           type: ECollectType.ADD,
           beforeUpdate: oldValue,
           didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath: [{ type: KeyPathType.property, value: key }],
+          domain: this.constructor.name
+        });
       }
       const result = Reflect.set(target, key, value, receiver);
-      // if (ctx.devTool) {
-      //   const oldRootValue = deepMerge({}, this.$$turboxProperties[rootKey], { clone: true });
-      //   const event: SetPropertyEvent = {
-      //     domain: this.constructor.name,
-      //     property: rootKey,
-      //     newValue: this.$$turboxProperties[rootKey],
-      //     oldValue: oldRootValue,
-      //     isNewlyAdded: !hadKey,
-      //   };
-      //   emitter.emit(EEventName.setProperty, event);
-      // }
       return result;
     }
 
@@ -226,7 +224,8 @@ export class Domain<S = {}> {
 
   private proxyGet(target: any, key: string, receiver: object) {
     const res = Reflect.get(target, key, receiver);
-    const rootKey = rootKeyCache.get(target)!;
+    const keyPath = keyPathCache.get(target)!;
+    const rootKey = keyPath[0].value;
 
     depCollector.collect(target, key);
     if (this.reactorConfigMap[rootKey].callback) {
@@ -238,17 +237,23 @@ export class Domain<S = {}> {
       !meta.freeze && f();
     }
 
-    return isObject(res) && !isDomain(res) ? this.proxyReactive(res, rootKey) : res;
+    return isObject(res) && !isDomain(res)
+      ? this.proxyReactive(res, [...keyPath, { type: Array.isArray(target) ? KeyPathType.index : KeyPathType.property, value: key }])
+      : res;
   }
 
   private proxyDeleteProperty(target: any, key: string) {
-    const rootKey = rootKeyCache.get(target)!;
+    const keyPath = keyPathCache.get(target)!;
+    const rootKey = keyPath[0].value;
     const oldValue = target[key];
     triggerCollector.trigger(target, key, {
       type: ECollectType.DELETE,
       beforeUpdate: oldValue,
       didUpdate: void 0,
-    }, this.reactorConfigMap[rootKey].isNeedRecord);
+    }, this.reactorConfigMap[rootKey].isNeedRecord, {
+      keyPath: [{ type: KeyPathType.property, value: key }],
+      domain: this.constructor.name
+    });
     return Reflect.deleteProperty(target, key);
   }
 
@@ -261,10 +266,10 @@ export class Domain<S = {}> {
    * proxy value could be
    * boolean, string, number, undefined, null, custom instance, array[], plainObject{}, Map, Set, WeakMap, WeakSet
    */
-  private proxyReactive(raw: object, rootKey: string) {
+  private proxyReactive(raw: object, keyPath: Array<{ type: KeyPathType; value: string }>) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
-    rootKeyCache.set(raw, rootKey);
+    keyPathCache.set(raw, keyPath);
     // different props use same ref
     const refProxy = rawCache.get(raw);
     if (refProxy !== void 0) {
@@ -338,7 +343,8 @@ export class Domain<S = {}> {
     },
     add: (value: any) => {
       const { add, has } = Reflect.getPrototypeOf(target) as SetType;
-      const rootKey = rootKeyCache.get(target)!;
+      const keyPath = keyPathCache.get(target)!;
+      const rootKey = keyPath[0].value;
       const hadValue = has.call(target, value);
 
       if (!hadValue) {
@@ -346,7 +352,10 @@ export class Domain<S = {}> {
           type: ECollectType.SET_ADD,
           beforeUpdate: void 0,
           didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath,
+          domain: this.constructor.name
+        });
 
         triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
           type: ECollectType.SET_ADD,
@@ -357,7 +366,8 @@ export class Domain<S = {}> {
     },
     set: (key: any, value: any) => {
       const { set, get, has } = Reflect.getPrototypeOf(target) as MapType;
-      const rootKey = rootKeyCache.get(target)!;
+      const keyPath = keyPathCache.get(target)!;
+      const rootKey = keyPath[0].value;
       const hadKey = has.call(target, key);
       const oldValue = get.call(target, key);
 
@@ -366,7 +376,10 @@ export class Domain<S = {}> {
           type: ECollectType.MAP_SET,
           beforeUpdate: oldValue,
           didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath,
+          domain: this.constructor.name
+        });
       }
       if (!hadKey) {
         triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
@@ -377,7 +390,8 @@ export class Domain<S = {}> {
     },
     delete: (key: any) => {
       const proto = Reflect.getPrototypeOf(target) as Collection;
-      const rootKey = rootKeyCache.get(target)!;
+      const keyPath = keyPathCache.get(target)!;
+      const rootKey = keyPath[0].value;
       const hadKey = proto.has.call(target, key);
 
       if (!hadKey) {
@@ -389,7 +403,10 @@ export class Domain<S = {}> {
         triggerCollector.trigger(target, key, {
           type: ECollectType.MAP_DELETE,
           beforeUpdate: oldValue,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath,
+          domain: this.constructor.name
+        });
 
         triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
           type: ECollectType.MAP_DELETE,
@@ -399,7 +416,10 @@ export class Domain<S = {}> {
         triggerCollector.trigger(target, key, {
           type: ECollectType.SET_DELETE,
           beforeUpdate: key,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        }, this.reactorConfigMap[rootKey].isNeedRecord, {
+          keyPath,
+          domain: this.constructor.name
+        });
 
         triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
           type: ECollectType.SET_DELETE,
@@ -441,7 +461,7 @@ export class Domain<S = {}> {
     }
   }
 
-  private dispatch(obj: object, actionName?: string, displayName?: string) {
+  private dispatch(obj: object, actionName?: string, displayName?: string, forceSaveHistory?: boolean, isNeedRecord?: boolean, immediately?: boolean) {
     const original = function () {
       const keys = Object.keys(obj);
       for (let i = 0, len = keys.length; i < len; i++) {
@@ -449,15 +469,10 @@ export class Domain<S = {}> {
         this[key] = obj[key];
       }
     };
-    const stackId = materialCallStack.push({
-      type: EMaterialType.UPDATE,
-      method: actionName ?? displayName ?? '$update',
-      domain: this.constructor.name
-    });
     // update state before store init
     if (store === void 0) {
       original.call(this);
-      materialCallStack.pop();
+      materialCallStack.pop(-1);
       return;
     }
     // update state after store init
@@ -468,9 +483,10 @@ export class Domain<S = {}> {
       type: EMaterialType.UPDATE,
       domain: this,
       original: bind(original, this) as Mutation,
-      stackId
+      forceSaveHistory,
+      isNeedRecord,
+      immediately,
     });
-    materialCallStack.pop();
   }
 }
 

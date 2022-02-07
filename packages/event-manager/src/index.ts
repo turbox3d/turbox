@@ -9,7 +9,7 @@ export {
   IHotKeyConfig,
   IHotKeyData,
 } from './keyboard';
-export { SceneMouseEvent } from './interactive/sceneMouse';
+export { SceneEvent } from './interactive/sceneEvent';
 export { CoordinateController } from './interactive/coordinate';
 export { InteractiveEvent } from './interactive/listener/type';
 export { InteractiveListener } from './interactive/listener/index';

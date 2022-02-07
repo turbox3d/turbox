@@ -14,6 +14,7 @@ if (
 }
 
 export { default as Rect2d } from './rect2d/index';
+export { default as Circle2d } from './circle2d/index';
 export { default as Polygon } from './polygon/index';
 export { default as Placement } from './placement/index';
 export { default as DrawUtils } from './draw-utils/index';

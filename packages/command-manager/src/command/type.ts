@@ -8,6 +8,14 @@ export enum CommandEventType {
   onDragStart,
   onDragMove,
   onDragEnd,
+  onPinchStart,
+  onPinch,
+  onPinchEnd,
+  onRotateStart,
+  onRotate,
+  onRotateEnd,
+  onPress,
+  onPressUp,
   onHoverIn,
   onHoverOut,
   onCarriageMove,
@@ -17,9 +25,13 @@ export enum CommandEventType {
 
 export interface ITool {
   hitTarget: (point: { x: number; y: number }) => IViewEntity | undefined;
-  coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType) => Vec2 | Vec3;
+  coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType, z?: number) => Vec2 | Vec3;
   getCamera: () => any;
   getRaycaster: () => any;
+  getScene: () => any;
+  getRootView: () => any;
+  getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => Promise<string | Blob>;
+  getApp: () => any;
 }
 
 export interface IDeclaredMap<T> {

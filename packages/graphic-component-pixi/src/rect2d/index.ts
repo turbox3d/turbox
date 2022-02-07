@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Mesh2D } from '@turbox3d/graphic-view-pixi';
+import { Mesh2D } from '@turbox3d/renderer-pixi';
 import DrawUtils from '../draw-utils/index';
 
 interface IProps {
@@ -18,6 +18,7 @@ interface IProps {
   lineAlpha?: number;
   fillColor?: number;
   fillAlpha?: number;
+  alpha?: number;
 }
 
 /** 正方形 */
@@ -44,6 +45,7 @@ export default class Rect2d extends Mesh2D<IProps> {
       lineAlpha,
       fillColor,
       fillAlpha,
+      alpha,
     } = this.props;
     DrawUtils.drawRect(this.view, {
       x,
@@ -57,6 +59,7 @@ export default class Rect2d extends Mesh2D<IProps> {
       lineAlpha,
       fillColor,
       fillAlpha,
+      alpha,
     });
   }
 

@@ -34,12 +34,12 @@
     "@turbox3d/event-manager": "^1.0.31",
     "@turbox3d/graphic-component-pixi": "^1.0.53",
     "@turbox3d/graphic-component-three": "^1.0.10",
-    "@turbox3d/graphic-view": "^1.0.36",
-    "@turbox3d/graphic-view-pixi": "^1.0.47",
-    "@turbox3d/graphic-view-three": "^1.0.25",
     "@turbox3d/math": "^1.0.15",
     "@turbox3d/reactivity": "^2.0.50",
-    "@turbox3d/reactivity-react": "^1.0.54"
+    "@turbox3d/reactivity-react": "^1.0.54",
+    "@turbox3d/renderer-core": "^0.0.1",
+    "@turbox3d/renderer-pixi": "^0.0.1",
+    "@turbox3d/renderer-three": "^0.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",

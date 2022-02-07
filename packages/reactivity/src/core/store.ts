@@ -5,6 +5,8 @@ import { EMaterialType } from '../const/enums';
 import { Reaction } from './reactive';
 import { ctx } from '../const/config';
 import { AfterStoreChangeEvent, BeforeStoreChangeEvent, EEventName, emitter } from '../utils/event';
+import { materialCallStack } from '../utils/materialCallStack';
+import { TimeTravel } from './time-travel';
 
 export let store: Store;
 
@@ -15,10 +17,20 @@ export interface ActionType {
 
 export const actionTypeChain: ActionType[] = [];
 
-let batchedUpdates: Function | undefined;
+export interface RegisterExternalBatchUpdateParam {
+  handler: Function;
+  idCustomType: string;
+}
 
-export const registerExternalBatchUpdate = (externalMethod: Function) => {
-  batchedUpdates = externalMethod;
+export interface IdToListenersInfo {
+  listeners: Function[];
+  idCustomType?: string;
+}
+
+const batchedUpdates: RegisterExternalBatchUpdateParam[] = [];
+
+export const registerExternalBatchUpdate = (obj: RegisterExternalBatchUpdateParam) => {
+  batchedUpdates.push(obj);
 };
 
 export function createStore(enhancer: (createStore: any) => Store) {
@@ -27,16 +39,22 @@ export function createStore(enhancer: (createStore: any) => Store) {
     return store;
   }
 
-  const componentUUIDToListeners: WeakMap<ReactionId, Function[]> = new WeakMap();
+  const componentUUIDToListeners: WeakMap<ReactionId, IdToListenersInfo> = new WeakMap();
 
-  function subscribe(listener: Function, uuid: ReactionId) {
+  function subscribe(listener: Function, uuid: ReactionId, idCustomType?: string) {
     let isSubscribed = true;
-    const listeners = componentUUIDToListeners.get(uuid);
+    const obj = componentUUIDToListeners.get(uuid);
 
-    if (listeners === void 0) {
-      componentUUIDToListeners.set(uuid, [listener]);
-    } else if (!includes(listeners, listener)) {
-      componentUUIDToListeners.set(uuid, listeners.concat(listener));
+    if (obj === void 0 || obj.listeners === void 0) {
+      componentUUIDToListeners.set(uuid, {
+        idCustomType,
+        listeners: [listener],
+      });
+    } else if (!includes(obj.listeners, listener)) {
+      componentUUIDToListeners.set(uuid, {
+        idCustomType,
+        listeners: obj.listeners.concat(listener),
+      });
     }
 
     return function unsubscribe() {
@@ -60,30 +78,37 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (!ids.length || ctx.disableReactive) {
       return;
     }
-    const pendingListeners: Function[] = [];
+    const pendingObjs: IdToListenersInfo[] = [];
 
     for (let index = 0; index < ids.length; index++) {
       const cid = ids[index];
-      const listeners = componentUUIDToListeners.get(cid) || [];
-      pendingListeners.push(...listeners);
+      const obj = componentUUIDToListeners.get(cid);
+      if (obj) {
+        pendingObjs.push(obj);
+      }
     }
 
-    const flush = () => {
-      for (let index = 0; index < pendingListeners.length; index++) {
-        const listener = pendingListeners[index];
-        listener(isInner);
+    const flush = (idCustomType?: string) => () => {
+      for (let index = 0; index < pendingObjs.length; index++) {
+        const obj = pendingObjs[index];
+        if (obj.idCustomType === idCustomType) {
+          const listeners = obj.listeners;
+          for (let j = 0; j < listeners.length; j++) {
+            const listener = listeners[j];
+            listener(isInner);
+          }
+        }
       }
     };
 
     if (useExternalBatchUpdate) {
-      if (batchedUpdates) {
-        batchedUpdates(flush);
-      } else {
-        flush();
-      }
+      batchedUpdates.forEach((obj) => {
+        const batchUpdate = obj.handler;
+        batchUpdate(flush(obj.idCustomType));
+      });
     } else {
       // reverse
-      flush();
+      flush()();
     }
   };
 
@@ -150,8 +175,13 @@ export function createStore(enhancer: (createStore: any) => Store) {
       isInner = false,
       domain,
       name,
-      stackId
+      forceSaveHistory = false,
+      isNeedRecord = true,
     } = dispatchedAction;
+    if (isInner) {
+      TimeTravel.processing = true;
+    }
+    const syncStackId = materialCallStack.push({ type: type!, method: name, domain: domain?.constructor.name });
 
     if (!isInner && (type !== EMaterialType.MUTATION && type !== EMaterialType.UPDATE)) {
       return;
@@ -159,18 +189,22 @@ export function createStore(enhancer: (createStore: any) => Store) {
 
     const callback = () => {
       const ids = [...triggerCollector.waitTriggerIds.values()];
-      if (!ids.length) {
+      if (!ids.length && !forceSaveHistory) {
         clean(false);
         return;
       }
-      if (!isInner) {
+      if (!isInner && isNeedRecord) {
         triggerCollector.save();
       }
       const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
       // do lazy computed reaction first，PS：maybe add new trigger ids
       flushChange(computedReactionIds, false, isInner);
-      const restIds = [...triggerCollector.waitTriggerIds.values()].filter(id => !(id instanceof Reaction && id.computed));
+      const lazyReactiveIds = [...triggerCollector.waitTriggerIds.values()].filter(id => id instanceof Reaction && !id.computed && !id.immediately);
+      const restIds = [...triggerCollector.waitTriggerIds.values()].filter(id => !(id instanceof Reaction));
       clean();
+      // do lazy reactive
+      flushChange(lazyReactiveIds, false, isInner);
+      // do Reactive/ReactReactive/CustomReactive
       flushChange(restIds, true, isInner);
     };
 
@@ -194,7 +228,7 @@ export function createStore(enhancer: (createStore: any) => Store) {
         args: payload,
         state: domain?.$$turboxProperties,
         time: Date.now(),
-        stackId
+        stackId: materialCallStack.currentStack?.stackId
       };
       emitter.emit(EEventName.beforeStoreChange, event);
     }
@@ -213,13 +247,17 @@ export function createStore(enhancer: (createStore: any) => Store) {
         state: domain?.$$turboxProperties,
         async: false,
         time: Date.now(),
-        stackId
+        stackId: materialCallStack.currentStack?.stackId
       };
       emitter.emit(EEventName.afterStoreChange, event);
     }
-
     if (isPromise(result)) {
+      materialCallStack.pop(syncStackId);
       return new Promise((resolve, reject) => {
+        let asyncStackId: number;
+        Promise.resolve().then(() => {
+          asyncStackId = materialCallStack.push({ type: type!, method: name, domain: domain?.constructor.name, syncStackId });
+        });
         (result as Promise<void>).then((res) => {
           if (ctx.devTool) {
             emitter.emit(EEventName.asyncAfterStoreChange, {
@@ -229,13 +267,19 @@ export function createStore(enhancer: (createStore: any) => Store) {
               state: domain?.$$turboxProperties,
               async: true,
               time: Date.now(),
-              stackId
+              stackId: materialCallStack.currentStack?.stackId
             });
           }
           keepAliveComputed(isInner);
           immediatelyReactive(isInner);
           mutationDepth -= 1;
-          nextTickCaller();
+          if (immediately) {
+            // immediately execute
+            dirtyJob && dirtyJob();
+          } else {
+            nextTickCaller();
+          }
+          materialCallStack.pop(asyncStackId);
           resolve(res);
         }).catch((error) => {
           reject(error);
@@ -250,10 +294,12 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (isInner || immediately) {
       // immediately execute
       dirtyJob && dirtyJob();
-      return result;
+      TimeTravel.processing = false;
+    } else {
+      nextTickCaller();
     }
 
-    nextTickCaller();
+    materialCallStack.pop(syncStackId);
 
     return result;
   }

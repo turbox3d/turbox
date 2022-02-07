@@ -24,16 +24,37 @@ export default class DocumentSystem extends Domain {
 
   /** 添加模型 */
   @mutation
-  addModel(model: EntityObject) {
-    if (this.models.has(model.id)) {
+  addModel(model: EntityObject | EntityObject[]) {
+    const add = (m: EntityObject) => {
+      if (this.models.has(m.id)) {
+        return;
+      }
+      this.models.set(m.id, m);
+    };
+    if (Array.isArray(model)) {
+      model.forEach(m => add(m));
       return;
     }
-    this.models.set(model.id, model);
+    add(model);
+  }
+
+  /** 删除模型 */
+  @mutation
+  removeModel(model: EntityObject | EntityObject[]) {
+    if (Array.isArray(model)) {
+      model.forEach(m => this.removeModelById(m.id));
+      return;
+    }
+    this.removeModelById(model.id);
   }
 
   /** 根据 id 删除模型 */
   @mutation
-  removeModelById(id: string) {
+  removeModelById(id: string | string[]) {
+    if (Array.isArray(id)) {
+      id.forEach(i => this.models.delete(i));
+      return;
+    }
     this.models.delete(id);
   }
 
@@ -43,8 +64,19 @@ export default class DocumentSystem extends Domain {
     this.models.clear();
   }
 
+  /** 查找模型 */
+  findModel(model: EntityObject | EntityObject[]) {
+    if (Array.isArray(model)) {
+      return model.map(m => this.findModelById(m.id)) as (EntityObject | undefined)[];
+    }
+    return this.findModelById(model.id) as EntityObject | undefined;
+  }
+
   /** 根据 id 查找模型 */
-  findModelById(id: string) {
+  findModelById(id: string | string[]) {
+    if (Array.isArray(id)) {
+      return id.map(i => this.models.get(i));
+    }
     return this.models.get(id);
   }
 

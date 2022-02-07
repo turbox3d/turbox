@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
-import { IViewEntity, SceneMouseEvent } from '@turbox3d/event-manager';
+import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import { BaseCommandBox } from './BaseCommandBox';
 import { BaseInteraction } from './BaseInteraction';
 import { CommandEventType, ITool } from './type';
@@ -63,7 +63,7 @@ export abstract class BaseCommand extends BaseInteraction {
     //
   }
 
-  distributeEvent(eventType: CommandEventType, ev: IViewEntity, event: SceneMouseEvent, tools: ITool) {
+  distributeEvent(eventType: CommandEventType, ev: IViewEntity, event: SceneEvent, tools: ITool) {
     // step 1 先让子 Commands 处理事件
     // Object.values(this.$children).forEach(command => command.distributeEvent(eventType, ev, event));
     this.activeChildren.forEach(command => command.distributeEvent(eventType, ev, event, tools));

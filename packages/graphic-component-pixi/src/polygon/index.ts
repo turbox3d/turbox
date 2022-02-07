@@ -1,4 +1,4 @@
-import { Mesh2D } from '@turbox3d/graphic-view-pixi';
+import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import DrawUtils from '../draw-utils/index';
 
@@ -17,6 +17,7 @@ interface IProps {
   lineAlpha?: number;
   fillColor?: number;
   fillAlpha?: number;
+  alpha?: number;
   zIndex?: number;
 }
 
@@ -45,6 +46,7 @@ export default class Polygon extends Mesh2D<IProps> {
       lineAlpha,
       fillColor,
       fillAlpha,
+      alpha,
       zIndex,
     } = this.props;
     zIndex && (this.view.zIndex = zIndex);
@@ -56,6 +58,7 @@ export default class Polygon extends Mesh2D<IProps> {
       lineAlpha,
       fillColor,
       fillAlpha,
+      alpha,
     });
   }
 

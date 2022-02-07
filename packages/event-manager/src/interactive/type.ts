@@ -1,4 +1,4 @@
-import { SceneMouseEvent } from './sceneMouse';
+import { SceneEvent } from './sceneEvent';
 
 export enum CoordinateType {
   /** 屏幕到画布 */
@@ -25,32 +25,52 @@ export interface InteractiveConfig {
   isClickable: boolean;
   isDraggable: boolean;
   isHoverable: boolean;
+  isPinchable: boolean;
+  isRotatable: boolean;
+  isPressable: boolean;
   // 交互回调
-  onClick: (event: SceneMouseEvent) => void;
-  onDBClick: (event: SceneMouseEvent) => void;
-  onRightClick: (event: SceneMouseEvent) => void;
-  dragStart: (event: SceneMouseEvent) => void;
-  dragMove: (event: SceneMouseEvent) => void;
-  dragEnd: (event: SceneMouseEvent) => void;
-  onHoverIn: (event: SceneMouseEvent) => void;
-  onHoverOut: (event: SceneMouseEvent) => void;
+  onClick: (event: SceneEvent) => void;
+  onDBClick: (event: SceneEvent) => void;
+  onRightClick: (event: SceneEvent) => void;
+  onDragStart: (event: SceneEvent) => void;
+  onDragMove: (event: SceneEvent) => void;
+  onDragEnd: (event: SceneEvent) => void;
+  onPinchStart: (event: SceneEvent) => void;
+  onPinch: (event: SceneEvent) => void;
+  onPinchEnd: (event: SceneEvent) => void;
+  onRotateStart: (event: SceneEvent) => void;
+  onRotate: (event: SceneEvent) => void;
+  onRotateEnd: (event: SceneEvent) => void;
+  onPress: (event: SceneEvent) => void;
+  onPressUp: (event: SceneEvent) => void;
+  onHoverIn: (event: SceneEvent) => void;
+  onHoverOut: (event: SceneEvent) => void;
   // 关联的 viewEntity
   getViewEntity?: () => IViewEntity;
 }
 
 export interface CanvasHandlers {
   /** 没点击到任何目标时的回调 */
-  onClick: (event: SceneMouseEvent) => void;
-  onRightClick: (event: SceneMouseEvent) => void;
-  onDragStart: (event: SceneMouseEvent) => void;
-  onDragMove: (event: SceneMouseEvent) => void;
-  onDragEnd: (event: SceneMouseEvent) => void;
-  onMouseMove: (event: SceneMouseEvent) => void;
-  onMouseUp: (event: SceneMouseEvent) => void;
+  onClick: (event: SceneEvent) => void;
+  onDBClick: (event: SceneEvent) => void;
+  onRightClick: (event: SceneEvent) => void;
+  onDragStart: (event: SceneEvent) => void;
+  onDragMove: (event: SceneEvent) => void;
+  onDragEnd: (event: SceneEvent) => void;
+  onPinchStart: (event: SceneEvent) => void;
+  onPinch: (event: SceneEvent) => void;
+  onPinchEnd: (event: SceneEvent) => void;
+  onRotateStart: (event: SceneEvent) => void;
+  onRotate: (event: SceneEvent) => void;
+  onRotateEnd: (event: SceneEvent) => void;
+  onPress: (event: SceneEvent) => void;
+  onPressUp: (event: SceneEvent) => void;
+  onPointerMove: (event: SceneEvent) => void;
+  onPointerUp: (event: SceneEvent) => void;
   onWheel: (event: WheelEvent) => void;
 }
 
-export type InteractiveType = 'isClickable' | 'isDraggable' | 'isHoverable';
+export type InteractiveType = 'isClickable' | 'isDraggable' | 'isHoverable' | 'isPinchable' | 'isRotatable' | 'isPressable';
 
 export interface IViewportInfo {
   x: number;

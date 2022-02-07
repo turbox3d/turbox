@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass';
 import React from 'react';
 import { InteractiveConfig, InteractiveType, CoordinateController } from '@turbox3d/event-manager';
 import { BaseScene, SceneContext, SceneType } from '@turbox3d/graphic-view';
@@ -17,36 +19,32 @@ class CoordinateControllerThree extends CoordinateController {
     this.scene3d = scene;
   }
 
-  canvasToSceneImpl(point: Vec2) {
+  canvasToSceneImpl(point: Vec2, z?: number) {
     const app = this.scene3d.getCurrentApp();
-    if (!app) {
+    const ctrl = this.scene3d.getCurrentInteractiveController();
+    if (!app || !ctrl) {
       return {
         x: 0,
         y: 0,
         z: 0,
       };
     }
-    // const camera = this.scene3d.camera!;
-    // const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
-    // const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
-    // const v = new THREE.Vector3(pX, pY, 0.5);
-    // v.unproject(camera);
-    // // 点击的点相对于相机位置的基向量
-    // v.sub(camera.position).normalize();
-    // // 因为相机位置是确定的，可以靠指定想要的场景 z 、相机的 z 和基向量的 z 倒推，算出放大倍数，再把基向量同比放大，用相机位置去加放大的偏移量
-    // const distance = -camera.position.z / v.z;
-    // const pos = new THREE.Vector3();
-    // pos.copy(camera.position).add(v.multiplyScalar(distance));
-    // return {
-    //   x: pos.x,
-    //   y: pos.y,
-    //   z: pos.z,
-    // };
-    const ctrl = this.scene3d.getCurrentInteractiveController();
-    if (ctrl) {
-      return ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3;
+    if (z !== void 0) {
+      const camera = this.scene3d.camera!;
+      const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
+      const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
+      const v = new THREE.Vector3(pX, pY, 0.5);
+      v.unproject(camera);
+      v.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
+      return {
+        x: v.x,
+        y: v.y,
+        z,
+      };
     }
-    return {
+    // 射线穿中的就用穿中的目标点，如果没有就需要指定一个 z，因为升维无法确定 z 的值
+    const p = ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3 | undefined;
+    return p || {
       x: 0,
       y: 0,
       z: 0,
@@ -54,8 +52,9 @@ class CoordinateControllerThree extends CoordinateController {
   }
 
   sceneToCanvasImpl(point: Vec3) {
-    const scenePointVector = new THREE.Vector3(point.x, point.y, point.z);
-    scenePointVector.project(this.scene3d.camera!);
+    const v = new THREE.Vector3(point.x, point.y, point.z);
+    v.applyMatrix4(this.scene3d.view.matrixWorld);
+    v.project(this.scene3d.camera!);
     const app = this.scene3d.getCurrentApp();
     if (!app) {
       return {
@@ -66,8 +65,8 @@ class CoordinateControllerThree extends CoordinateController {
     const halfWidth = app.domElement.clientWidth / 2;
     const halfHeight = app.domElement.clientHeight / 2;
     return {
-      x: Math.round(scenePointVector.x * halfWidth + halfWidth),
-      y: Math.round(-scenePointVector.y * halfHeight + halfHeight),
+      x: Math.round(v.x * halfWidth + halfWidth),
+      y: Math.round(-v.y * halfHeight + halfHeight),
     };
   }
 }
@@ -78,6 +77,8 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   sceneContext: SceneContext<THREE.Object3D, Vec3>;
   controls: OrbitControls;
   raycaster = new THREE.Raycaster();
+  composer: EffectComposer;
+  private timer: number;
 
   render() {
     if (!Scene3dContext) {
@@ -92,7 +93,9 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   createView() {
-    return new THREE.Group();
+    const view = new THREE.Group();
+    view.name = Scene3DSymbol.toString();
+    return view;
   }
 
   getViewInfo() {
@@ -187,18 +190,25 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, width = BaseScene.DEFAULT_WIDTH, height = BaseScene.DEFAULT_HEIGHT, cameraPosition, cameraTarget, cameraControls = true } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, cameraTarget, cameraControls = true, preserveDrawingBuffer = true } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 1, 30000);
+    this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 1, 30000);
     const app = new THREE.WebGLRenderer({
       alpha: transparent,
       antialias: true,
+      preserveDrawingBuffer,
     });
-    app.setSize(width, height);
-    app.setClearColor(backgroundColor);
+    if (this.props.openSSAO) {
+      this.composer = new EffectComposer(app);
+      const ssaoPass = new SSAOPass(this.scene, this.camera, this.width, this.height);
+      ssaoPass.kernelRadius = 16;
+      this.composer.addPass(ssaoPass);
+    }
     app.setPixelRatio(this.resolution);
+    app.setSize(this.width, this.height);
+    app.setClearColor(backgroundColor);
     if (this.props.outputEncoding) {
       app.outputEncoding = this.props.outputEncoding;
     }
@@ -207,9 +217,16 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     this.controls.enabled = cameraControls;
     this.updateCameraTarget(cameraTarget as Vec3);
     const animate = () => {
-      requestAnimationFrame(animate);
-      this.controls.update();
-      app.render(this.scene!, this.camera!);
+      if (this.renderFlag) {
+        this.controls.update();
+        app.render(this.scene!, this.camera!);
+        this.composer?.render();
+      }
+      if (this.maxFPS === 60) {
+        this.timer = requestAnimationFrame(animate);
+      } else {
+        this.timer = window.setTimeout(animate, 1000 / this.maxFPS);
+      }
     };
     animate();
     return app;
@@ -326,8 +343,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       this.camera.aspect = aspect;
       this.camera.updateProjectionMatrix();
     } else if (this.camera && this.camera instanceof THREE.OrthographicCamera) {
-      /** @todo 暂时先写死 */
-      const frustumSize = 1000;
+      const frustumSize = this.props.frustumSize || height;
       this.camera.left = -frustumSize * aspect / 2;
       this.camera.right = frustumSize * aspect / 2;
       this.camera.top = frustumSize / 2;
@@ -335,14 +351,17 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       this.camera.updateProjectionMatrix();
     }
     app.setSize(width, height);
+    this.composer?.setSize(width, height);
   }
 
-  initBackGroundImage() {
+  setBackGroundImage() {
     const { width, height, props: { backgroundImage } } = this;
+    this.backgroundImage && this.scene!.remove(this.backgroundImage);
     if (backgroundImage) {
       const map = new THREE.TextureLoader().load(backgroundImage);
       const material = new THREE.SpriteMaterial({ map, color: 0xffffff });
       const image = new THREE.Sprite(material);
+      this.backgroundImage = image;
       image.scale.set(width, height, 1);
       this.scene!.add(image);
     }
@@ -364,6 +383,11 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
 
   destroyApp(app: THREE.WebGLRenderer) {
     app.dispose();
+    if (this.maxFPS === 60) {
+      cancelAnimationFrame(this.timer);
+    } else {
+      window.clearTimeout(this.timer);
+    }
   }
 
   removeAppChildrenView() {
@@ -371,14 +395,34 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   /** 获取截图 */
-  getScreenShot() {
+  async getScreenShot(sx = 0, sy = 0, w?: number, h?: number, fileType = 'image/png', quality = 1, isBase64 = true) {
     const app = this.getCurrentApp();
     if (!app) {
       return '';
     }
-    app.render(this.scene!, this.camera!);
-    const imgData = app.domElement.toDataURL('image/jpeg');
-    return imgData;
+    const oldCanvas = app.domElement;
+    const newCanvas = document.createElement('canvas');
+    const width = w || oldCanvas.width;
+    const height = h || oldCanvas.height;
+    newCanvas.width = width;
+    newCanvas.height = height;
+    const newContext = newCanvas.getContext('2d');
+    if (!newContext) {
+      return '';
+    }
+    newContext.drawImage(oldCanvas, sx, sy, width, height, 0, 0, width, height);
+    return new Promise<string | Blob>((resolve) => {
+      if (isBase64) {
+        const imgData = newCanvas.toDataURL(fileType, quality);
+        resolve(imgData);
+      } else {
+        newCanvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          }
+        }, fileType, quality);
+      }
+    });
   }
 
   canvasScaleImpl() {

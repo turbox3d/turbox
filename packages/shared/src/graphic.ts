@@ -9,17 +9,6 @@ export interface Vec3 {
   z: number;
 }
 
-/**
- * 获取鼠标事件的 client 坐标
- * @param event
- */
-export function getEventClientPos(event: MouseEvent): Vec2 {
-  return {
-    x: event.clientX,
-    y: event.clientY,
-  };
-}
-
 /** 判断点是否在矩形内 */
 export function pointInRect(p: Vec2, rect: Vec2[]) {
   const [r1, r2] = rect;

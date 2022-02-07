@@ -1,4 +1,6 @@
 import { ctx } from '../const/config';
+import { ECollectType } from '../const/enums';
+import { KeyPathType } from '../core/domain';
 import { MaterialCallStackRecord } from './materialCallStack';
 
 export enum EEventName {
@@ -10,11 +12,13 @@ export enum EEventName {
   materialCallStackChange = 'materialCallStackChange',
 }
 export interface SetPropertyEvent {
+  stackId?: number;
   domain: string;
-  property: string;
+  keyPath: Array<{ type: KeyPathType; value: string }>;
   newValue: any;
   oldValue: any;
-  isNewlyAdded: boolean;
+  time: number;
+  type: ECollectType;
 }
 export interface BeforeStoreChangeEvent {
   domain?: string;
@@ -22,7 +26,7 @@ export interface BeforeStoreChangeEvent {
   args: any[];
   state: any;
   time: number;
-  stackId: number;
+  stackId?: number;
 }
 export interface AfterStoreChangeEvent {
   domain?: string;
@@ -31,7 +35,7 @@ export interface AfterStoreChangeEvent {
   state: any;
   async: boolean;
   time: number;
-  stackId: number;
+  stackId?: number;
 }
 export interface MaterialCallStackChangeEvent {
   stack: MaterialCallStackRecord[];

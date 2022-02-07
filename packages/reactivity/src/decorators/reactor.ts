@@ -39,7 +39,8 @@ export function reactor(...args: any[]) {
           };
           !meta.freeze && f();
         }
-        return current.propertyGet(property, config);
+        const defaultValue = descriptor && descriptor.initializer && descriptor.initializer();
+        return current.propertyGet(property, config, !!(descriptor && descriptor.initializer), defaultValue);
       },
       set(newVal: any) {
         const current = (this as Domain);

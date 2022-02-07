@@ -1,4 +1,4 @@
-import { Mesh3D } from '@turbox3d/graphic-view-three';
+import { Mesh3D } from '@turbox3d/renderer-three';
 
 export default class Gizmo3d extends Mesh3D {
   protected reactivePipeLine = [

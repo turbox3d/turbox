@@ -62,11 +62,15 @@ function executeTask() {
  * @param fn 任务的执行函数
  * @param priority 任务优先级
  */
-function pushTask(fn: Function, priority: number) {
+function pushTask(fn: Function, priority: number, maxFPS: number) {
   tasks.push(Task.createTask(fn, priority));
   if (!readyToExecute) {
     readyToExecute = true;
-    requestAnimationFrame(executeTask);
+    if (maxFPS === 60) {
+      requestAnimationFrame(executeTask);
+    } else {
+      window.setTimeout(executeTask, 1000 / maxFPS);
+    }
   }
 }
 
@@ -75,7 +79,7 @@ function pushTask(fn: Function, priority: number) {
  * @param func 要执行的函数
  * @param priority 优先级
  */
-export function throttleInAFrame<T extends(...args: any[]) => void>(func: T, priority: number = TaskPriority.UserAction): T {
+export function throttleInAFrame<T extends(...args: any[]) => void>(func: T, priority: number = TaskPriority.UserAction, maxFPS = 60): T {
   let cacheArgs;
   let isPending = false;
 
@@ -89,7 +93,7 @@ export function throttleInAFrame<T extends(...args: any[]) => void>(func: T, pri
 
     if (!isPending) {
       isPending = true;
-      pushTask(execute, priority);
+      pushTask(execute, priority, maxFPS);
     }
   } as T;
 }

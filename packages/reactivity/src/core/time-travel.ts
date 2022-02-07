@@ -6,7 +6,6 @@ import { ECollectType, EMaterialType } from '../const/enums';
 import { TURBOX_PREFIX } from '../const/symbol';
 import { HistoryOperationType } from '../interfaces';
 import { Action } from './action';
-import { materialCallStack } from '../utils/materialCallStack';
 
 export interface DiffInfo {
   type: ECollectType;
@@ -34,10 +33,10 @@ export interface HistoryCollectorPayload {
  */
 export class TimeTravel {
   static currentTimeTravel?: TimeTravel;
+  static processing = false;
 
   static switch = (instance: TimeTravel) => {
     TimeTravel.currentTimeTravel = instance;
-    TimeTravel.resume();
   };
 
   static create = () => {
@@ -159,7 +158,6 @@ export class TimeTravel {
     const original = () => {
       TimeTravel.undoHandler(currentHistory.history);
     };
-    const stackId = materialCallStack.push({ type: EMaterialType.UNDO, method: EMaterialType.UNDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -174,9 +172,7 @@ export class TimeTravel {
       original,
       type: EMaterialType.UNDO,
       isInner: true,
-      stackId
     });
-    materialCallStack.pop();
     this.cursor -= 1;
     nextTick(() => {
       this.onChange(this.undoable, this.redoable, 'undo');
@@ -196,7 +192,6 @@ export class TimeTravel {
     const original = () => {
       TimeTravel.redoHandler(currentHistory.history);
     };
-    const stackId = materialCallStack.push({ type: EMaterialType.REDO, method: EMaterialType.REDO });
     if (!store) {
       fail('store is not ready, please init first.');
     }
@@ -211,9 +206,7 @@ export class TimeTravel {
       original,
       type: EMaterialType.REDO,
       isInner: true,
-      stackId
     });
-    materialCallStack.pop();
     nextTick(() => {
       this.onChange(this.undoable, this.redoable, 'redo');
     });

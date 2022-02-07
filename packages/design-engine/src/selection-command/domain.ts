@@ -9,6 +9,12 @@ export class Selection extends Domain {
   @reactor() layerDepth = 1;
   @reactor() selectMode = ESelectMode.OVERALL;
   @reactor() selectEntityTypes?: symbol[];
+  @reactor() isMultiSelectMode = false;
+
+  @mutation
+  setMultiSelect(isMultiple: boolean) {
+    this.isMultiSelectMode = isMultiple;
+  }
 
   @mutation()
   switchSelectMode(selectMode: ESelectMode) {

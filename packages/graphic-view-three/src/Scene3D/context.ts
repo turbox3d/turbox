@@ -14,6 +14,6 @@ export const Scene3dContext = React.createContext && React.createContext<SceneCo
   updateCursor: throwErr,
   getCommandBox: throwErr as () => BaseCommandBox | undefined,
   getTools: throwErr as () => ITool,
-  coordinateTransform: throwErr as any as (point: Vec3, type: CoordinateType) => Vec3,
-  getScreenShot: () => '',
+  coordinateTransform: throwErr as any as (point: Vec3, type: CoordinateType, z?: number) => Vec3,
+  getScreenShot: throwErr as any,
 });

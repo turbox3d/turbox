@@ -3,12 +3,14 @@ import { BabelDescriptor } from '../interfaces';
 import { Action } from '../core/action';
 import { EMaterialType } from '../const/enums';
 import { MATERIAL_TYPE } from '../const/symbol';
-import { mutation } from './mutation';
+import { mutation, MutationConfig } from './mutation';
 
 interface ActionConfig {
   displayName: string;
   /** 是否自动包裹一个顶层 mutation */
   isWrapMutation: boolean;
+  /** 自动包裹的 mutation 的配置 */
+  mutationConfig?: MutationConfig;
 }
 
 type ActionCallback = (...payload: any[]) => void | Promise<void>;
@@ -24,16 +26,19 @@ function createAction(target: object | undefined,
     const bindOriginal = bind(original, this);
     let wp: (...payload: any[]) => void | Promise<void>;
     if (config.isWrapMutation) {
-      wp = mutation(name, bindOriginal);
+      wp = mutation(name, bindOriginal, config.mutationConfig);
     } else {
       wp = bindOriginal;
     }
     const result = currentAction.execute(wp, payload);
     if (isPromise(result)) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         (result as Promise<any>).then((res) => {
           currentAction.complete();
           resolve(res);
+        }, (err) => {
+          currentAction.abort();
+          reject(err);
         });
       });
     }
@@ -45,7 +50,7 @@ function createAction(target: object | undefined,
 }
 
 export function action(target: object, name: string | symbol | number, descriptor?: BabelDescriptor<any>): any;
-export function action(displayName?: string, isWrapMutation?: boolean): (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
+export function action(displayName?: string, isWrapMutation?: boolean, mutationConfig?: MutationConfig): (target: object, name: string | symbol | number, descriptor?: BabelDescriptor<any>) => any;
 export function action(name: string | symbol | number, original: ActionCallback, config?: ActionConfig): (...payload: any[]) => any;
 /**
  * decorator @action, handle undo/redo action.
@@ -54,11 +59,13 @@ export function action(...args: any[]) {
   const config: ActionConfig = {
     displayName: '',
     isWrapMutation: true,
+    mutationConfig: undefined,
   };
   if (typeof args[0] === 'string' && typeof args[1] === 'function') {
     if (args[2] !== void 0) {
       config.displayName = args[2].displayName;
       config.isWrapMutation = args[2].isWrapMutation;
+      config.mutationConfig = args[2].mutationConfig;
     }
     const name = args[0];
     const original = args[1];
@@ -120,6 +127,7 @@ export function action(...args: any[]) {
   // @action(args)
   config.displayName = args[0] || '';
   config.isWrapMutation = args[1] !== void 0 ? args[1] : true;
+  config.mutationConfig = args[2] !== void 0 ? args[2] : undefined;
 
   return decorator;
 }

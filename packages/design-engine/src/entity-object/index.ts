@@ -33,30 +33,37 @@ export default class EntityObject extends Domain {
     return EntityObject.entityMap.get(id);
   }
 
-  @reactor() id = generateUUID();
+  @reactor() id: string;
   /** 模型名称 */
   @reactor() name = '';
-  /**
-   * 位置信息：左后下
-   */
+  /** 模型位置 */
   @reactor() position = new Vector3(0, 0, 0);
-
-  /**
-   * 存的是角度，计算的时候需要转成弧度
-   */
+  /** 模型旋转角度（注意不是弧度） */
   @reactor() rotation = new Vector3(0, 0, 0);
-
+  /** 模型缩放 */
   @reactor() scale = new Vector3(1, 1, 1);
-
+  /** 模型尺寸 */
   @reactor() size = new Vector3(0, 0, 0);
-
+  /** 模型父节点 */
   @reactor() parent?: EntityObject;
-
+  /** 模型子节点 */
   @reactor() children = new Set<EntityObject>();
-
+  /** 是否隐藏 */
   @reactor() hidden = false;
-
+  /** 是否锁定 */
   @reactor() locked = false;
+  /** 是否可被点击 */
+  @reactor() isClickable = true;
+  /** 是否可被 hover */
+  @reactor() isHoverable = true;
+  /** 是否可被拖拽 */
+  @reactor() isDraggable = true;
+  /** 是否可被捏合（移动端） */
+  @reactor() isPinchable = true;
+  /** 是否可被旋转（移动端） */
+  @reactor() isRotatable = true;
+  /** 是否可被按压（移动端） */
+  @reactor() isPressable = true;
 
   /** 响应式的任务管线 */
   protected reactivePipeLine: Array<{
@@ -70,8 +77,9 @@ export default class EntityObject extends Domain {
 
   private reactions: Reaction[] = [];
 
-  constructor() {
+  constructor(id = generateUUID()) {
     super();
+    this.id = id;
     EntityObject.entityMap.set(this.id, this);
   }
 
@@ -245,6 +253,47 @@ export default class EntityObject extends Domain {
     return this.getMatrix4();
   }
 
+  @mutation
+  setClickable(clickable: boolean) {
+    this.isClickable = clickable;
+  }
+
+  @mutation
+  setHoverable(hoverable: boolean) {
+    this.isHoverable = hoverable;
+  }
+
+  @mutation
+  setDraggable(draggable: boolean) {
+    this.isDraggable = draggable;
+  }
+
+  @mutation
+  setPinchable(pinchable: boolean) {
+    this.isPinchable = pinchable;
+  }
+
+  @mutation
+  setRotatable(rotatable: boolean) {
+    this.isRotatable = rotatable;
+  }
+
+  @mutation
+  setPressable(pressable: boolean) {
+    this.isPressable = pressable;
+  }
+
+  /** 设置是否可交互 */
+  @mutation
+  setInteractive(interactive: boolean) {
+    this.setClickable(interactive);
+    this.setHoverable(interactive);
+    this.setDraggable(interactive);
+    this.setPinchable(interactive);
+    this.setRotatable(interactive);
+    this.setPressable(interactive);
+  }
+
   /** 锁定 */
   @mutation
   lock() {
@@ -341,11 +390,10 @@ export default class EntityObject extends Domain {
     return this;
   }
 
-  /** 移除所有子模型 */
+  /** 批量添加子模型 */
   @mutation
-  removeChildren() {
-    this.children.forEach(child => { child.parent = undefined; });
-    this.children.clear();
+  addChildren(children: EntityObject[]) {
+    children.forEach(child => this.addChild(child));
     return this;
   }
 
@@ -354,6 +402,18 @@ export default class EntityObject extends Domain {
   removeChild(child: EntityObject) {
     child.parent = undefined;
     this.children.delete(child);
+    return this;
+  }
+
+  /** 批量移除指定的子模型，不传参则移除所有子模型 */
+  @mutation
+  removeChildren(children?: EntityObject[]) {
+    if (!children) {
+      this.children.forEach(child => { child.parent = undefined; });
+      this.children.clear();
+      return this;
+    }
+    children.forEach(child => this.removeChild(child));
     return this;
   }
 
@@ -551,9 +611,15 @@ export default class EntityObject extends Domain {
     return [];
   }
 
+  /**
+   * 初始建模包围盒，默认建模原点为几何中心，如需修改请重写该方法
+   * @BreakingChange 之前建模原点默认为左后下，现在默认为几何中心（更便于做计算）
+   */
   getRawBox3() {
     const size = new Vector3(this.size.x, this.size.y, this.size.z);
-    const center = size.clone().multiply(new Vector3(0.5, 0.5, 0.5));
+    // const original = new Vector3(0.5, 0.5, 0.5);
+    const original = new Vector3(0, 0, 0);
+    const center = size.clone().multiply(original);
     return new Box3().setFromCenterAndSize(center, size);
   }
 

@@ -58,6 +58,8 @@ export function init(callback?: () => void | Promise<void>): void | Promise<void
     // eslint-disable-next-line consistent-return
     return (result as Promise<void>).then(() => {
       clean();
+    }, () => {
+      clean();
     });
   }
   clean();

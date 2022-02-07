@@ -1,4 +1,4 @@
-import { IViewEntity, SceneMouseEvent } from '@turbox3d/event-manager';
+import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import { BaseCommand } from './BaseCommand';
 import { CommandEventType, ITool } from './type';
 
@@ -24,7 +24,7 @@ export abstract class BaseCommandBox {
     return this.activeCommand === command;
   }
 
-  distributeEvent(eventType: CommandEventType, ev: IViewEntity, event: SceneMouseEvent, tools: ITool) {
+  distributeEvent(eventType: CommandEventType, ev: IViewEntity, event: SceneEvent, tools: ITool) {
     if (this.activeCommand) {
       this.activeCommand.distributeEvent(eventType, ev, event, tools);
     }

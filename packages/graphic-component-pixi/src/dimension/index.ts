@@ -1,5 +1,5 @@
-import { Mesh2D } from '@turbox3d/graphic-view-pixi';
-import { SceneMouseEvent } from '@turbox3d/event-manager';
+import { Mesh2D } from '@turbox3d/renderer-pixi';
+import { SceneEvent } from '@turbox3d/event-manager';
 import * as PIXI from 'pixi.js';
 import { drawText, generateDimData } from '../_utils/utils';
 
@@ -117,10 +117,10 @@ export default class Dimension extends Mesh2D<IProps> {
   protected onClickable() {
     return true;
   }
-  protected onClick = (e: SceneMouseEvent) => {
+  protected onClick = (e: SceneEvent) => {
     let targetG = this._interactContainer.children[0];
     this._interactContainer.children.forEach(c => {
-      if (this._distance2(c.position, e.scenePosition) < this._distance2(targetG.position, e.scenePosition)) targetG = c;
+      if (this._distance2(c.position, e.getScenePosition()) < this._distance2(targetG.position, e.getScenePosition())) targetG = c;
     });
     this.props.clickCallback?.(this.graphic2endPsMap.get(targetG as PIXI.Graphics));
   }

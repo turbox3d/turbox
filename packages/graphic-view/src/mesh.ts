@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { reactive, Reaction } from '@turbox3d/reactivity';
-import { InteractiveConfig, SceneMouseEvent } from '@turbox3d/event-manager';
+import { InteractiveConfig, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
+import { CommandEventType } from '@turbox3d/command-manager';
+import { invariant } from '@turbox3d/shared';
 import React from 'react';
 import { SceneContext, BaseScene, SceneType } from './scene';
 import { getMeshParent } from './utils';
 
-export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
+export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends React.PureComponent<Props, State, SceneContext<DisplayObject, Point>> {
   static contextType: React.Context<SceneContext<any, any>>;
 
   context: SceneContext<DisplayObject, Point>;
@@ -18,8 +20,14 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
   /** 响应式的渲染任务管线，与 draw 互斥，有任务就不会执行 draw */
   protected reactivePipeLine: Function[] = [];
 
+  /** 异步的任务管线是否并发。默认：true */
+  protected isConcurrent = true;
+
   /** 是否默认添加到场景中。默认：true */
   protected autoAppendToWorld = true;
+
+  /** 是否为可交互实体。默认：false */
+  protected isViewEntity = false;
 
   /** 当前组件上层组件 */
   private parentMesh?: BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>;
@@ -28,17 +36,39 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
 
   private hasPipeLine = false;
 
+  private interactiveTask: Reaction;
+
   constructor(props: Props) {
     super(props);
     this.view = this.createDefaultView();
+    this.interactiveTask = reactive(() => {
+      this.applyInteractive();
+    });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.reactivePipeLine.length) {
-      this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
-        name: 'baseMeshReactivePipeLine',
-        immediately: false,
-      }));
+      if (this.isConcurrent) {
+        this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
+          name: 'baseMeshReactivePipeLine',
+          immediately: false,
+        }));
+      } else {
+        for (let i = 0; i < this.reactivePipeLine.length; i++) {
+          const task = this.reactivePipeLine[i];
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise<void>((resolve) => {
+            const r = reactive(async () => {
+              await task.call(this);
+              resolve();
+            }, {
+              name: 'baseMeshReactivePipeLine',
+              immediately: false,
+            });
+            this.reactions.push(r);
+          });
+        }
+      }
       this.hasPipeLine = true;
     }
     // 将视图添加到场景中
@@ -55,6 +85,7 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
     if (this.reactions.length) {
       this.reactions.forEach(reaction => reaction.dispose());
     }
+    this.interactiveTask.dispose();
     // 删除交互配置
     this.context.updateInteractiveObject(this.view);
     // 移除视图
@@ -65,7 +96,17 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
     this.clearView();
     this.draw();
     if (this.reactivePipeLine.length && this.hasPipeLine) {
-      this.reactivePipeLine.forEach(task => task.call(this));
+      if (this.isConcurrent) {
+        this.reactivePipeLine.forEach(task => task.call(this));
+      } else {
+        (async () => {
+          for (let i = 0; i < this.reactivePipeLine.length; i++) {
+            const task = this.reactivePipeLine[i];
+            // eslint-disable-next-line no-await-in-loop
+            await task.call(this);
+          }
+        })();
+      }
     }
     return this.props.children || null;
   }
@@ -104,73 +145,230 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
    * 标记当前对象是否可点击
    */
   protected onClickable() {
-    return false;
+    return this.isViewEntity;
   }
 
   /**
    * 标记当前对象是否可 Hover
    */
   protected onHoverable() {
-    return false;
+    return this.isViewEntity;
   }
 
   /**
    * 标记当前对象是否可拖拽
    */
   protected onDraggable() {
-    return false;
+    return this.isViewEntity;
+  }
+
+  protected onPinchable() {
+    return this.isViewEntity;
+  }
+
+  protected onRotatable() {
+    return this.isViewEntity;
+  }
+
+  protected onPressable() {
+    return this.isViewEntity;
   }
 
   protected get interactiveConfig(): InteractiveConfig {
     const isClickable = this.onClickable();
     const isDraggable = this.onDraggable();
     const isHoverable = this.onHoverable();
+    const isPinchable = this.onPinchable();
+    const isRotatable = this.onRotatable();
+    const isPressable = this.onPressable();
 
     return {
-      onClick: this.onClick.bind(this),
-      onDBClick: this.onDBClick.bind(this),
-      onRightClick: this.onRightClick.bind(this),
-      dragStart: this.dragStart.bind(this),
-      dragMove: this.dragMove.bind(this),
-      dragEnd: this.dragEnd.bind(this),
-      onHoverIn: this.onHoverIn.bind(this),
-      onHoverOut: this.onHoverOut.bind(this),
+      getViewEntity: this.isViewEntity ? this.getViewEntity : undefined,
+      onClick: this.isViewEntity ? this._on$Click : this.onClick.bind(this),
+      onDBClick: this.isViewEntity ? this._on$DBClick : this.onDBClick.bind(this),
+      onRightClick: this.isViewEntity ? this._on$RightClick : this.onRightClick.bind(this),
+      onDragStart: this.isViewEntity ? this._on$DragStart : this.onDragStart.bind(this),
+      onDragMove: this.isViewEntity ? this._on$DragMove : this.onDragMove.bind(this),
+      onDragEnd: this.isViewEntity ? this._on$DragEnd : this.onDragEnd.bind(this),
+      onPinchStart: this.isViewEntity ? this._on$PinchStart : this.onPinchStart.bind(this),
+      onPinch: this.isViewEntity ? this._on$Pinch : this.onPinch.bind(this),
+      onPinchEnd: this.isViewEntity ? this._on$PinchEnd : this.onPinchEnd.bind(this),
+      onRotateStart: this.isViewEntity ? this._on$RotateStart : this.onRotateStart.bind(this),
+      onRotate: this.isViewEntity ? this._on$Rotate : this.onRotate.bind(this),
+      onRotateEnd: this.isViewEntity ? this._on$RotateEnd : this.onRotateEnd.bind(this),
+      onPress: this.isViewEntity ? this._on$Press : this.onPress.bind(this),
+      onPressUp: this.isViewEntity ? this._on$PressUp : this.onPressUp.bind(this),
+      onHoverIn: this.isViewEntity ? this._on$HoverIn : this.onHoverIn.bind(this),
+      onHoverOut: this.isViewEntity ? this._on$HoverOut : this.onHoverOut.bind(this),
       isClickable,
       isDraggable,
       isHoverable,
+      isPinchable,
+      isRotatable,
+      isPressable,
     };
   }
 
-  protected onClick(event: SceneMouseEvent) {
+  protected onClick(event: SceneEvent) {
     //
   }
 
-  protected onDBClick(event: SceneMouseEvent) {
+  protected onDBClick(event: SceneEvent) {
     //
   }
 
-  protected onRightClick(event: SceneMouseEvent) {
+  protected onRightClick(event: SceneEvent) {
     //
   }
 
-  protected dragStart(event: SceneMouseEvent) {
+  protected onDragStart(event: SceneEvent) {
     //
   }
 
-  protected dragMove(event: SceneMouseEvent) {
+  protected onDragMove(event: SceneEvent) {
     //
   }
 
-  protected dragEnd(event: SceneMouseEvent) {
+  protected onDragEnd(event: SceneEvent) {
     //
   }
 
-  protected onHoverIn(event: SceneMouseEvent) {
+  protected onPinchStart(event: SceneEvent) {
     //
   }
 
-  protected onHoverOut(event: SceneMouseEvent) {
+  protected onPinch(event: SceneEvent) {
     //
+  }
+
+  protected onPinchEnd(event: SceneEvent) {
+    //
+  }
+
+  protected onRotateStart(event: SceneEvent) {
+    //
+  }
+
+  protected onRotate(event: SceneEvent) {
+    //
+  }
+
+  protected onRotateEnd(event: SceneEvent) {
+    //
+  }
+
+  protected onPress(event: SceneEvent) {
+    //
+  }
+
+  protected onPressUp(event: SceneEvent) {
+    //
+  }
+
+  protected onHoverIn(event: SceneEvent) {
+    //
+  }
+
+  protected onHoverOut(event: SceneEvent) {
+    //
+  }
+
+  private getViewEntity = () => {
+    const { id, type } = this.props;
+    invariant(!!id && !!type, 'you should pass the {id} and {type} props while define as view entity');
+    return { id: id!, type: type! };
+  }
+
+  private _on$Click = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onClick, event);
+    return this.onClick(event);
+  };
+
+  private _on$DBClick = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onDBClick, event);
+    return this.onDBClick(event);
+  };
+
+  private _on$RightClick = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onRightClick, event);
+    return this.onRightClick(event);
+  }
+
+  private _on$DragStart = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onDragStart, event);
+    return this.onDragStart(event);
+  };
+
+  private _on$DragMove = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onDragMove, event);
+    return this.onDragMove(event);
+  };
+
+  private _on$DragEnd = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onDragEnd, event);
+    return this.onDragEnd(event);
+  };
+
+  private _on$PinchStart = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onPinchStart, event);
+    return this.onPinchStart(event);
+  };
+
+  private _on$Pinch = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onPinch, event);
+    return this.onPinch(event);
+  };
+
+  private _on$PinchEnd = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onPinchEnd, event);
+    return this.onPinchEnd(event);
+  };
+
+  private _on$RotateStart = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onRotateStart, event);
+    return this.onRotateStart(event);
+  };
+
+  private _on$Rotate = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onRotate, event);
+    return this.onRotate(event);
+  };
+
+  private _on$RotateEnd = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onRotateEnd, event);
+    return this.onRotateEnd(event);
+  };
+
+  private _on$Press = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onPress, event);
+    return this.onPress(event);
+  };
+
+  private _on$PressUp = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onPressUp, event);
+    return this.onPressUp(event);
+  };
+
+  private _on$HoverIn = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onHoverIn, event);
+    return this.onHoverIn(event);
+  };
+
+  private _on$HoverOut = (event: SceneEvent) => {
+    this.forwardToCommand(CommandEventType.onHoverOut, event);
+    return this.onHoverOut(event);
+  };
+
+  /** 转发事件给CommandBox */
+  private forwardToCommand(eventType: CommandEventType, event: SceneEvent) {
+    const commandBox = this.context.getCommandBox();
+    const tools = this.context.getTools();
+
+    if (commandBox) {
+      const { id, type } = this.props;
+      invariant(!!id && !!type, 'you should pass the {id} and {type} props while define as view entity');
+      commandBox.distributeEvent(eventType, { id: id!, type: type! }, event, tools);
+    }
   }
 
   /**
@@ -222,11 +420,14 @@ export abstract class BaseMesh<Props, State, ApplicationContext, Scene, Camera, 
     const isClickable = this.onClickable();
     const isDraggable = this.onDraggable();
     const isHoverable = this.onHoverable();
-    this.setViewInteractive(isClickable || isHoverable || isDraggable);
-    if (isClickable || isHoverable || isDraggable) {
-      this.context.updateInteractiveObject(this.view, this.interactiveConfig);
+    const isPinchable = this.onPinchable();
+    const isRotatable = this.onRotatable();
+    const isPressable = this.onPressable();
+    this.setViewInteractive(isClickable || isHoverable || isDraggable || isPinchable || isRotatable || isPressable);
+    if (isClickable || isHoverable || isDraggable || isPinchable || isRotatable || isPressable) {
+      this.context && this.context.updateInteractiveObject(this.view, this.interactiveConfig);
     } else {
-      this.context.updateInteractiveObject(this.view);
+      this.context && this.context.updateInteractiveObject(this.view);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Mesh2D } from '@turbox3d/graphic-view-pixi';
+import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import { Vec2 } from '@turbox3d/shared';
 import { drawText } from '../_utils/utils';

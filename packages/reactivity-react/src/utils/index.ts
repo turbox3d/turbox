@@ -15,3 +15,5 @@ export function copyStaticProperties(base, target) {
     }
   }
 }
+
+export const IdCustomType = 'react';

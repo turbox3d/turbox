@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { CoordinateController, InteractiveConfig, InteractiveType, SceneMouseEvent } from '@turbox3d/event-manager';
+import { CoordinateController, InteractiveConfig, InteractiveType, SceneEvent } from '@turbox3d/event-manager';
 import { BaseScene, BaseSceneProps, SceneType } from '@turbox3d/graphic-view';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
@@ -72,6 +72,19 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
     this.view.sortableChildren = true;
   }
 
+  componentDidUpdate() {
+    super.componentDidUpdate();
+    const app = this.getCurrentApp();
+    if (!app) {
+      return;
+    }
+    if (this.renderFlag) {
+      app.start();
+    } else {
+      app.stop();
+    }
+  }
+
   render() {
     if (!Scene2dContext) {
       return null;
@@ -85,7 +98,9 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   createView() {
-    return new PIXI.Container();
+    const view = new PIXI.Container();
+    view.name = Scene2DSymbol.toString();
+    return view;
   }
 
   getViewInfo() {
@@ -162,7 +177,7 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
         app.stage.addChild(vp);
       }
       app.ticker.add(() => {
-        if (this.viewport?.visible) {
+        if (this.viewport?.visible && this.renderFlag) {
           app.renderer.render(this.view, this.rt);
           app.renderer.framebuffer.blit();
         }
@@ -208,23 +223,27 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, width = BaseScene.DEFAULT_WIDTH, height = BaseScene.DEFAULT_HEIGHT, resizeTo, allowUseData = false, resizeFramebuffer } = this.props;
-    const resizeContainer = typeof resizeTo === 'string' ? document.getElementById(resizeTo) : resizeTo;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, preserveDrawingBuffer = true, resizeFramebuffer } = this.props;
     // 初始化应用
     const app = new PIXI.Application({
-      width,
-      height,
+      width: this.width,
+      height: this.height,
       backgroundColor,
       transparent,
       antialias: true,
       autoDensity: true,
       resolution: this.resolution,
-      resizeTo: resizeContainer || window,
-      preserveDrawingBuffer: allowUseData,
+      preserveDrawingBuffer,
     });
+    app.ticker.deltaMS = 1000 / this.maxFPS;
     // 暂存原始 resizeFramebuffer 函数
     this.originalResizeFramebufferFunction = (app.renderer.framebuffer as any).resizeFramebuffer;
     // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+    if (this.renderFlag) {
+      app.start();
+    } else {
+      app.stop();
+    }
     return app;
   }
 
@@ -303,16 +322,21 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   resizeStage = (app: PIXI.Application) => {
+    const { resizeTo } = this.props;
+    const resizeContainer = typeof resizeTo === 'string' ? document.getElementById(resizeTo) : resizeTo;
+    app.resizeTo = resizeContainer || window;
     app.resize();
   };
 
-  initBackGroundImage(app: PIXI.Application) {
+  setBackGroundImage(app: PIXI.Application) {
     const { width, height, props: { backgroundImage } } = this;
+    this.backgroundImage && app.stage.removeChild(this.backgroundImage);
     if (backgroundImage) {
       const image = PIXI.Sprite.from(backgroundImage);
+      this.backgroundImage = image;
       image.width = width;
       image.height = height;
-      app.stage.addChild(image);
+      app.stage.addChildAt(image, 0);
     }
   }
 
@@ -347,33 +371,56 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   /** 获取截图 */
-  getScreenShot(): string {
-    if (this.view.scale.y > 0) {
-      this.view.position.set(0, 0);
-      this.view.scale.set(1, 1);
-    } else {
-      this.view.position.set(0, this.view.getLocalBounds().height);
-      this.view.scale.set(1, -1);
-    }
+  async getScreenShot(sx = 0, sy = 0, w?: number, h?: number, fileType = 'image/png', quality = 1, isBase64 = true) {
     const app = this.getCurrentApp();
     if (!app) {
       return '';
     }
-    return app.renderer.plugins.extract.base64(this.view, 'image/jpeg');
+    const oldCanvas = app.view;
+    const newCanvas = document.createElement('canvas');
+    const width = w || oldCanvas.width;
+    const height = h || oldCanvas.height;
+    newCanvas.width = width;
+    newCanvas.height = height;
+    const newContext = newCanvas.getContext('2d');
+    if (!newContext) {
+      return '';
+    }
+    newContext.drawImage(oldCanvas, sx, sy, width, height, 0, 0, width, height);
+    return new Promise<string | Blob>((resolve) => {
+      if (isBase64) {
+        const imgData = newCanvas.toDataURL(fileType, quality);
+        resolve(imgData);
+      } else {
+        newCanvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          }
+        }, fileType, quality);
+      }
+    });
   }
 
-  canvasScaleImpl(event: WheelEvent) {
+  canvasScaleImpl(event: WheelEvent | SceneEvent) {
     const { coordinateType } = this.props;
-    const ratio = event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
+    let ratio = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    if (event instanceof WheelEvent) {
+      ratio = event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
+      offsetX = event.offsetX;
+      offsetY = event.offsetY;
+    } else if (event instanceof SceneEvent) {
+      ratio = event.gesturesExtra?.deltaScale || 1;
+      offsetX = event.event.clientX;
+      offsetY = event.event.clientY;
+    }
     const currentScale = this.getViewInfo().scale.x;
-
     if (coordinateType === 'front' || coordinateType === 'left') {
       this.setViewScale({ x: currentScale * ratio, y: -currentScale * ratio });
     } else {
       this.setViewScale({ x: currentScale * ratio, y: currentScale * ratio });
     }
-
-    let { offsetX, offsetY } = event;
     const vpi = this.getViewportInfo();
     if (vpi) {
       offsetX -= vpi.position.x;
@@ -383,7 +430,7 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
     this.setViewPosition({ x: offsetX + (x - offsetX) * ratio, y: offsetY + (y - offsetY) * ratio });
   }
 
-  canvasDragImpl(event: SceneMouseEvent, type: 'start' | 'move' | 'end') {
+  canvasDragImpl(event: SceneEvent, type: 'start' | 'move' | 'end') {
     if (type === 'start') {
       const { x: offsetX, y: offsetY } = event.canvasPosition;
       const { x, y } = this.getViewInfo().position;

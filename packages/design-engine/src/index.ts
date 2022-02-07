@@ -23,6 +23,7 @@ export { default as HintCommand } from './hint-command/index';
 export { default as InferenceEngine } from './inference-engine/index';
 export { default as LoadSystem } from './load-system/index';
 export { default as MaterialBrushCommand } from './material-brush-command/index';
+export { default as MaterialDragSystem } from './material-drag-system/index';
 export { default as MeasureCommand } from './measure-command/index';
 export { default as MountSystem } from './mount-system/index';
 export { default as PlacementEngine } from './placement-engine/index';
