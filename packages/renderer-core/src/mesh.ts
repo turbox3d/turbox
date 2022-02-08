@@ -27,8 +27,6 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
 
   private reactions: Reaction[] = [];
 
-  private hasPipeLine = false;
-
   private interactiveTask: Reaction;
 
   constructor(props: Props) {
@@ -37,41 +35,6 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
     this.interactiveTask = reactive(() => {
       this.applyInteractive();
     });
-  }
-
-  async componentDidMount() {
-    if (this.reactivePipeLine.length) {
-      if (this.isConcurrent) {
-        this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
-          name: 'baseMeshReactivePipeLine',
-          immediately: false,
-        }));
-      } else {
-        for (let i = 0; i < this.reactivePipeLine.length; i++) {
-          const task = this.reactivePipeLine[i];
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise<void>((resolve) => {
-            const r = reactive(async () => {
-              await task.call(this);
-              resolve();
-            }, {
-              name: 'baseMeshReactivePipeLine',
-              immediately: false,
-            });
-            this.reactions.push(r);
-          });
-        }
-      }
-      this.hasPipeLine = true;
-    }
-    // 将视图添加到场景中
-    this.appendToWorld();
-    // 配置交互能力
-    this.applyInteractive();
-  }
-
-  componentDidUpdate() {
-    this.applyInteractive();
   }
 
   componentWillUnmount() {
@@ -86,22 +49,57 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
   }
 
   render() {
+    return (this.props as any).children || null;
+  }
+
+  async commit(isCreate = false) {
+    if (!isCreate) {
+      if (this._vNode.committing) {
+        return;
+      }
+      this._vNode.committing = true;
+    }
     this.clearView();
     this.draw();
-    if (this.reactivePipeLine.length && this.hasPipeLine) {
+    if (this.reactivePipeLine.length) {
       if (this.isConcurrent) {
-        this.reactivePipeLine.forEach(task => task.call(this));
+        if (isCreate) {
+          this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
+            name: 'baseMeshReactivePipeLine',
+            immediately: false,
+          }));
+        } else {
+          this.reactivePipeLine.forEach(task => task.call(this));
+        }
+      } else if (isCreate) {
+        for (let i = 0; i < this.reactivePipeLine.length; i++) {
+          const task = this.reactivePipeLine[i];
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise<void>((resolve) => {
+            const r = reactive(async () => {
+              await task.call(this);
+              resolve();
+            }, {
+              name: 'baseMeshReactivePipeLine',
+              immediately: false,
+            });
+            this.reactions.push(r);
+          });
+        }
       } else {
-        (async () => {
-          for (let i = 0; i < this.reactivePipeLine.length; i++) {
-            const task = this.reactivePipeLine[i];
-            // eslint-disable-next-line no-await-in-loop
-            await task.call(this);
-          }
-        })();
+        for (let i = 0; i < this.reactivePipeLine.length; i++) {
+          const task = this.reactivePipeLine[i];
+          // eslint-disable-next-line no-await-in-loop
+          await task.call(this);
+        }
       }
     }
-    return (this.props as any).children || null;
+    if (isCreate) {
+      // 将视图添加到场景中
+      this.appendToWorld();
+    }
+    // 配置交互能力
+    this.applyInteractive();
   }
 
   abstract createDefaultView(): DisplayObject;

@@ -20,9 +20,10 @@ export class VirtualNode<P = any> {
   status: NodeStatus = NodeStatus.READY;
   tag: NodeTag = NodeTag.COMPONENT;
   props?: P = {} as P;
+  committing = false;
 
   static isBatchUpdate = false;
-  static batchQueue: VirtualNode[] = [];
+  static batchQueue: Array<() => Promise<VirtualNode>> = [];
 
   static buildNode(el: Element<any>) {
     const node = new VirtualNode();
@@ -87,7 +88,14 @@ export class VirtualNode<P = any> {
     if (child) {
       child.create();
     }
-    this.instance!.componentDidMount();
+    if (VirtualNode.isBatchUpdate) {
+      VirtualNode.batchQueue.push(async () => {
+        const r = await this.commitCreate();
+        return r;
+      });
+    } else {
+      this.commitCreate();
+    }
     if (singleNode) {
       return;
     }
@@ -96,6 +104,18 @@ export class VirtualNode<P = any> {
       return;
     }
     sibling.create();
+  }
+
+  async commitCreate() {
+    // create first, then delete
+    if (this.status & NodeStatus.REMOVE) {
+      return this;
+    }
+    if (this.instance instanceof BaseMesh) {
+      await this.instance.commit(true);
+    }
+    this.instance!.componentDidMount();
+    return this;
   }
 
   getChildren() {
@@ -143,13 +163,14 @@ export class VirtualNode<P = any> {
       return current;
     }, undefined);
     const newChildNodes = this.getChildren();
-    newChildNodes.forEach(n => {
+    for (let index = 0; index < newChildNodes.length; index++) {
+      const n = newChildNodes[index];
       if (n.status & NodeStatus.UPDATE) {
         n.update();
       } else if (n.status & NodeStatus.CREATE) {
         n.create(true);
       }
-    });
+    }
   }
 
   resetStatus() {
@@ -172,7 +193,7 @@ export class VirtualNode<P = any> {
           const node = tempNodes.find(n => n.key === el.key);
           if (node) {
             const needUpdate = node.instance!.shouldComponentUpdate(el.props);
-            node.status |= (needUpdate ? NodeStatus.UPDATE : NodeStatus.FAKE_UPDATE);
+            node.status |= needUpdate ? NodeStatus.UPDATE : NodeStatus.FAKE_UPDATE;
             if (needUpdate) {
               node.props = el.props;
             }
@@ -210,21 +231,37 @@ export class VirtualNode<P = any> {
     if (!isForce && this.status & NodeStatus.FAKE_UPDATE) {
       return;
     }
-    if (VirtualNode.isBatchUpdate) {
-      VirtualNode.batchQueue.indexOf(this) > -1 || VirtualNode.batchQueue.push(this);
-      return;
-    }
+    // delete first, then do not to update or create
     if (this.status & NodeStatus.REMOVE) {
       return;
     }
     this.instance!.componentWillUpdate(this.props);
     const prevProps = this.instance!.props;
-    this.instance!.props = this.props || {} as P;
+    this.instance!.props = this.props || ({} as P);
     const elements = this.instance!.render();
     this.diff(elements);
     this.patch();
     this.resetStatus();
+    if (VirtualNode.isBatchUpdate) {
+      VirtualNode.batchQueue.push(async () => {
+        const r = await this.commitUpdate(prevProps);
+        return r;
+      });
+    } else {
+      this.commitUpdate(prevProps);
+    }
+  }
+
+  async commitUpdate(prevProps: P) {
+    // update first, then delete
+    if (this.status & NodeStatus.REMOVE) {
+      return this;
+    }
+    if (this.instance instanceof BaseMesh) {
+      await this.instance.commit();
+    }
     this.instance!.componentDidUpdate(prevProps);
+    return this;
   }
 
   getParentPath() {
@@ -248,11 +285,20 @@ export function render(elements: Element<any>[]) {
   }
 }
 
-export function batchUpdate(callback: () => void) {
+export async function batchUpdate(callback: () => void) {
   VirtualNode.isBatchUpdate = true;
   callback();
-  VirtualNode.isBatchUpdate = false;
+  const nodes: VirtualNode[] = [];
   // const waitUpdateQueue = VirtualNode.batchQueue.filter(n => !n.getParentPath().some(parent => VirtualNode.batchQueue.indexOf(parent) > -1));
-  VirtualNode.batchQueue.forEach(n => n.update());
+  for (let index = 0; index < VirtualNode.batchQueue.length; index++) {
+    const f = VirtualNode.batchQueue[index];
+    // eslint-disable-next-line no-await-in-loop
+    const node = await f();
+    nodes.push(node);
+  }
+  nodes.forEach(n => {
+    n.committing = false;
+  });
+  VirtualNode.isBatchUpdate = false;
   VirtualNode.batchQueue = [];
 }

@@ -148,3 +148,15 @@ export function loadJSON(url: string): Promise<any> {
     xhr.send(null);
   });
 }
+
+export function updateQueryStringParameter(url: string, key: string, value: string) {
+  if (!value) {
+    return url;
+  }
+  const re = new RegExp(`([?&])${key}=.*?(&|$)`, 'i');
+  const separator = url.indexOf('?') !== -1 ? '&' : '?';
+  if (url.match(re)) {
+    return url.replace(re, `$1${key}=${value}$2`);
+  }
+  return `${url}${separator}${key}=${value}`;
+}
