@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/command-manager",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Large-scale productivity application command management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -62,7 +62,7 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/event-manager": "^1.1.1",
-    "@turbox3d/shared": "^1.1.1"
+    "@turbox3d/event-manager": "^1.1.2",
+    "@turbox3d/shared": "^1.1.2"
   }
 }
