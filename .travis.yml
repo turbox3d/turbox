@@ -21,7 +21,6 @@ jobs:
     - stage: deploy
       script:
         - lerna bootstrap
-        - lerna run build:ts
         - lerna run build:all
         - cp .npmrc.template $HOME/.npmrc
         - lerna publish from-package --yes
