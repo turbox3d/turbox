@@ -23,7 +23,7 @@ export class VirtualNode<P = any> {
   committing = false;
 
   static isBatchUpdate = false;
-  static batchQueue: Array<() => Promise<VirtualNode>> = [];
+  static batchQueue: Array<() => VirtualNode> = [];
 
   static buildNode(el: Element<any>) {
     const node = new VirtualNode();
@@ -89,10 +89,7 @@ export class VirtualNode<P = any> {
       child.create();
     }
     if (VirtualNode.isBatchUpdate) {
-      VirtualNode.batchQueue.push(async () => {
-        const r = await this.commitCreate();
-        return r;
-      });
+      VirtualNode.batchQueue.push(() => this.commitCreate());
     } else {
       this.commitCreate();
     }
@@ -106,13 +103,13 @@ export class VirtualNode<P = any> {
     sibling.create();
   }
 
-  async commitCreate() {
+  commitCreate() {
     // create first, then delete
     if (this.status & NodeStatus.REMOVE) {
       return this;
     }
     if (this.instance instanceof BaseMesh) {
-      await this.instance.commit(true);
+      this.instance.commit(true);
     }
     this.instance!.componentDidMount();
     return this;
@@ -243,22 +240,20 @@ export class VirtualNode<P = any> {
     this.patch();
     this.resetStatus();
     if (VirtualNode.isBatchUpdate) {
-      VirtualNode.batchQueue.push(async () => {
-        const r = await this.commitUpdate(prevProps);
-        return r;
-      });
+      VirtualNode.batchQueue.push(() => this.commitUpdate(prevProps));
     } else {
       this.commitUpdate(prevProps);
+      this.committing = false;
     }
   }
 
-  async commitUpdate(prevProps: P) {
+  commitUpdate(prevProps: P) {
     // update first, then delete
     if (this.status & NodeStatus.REMOVE) {
       return this;
     }
     if (this.instance instanceof BaseMesh) {
-      await this.instance.commit();
+      this.instance.commit();
     }
     this.instance!.componentDidUpdate(prevProps);
     return this;
@@ -285,15 +280,14 @@ export function render(elements: Element<any>[]) {
   }
 }
 
-export async function batchUpdate(callback: () => void) {
+export function batchUpdate(callback: () => void, finish?: () => void) {
   VirtualNode.isBatchUpdate = true;
   callback();
   const nodes: VirtualNode[] = [];
   // const waitUpdateQueue = VirtualNode.batchQueue.filter(n => !n.getParentPath().some(parent => VirtualNode.batchQueue.indexOf(parent) > -1));
   for (let index = 0; index < VirtualNode.batchQueue.length; index++) {
     const f = VirtualNode.batchQueue[index];
-    // eslint-disable-next-line no-await-in-loop
-    const node = await f();
+    const node = f();
     nodes.push(node);
   }
   nodes.forEach(n => {
@@ -301,4 +295,5 @@ export async function batchUpdate(callback: () => void) {
   });
   VirtualNode.isBatchUpdate = false;
   VirtualNode.batchQueue = [];
+  finish && finish();
 }

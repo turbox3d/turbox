@@ -21,6 +21,7 @@ export let ctx: ConfigCtx = {
   disableReactive: false,
   strictMode: isDev,
   devTool: false,
+  batchUpdateOnFinish: undefined,
 };
 
 /**

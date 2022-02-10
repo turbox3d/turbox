@@ -14,10 +14,7 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
   protected viewType: 'camera' | 'light' | 'model' = 'model';
 
   /** 响应式的渲染任务管线，与 draw 互斥，有任务就不会执行 draw */
-  protected reactivePipeLine: Function[] = [];
-
-  /** 异步的任务管线是否并发。默认：true */
-  protected isConcurrent = true;
+  protected reactivePipeLine: Array<() => void> = [];
 
   /** 是否默认添加到场景中。默认：true */
   protected autoAppendToWorld = true;
@@ -52,7 +49,7 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
     return (this.props as any).children || null;
   }
 
-  async commit(isCreate = false) {
+  commit(isCreate = false) {
     if (!isCreate) {
       if (this._vNode.committing) {
         return;
@@ -62,36 +59,13 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
     this.clearView();
     this.draw();
     if (this.reactivePipeLine.length) {
-      if (this.isConcurrent) {
-        if (isCreate) {
-          this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
-            name: 'baseMeshReactivePipeLine',
-            immediately: false,
-          }));
-        } else {
-          this.reactivePipeLine.forEach(task => task.call(this));
-        }
-      } else if (isCreate) {
-        for (let i = 0; i < this.reactivePipeLine.length; i++) {
-          const task = this.reactivePipeLine[i];
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise<void>((resolve) => {
-            const r = reactive(async () => {
-              await task.call(this);
-              resolve();
-            }, {
-              name: 'baseMeshReactivePipeLine',
-              immediately: false,
-            });
-            this.reactions.push(r);
-          });
-        }
+      if (isCreate) {
+        this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
+          name: 'baseMeshReactivePipeLine',
+          immediately: false,
+        }));
       } else {
-        for (let i = 0; i < this.reactivePipeLine.length; i++) {
-          const task = this.reactivePipeLine[i];
-          // eslint-disable-next-line no-await-in-loop
-          await task.call(this);
-        }
+        this.reactivePipeLine.forEach(task => task.call(this));
       }
     }
     if (isCreate) {

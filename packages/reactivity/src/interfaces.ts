@@ -61,6 +61,7 @@ export interface ConfigCtx {
   disableReactive?: boolean;
   strictMode?: boolean;
   devTool?: boolean;
+  batchUpdateOnFinish?: () => void;
 }
 
 export type BabelDescriptor<T> = TypedPropertyDescriptor<T> & { initializer?: () => any };

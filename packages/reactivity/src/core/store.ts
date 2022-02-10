@@ -18,7 +18,7 @@ export interface ActionType {
 export const actionTypeChain: ActionType[] = [];
 
 export interface RegisterExternalBatchUpdateParam {
-  handler: Function;
+  handler: (callback: () => void, finish?: () => void) => void | Promise<void>;
   idCustomType: string;
 }
 
@@ -104,7 +104,10 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (useExternalBatchUpdate) {
       batchedUpdates.forEach((obj) => {
         const batchUpdate = obj.handler;
-        batchUpdate(flush(obj.idCustomType));
+        batchUpdate(flush(obj.idCustomType), () => {
+          // finish batchUpdate
+          ctx.batchUpdateOnFinish && ctx.batchUpdateOnFinish();
+        });
       });
     } else {
       // reverse
