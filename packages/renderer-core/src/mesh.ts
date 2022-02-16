@@ -7,6 +7,8 @@ import { BaseScene, SceneType } from './scene';
 import { PureComponent } from './component';
 import { getMeshParent } from './utils';
 
+type CommitType = 'update' | 'create' | 'delete';
+
 export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends PureComponent<Props> {
   /** 当前组件的视图对象 */
   protected view: DisplayObject;
@@ -34,22 +36,23 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
     });
   }
 
-  componentWillUnmount() {
-    if (this.reactions.length) {
-      this.reactions.forEach(reaction => reaction.dispose());
-    }
-    this.interactiveTask.dispose();
-    // 删除交互配置
-    this.context.updateInteractiveObject(this.view);
-    // 移除视图
-    this.removeFromWorld();
-  }
-
   render() {
     return (this.props as any).children || null;
   }
 
-  commit(isCreate = false) {
+  commit(type: CommitType) {
+    if (type === 'delete') {
+      if (this.reactions.length) {
+        this.reactions.forEach(reaction => reaction.dispose());
+      }
+      this.interactiveTask.dispose();
+      // 删除交互配置
+      this.context.updateInteractiveObject(this.view);
+      // 移除视图
+      this.removeFromWorld();
+      return;
+    }
+    const isCreate = type === 'create';
     if (!isCreate) {
       if (this._vNode.committing) {
         return;

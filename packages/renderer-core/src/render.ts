@@ -109,7 +109,7 @@ export class VirtualNode<P = any> {
       return this;
     }
     if (this.instance instanceof BaseMesh) {
-      this.instance.commit(true);
+      this.instance.commit('create');
     }
     this.instance!.componentDidMount();
     return this;
@@ -136,7 +136,14 @@ export class VirtualNode<P = any> {
         n.remove();
       });
     }
+    this.commitDelete();
+  }
+
+  commitDelete() {
     this.instance!.componentWillUnmount();
+    if (this.instance instanceof BaseMesh) {
+      this.instance.commit('delete');
+    }
   }
 
   patch() {
@@ -253,7 +260,7 @@ export class VirtualNode<P = any> {
       return this;
     }
     if (this.instance instanceof BaseMesh) {
-      this.instance.commit();
+      this.instance.commit('update');
     }
     this.instance!.componentDidUpdate(prevProps);
     return this;

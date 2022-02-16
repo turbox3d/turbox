@@ -142,7 +142,7 @@ export function loadJSON(url: string): Promise<any> {
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        resolve(JSON.parse(xhr.responseText));
+        resolve(JSON.parse(xhr.responseText || '{}'));
       }
     };
     xhr.send(null);
