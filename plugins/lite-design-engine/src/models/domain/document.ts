@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { DocumentSystem, EntityObject, mutation, reactor, Vector2, MathUtils } from '@turbox3d/turbox3d';
 import { ProductEntity } from '../entity/product';
 import { AssemblyEntity } from '../entity/assembly';
@@ -7,6 +8,7 @@ import { BackgroundEntity } from '../entity/background';
 import { ldeStore } from '../index';
 import { coordinateStringToArray } from '../../utils/common';
 import { SkewPointEntity } from '../entity/skewPoint';
+import { convertUrl } from '../../utils/image';
 
 const DataTypeId = 'lite-design-engine';
 
@@ -260,8 +262,17 @@ export class DocumentDomain extends DocumentSystem {
             cutoutUrl: product.cutoutUrl || product.cutoutData?.cutoutUrl || '',
           });
         }
+        const skewOriginalUrl = product.skewOriginalUrl || product.finialImgUrl || product.imageUrl;
+        const loader = new THREE.TextureLoader();
+        const map = await loader.loadAsync(convertUrl(skewOriginalUrl)).catch(err => {
+          console.error(err);
+        });
+        if (!map) {
+          return;
+        }
         entity.$update({
-          skewOriginalUrl: product.skewOriginalUrl || product.finialImgUrl || product.imageUrl,
+          skewOriginalUrl,
+          skewOriginalUrlImage: map.image,
           resourceUrl: product.imageUrl,
         });
         const transformArr = product.transform

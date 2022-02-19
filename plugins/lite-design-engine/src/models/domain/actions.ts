@@ -13,7 +13,7 @@ import { AssemblyEntity } from '../entity/assembly';
 import { Controls } from './controls';
 import { SkewPointEntity } from '../entity/skewPoint';
 import { ClipPointEntity } from '../entity/clipPoint';
-import { mirrorImage, loadImage, uploadFile, cropImage } from '../../utils/image';
+import { mirrorImage, cropImage, convertUrl } from '../../utils/image';
 import { DocumentJSON } from './document';
 
 function getNeg() {
@@ -31,19 +31,22 @@ export class ActionsDomain extends Domain {
     specificId?: string
   ) => {
     const entity = new ProductEntity<CustomBizData>(specificId);
-    const map = await loadImage(url).catch(err => {
+    const loader = new THREE.TextureLoader();
+    const map = await loader.loadAsync(convertUrl(url)).catch(err => {
       console.error(err);
     });
-    if (!map || !map.blob) {
+    if (!map) {
       return;
     }
     entity.$update({
       url,
+      urlImage: map.image,
       skewOriginalUrl: url,
+      skewOriginalUrlImage: map.image,
       resourceUrl: url,
     });
     extraInfo && (entity.extraInfo = extraInfo);
-    const ratio = map.width / map.height;
+    const ratio = map.image.width / map.image.height;
     const bgSize = ldeStore.document.getBackgroundSize();
     entity.setSize({
       x: ratio > 1 ? bgSize.x / 4 : (bgSize.y / 4) * ratio,
@@ -93,7 +96,9 @@ export class ActionsDomain extends Domain {
         const product = new ProductEntity();
         product.$update({
           url: selected.url,
+          urlImage: selected.urlImage,
           skewOriginalUrl: selected.skewOriginalUrl,
+          skewOriginalUrlImage: selected.skewOriginalUrlImage,
           cutoutOriginalUrl: selected.cutoutOriginalUrl,
           cutoutUrl: selected.cutoutUrl,
           resourceUrl: selected.resourceUrl,
@@ -159,13 +164,14 @@ export class ActionsDomain extends Domain {
     if (!EntityCategory.isProduct(selected)) {
       return;
     }
-    const map = await loadImage(url).catch(err => {
+    const loader = new THREE.TextureLoader();
+    const map = await loader.loadAsync(convertUrl(url)).catch(err => {
       console.error(err);
     });
-    if (!map || !map.blob) {
+    if (!map) {
       return;
     }
-    const ratio = map.width / map.height;
+    const ratio = map.image.width / map.image.height;
     const bgSize = ldeStore.document.getBackgroundSize();
     if (!isSelf) {
       selected.setSize({
@@ -179,7 +185,9 @@ export class ActionsDomain extends Domain {
     }
     selected.$update({
       url,
+      urlImage: map.image,
       skewOriginalUrl: url,
+      skewOriginalUrlImage: map.image,
       isSkewed: false,
       isClipped: false,
       snapped: false,
@@ -327,19 +335,22 @@ export class ActionsDomain extends Domain {
     }
     const { sceneWidth, canvasMarginRatio } = ldeStore.scene;
     const entity = new BackgroundEntity();
-    const map = await loadImage(url).catch(err => {
+    const loader = new THREE.TextureLoader();
+    const map = await loader.loadAsync(convertUrl(url)).catch(err => {
       console.error(err);
     });
-    if (!map || !map.blob) {
+    if (!map) {
       return;
     }
     entity.$update({
       url,
+      urlImage: map.image,
       skewOriginalUrl: url,
+      skewOriginalUrlImage: map.image,
       resourceUrl: url,
     });
-    const mapWidth = map.width / 2;
-    const mapHeight = map.height / 2;
+    const mapWidth = map.image.width / 2;
+    const mapHeight = map.image.height / 2;
     const width = sceneWidth * canvasMarginRatio;
     entity.setSize({
       x: width,
@@ -408,11 +419,10 @@ export class ActionsDomain extends Domain {
       return;
     }
     this.skewAction = Action.create('skew');
+    // 开启 ticker
+    ldeStore.scene.setRenderFlag2d(true);
     this.skewAction.execute(
       () => {
-        // 开启 ticker
-        ldeStore.scene.setRenderFlag3d(false);
-        ldeStore.scene.setRenderFlag2d(true);
         let skewPoints = [...selected.children.values()].filter(child => EntityCategory.isSkewPoint(child));
         if (skewPoints.length === 0) {
           // 初次形变
@@ -459,9 +469,16 @@ export class ActionsDomain extends Domain {
     app2d.stage.addChildAt(image, 0);
     await Promise.resolve();
     URL.revokeObjectURL(url);
+    ldeStore.scene.setRenderFlag3d(false);
   };
 
-  confirmSkew = async () => {
+  confirmSkew = async (uploadMethod: ({
+    data,
+    fileName,
+  }: {
+    data: any,
+    fileName: string,
+  }) => Promise<string>) => {
     const model = ldeStore.document.skewModel;
     if (!model) {
       this.cancelSkew();
@@ -508,10 +525,11 @@ export class ActionsDomain extends Domain {
     const img = app.renderer.plugins.extract.image(container, 'image/png', 1);
     SceneUtil.get2DRootView().removeChild(container);
     // 回退掉 mirror
-    const url = await mirrorImage(img.src, model.materialDirection.clone().multiply(new Vector2(1, -1)));
+    const url = await mirrorImage(img.src, model.materialDirection.clone().multiply(new Vector2(1, -1))) as Blob;
     app.stage.addChildAt(backgroundObj, 0);
-    const { fullUrl } = await uploadFile({
-      file: new File([url], 'img.png'),
+    const fullUrl = await uploadMethod({
+      data: url,
+      fileName: 'skew.png',
     });
     if (!fullUrl) {
       model.setRotation(rotation);
@@ -520,10 +538,16 @@ export class ActionsDomain extends Domain {
     }
     await this.skewAction.execute(
       async () => {
-        // 缓存图片，加速贴图加载
-        await loadImage(fullUrl);
+        const loader = new THREE.TextureLoader();
+        const map = await loader.loadAsync(convertUrl(fullUrl)).catch(err => {
+          console.error(err);
+        });
+        if (!map) {
+          return;
+        }
         model.$update({
           url: fullUrl,
+          urlImage: map.image,
           isSkewed: true,
         });
         model.setRotation(rotation);
@@ -615,7 +639,13 @@ export class ActionsDomain extends Domain {
     );
   };
 
-  confirmClip = async () => {
+  confirmClip = async (uploadMethod: ({
+    data,
+    fileName,
+  }: {
+    data: any,
+    fileName: string,
+  }) => Promise<string>) => {
     const model = ldeStore.document.clipModel;
     if (!model) {
       this.cancelClip();
@@ -634,9 +664,10 @@ export class ActionsDomain extends Domain {
       this.cancelClip();
       return;
     }
-    const url = await mirrorImage(croppedImage.blob, model.materialDirection.clone());
-    const { fullUrl } = await uploadFile({
-      file: new File([url], 'img.png'),
+    const url = await mirrorImage(croppedImage.blob, model.materialDirection.clone()) as Blob;
+    const fullUrl = await uploadMethod({
+      data: url,
+      fileName: 'crop.png',
     });
     if (!fullUrl) {
       this.cancelClip();
@@ -644,12 +675,19 @@ export class ActionsDomain extends Domain {
     }
     await this.clipAction.execute(
       async () => {
-        // 缓存图片，加速贴图加载
-        await loadImage(fullUrl);
+        const loader = new THREE.TextureLoader();
+        const map = await loader.loadAsync(convertUrl(fullUrl)).catch(err => {
+          console.error(err);
+        });
+        if (!map) {
+          return;
+        }
         model.$update({
           url: fullUrl,
+          urlImage: map.image,
           isClipped: true,
           skewOriginalUrl: fullUrl,
+          skewOriginalUrlImage: map.image,
         });
         const deltaP = new Vector3(
           ((start.x + end.x) / 2 - 0.5) * size.x,
@@ -751,6 +789,9 @@ export class ActionsDomain extends Domain {
     mutation('', () => {
       ldeStore.actions.clearScene();
     }, { immediately: true })();
+    if (Object.keys(data).length === 0) {
+      return;
+    }
     await ldeStore.document.loadDocument(data, extraInfoKeys);
   };
 

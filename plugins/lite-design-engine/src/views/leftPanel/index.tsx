@@ -86,7 +86,9 @@ export function LeftPanel() {
   }
 
   const confirmSkew = () => {
-    ldeStore.actions.confirmSkew();
+    ldeStore.actions.confirmSkew(async () => {
+      return '';
+    });
   }
 
   const cancelSkew = () => {
@@ -98,7 +100,9 @@ export function LeftPanel() {
   }
 
   const confirmClip = () => {
-    ldeStore.actions.confirmClip();
+    ldeStore.actions.confirmClip(async () => {
+      return '';
+    });
   }
 
   const cancelClip = () => {

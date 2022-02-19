@@ -116,7 +116,7 @@ export class Circle extends Mesh3D<ICircleProps> {
   protected reactivePipeLine = [this.updateGeometry, this.updateImage];
   sprite = new THREE.Sprite();
 
-  async updateGeometry() {
+  updateGeometry() {
     const { scale = { x: 1, y: 1, z: 1 }, radius, color, opacity = 1 } = this.props;
     const geometry = new THREE.CircleGeometry(radius, 32);
     const material = new THREE.MeshBasicMaterial({ color: color || 0xBF975B, opacity, transparent: true });

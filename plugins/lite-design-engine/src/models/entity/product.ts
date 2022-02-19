@@ -8,8 +8,10 @@ import { DeletePointEntity } from './deletePoint';
 export class ProductEntity<CustomBizData = any> extends EntityObject {
   /** 当前贴图 */
   @reactor url = '';
+  @reactor urlImage: HTMLImageElement;
   /** 形变用的原始贴图（形变之前的，如果被裁剪过，skewOriginalUrl 也会被更新）*/
   @reactor skewOriginalUrl = '';
+  @reactor skewOriginalUrlImage: HTMLImageElement;
   /** 抠图前的贴图 */
   @reactor cutoutOriginalUrl = '';
   /** 抠图后的贴图 */

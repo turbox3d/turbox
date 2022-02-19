@@ -33,12 +33,12 @@ export class SceneDomain extends Domain {
     this.resolution = res;
   }
 
-  @mutation
+  @mutation('', true)
   setRenderFlag2d(flag: boolean) {
     this.renderFlag2d = flag;
   }
 
-  @mutation
+  @mutation('', true)
   setRenderFlag3d(flag: boolean) {
     this.renderFlag3d = flag;
   }

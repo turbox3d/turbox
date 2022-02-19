@@ -230,13 +230,3 @@ export const convertUrl = (url: string) => {
   }
   return updateQueryStringParameter(url, 'ihomelitedesignengine', 'true');
 }
-
-export async function uploadFile(params: IOSSUploadParams) {
-  const obj = await upload.uploadOSS(params).catch(() => {
-    return {} as IUploadResult;
-  });
-  if (obj.fullUrl && obj.fullUrl.startsWith('//')) {
-    obj.fullUrl = `https:${obj.fullUrl}`;
-  }
-  return obj;
-}

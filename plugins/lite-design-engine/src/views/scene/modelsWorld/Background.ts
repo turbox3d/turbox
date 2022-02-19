@@ -1,10 +1,8 @@
 import { IViewEntity, Mesh3D, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
 import * as THREE from 'three';
-import * as React from 'react';
 // import { appCommandBox } from '../../../commands/index';
 // import { WireFrame } from '../helper/index';
 import { BackgroundEntity } from '../../../models/entity/background';
-import { convertUrl } from '../../../utils/image';
 
 interface IProps extends IViewEntity {
   model: BackgroundEntity;
@@ -63,19 +61,11 @@ export class Background extends Mesh3D<IBackgroundProps> {
   protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updatePosition];
   protected view = new THREE.Sprite();
 
-  async updateMaterial() {
+  private updateMaterial() {
     const { model } = this.props;
     if (model.url) {
-      // const url = model.url instanceof Blob ? URL.createObjectURL(model.url) : model.url;
-      const loader = new THREE.TextureLoader();
-      loader.setWithCredentials(true);
-      const map = await loader.loadAsync(convertUrl(model.url)).catch((err) => {
-        console.error(err);
-      });
-      // model.url instanceof Blob && URL.revokeObjectURL(url);
-      if (!map) {
-        return;
-      }
+      const map = new THREE.Texture(model.urlImage);
+      map.needsUpdate = true;
       this.assignTexture(map);
     }
   }
@@ -84,17 +74,13 @@ export class Background extends Mesh3D<IBackgroundProps> {
     this.view.material = new THREE.SpriteMaterial({ map });
   }
 
-  updateGeometry() {
+  private updateGeometry() {
     const { model } = this.props;
     this.view.scale.set(model.size.x, model.size.y, model.size.z);
   }
 
   private updatePosition() {
     const { model } = this.props;
-    this.view.position.set(
-      model.position.x,
-      model.position.y,
-      model.position.z
-    );
+    this.view.position.set(model.position.x, model.position.y, model.position.z);
   }
 }

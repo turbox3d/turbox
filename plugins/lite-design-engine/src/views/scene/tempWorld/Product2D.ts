@@ -8,7 +8,6 @@ import { SkewPointSymbol } from '../../../consts/scene';
 import { ldeStore } from '../../../models/index';
 import { SceneUtil } from '../modelsWorld/index';
 import { Circle2d } from '../helper/index';
-import { loadImageElement } from '../../../utils/image';
 
 interface IProduct2DProps {
   model: ProductEntity;
@@ -17,7 +16,6 @@ interface IProduct2DProps {
 class ProductMesh2D extends Mesh2D<IProduct2DProps> {
   protected reactivePipeLine = [this.updateMaterial];
   protected view: PIXIProjection.Sprite2d;
-  protected isConcurrent = false;
   texture?: PIXI.Texture;
   modelUrl?: string | Blob;
   currentTicker?: PIXI.TickerCallback<any>;
@@ -28,8 +26,8 @@ class ProductMesh2D extends Mesh2D<IProduct2DProps> {
     super.componentWillUnmount();
   }
 
-  async componentDidMount() {
-    await super.componentDidMount();
+  componentDidMount() {
+    super.componentDidMount();
     const app = this.context.getTools().getApp() as PIXI.Application;
     const target = ldeStore.document.skewModel;
     if (this.texture && target) {
@@ -40,13 +38,12 @@ class ProductMesh2D extends Mesh2D<IProduct2DProps> {
     }
   }
 
-  async updateMaterial() {
+  updateMaterial() {
     const { model } = this.props;
     if (model.url && this.modelUrl !== model.url) {
       this.modelUrl = model.url;
-      const url = ldeStore.scene.isClipMode ? model.url : model.skewOriginalUrl;
-      const { element } = await loadImageElement(url);
-      const map = PIXI.Texture.from(element);
+      const url = ldeStore.scene.isClipMode ? model.urlImage : model.skewOriginalUrlImage;
+      const map = PIXI.Texture.from(url);
       this.assignTexture(map);
     }
   }
