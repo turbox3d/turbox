@@ -55,6 +55,11 @@ export class Controls extends Domain {
       y: this.model.size.y / 2 + 30,
     });
     rotatePoint.setSize({ x: rotatePoint.radius * 2, y: rotatePoint.radius * 2, z: 1 });
+    this.model.children.forEach(child => {
+      if (EntityCategory.isRotatePoint(child)) {
+        this.model.removeChild(child);
+      }
+    });
     this.model.addChild(rotatePoint);
   }
 

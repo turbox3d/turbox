@@ -224,9 +224,9 @@ function updateQueryStringParameter(url: string, key: string, value: string) {
   }
 }
 
-export const convertUrl = (url: string) => {
+export const convertUrl = (url: string, maxWidth = 2400) => {
   if (url.includes(';base64,') || !url) {
     return url;
   }
-  return updateQueryStringParameter(url, 'ihomelitedesignengine', 'true');
+  return updateQueryStringParameter(`${url}?x-oss-process=image/resize,w_${maxWidth}`, 'ihomelitedesignengine', 'true');
 }

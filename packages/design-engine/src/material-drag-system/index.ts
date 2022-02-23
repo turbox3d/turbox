@@ -56,13 +56,13 @@ export default class MaterialDragSystem {
     this.isMouseDown = true;
     this.mouseDealType = MouseDealType.Click;
     this.dragStatus = DragStatus.Ready;
-    this.mouseDownInfo = { x: event.screenX, y: event.screenY };
+    this.mouseDownInfo = { x: event.clientX, y: event.clientY };
     document.addEventListener('pointerup', this.onMouseUp);
   };
 
   private isMouseMoved(moveEvent: PointerEvent, tolerance: number) {
-    const dx = this.mouseDownInfo.x - moveEvent.screenX;
-    const dy = this.mouseDownInfo.y - moveEvent.screenY;
+    const dx = this.mouseDownInfo.x - moveEvent.clientX;
+    const dy = this.mouseDownInfo.y - moveEvent.clientY;
     return dx * dx + dy * dy > tolerance * tolerance;
   }
 

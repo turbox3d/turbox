@@ -12,22 +12,22 @@ export enum MouseDealType {
   /**
    * 作为一次 Drag 事件处理
    */
-  Drag,
+  Drag = 'drag',
   /**
    * 作为一次 Click 事件处理
    */
-  Click,
+  Click = 'click',
   /** 多点触控事件 */
-  MultiTouch,
+  MultiTouch = 'multi-touch',
   /** 按压 */
-  Press,
+  Press = 'press',
 }
 
 /**
  * 可监听的交互事件类型
  */
 export enum InteractiveEvent {
-  Click, // 涵盖移动端的 tap
+  Click = 1, // 涵盖移动端的 tap
   DBClick,
   RightClick,
   DragStart, // 涵盖移动端的 pan

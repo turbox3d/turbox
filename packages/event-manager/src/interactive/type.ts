@@ -2,7 +2,7 @@ import { SceneEvent } from './sceneEvent';
 
 export enum CoordinateType {
   /** 屏幕到画布 */
-  ScreenToCanvas,
+  ScreenToCanvas = 1,
   /** 屏幕到场景 */
   ScreenToScene,
   /** 画布到场景 */

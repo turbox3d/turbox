@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool, Vector2, Matrix3 } from '@turbox3d/turbox3d';
-import { EntityCategory, ProductEntity } from '../../..';
-import { ClipPointSymbol } from '../../../consts/scene';
-import { ClipPointEntity } from '../../../models/entity/clipPoint';
-import { ldeStore } from '../../../models/index';
+import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool } from '@turbox3d/turbox3d';
+import { ClipPointSymbol } from '../../consts/scene';
+import { ClipPointEntity } from '../../models/entity/clipPoint';
+import { ldeStore } from '../../models/index';
+import { EntityCategory } from '../../utils/category';
 
 export class ClipCommand extends BaseCommand {
   private action: Action;

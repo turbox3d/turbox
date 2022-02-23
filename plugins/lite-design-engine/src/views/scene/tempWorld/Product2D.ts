@@ -152,6 +152,36 @@ export class Product2DViewEntity extends ViewEntity2D<IProductViewEntityProps> {
   ];
   protected view: PIXI.Container;
 
+  protected onClickable() {
+    const { model } = this.props;
+    return model.isClickable;
+  }
+
+  protected onHoverable() {
+    const { model } = this.props;
+    return model.isHoverable;
+  }
+
+  protected onDraggable() {
+    const { model } = this.props;
+    return model.isDraggable;
+  }
+
+  protected onPinchable() {
+    const { model } = this.props;
+    return model.isPinchable;
+  }
+
+  protected onRotatable() {
+    const { model } = this.props;
+    return model.isRotatable;
+  }
+
+  protected onPressable() {
+    const { model } = this.props;
+    return model.isPressable;
+  }
+
   render() {
     const { model } = this.props;
     const skewPoints = ldeStore.document.skewModel ? [...ldeStore.document.skewModel.children.values()].filter(c => EntityCategory.isSkewPoint(c)).map((s) => s.position) : [];

@@ -13,7 +13,7 @@ import { AssemblyEntity } from '../entity/assembly';
 import { Controls } from './controls';
 import { SkewPointEntity } from '../entity/skewPoint';
 import { ClipPointEntity } from '../entity/clipPoint';
-import { mirrorImage, cropImage, convertUrl } from '../../utils/image';
+import { mirrorImage, cropImage, convertUrl, loadImageElement } from '../../utils/image';
 import { DocumentJSON } from './document';
 
 function getNeg() {
@@ -420,6 +420,7 @@ export class ActionsDomain extends Domain {
     }
     this.skewAction = Action.create('skew');
     // 开启 ticker
+    selected.setInteractive(false);
     ldeStore.scene.setRenderFlag2d(true);
     this.skewAction.execute(
       () => {
@@ -461,14 +462,12 @@ export class ActionsDomain extends Domain {
     app.render(SceneUtil.getScene(), SceneUtil.getCamera());
     const { sceneWidth: width, sceneHeight: height, resolution } = ldeStore.scene;
     const blob = await SceneUtil.getScreenShot(0, 0, Math.floor(width * resolution), Math.floor(height * resolution), undefined, undefined, false) as Blob;
-    const url = URL.createObjectURL(blob);
-    const image = PIXI.Sprite.from(url);
+    const { element } = await loadImageElement(blob);
+    const image = PIXI.Sprite.from(PIXI.Texture.from(element));
     image.width = width;
     image.height = height;
     const app2d = SceneUtil.get2DApp() as PIXI.Application;
     app2d.stage.addChildAt(image, 0);
-    await Promise.resolve();
-    URL.revokeObjectURL(url);
     ldeStore.scene.setRenderFlag3d(false);
   };
 
@@ -571,6 +570,7 @@ export class ActionsDomain extends Domain {
         ldeStore.scene.$update({
           hideSkewPoint: false,
         });
+        model.setInteractive(true);
         ldeStore.document.$update({
           skewModel: undefined,
         });
@@ -586,6 +586,7 @@ export class ActionsDomain extends Domain {
   };
 
   cancelSkew = () => {
+    ldeStore.document.skewModel && ldeStore.document.skewModel.setInteractive(true);
     const app2d = SceneUtil.get2DApp() as PIXI.Application;
     app2d.stage.removeChildAt(0);
     ldeStore.document.$update({
@@ -637,6 +638,7 @@ export class ActionsDomain extends Domain {
       true,
       { immediately: true }
     );
+    appCommandBox.clipCommand.apply();
   };
 
   confirmClip = async (uploadMethod: ({
@@ -655,8 +657,8 @@ export class ActionsDomain extends Domain {
     const clipPoints = [...model.children.values()].filter(child => EntityCategory.isClipPoint(child));
     const xs = clipPoints.map(p => p.position.x);
     const ys = clipPoints.map(p => p.position.y);
-    const start = new Vector2((Math.min(...xs) - -size.x / 2) / size.x, (size.y / 2 - Math.max(...ys)) / size.y); // normalized
-    const end = new Vector2((Math.max(...xs) - -size.x / 2) / size.x, (size.y / 2 - Math.min(...ys)) / size.y); // normalized
+    const start = new Vector2((Math.min(...xs) + size.x / 2) / size.x, (size.y / 2 - Math.max(...ys)) / size.y); // normalized
+    const end = new Vector2((Math.max(...xs) + size.x / 2) / size.x, (size.y / 2 - Math.min(...ys)) / size.y); // normalized
     // model.cropPercent = `${start.y} ${1 - end.y} ${start.x} ${1 - end.x}`;
     const mirrorUrl = await mirrorImage(model.url, model.materialDirection.clone());
     const croppedImage = await cropImage(mirrorUrl, { start, end });
@@ -709,6 +711,7 @@ export class ActionsDomain extends Domain {
       true,
       { immediately: true }
     );
+    appCommandBox.defaultCommand.apply();
     this.clipAction.complete();
   };
 
@@ -727,6 +730,7 @@ export class ActionsDomain extends Domain {
       { immediately: true }
     );
     this.clipAction.abort(false);
+    appCommandBox.defaultCommand.apply();
   };
 
   @mutation

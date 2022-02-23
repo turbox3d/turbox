@@ -1,8 +1,10 @@
 import { BaseCommandBox } from '@turbox3d/turbox3d';
 import { DefaultCommand } from './default';
+import { ClipCommand } from './clip/index';
 
 class AppCommandBox extends BaseCommandBox {
   defaultCommand = new DefaultCommand(this);
+  clipCommand = new ClipCommand(this);
 
   constructor() {
     super();
@@ -11,6 +13,8 @@ class AppCommandBox extends BaseCommandBox {
 
   disposeAll() {
     this.defaultCommand.select.clearAllSelected();
+    this.defaultCommand.dispose();
+    this.clipCommand.dispose();
   }
 }
 
