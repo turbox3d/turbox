@@ -190,16 +190,10 @@ export class InteractiveController<Container, DisplayObject> {
 
   /**
    * 主动传入一个点位做一次 hitTest，返回结果
-   * @param point 是相对于屏幕左上角的点击位置
+   * @param point 是相对于 canvas 左上角的点击位置
    */
   hitTargetOriginalByPoint(point: Vec2) {
-    // 相对于 canvas 左上角的点击位置，量度与事件点击相同
-    let originalPoint = getRelativePositionFromEvent(point, this.renderer);
-    // 无法根据事件和 renderer 获取合法的点击位置
-    if (!originalPoint) {
-      return {};
-    }
-    originalPoint = this.revisePointByViewPort(originalPoint);
+    const originalPoint = this.revisePointByViewPort(point);
     return this.getHitTargetOriginal(originalPoint, this.container, this.interactiveConfig, 'isClickable');
   }
 
