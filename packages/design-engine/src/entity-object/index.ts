@@ -64,6 +64,8 @@ export default class EntityObject extends Domain {
   @reactor() isRotatable = true;
   /** 是否可被按压（移动端） */
   @reactor() isPressable = true;
+  /** 渲染顺序 */
+  @reactor() renderOrder = 0;
 
   /** 响应式的任务管线 */
   protected reactivePipeLine: Array<{
@@ -292,6 +294,11 @@ export default class EntityObject extends Domain {
     this.setPinchable(interactive);
     this.setRotatable(interactive);
     this.setPressable(interactive);
+  }
+
+  @mutation
+  setRenderOrder(renderOrder: number) {
+    this.renderOrder = renderOrder;
   }
 
   /** 锁定 */
