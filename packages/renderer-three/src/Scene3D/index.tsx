@@ -265,15 +265,20 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       this.raycaster.setFromCamera(mouse, this.camera!);
       const objects = this.raycaster.intersectObjects(this.scene!.children, true);
       let i = 0;
-      const originalTarget = objects[i]; // closest first
-      if (!originalTarget) {
+      if (!objects[0]) {
         return {
           originalTarget: undefined,
           target: undefined,
           originalTargetPoint: undefined,
         };
       }
+      // 相同距离的需要再根据 renderOrder 排序
+      const sameDisLength = objects.filter(o => o.distance.toFixed(10) === objects[0].distance.toFixed(10)).length;
+      const sameDisObjects = objects.splice(0, sameDisLength);
+      sameDisObjects.sort((a, b) => b.object.renderOrder - a.object.renderOrder);
+      objects.unshift(...sameDisObjects);
       // 找到最近的一个可交互的对象
+      const originalTarget = objects[i]; // closest first
       let obj = originalTarget.object;
       while (!obj.userData.interactive) {
         // 如果不可交互就找它的父节点，当整条路径都不可交互，则选择下一个被射线穿过的对象
