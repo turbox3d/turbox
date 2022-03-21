@@ -32,11 +32,17 @@ class CoordinateControllerThree extends CoordinateController {
       const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
       const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
       const v = new THREE.Vector3(pX, pY, 0.5);
+      const pos = new THREE.Vector3();
       v.unproject(camera);
-      v.sub(camera.position).normalize();
-      const distance = (z - camera.position.z) / v.z;
-      const pos = camera.position.clone().add(v.multiplyScalar(distance));
-      pos.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
+      if (camera instanceof THREE.OrthographicCamera) {
+        v.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
+        pos.copy(v);
+      } else if (camera instanceof THREE.PerspectiveCamera) {
+        v.sub(camera.position).normalize();
+        const distance = (z - camera.position.z) / v.z;
+        pos.copy(camera.position).add(v.multiplyScalar(distance));
+        pos.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
+      }
       return {
         x: pos.x,
         y: pos.y,
