@@ -121,6 +121,9 @@ export function createStore(enhancer: (createStore: any) => Store) {
     if (!computedReactionIds.length) {
       return;
     }
+    if (ctx.devTool) {
+      console.log('keepAlive computed', computedReactionIds);
+    }
     flushChange(computedReactionIds, false, isInner);
     // clean wait queue keep alive
     batchRemoveFromSet(triggerCollector.waitTriggerIds, computedReactionIds);
@@ -134,6 +137,9 @@ export function createStore(enhancer: (createStore: any) => Store) {
     }
     // clean wait queue
     batchRemoveFromSet(triggerCollector.waitTriggerIds, immediatelyReactionIds);
+    if (ctx.devTool) {
+      console.log('immediately reactive', immediatelyReactionIds);
+    }
     flushChange(immediatelyReactionIds, false, isInner);
   };
 
@@ -201,13 +207,22 @@ export function createStore(enhancer: (createStore: any) => Store) {
       }
       const computedReactionIds = ids.filter(id => id instanceof Reaction && id.lazy && id.computed);
       // do lazy computed reaction first，PS：maybe add new trigger ids
+      if (ctx.devTool) {
+        console.log('lazy computed', computedReactionIds);
+      }
       flushChange(computedReactionIds, false, isInner);
       const lazyReactiveIds = [...triggerCollector.waitTriggerIds.values()].filter(id => id instanceof Reaction && !id.computed && !id.immediately);
       const restIds = [...triggerCollector.waitTriggerIds.values()].filter(id => !(id instanceof Reaction));
       clean();
       // do lazy reactive
+      if (ctx.devTool) {
+        console.log('lazy reactive', lazyReactiveIds);
+      }
       flushChange(lazyReactiveIds, false, isInner);
       // do Reactive/ReactReactive/CustomReactive
+      if (ctx.devTool) {
+        console.log('custom view Reactive', restIds);
+      }
       flushChange(restIds, true, isInner);
     };
 

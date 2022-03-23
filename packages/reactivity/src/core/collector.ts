@@ -46,7 +46,7 @@ const isInBlackList = (propKey: string) => {
  */
 class DepCollector {
   public dependencyGraph = new Map<object, DepNodeAssembly>();
-  private reactionIdDeps = new Map<ReactionId, Map<object, DepNodeStatus>>();
+  public reactionIdDeps = new Map<ReactionId, Map<object, DepNodeStatus>>();
   private reactionIdStack: ReactionId[] = [];
 
   start(id: ReactionId) {
@@ -171,6 +171,7 @@ class TriggerCollector {
           type
         };
         emitter.emit(EEventName.setProperty, event);
+        console.log(event);
       } catch (e) {
         console.error(e);
       }
