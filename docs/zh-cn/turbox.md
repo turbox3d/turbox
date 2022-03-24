@@ -1913,9 +1913,9 @@ HotKey.off(Key.Escape, () => {});
 ```
 
 ## 视图渲染框架
-顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层有基于 react 封装的框架，也有无 react 依赖的渲染框架。
+顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层有无外部依赖的渲染框架，也有基于 react 封装的框架（暂停维护）。
 
-> 推荐使用无 react 依赖的版本，性能更好、内存开销更小，是个纯粹的针对图形场景的渲染器。
+> 推荐使用无外部依赖的版本，性能更好、内存开销更小，是个纯粹的针对图形场景的渲染器。
 
 它的目的就是利用数据驱动视图、声明式、响应式表达的思路来做图形业务，以达到类似于做 web 页面的开发体感，低成本上手 web 2d/3d 业务，它把上面的几个子框架全部串联了起来，将事件传递到交互层，交互层及 model 层处理数据，数据自动响应式驱动视图更新。甚至基于视图层框架的 API，还可以封装很多图形基础组件及业务组件，进一步提效。
 
@@ -1923,7 +1923,7 @@ HotKey.off(Key.Escape, () => {});
 
 web 3d 工程领域是一个小众领域，市面上大部分 web 3d 业务并不复杂在业务逻辑本身，更多是追求离线渲染、效果，不像游戏领域有那么多业务逻辑要写。图形学及 2d、3d 编程的门槛较高较垂直，而 web 2d/3d 更是一个小分支，市面上的人才较少，做渲染、写 shader、做端游的不屑于做 web 3d 工程/业务，而 web 前端想要做 3d 业务还是有一些陡峭的学习曲线和踩坑成本。开发这套框架的初衷是希望能达到降低入门门槛、上手成本，将职责分离，让业务跑的更快更好（开发者学一些基本的几何及代数知识即可上手）
 
-视图层框架有一个核心库 renderer-core/graphic-view，它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
+视图层框架有一个核心库 renderer-core（对应的依赖 react 的旧版视图框架 graphic-view 已暂停维护），它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
 
 视图层框架对用户来说常用的就 Scene、Mesh、ViewEntity 三个概念，其余的细节看 ts 提示及注释，这里不再罗列。
 
@@ -1931,36 +1931,6 @@ Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scen
 
 理解了基本概念之后，我们来看一下它的使用方式：
 ```tsx
-// 2d 下的立面场景，用 react 来渲染
-@ReactiveReact
-export class FrontView extends React.Component {
-  render() {
-    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
-    if (!wall) {
-        return null;
-    }
-    const viewport = doorWindowStore.scene.viewStyles.front;
-    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
-    return (
-      <Scene2D
-        id="front-scene-2d"
-        commandBox={appCommandBox}
-        container={SCENE_2D}
-        viewport={viewport}
-        camera2dSize={{ x: wall.size.x, y: wall.size.y + 1000 }}
-        coordinateType="front"
-        cameraPosition={cameraPos}
-        transparent={false}
-        backgroundColor={0xE6E9EB}
-        resizeTo={SCENE_2D}
-      >
-        <Axis2d type="front" />
-        {/** 使用 ViewEntity 组件需要传 id 和 type，标识它是什么类型的实体，对应的 id 是什么 */}
-        <DoorWindowView key={model.id} model={model} id={model.id} type={DoorWindowEntityType.DoorWindowVirtual} />
-      </Scene2D>
-    );
-  }
-}
 // 用无 react 依赖的渲染器来渲染
 @Reactive
 export class FrontView extends Component {
@@ -2001,6 +1971,37 @@ export class FrontView extends Component {
       },
       key: 'xxx',
     }];
+  }
+}
+
+// 2d 下的立面场景，用 react 来渲染
+@ReactiveReact
+export class FrontView extends React.Component {
+  render() {
+    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
+    if (!wall) {
+        return null;
+    }
+    const viewport = doorWindowStore.scene.viewStyles.front;
+    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
+    return (
+      <Scene2D
+        id="front-scene-2d"
+        commandBox={appCommandBox}
+        container={SCENE_2D}
+        viewport={viewport}
+        camera2dSize={{ x: wall.size.x, y: wall.size.y + 1000 }}
+        coordinateType="front"
+        cameraPosition={cameraPos}
+        transparent={false}
+        backgroundColor={0xE6E9EB}
+        resizeTo={SCENE_2D}
+      >
+        <Axis2d type="front" />
+        {/** 使用 ViewEntity 组件需要传 id 和 type，标识它是什么类型的实体，对应的 id 是什么 */}
+        <DoorWindowView key={model.id} model={model} id={model.id} type={DoorWindowEntityType.DoorWindowVirtual} />
+      </Scene2D>
+    );
   }
 }
 
