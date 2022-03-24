@@ -5,7 +5,7 @@ import { ProductEntity } from '../entity/product';
 import { ldeStore } from '../index';
 import { CubeEntity } from '../entity/cube';
 import { BackgroundEntity } from '../entity/background';
-import { EyeDistance, Z_INDEX_ACTION, MIRROR_ACTION } from '../../consts/scene';
+import { EyeDistance, Z_INDEX_ACTION, MIRROR_ACTION, RenderOrder } from '../../consts/scene';
 import { EntityCategory } from '../../utils/category';
 import { appCommandBox } from '../../commands/index';
 import { SceneUtil } from '../../views/scene/modelsWorld/index';
@@ -45,7 +45,11 @@ export class ActionsDomain extends Domain {
       skewOriginalUrlImage: map.image,
       resourceUrl: url,
     });
-    extraInfo && (entity.extraInfo = extraInfo);
+    if (extraInfo) {
+      entity.$update({
+        extraInfo,
+      });
+    }
     const ratio = map.image.width / map.image.height;
     const bgSize = ldeStore.document.getBackgroundSize();
     entity.setSize({
@@ -106,13 +110,16 @@ export class ActionsDomain extends Domain {
           isClipped: selected.isClipped,
           snapped: selected.snapped,
         });
+        product.setRenderOrder(selected.renderOrder);
         product.setSize(selected.size);
         product.setPosition(selected.position.added(new Vector3(20, 20)));
         product.setRotation(selected.rotation);
         product.setScale(selected.scale);
         product.setMaterialDirection(selected.materialDirection.clone());
         // product.cropPercent = selected.cropPercent;
-        product.extraInfo = selected.extraInfo;
+        product.$update({
+          extraInfo: { ...selected.extraInfo },
+        });
         const newSkewPoints = [...selected.children.values()]
           .filter(m => EntityCategory.isSkewPoint(m))
           .map(p => {
@@ -202,7 +209,11 @@ export class ActionsDomain extends Domain {
     selected.$update({
       materialDirection: selected.materialDirection,
     });
-    extraInfo && (selected.extraInfo = extraInfo);
+    if (extraInfo) {
+      selected.$update({
+        extraInfo,
+      });
+    }
     const control = new Controls(selected);
     control.init();
   };
@@ -280,7 +291,7 @@ export class ActionsDomain extends Domain {
       y: Math.random() * 180,
       z: Math.random() * 180,
     });
-    ldeStore.document.addModel(entity);
+    ldeStore.document.addModel(entity, false);
   };
 
   /** 重置画布位置和缩放 */
@@ -352,6 +363,7 @@ export class ActionsDomain extends Domain {
     const mapWidth = map.image.width / 2;
     const mapHeight = map.image.height / 2;
     const width = sceneWidth * canvasMarginRatio;
+    entity.setRenderOrder(RenderOrder.BACKGROUND);
     entity.setSize({
       x: width,
       y: mapHeight / (mapWidth / width),
@@ -360,7 +372,6 @@ export class ActionsDomain extends Domain {
     entity.setPosition({
       x: 0,
       y: 0,
-      z: EyeDistance.BACKGROUND,
     });
     [...ldeStore.document.models.values()]
       .filter(m => EntityCategory.isBackground(m))
@@ -420,7 +431,6 @@ export class ActionsDomain extends Domain {
     }
     this.skewAction = Action.create('skew');
     // 开启 ticker
-    selected.setInteractive(false);
     ldeStore.scene.setRenderFlag2d(true);
     this.skewAction.execute(
       () => {
@@ -469,6 +479,7 @@ export class ActionsDomain extends Domain {
     const app2d = SceneUtil.get2DApp() as PIXI.Application;
     app2d.stage.addChildAt(image, 0);
     ldeStore.scene.setRenderFlag3d(false);
+    appCommandBox.skewCommand.apply();
   };
 
   confirmSkew = async (uploadMethod: ({
@@ -570,7 +581,6 @@ export class ActionsDomain extends Domain {
         ldeStore.scene.$update({
           hideSkewPoint: false,
         });
-        model.setInteractive(true);
         ldeStore.document.$update({
           skewModel: undefined,
         });
@@ -580,13 +590,13 @@ export class ActionsDomain extends Domain {
       true,
       { immediately: true }
     );
+    appCommandBox.defaultCommand.apply();
     this.skewAction.complete();
     ldeStore.scene.setRenderFlag3d(true);
     ldeStore.scene.setRenderFlag2d(false);
   };
 
   cancelSkew = () => {
-    ldeStore.document.skewModel && ldeStore.document.skewModel.setInteractive(true);
     const app2d = SceneUtil.get2DApp() as PIXI.Application;
     app2d.stage.removeChildAt(0);
     ldeStore.document.$update({
@@ -598,6 +608,7 @@ export class ActionsDomain extends Domain {
     this.skewAction.abort();
     ldeStore.scene.setRenderFlag3d(true);
     ldeStore.scene.setRenderFlag2d(false);
+    appCommandBox.defaultCommand.apply();
   };
 
   clipAction: Action;

@@ -3,14 +3,14 @@ import * as PIXI from 'pixi.js';
 import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, Element } from '@turbox3d/turbox3d';
 import { FPSMonitorComponent } from '@turbox3d/turbox-dev-tool';
 import { appCommandBox } from '../../commands/index';
-import { Camera } from './camera/index';
+import { OrthographicCamera, PerspectiveCamera } from './camera/index';
 import { Light } from './light/index';
 import { Rect3d } from './helper/index';
 import { ModelsWorld, SceneUtil } from './modelsWorld/index';
 // import './index.less';
 import { ldeStore } from '../../models/index';
 import { TempWorld } from './tempWorld/index';
-import { EyeDistance } from '../../consts/scene';
+import { RenderOrder } from '../../consts/scene';
 
 @Reactive
 class Shadow extends Component {
@@ -20,7 +20,7 @@ class Shadow extends Component {
     const background = ldeStore.document.getBackgroundModel();
     // return (
     //   <>
-    //     {!background && <Rect3d color={0xFFFFFF} width={width} height={height} position={{ x: 0, y: 0, z: EyeDistance.EMPTY_BACKGROUND }} />}
+    //     {!background && <Rect3d color={0xFFFFFF} width={width} height={height} position={{ x: 0, y: 0, z: 0 }} />}
     //   </>
     // );
     if (!background) {
@@ -30,7 +30,8 @@ class Shadow extends Component {
           color: 0xFFFFFF,
           width,
           height,
-          position: { x: 0, y: 0, z: EyeDistance.EMPTY_BACKGROUND },
+          position: { x: 0, y: 0, z: 0 },
+          renderOrder: RenderOrder.EMPTY_BACKGROUND,
         },
       }];
     }
@@ -78,9 +79,10 @@ class GraphicWorld extends Component<{
   scene2dChildren: Component[];
   scene3dChildren: Component[];
   maxFPS: number;
+  mode: 'orthographic' | 'perspective';
 }> {
   render() {
-    const { maxFPS, scene2dChildren, scene3dChildren } = this.props;
+    const { maxFPS, scene2dChildren, scene3dChildren, mode } = this.props;
     return [{
       component: Scene2D,
       props: {
@@ -116,7 +118,7 @@ class GraphicWorld extends Component<{
         resolution: ldeStore.scene.resolution,
         renderFlag: ldeStore.scene.renderFlag3d,
         children: [{
-          component: Camera,
+          component: mode === 'orthographic' ? OrthographicCamera : PerspectiveCamera,
         }, {
           component: Light,
         }, {
@@ -136,11 +138,12 @@ export class MainScene extends React.Component<{
   maxFPS?: number;
   scene2dChildren?: any[];
   scene3dChildren?: any[];
+  mode?: 'orthographic' | 'perspective';
 }> {
   private reaction: Reaction;
 
   componentDidMount() {
-    const { maxFPS = 60, scene3dChildren = [], scene2dChildren = [] } = this.props;
+    const { maxFPS = 60, scene3dChildren = [], scene2dChildren = [], mode = 'orthographic' } = this.props;
     this.reaction = reactive(() => {
       const rootView2d = (SceneUtil.get2DRootView() as PIXI.Container);
       const { sceneWidth, sceneHeight, canvasZoom, canvasPosition } = ldeStore.scene;
@@ -157,8 +160,16 @@ export class MainScene extends React.Component<{
         scene2dChildren,
         scene3dChildren,
         maxFPS,
+        mode,
       }
     }]);
+    window.addEventListener('resize', () => {
+      const domElement = document.getElementById('scene3d');
+      ldeStore.scene.$update({
+        sceneWidth: domElement!.clientWidth,
+        sceneHeight: domElement!.clientHeight,
+      });
+    });
   }
 
   componentWillUnmount() {

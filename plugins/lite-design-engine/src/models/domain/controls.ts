@@ -1,5 +1,4 @@
 import { Domain, Vector3, EntityObject, mutation } from '@turbox3d/turbox3d';
-import { EyeDistance } from '../../consts/scene';
 import { EntityCategory } from '../../utils/category';
 import { ScalePointEntity } from '../entity/scalePoint';
 import { RotatePointEntity } from '../entity/rotatePoint';
@@ -23,10 +22,10 @@ export class Controls extends Domain {
   }
 
   getMapRule = () => ({
-    leftTop: new Vector3(-this.model.size.x / 2, this.model.size.y / 2, EyeDistance.SCALE_POINT),
-    rightTop: new Vector3(this.model.size.x / 2, this.model.size.y / 2, EyeDistance.SCALE_POINT),
-    rightBottom: new Vector3(this.model.size.x / 2, -this.model.size.y / 2, EyeDistance.SCALE_POINT),
-    leftBottom: new Vector3(-this.model.size.x / 2, -this.model.size.y / 2, EyeDistance.SCALE_POINT),
+    leftTop: new Vector3(-this.model.size.x / 2, this.model.size.y / 2, 0),
+    rightTop: new Vector3(this.model.size.x / 2, this.model.size.y / 2, 0),
+    rightBottom: new Vector3(this.model.size.x / 2, -this.model.size.y / 2, 0),
+    leftBottom: new Vector3(-this.model.size.x / 2, -this.model.size.y / 2, 0),
   });
 
   @mutation

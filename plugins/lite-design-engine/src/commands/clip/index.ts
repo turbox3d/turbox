@@ -37,7 +37,7 @@ export class ClipCommand extends BaseCommand {
     const diagonalP = allClipPoints[[2, 3, 0, 1][index]].position;// 对角点索引数组
     const size = this.target.parent!.size;
 
-    const MIN_D = 50; // 剪裁区域最小边长
+    const MIN_D = 30; // 剪裁区域最小边长
     // x
     if( this.target.position.x < diagonalP.x) {
       if (position.x < -size.x / 2) { position.x = - size.x / 2}

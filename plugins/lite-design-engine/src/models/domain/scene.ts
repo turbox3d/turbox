@@ -9,6 +9,8 @@ export class SceneDomain extends Domain {
   @reactor cameraControlsEnabled = false;
   /** 中央阴影部分画布区域的缩放 */
   @reactor canvasZoom = 1;
+  /** 画布缩放的限制范围 */
+  @reactor canvasZoomRange = [0.1, 2];
   /** 中央阴影部分画布区域的位置 */
   @reactor canvasPosition = { x: 0, y: 0 };
   /** 中央阴影部分画布区域的尺寸比例 */

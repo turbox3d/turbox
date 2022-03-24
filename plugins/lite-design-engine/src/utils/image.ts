@@ -2,34 +2,45 @@ import { Vector2, Vec2 } from '@turbox3d/turbox3d';
 import * as THREE from 'three';
 import { SceneUtil } from '../views/scene/modelsWorld/index';
 
-export const mirrorImage = (image: string | Blob, materialDirection: Vector2, isBase64 = false, fileType = 'image/png', quality = 1) => {
-  const img = new Image();
-  img.setAttribute('crossOrigin', 'anonymous');
-  img.src = image instanceof Blob ? URL.createObjectURL(image) : convertUrl(image);
-  return new Promise<string | Blob>((resolve) => {
-    img.onload = () => {
-      image instanceof Blob && URL.revokeObjectURL(img.src);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.translate(materialDirection.x === -1 ? canvas.width : 0, materialDirection.y === -1 ? canvas.height : 0);
-      ctx.scale(materialDirection.x, materialDirection.y);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-      if (isBase64) {
-        resolve(`${canvas.toDataURL(fileType, quality)}`);
-      } else {
-        canvas.toBlob(
-          blob => {
-            if (blob) {
-              resolve(blob);
-            }
-          },
-          fileType,
-          quality
-        );
-      }
-    };
+export const mirrorImage = (
+  image: string | Blob,
+  materialDirection: Vector2,
+  isBase64 = false,
+  fileType = 'image/png',
+  quality = 1,
+  maxWidth?: number
+) => {
+  return new Promise<string | Blob>(resolve => {
+    if (materialDirection.x === 1 && materialDirection.y === 1) {
+      resolve(image);
+    } else {
+      const img = new Image();
+      img.setAttribute('crossOrigin', 'anonymous');
+      img.src = image instanceof Blob ? URL.createObjectURL(image) : convertUrl(image, maxWidth);
+      img.onload = () => {
+        image instanceof Blob && URL.revokeObjectURL(img.src);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d')!;
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.translate(materialDirection.x === -1 ? canvas.width : 0, materialDirection.y === -1 ? canvas.height : 0);
+        ctx.scale(materialDirection.x, materialDirection.y);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+        if (isBase64) {
+          resolve(`${canvas.toDataURL(fileType, quality)}`);
+        } else {
+          canvas.toBlob(
+            blob => {
+              if (blob) {
+                resolve(blob);
+              }
+            },
+            fileType,
+            quality
+          );
+        }
+      };
+    }
   });
 };
 
@@ -71,10 +82,10 @@ export const getRenderTargetImageData = (
   });
 };
 
-export async function loadImageBase64(url: string | Blob, fileType = 'image/png', quality = 1) {
+export async function loadImageBase64(url: string | Blob, fileType = 'image/png', quality = 1, maxWidth?: number) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
-  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url, maxWidth);
   return new Promise<{
     base64: string;
     width: number;
@@ -97,10 +108,10 @@ export async function loadImageBase64(url: string | Blob, fileType = 'image/png'
   });
 }
 
-export async function loadImage(url: string | Blob, fileType = 'image/png', quality = 1) {
+export async function loadImage(url: string | Blob, fileType = 'image/png', quality = 1, maxWidth?: number) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
-  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url, maxWidth);
   return new Promise<{
     blob: Blob | null;
     width: number;
@@ -128,10 +139,10 @@ export async function loadImage(url: string | Blob, fileType = 'image/png', qual
   });
 }
 
-export async function loadImageElement(url: string | Blob) {
+export async function loadImageElement(url: string | Blob, maxWidth?: number) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
-  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url, maxWidth);
   return new Promise<{
     element: HTMLImageElement;
     width: number;
@@ -148,10 +159,10 @@ export async function loadImageElement(url: string | Blob) {
   });
 }
 
-export async function cropImage(url: string | Blob, rect: { start: Vec2; end: Vec2 }, fileType = 'image/png', quality = 1) {
+export async function cropImage(url: string | Blob, rect: { start: Vec2; end: Vec2 }, fileType = 'image/png', quality = 1, maxWidth?: number) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
-  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url, maxWidth);
   return new Promise<{
     blob: Blob | null;
     width: number;
@@ -224,9 +235,13 @@ function updateQueryStringParameter(url: string, key: string, value: string) {
   }
 }
 
-export const convertUrl = (url: string, maxWidth = 2400) => {
-  if (url.includes(';base64,') || !url) {
+export const convertUrl = (url: string, maxWidth = 2560) => {
+  if (url.includes(';base64,') || url.includes('blob:') || !url) {
     return url;
   }
-  return updateQueryStringParameter(`${url}?x-oss-process=image/resize,w_${maxWidth}`, 'ihomelitedesignengine', 'true');
+  return updateQueryStringParameter(
+    `${url}?x-oss-process=image/resize,w_${maxWidth}/format,webp`,
+    'ihomelitedesignengine',
+    'true'
+  );
 }

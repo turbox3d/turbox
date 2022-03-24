@@ -10,7 +10,7 @@ import { ScalePointEntity } from '../../../models/entity/scalePoint';
 import { RotatePointViewEntity } from './RotatePoint';
 import { RotatePointEntity } from '../../../models/entity/rotatePoint';
 import { EntityCategory } from '../../../utils/category';
-import { ScalePointSymbol, RotatePointSymbol, ClipPointSymbol, AdjustPointSymbol, DeletePointSymbol } from '../../../consts/scene';
+import { ScalePointSymbol, RotatePointSymbol, ClipPointSymbol, AdjustPointSymbol, DeletePointSymbol, RenderOrder } from '../../../consts/scene';
 import { ldeStore } from '../../../models/index';
 import { ClipPointEntity } from '../../../models/entity/clipPoint';
 import { ClipPointViewEntity } from './ClipPoint';
@@ -79,7 +79,8 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
         component: WireFrame,
         props: {
           model,
-        }
+          renderOrder: RenderOrder.CONTROL_POINT,
+        },
       });
       if (bizType === 'iPad') {
         const dps = (Array.from(model.children).filter(child => EntityCategory.isDeletePoint(child)) as DeletePointEntity[])
@@ -141,46 +142,65 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
         },
         key: e.id,
       }));
-      views.push(...cps, {
-        component: FatLine,
-        props: {
-          dashed: true,
-          dashScale: 0.2,
-          looped: true,
-          color: 0xBF975B,
-          position: new Vector3(0, 0, ldeStore.document.clipModel.position.z + 1),
-          rotation: new Vector3(0, 0, 0),
-          linePositions: (Array.from(ldeStore.document.clipModel.children).filter(child => EntityCategory.isClipPoint(child)) as ClipPointEntity[]).map(p => p.position.toArray()).flat(),
+      views.push(
+        ...cps,
+        {
+          component: FatLine,
+          props: {
+            dashed: true,
+            dashScale: 0.2,
+            looped: true,
+            color: 0xbf975b,
+            position: new Vector3(0, 0, ldeStore.document.clipModel.position.z + 1),
+            rotation: new Vector3(0, 0, 0),
+            linePositions: (
+              Array.from(ldeStore.document.clipModel.children).filter(child =>
+                EntityCategory.isClipPoint(child)
+              ) as ClipPointEntity[]
+            )
+              .map(p => p.position.toArray())
+              .flat(),
+            renderOrder: RenderOrder.CONTROL_POINT,
+          },
+          key: 1,
         },
-        key: 1,
-      }, {
-        component: ClipMask,
-        props: {
-          model,
-          points: Array.from(ldeStore.document.clipModel.children).filter(child => EntityCategory.isClipPoint(child)) as ClipPointEntity[],
-        },
-      });
+        {
+          component: ClipMask,
+          props: {
+            model,
+            points: Array.from(ldeStore.document.clipModel.children).filter(child =>
+              EntityCategory.isClipPoint(child)
+            ) as ClipPointEntity[],
+            renderOrder: RenderOrder.CONTROL_POINT,
+          },
+        }
+      );
     }
     if (model.snapped) {
-      views.push({
-        component: FatLine,
-        props: {
-          dashed: true,
-          position: new Vector3(0, 0, model.position.z + 1),
-          rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
-          linePositions: [-100, 0, 0, 100, 0, 0],
+      views.push(
+        {
+          component: FatLine,
+          props: {
+            dashed: true,
+            position: new Vector3(0, 0, model.position.z + 1),
+            rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
+            linePositions: [-100, 0, 0, 100, 0, 0],
+            renderOrder: RenderOrder.CONTROL_POINT,
+          },
+          key: 2,
         },
-        key: 2,
-      }, {
-        component: FatLine,
-        props: {
-          dashed: true,
-          position: new Vector3(0, 0, model.position.z + 1),
-          rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
-          linePositions: [0, -100, 0, 0, 100, 0],
-        },
-        key: 3,
-      });
+        {
+          component: FatLine,
+          props: {
+            dashed: true,
+            position: new Vector3(0, 0, model.position.z + 1),
+            rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
+            linePositions: [0, -100, 0, 0, 100, 0],
+            renderOrder: RenderOrder.CONTROL_POINT,
+          },
+          key: 3,
+        }
+      );
     }
     return views;
   }
@@ -214,7 +234,7 @@ interface IProductProps {
 }
 
 export class Product extends Mesh3D<IProductProps> {
-  protected reactivePipeLine = [this.updateMaterial, this.updateRotation, this.updateGeometry];
+  protected reactivePipeLine = [this.updateMaterial, this.updateRotation, this.updateGeometry, this.updateRenderOrder];
   protected view = new THREE.Sprite();
   protected material = new THREE.SpriteMaterial();
   private reaction: Reaction;
@@ -232,19 +252,20 @@ export class Product extends Mesh3D<IProductProps> {
     this.material.map = map;
     this.material.map.minFilter = THREE.LinearFilter;
     this.view.material = this.material;
+    this.view.material.depthTest = false;
     this.updateMaterialDirection();
   }
 
   componentDidMount() {
     super.componentDidMount();
-    this.reaction = reactive(() => {
-      this.updateMaterialDirection();
-    }, {
-      deps: [
-        () => this.props.model.materialDirection.x,
-        () => this.props.model.materialDirection.y,
-      ],
-    });
+    this.reaction = reactive(
+      () => {
+        this.updateMaterialDirection();
+      },
+      {
+        deps: [() => this.props.model.materialDirection.x, () => this.props.model.materialDirection.y],
+      }
+    );
   }
 
   componentWillUnmount() {
@@ -269,5 +290,10 @@ export class Product extends Mesh3D<IProductProps> {
   updateGeometry() {
     const { model } = this.props;
     this.view.scale.set(model.size.x, model.size.y, model.size.z);
+  }
+
+  private updateRenderOrder() {
+    const { model } = this.props;
+    this.view.renderOrder = model.renderOrder;
   }
 }

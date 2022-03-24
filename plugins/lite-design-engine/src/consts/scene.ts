@@ -1,8 +1,12 @@
 export enum EyeDistance {
-  EMPTY_BACKGROUND = -2000,
-  BACKGROUND = -1000,
-  SCALE_POINT = 100,
   CAMERA = 1000,
+}
+
+export enum RenderOrder {
+  EMPTY_BACKGROUND = -2,
+  BACKGROUND = -1,
+  Cube = 10,
+  CONTROL_POINT = 9999,
 }
 
 export enum Z_INDEX_ACTION {

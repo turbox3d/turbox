@@ -13,8 +13,32 @@ export class BackgroundViewEntity extends ViewEntity3D<IProps> {
   protected reactivePipeLine = [
     this.updatePosition,
     this.updateRotation,
-    this.updateScale
+    this.updateScale,
   ];
+
+  protected onClickable() {
+    return false;
+  }
+
+  protected onHoverable() {
+    return false;
+  }
+
+  protected onDraggable() {
+    return false;
+  }
+
+  protected onPinchable() {
+    return false;
+  }
+
+  protected onRotatable() {
+    return false;
+  }
+
+  protected onPressable() {
+    return false;
+  }
 
   render() {
     const { model } = this.props;
@@ -58,7 +82,7 @@ interface IBackgroundProps {
 }
 
 export class Background extends Mesh3D<IBackgroundProps> {
-  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updatePosition];
+  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updatePosition, this.updateRenderOrder];
   protected view = new THREE.Sprite();
 
   private updateMaterial() {
@@ -72,6 +96,7 @@ export class Background extends Mesh3D<IBackgroundProps> {
 
   private assignTexture(map: THREE.Texture) {
     this.view.material = new THREE.SpriteMaterial({ map });
+    this.view.material.depthTest = false;
   }
 
   private updateGeometry() {
@@ -82,5 +107,10 @@ export class Background extends Mesh3D<IBackgroundProps> {
   private updatePosition() {
     const { model } = this.props;
     this.view.position.set(model.position.x, model.position.y, model.position.z);
+  }
+
+  private updateRenderOrder() {
+    const { model } = this.props;
+    this.view.renderOrder = model.renderOrder;
   }
 }

@@ -2,6 +2,7 @@ import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element } from '@turbox
 import { appCommandBox } from '../../../commands/index';
 import { Cube, WireFrame } from '../helper/index';
 import { CubeEntity } from '../../../models/entity/cube';
+import { RenderOrder } from '../../../consts/scene';
 
 interface IProps extends IViewEntity {
   model: CubeEntity;
@@ -16,6 +17,7 @@ export class CubeViewEntity extends ViewEntity3D<IProps> {
   ];
 
   render() {
+    this.view.renderOrder = RenderOrder.Cube;
     const { model } = this.props;
     const isSelected = appCommandBox.defaultCommand.select
       .getSelectedEntities()

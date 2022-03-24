@@ -1,6 +1,7 @@
 import { IViewEntity, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
 import { Circle } from '../helper/index';
 import { RotatePointEntity } from '../../../models/entity/rotatePoint';
+import { RenderOrder } from '../../../consts/scene';
 
 interface IRotatePointProps extends IViewEntity {
   model: RotatePointEntity;
@@ -19,7 +20,8 @@ export class RotatePointViewEntity extends ViewEntity3D<IRotatePointProps> {
       component: Circle,
       props: {
         radius: this.props.model.radius,
-        imgUrl: 'https://img.alicdn.com/imgextra/i3/O1CN01Ekra8c1aK1gwa57wE_!!6000000003310-2-tps-200-200.png?x-oss-process=image/resize,w_60',
+        imgUrl: 'https://img.alicdn.com/imgextra/i3/O1CN01Ekra8c1aK1gwa57wE_!!6000000003310-2-tps-200-200.png?x-oss-process=image/resize,w_60/format,webp',
+        renderOrder: RenderOrder.CONTROL_POINT,
       },
     }];
   }

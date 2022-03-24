@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import * as React from 'react';
-import { Button, Slider } from 'antd';
+import { Button, Input, Slider } from 'antd';
 import { ldeStore } from '../../models/index';
 import './index.less';
 import { Z_INDEX_ACTION, MIRROR_ACTION } from '../../consts/scene';
@@ -86,8 +86,10 @@ export function LeftPanel() {
   }
 
   const confirmSkew = () => {
-    ldeStore.actions.confirmSkew(async () => {
-      return '';
+    ldeStore.actions.confirmSkew(async ({
+      data: url,
+    }) => {
+      return URL.createObjectURL(url);
     });
   }
 
@@ -100,8 +102,10 @@ export function LeftPanel() {
   }
 
   const confirmClip = () => {
-    ldeStore.actions.confirmClip(async () => {
-      return '';
+    ldeStore.actions.confirmClip(async ({
+      data: url,
+    }) => {
+      return URL.createObjectURL(url);
     });
   }
 
@@ -125,8 +129,14 @@ export function LeftPanel() {
     console.log(json);
   }
 
+  const loadUrl = React.useRef<string>('');
+
+  const loadUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    loadUrl.current = e.target.value;
+  }
+
   const load = async () => {
-    const json = await LoadSystem.loadJSON('https://ihomeimg.oss-cn-beijing.aliyuncs.com/i/m6orvirrfb8.json');
+    const json = await LoadSystem.loadJSON(loadUrl.current);
     ldeStore.actions.load(json);
   }
 
@@ -159,6 +169,16 @@ export function LeftPanel() {
 
   const renderFlag2d = () => {
     ldeStore.scene.setRenderFlag2d(!ldeStore.scene.renderFlag2d);
+  }
+
+  const generateThumbnail = async () => {
+    const json = await LoadSystem.loadJSON('https://ihomeimg.oss-cn-beijing.aliyuncs.com/i/qdnj4na7n8c.json');
+    const url = await ldeStore.document.generateThumbnail(json, 600) as Blob;
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(url);
+    downloadLink.download = 'thumbnail';
+    downloadLink.click();
+    URL.revokeObjectURL(downloadLink.href);
   }
 
   return (
@@ -202,7 +222,9 @@ export function LeftPanel() {
         <Button type="primary" className="op" onClick={redoHandler}>Redo</Button>
         <Button type="primary" className="op" onClick={save}>保存</Button>
         <Button type="primary" className="op" onClick={load}>加载</Button>
+        <Input onChange={loadUrlChange} />
         <Button type="primary" className="op" onClick={screenShot}>截图</Button>
+        <Button type="primary" className="op" onClick={generateThumbnail}>生成缩略图</Button>
         <Button type="primary" className="op" onClick={exportPDF}>导出pdf</Button>
         <Button type="primary" className="op" onClick={renderFlag}>renderFlag3d</Button>
         <Button type="primary" className="op" onClick={renderFlag2d}>renderFlag2d</Button>

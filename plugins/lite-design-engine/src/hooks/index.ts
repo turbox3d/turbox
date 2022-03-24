@@ -80,7 +80,7 @@ export function useMaterialDragAndReplace<CustomBizData>(
         imgEl.style.backgroundRepeat = 'no-repeat';
         imgEl.style.backgroundSize = 'contain';
         imgEl.style.backgroundPosition = 'center';
-        imgEl.style.backgroundImage = `url(${previewUrl || url}?x-oss-process=image/resize,w_300)`;
+        imgEl.style.backgroundImage = `url(${previewUrl || url}?x-oss-process=image/resize,w_300/format,webp)`;
         imgEl.id = 'material-thumbnail';
         imgEl.style.width = '150px';
         imgEl.style.height = '150px';

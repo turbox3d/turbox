@@ -1,5 +1,4 @@
 import { EntityObject, mutation, reactor, Vector2, Vector3 } from '@turbox3d/turbox3d';
-import { EyeDistance } from '../../consts/scene';
 import { ScalePointEntity } from './scalePoint';
 import { RotatePointEntity } from './rotatePoint';
 import { AdjustPointEntity } from './adjustPoint';
@@ -26,7 +25,7 @@ export class ProductEntity<CustomBizData = any> extends EntityObject {
   @reactor snapped = false;
 
   /** 额外的业务自定义数据 */
-  extraInfo: CustomBizData = {} as CustomBizData;
+  @reactor extraInfo: CustomBizData = {} as CustomBizData;
   // cropPercent = '';
 
   constructor(id?: string) {
@@ -34,10 +33,10 @@ export class ProductEntity<CustomBizData = any> extends EntityObject {
   }
 
   getMapRule = (size = this.size) => ({
-    leftTop: new Vector3(-size.x / 2, size.y / 2, EyeDistance.SCALE_POINT),
-    rightTop: new Vector3(size.x / 2, size.y / 2, EyeDistance.SCALE_POINT),
-    rightBottom: new Vector3(size.x / 2, -size.y / 2, EyeDistance.SCALE_POINT),
-    leftBottom: new Vector3(-size.x / 2, -size.y / 2, EyeDistance.SCALE_POINT),
+    leftTop: new Vector3(-size.x / 2, size.y / 2, 0),
+    rightTop: new Vector3(size.x / 2, size.y / 2, 0),
+    rightBottom: new Vector3(size.x / 2, -size.y / 2, 0),
+    leftBottom: new Vector3(-size.x / 2, -size.y / 2, 0),
   });
 
   @mutation

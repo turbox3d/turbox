@@ -178,8 +178,11 @@ export class ScaleCommand extends BaseCommand {
     }
     if (this.currentProduct instanceof THREE.Group && this.pinchScaleOffset && this.pinchScaleInitPosition && this.pinchScaleInitScale) {
       // 缩放画布
-      const ratio = event.gesturesExtra?.scale || 1;
+      let ratio = event.gesturesExtra?.scale || 1;
       const { x: offsetX, y: offsetY } = this.pinchScaleOffset;
+      const [min, max] = ldeStore.scene.canvasZoomRange;
+      ratio = Math.max(this.pinchScaleInitScale.x * ratio, min) / this.pinchScaleInitScale.x;
+      ratio = Math.min(this.pinchScaleInitScale.x * ratio, max) / this.pinchScaleInitScale.x;
       this.currentProduct.scale.x = this.pinchScaleInitScale.x * ratio;
       this.currentProduct.scale.y = this.pinchScaleInitScale.y * ratio;
       this.currentProduct.position.x = offsetX + (this.pinchScaleInitPosition.x - offsetX) * ratio;
@@ -239,7 +242,7 @@ export class ScaleCommand extends BaseCommand {
       return;
     }
     if (event.event instanceof WheelEvent) {
-      const ratio = event.event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
+      let deltaRatio = event.event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
       const matrixWorld = (SceneUtil.getRootView() as THREE.Group).matrixWorld.clone();
       const v = tools.coordinateTransform({
         x: event.event.offsetX,
@@ -247,11 +250,14 @@ export class ScaleCommand extends BaseCommand {
       }, CoordinateType.CanvasToScene, 0);
       const { x: offsetX, y: offsetY } = new THREE.Vector3(v.x, v.y).applyMatrix4(matrixWorld);
       const rootView = SceneUtil.getRootView() as THREE.Group;
-      rootView.scale.x *= ratio;
-      rootView.scale.y *= ratio;
+      const [min, max] = ldeStore.scene.canvasZoomRange;
+      deltaRatio = Math.max(rootView.scale.x * deltaRatio, min) / rootView.scale.x;
+      deltaRatio = Math.min(rootView.scale.x * deltaRatio, max) / rootView.scale.x;
+      rootView.scale.x *= deltaRatio;
+      rootView.scale.y *= deltaRatio;
       const { x, y } = rootView.position;
-      rootView.position.x = offsetX + (x - offsetX) * ratio;
-      rootView.position.y = offsetY + (y - offsetY) * ratio;
+      rootView.position.x = offsetX + (x - offsetX) * deltaRatio;
+      rootView.position.y = offsetY + (y - offsetY) * deltaRatio;
       ldeStore.scene.$update({
         canvasZoom: rootView.scale.x,
         canvasPosition: {
