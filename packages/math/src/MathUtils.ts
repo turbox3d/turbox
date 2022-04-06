@@ -286,6 +286,7 @@ const MathUtils = {
     const indices: number[] = [];
     const vertices: number[] = [];
     const normals: number[] = [];
+    const uvs: number[] = [];
     const a1 = MathUtils.interpolation(quadPositions[0], quadPositions[1], widthSegments);
     const a2 = MathUtils.interpolation(quadPositions[3], quadPositions[2], widthSegments);
     const a3 = a1.map((v, i) => MathUtils.interpolation(v.clone(), a2[i].clone(), heightSegments));
@@ -300,6 +301,7 @@ const MathUtils = {
       }
       for (let j = 0; j <= widthSegments; j++) {
         normals.push(0, 0, 1);
+        uvs.push(j * (1 / widthSegments), i * (1 / heightSegments));
       }
     }
     for (let i = 0; i < heightSegments; i++) {
@@ -312,6 +314,13 @@ const MathUtils = {
         indices.push(b, c, d);
       }
     }
+
+    return {
+      indices,
+      vertices,
+      normals,
+      uvs,
+    };
   },
 };
 
