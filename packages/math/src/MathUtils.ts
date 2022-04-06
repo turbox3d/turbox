@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Quaternion } from './base/Quaternion';
 import { Tolerance } from './base/Tolerance';
+import { Vector3 } from './base/Vector3';
 
 const _lut: string[] = [];
 
 for (let i = 0; i < 256; i++) {
-  _lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
+  _lut[i] = (i < 16 ? '0' : '') + i.toString(16);
 }
 
 let _seed = 1234567;
@@ -15,12 +16,17 @@ const MathUtils = {
   RAD2DEG: 180 / Math.PI,
   generateUUID() {
     // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
-    const d0 = Math.random() * 0xffffffff | 0;
-    const d1 = Math.random() * 0xffffffff | 0;
-    const d2 = Math.random() * 0xffffffff | 0;
-    const d3 = Math.random() * 0xffffffff | 0;
-    const uuid = `${_lut[d0 & 0xff] + _lut[d0 >> 8 & 0xff] + _lut[d0 >> 16 & 0xff] + _lut[d0 >> 24 & 0xff]}-${_lut[d1 & 0xff]}${_lut[d1 >> 8 & 0xff]}-${_lut[d1 >> 16 & 0x0f | 0x40]}${_lut[d1 >> 24 & 0xff]}-${_lut[d2 & 0x3f | 0x80]}${_lut[d2 >> 8 & 0xff]}-${_lut[d2 >> 16 & 0xff]}${_lut[d2 >> 24 & 0xff]
-    }${_lut[d3 & 0xff]}${_lut[d3 >> 8 & 0xff]}${_lut[d3 >> 16 & 0xff]}${_lut[d3 >> 24 & 0xff]}`;
+    const d0 = (Math.random() * 0xffffffff) | 0;
+    const d1 = (Math.random() * 0xffffffff) | 0;
+    const d2 = (Math.random() * 0xffffffff) | 0;
+    const d3 = (Math.random() * 0xffffffff) | 0;
+    const uuid = `${_lut[d0 & 0xff] + _lut[(d0 >> 8) & 0xff] + _lut[(d0 >> 16) & 0xff] + _lut[(d0 >> 24) & 0xff]}-${
+      _lut[d1 & 0xff]
+    }${_lut[(d1 >> 8) & 0xff]}-${_lut[((d1 >> 16) & 0x0f) | 0x40]}${_lut[(d1 >> 24) & 0xff]}-${
+      _lut[(d2 & 0x3f) | 0x80]
+    }${_lut[(d2 >> 8) & 0xff]}-${_lut[(d2 >> 16) & 0xff]}${_lut[(d2 >> 24) & 0xff]}${_lut[d3 & 0xff]}${
+      _lut[(d3 >> 8) & 0xff]
+    }${_lut[(d3 >> 16) & 0xff]}${_lut[(d3 >> 24) & 0xff]}`;
 
     // .toUpperCase() here flattens concatenated strings to save heap memory space.
     return uuid.toUpperCase();
@@ -35,7 +41,7 @@ const MathUtils = {
   },
   // Linear mapping from range <a1, a2> to range <b1, b2>
   mapLinear(x: number, a1: number, a2: number, b1: number, b2: number) {
-    return b1 + (x - a1) * (b2 - b1) / (a2 - a1);
+    return b1 + ((x - a1) * (b2 - b1)) / (a2 - a1);
   },
   // https://en.wikipedia.org/wiki/Linear_interpolation
   lerp(x: number, y: number, t: number) {
@@ -84,7 +90,7 @@ const MathUtils = {
 
     // Park-Miller algorithm
 
-    _seed = _seed * 16807 % 2147483647;
+    _seed = (_seed * 16807) % 2147483647;
 
     return (_seed - 1) / 2147483646;
   },
@@ -254,6 +260,58 @@ const MathUtils = {
       return -1;
     }
     return 1;
+  },
+  /**
+   * 单向线性插值
+   */
+  interpolation(start: Vector3, end: Vector3, segments = 10) {
+    const v = end.subtracted(start);
+    const step = v.length / segments;
+    const points: Vector3[] = [];
+    const n = v.normalized();
+    for (let index = 0; index < segments - 1; index++) {
+      points.push(start.added(n.clone().multiplyScalar(step * (index + 1))));
+    }
+    points.unshift(start.clone());
+    points.push(end.clone());
+    return points;
+  },
+  /**
+   * 根据四方点生成网格
+   * @param quadPositions 四方点，左上角为起点，按照顺时针顺序
+   * @param widthSegments 宽度分割段数
+   * @param heightSegments 高度分割段数
+   */
+  generateMeshByQuad(quadPositions: Vector3[], widthSegments = 10, heightSegments = 10) {
+    const indices: number[] = [];
+    const vertices: number[] = [];
+    const normals: number[] = [];
+    const a1 = MathUtils.interpolation(quadPositions[0], quadPositions[1], widthSegments);
+    const a2 = MathUtils.interpolation(quadPositions[3], quadPositions[2], widthSegments);
+    const a3 = a1.map((v, i) => MathUtils.interpolation(v.clone(), a2[i].clone(), heightSegments));
+
+    for (let i = 0; i <= heightSegments; i++) {
+      if (i === 0) {
+        vertices.push(...a1.flatMap(a => a.toArray()));
+      } else if (i === heightSegments) {
+        vertices.push(...a2.flatMap(a => a.toArray()));
+      } else {
+        vertices.push(...a3.flatMap(a => a[i].toArray()));
+      }
+      for (let j = 0; j <= widthSegments; j++) {
+        normals.push(0, 0, 1);
+      }
+    }
+    for (let i = 0; i < heightSegments; i++) {
+      for (let j = 0; j < widthSegments; j++) {
+        const a = i * (widthSegments + 1) + (j + 1);
+        const b = i * (widthSegments + 1) + j;
+        const c = (i + 1) * (widthSegments + 1) + j;
+        const d = (i + 1) * (widthSegments + 1) + (j + 1);
+        indices.push(a, b, d);
+        indices.push(b, c, d);
+      }
+    }
   },
 };
 
