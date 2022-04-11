@@ -1,3 +1,5 @@
+import { Vec2 } from '@turbox3d/shared';
+
 /** 标示拖拽阶段 */
 export enum DragStatus {
   Ready = 'ready',
@@ -48,7 +50,7 @@ export enum InteractiveEvent {
 }
 
 interface PointerEventFunc {
-  (event: PointerEvent | Touch, extra?: IGesturesExtra): void;
+  (event: PointerEvent | Touch, extra?: IGesturesExtra | IExtra): void;
 }
 
 interface WheelEventFunc {
@@ -65,6 +67,10 @@ export interface IGesturesExtra {
   eventCache?: (PointerEvent | Touch)[];
 }
 
+export interface IExtra {
+  mouseDownInfo?: Vec2;
+}
+
 export interface IFunc {
-  (event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra): void;
+  (event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra): void;
 }

@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommandBox, CommandEventType, ITool } from '@turbox3d/command-manager';
 import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent } from '@turbox3d/event-manager';

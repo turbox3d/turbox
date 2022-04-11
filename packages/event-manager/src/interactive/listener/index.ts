@@ -1,7 +1,7 @@
 import { getRelativePositionFromEvent, pointInRect, Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
-import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, IGesturesExtra } from './type';
-import { isMouseMoved } from './utils';
+import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, IGesturesExtra, IExtra } from './type';
+import { isMouseMoved, MoveTolerance } from './utils';
 import { IViewportInfo } from '../type';
 
 /**
@@ -122,7 +122,7 @@ export class InteractiveListener {
     }
   }
 
-  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra) {
+  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra) {
     // 判断是否在当前视口，不在的过滤掉，不触发
     if (this.viewport) {
       const { x, y, width, height } = this.viewport;
@@ -253,13 +253,18 @@ export class InteractiveListener {
       }
     } else if (
       this.mouseDealType === MouseDealType.Drag ||
-      (this.mouseDownInfo && isMouseMoved(this.mouseDownInfo, event, 4))
+      (this.mouseDownInfo && isMouseMoved(this.mouseDownInfo, event, MoveTolerance))
     ) {
       window.clearTimeout(this.pressTimer);
       this.mouseDealType = MouseDealType.Drag;
       if (this.dragStatus === DragStatus.Ready) {
         this.dragStatus = DragStatus.Dragging;
-        this.triggerEvent(InteractiveEvent.DragStart, event);
+        this.triggerEvent(InteractiveEvent.DragStart, event, {
+          mouseDownInfo: {
+            x: this.mouseDownInfo?.x || 0,
+            y: this.mouseDownInfo?.y || 0,
+          },
+        });
       } else if (this.dragStatus === DragStatus.Dragging) {
         this.triggerEvent(InteractiveEvent.DragMove, event);
       }

@@ -11,7 +11,11 @@ export {
 } from './keyboard';
 export { SceneEvent } from './interactive/sceneEvent';
 export { CoordinateController } from './interactive/coordinate';
-export { InteractiveEvent } from './interactive/listener/type';
+export {
+  InteractiveEvent,
+  IGesturesExtra,
+  IExtra,
+} from './interactive/listener/type';
 export { InteractiveListener } from './interactive/listener/index';
 export { InteractiveController } from './interactive/index';
 export {

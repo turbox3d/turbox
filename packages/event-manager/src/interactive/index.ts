@@ -2,7 +2,7 @@
 import { TaskPriority, throttleInAFrame, Vec2, Vec3, getRelativePositionFromEvent } from '@turbox3d/shared';
 import { CanvasHandlers, InteractiveConfig, InteractiveType, IViewportInfo } from './type';
 import { InteractiveListener } from './listener/index';
-import { InteractiveEvent, IGesturesExtra } from './listener/type';
+import { InteractiveEvent, IGesturesExtra, IExtra } from './listener/type';
 import { SceneEvent } from './sceneEvent';
 import { CoordinateController } from './coordinate';
 
@@ -244,17 +244,17 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onRightClick(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onDragStart = (event: PointerEvent | Touch) => {
+  private onDragStart = (event: PointerEvent | Touch, extra?: IExtra) => {
     const { target } = this.hitTargetHandler(event, 'isDraggable');
     if (target) {
       const config = this.interactiveConfig.get(target);
       if (config && config.isDraggable && config.onDragStart) {
         this.dragTarget = target;
-        config.onDragStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
+        config.onDragStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
       }
       return;
     }
-    this.canvasHandlers.onDragStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
+    this.canvasHandlers.onDragStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
   private onDragMove = throttleInAFrame((event: PointerEvent | Touch) => {

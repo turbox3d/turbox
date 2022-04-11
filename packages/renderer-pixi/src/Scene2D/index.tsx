@@ -397,7 +397,7 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
       offsetX = event.offsetX;
       offsetY = event.offsetY;
     } else if (event instanceof SceneEvent) {
-      ratio = event.gesturesExtra?.deltaScale || 1;
+      ratio = (event.extra as any)?.deltaScale || 1;
       offsetX = event.event.clientX;
       offsetY = event.event.clientY;
     }
