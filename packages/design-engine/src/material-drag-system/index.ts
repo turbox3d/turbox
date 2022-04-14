@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { InteractiveEvent } from '@turbox3d/event-manager';
+import { IExtra, IGesturesExtra, InteractiveEvent } from '@turbox3d/event-manager';
 import { Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
 
@@ -27,19 +27,11 @@ export enum MouseDealType {
   Press = 'press',
 }
 
-export interface IGesturesExtra {
-  scale?: number;
-  deltaScale?: number;
-  rotate?: number;
-  deltaRotate?: number;
-  eventCache?: (PointerEvent | Touch)[];
-}
-
 export default class MaterialDragSystem {
   /** 入参 */
   args: any[];
   /** 事件回调处理 */
-  handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch) => void;
+  handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: IGesturesExtra | IExtra) => void;
   maxFPS = 60;
 
   static touchableDevice = 'ontouchstart' in window;
@@ -69,7 +61,7 @@ export default class MaterialDragSystem {
   private useX?: boolean;
 
   constructor(
-    handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch) => void,
+    handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: IGesturesExtra | IExtra) => void,
     maxFPS = 60
   ) {
     this.handler = handler;
@@ -109,8 +101,8 @@ export default class MaterialDragSystem {
     }
   }
 
-  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra) {
-    this.handler(e, event);
+  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra) {
+    this.handler(e, event, extra);
   }
 
   private addEventCache(event: PointerEvent) {
@@ -221,7 +213,12 @@ export default class MaterialDragSystem {
       this.mouseDealType = MouseDealType.Drag;
       if (this.dragStatus === DragStatus.Ready) {
         this.dragStatus = DragStatus.Dragging;
-        this.triggerEvent(InteractiveEvent.DragStart, event);
+        this.triggerEvent(InteractiveEvent.DragStart, event, {
+          mouseDownInfo: {
+            x: this.mouseDownInfo?.x || 0,
+            y: this.mouseDownInfo?.y || 0,
+          },
+        });
       } else if (this.dragStatus === DragStatus.Dragging) {
         this.triggerEvent(InteractiveEvent.DragMove, event);
       }
