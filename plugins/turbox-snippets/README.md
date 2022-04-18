@@ -18,14 +18,25 @@ In order to install an extension you need to launch the Command Pallet (Ctrl + S
 ## snippets
 | Trigger        | Content                                    |
 |---------------:|--------------------------------------------|
-| `ten→`         | Create entry with turbox                   |
-| `tdm→`         | Create Domain                              |
-| `trc→`         | Create reactor                             |
-| `tu→`          | Update state                               |
-| `tmu→`         | Create mutation for update state           |
-| `tef→`         | Create effect                              |
-| `tcc→`         | Create a Class Component with turbox       |
-| `tfc→`         | Create a Function Component with turbox    |
-| `tcpc→`        | Create a PureComponent with turbox         |
-| `trf→`         | Create a reactive function with turbox     |
-| `tmw→`         | Create Middleware                          |
+| `tce→`         | Create Entry                               |
+| `tcd→`         | Create Domain                              |
+| `tcr→`         | Create Reactor                             |
+| `tus→`         | Update State                               |
+| `tcm→`         | Create Mutation                            |
+| `tcc→`         | Create Computed                            |
+| `tccf→`        | Create Computed Function                   |
+| `tcrcc→`       | Create Reactive Class Component            |
+| `tcrfc→`       | Create Reactive Function Component         |
+| `tcrpc→`       | Create Reactive PureComponent              |
+| `tcrf→`        | Create Reactive Function                   |
+| `tcmw→`        | Create Middleware                          |
+| `tcrv3→`       | Create Reactive ViewEntity3D               |
+| `tcrv2→`       | Create Reactive ViewEntity2D               |
+| `tcrgc→`       | Create Reactive Graphic Component          |
+| `tcm3→`        | Create Mesh3D                              |
+| `tcm2→`        | Create Mesh2D                              |
+| `tcve→`        | Create ViewEntity Element                  |
+| `tcme→`        | Create Mesh Element                        |
+| `tccb→`        | Create CommandBox                          |
+| `tccc→`        | Create Composed Command                    |
+| `tcbc→`        | Create BaseCommand                         |

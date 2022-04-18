@@ -1,94 +1,102 @@
 {
-  "Create entry with turbox": {
-    "prefix": "ten",
+  "Create Entry": {
+    "prefix": "tce",
     "body": [
-      "import Turbox from 'turbox';",
+      "import { config, Tolerance, EnvSystem } from '@turbox3d/turbox3d';",
+      "import * as ReactDOM from 'react-dom';",
+      "import * as React from 'react';",
       "",
-      "async function main() {",
-      "\tTurbox.config({",
-      "\t\tdevTool: false,",
-      "\t\tmiddleware: {",
-      "\t\t\tlogger: false,",
-      "\t\t}",
-      "\t\ttimeTravel: {",
-      "\t\t\tisActive: false,",
-      "\t\t\tmaxStepNumber: 20,",
-      "\t\t}",
-      "\t});",
-      "\tTurbox.render(",
-      "\t\t<Layout />,",
-      "\t\t'#app',",
-      "\t);",
-      "}",
+      "config({",
+      "  middleware: {",
+      "    logger: process.env.NODE_ENV !== 'production', // 默认在 dev 环境开启 logger 中间件，在生产环境关闭",
+      "    diffLogger: true, // 默认开启 log 状态的 diff 信息",
+      "    effect: false, // 默认关闭 effect 中间件",
+      "    perf: process.env.NODE_ENV !== 'production', // 默认在 dev 环境开启 perf 中间件，性能分析用，在生产环境关闭",
+      "    skipNestLog: true, // 默认开启跳过被嵌套的 mutation 执行的日志",
+      "    skipNestPerfLog: true, // 默认开启跳过被嵌套的 mutation 执行的性能日志",
+      "  },",
+      "  timeTravel: {",
+      "    isActive: false, // 是否激活时间旅行器，该配置的优先级为最高，关闭时所有可产生历史记录的操作都不会被记录",
+      "    maxStepNumber: 20, // 记录操作的最大步数",
+      "    isNeedRecord: false, // 所有属性状态是否需要被记录的全局配置，默认全不记录（注意：只针对属性）",
+      "    keepActionChain: process.env.NODE_ENV !== 'production', // 默认开启保存 actionChain 到撤销恢复栈中，在生产环境关闭",
+      "  },",
+      "  disableReactive: false, // 是否禁用响应式",
+      "  strictMode: process.env.NODE_ENV !== 'production', // 严格模式，开启非法赋值检测，默认在 dev 环境开启，生产环境关闭",
+      "  devTool: false, // 默认关闭 devTool，在生产环境自动关闭",
+      "});",
       "",
-      "main();",
+      "const TOLERANCE = 1e-3;",
+      "Tolerance.setGlobal(TOLERANCE, TOLERANCE, TOLERANCE);",
+      "",
+      "appStore.document.createHistory(20);",
+      "appStore.document.applyHistory();",
+      "",
+      "EnvSystem.AppEnvMgr.switchAppEnv('app-env');",
+      "",
+      "ReactDOM.render(",
+      "  <>",
+      "    <MainScene />",
+      "    <LeftPanel />",
+      "  </>,",
+      "  document.getElementById('app')",
+      ");",
       ""
     ],
-    "description": "Create entry with turbox"
+    "description": "Create Entry"
   },
   "Create Domain": {
-    "prefix": "tdm",
+    "prefix": "tcd",
     "body": [
-      "import { Domain, reactor, effect, mutation, computed } from 'turbox';",
+      "import { Domain, reactor, mutation } from '@turbox3d/turbox3d';",
       "",
-      "export default class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
       "\t@reactor() example = '';",
       "",
       "\t@mutation()",
       "\tupdateExample(example) {",
       "\t\tthis.example = example;",
       "\t}",
-      "",
-      "\t@computed()",
-      "\tget computedProp() {",
-      "\t\treturn this.example;",
-      "\t}",
-      "",
-      "\t@effect()",
-      "\tasync fetch() {",
-      "\t\tthis.updateExample('example');",
-      "\t}",
-      "}",
       ""
     ],
     "description": "Create Domain"
   },
-  "Create reactor": {
-    "prefix": "trc",
+  "Create Reactor": {
+    "prefix": "tcr",
     "body": [
       "@reactor() ${1:state} = ${0:initValue};"
     ],
-    "description": "Create reactor"
+    "description": "Create Reactor"
   },
-  "Update state": {
-    "prefix": "tu",
+  "Update State": {
+    "prefix": "tus",
     "body": [
       "this.\\$update({$0});"
     ],
-    "description": "Update state"
+    "description": "Update State"
   },
-  "Create mutation": {
-    "prefix": "tmu",
+  "Create Mutation": {
+    "prefix": "tcm",
     "body": [
       "@mutation()",
       "${1:updateState}(${2:newState}) {",
       "\tthis.${3:state} = ${2:newState};",
       "}"
     ],
-    "description": "Create mutation for update state"
+    "description": "Create Mutation"
   },
-  "Create computed": {
-    "prefix": "tcp",
+  "Create Computed": {
+    "prefix": "tcc",
     "body": [
       "@computed()",
       "get ${1:computedProp}() {",
       "\treturn this.${2:newState};",
       "}"
     ],
-    "description": "Create computed"
+    "description": "Create Computed"
   },
-  "Create computed function": {
-    "prefix": "tcpf",
+  "Create Computed Function": {
+    "prefix": "tccf",
     "body": [
       "const computedProp = computed(() => {",
       "\treturn this.firstName + ' ' + this.lastName;",
@@ -96,25 +104,15 @@
       "\tlazy: true,",
       "});"
     ],
-    "description": "Create computed function"
+    "description": "Create Computed Function"
   },
-  "Create effect": {
-    "prefix": "tef",
-    "body": [
-      "@effect()",
-      "async ${1:fetch}() {",
-      "\t$0",
-      "}"
-    ],
-    "description": "Create effect"
-  },
-  "Create a Class Component with turbox": {
-    "prefix": "tcc",
+  "Create Reactive Class Component": {
+    "prefix": "tcrcc",
     "body": [
       "import React, { Component } from 'react';",
-      "import { Reactive } from 'turbox';",
+      "import { ReactiveReact } from '@turbox3d/turbox3d';",
       "",
-      "@Reactive()",
+      "@ReactiveReact()",
       "class ${1:${TM_FILENAME_BASE}} extends Component {",
       "\trender() {",
       "\t\treturn (",
@@ -128,15 +126,15 @@
       "export default ${1:${TM_FILENAME_BASE}};",
       ""
     ],
-    "description": "Create a Class Component with turbox"
+    "description": "Create Reactive Class Component"
   },
-  "Create a Function Component with turbox": {
-    "prefix": "tfc",
+  "Create Reactive Function Component": {
+    "prefix": "tcrfc",
     "body": [
       "import React from 'react';",
-      "import { Reactive } from 'turbox';",
+      "import { ReactiveReact } from '@turbox3d/turbox3d';",
       "",
-      "const ${1:${TM_FILENAME_BASE}} = Reactive(() => {",
+      "const ${1:${TM_FILENAME_BASE}} = ReactiveReact(() => {",
       "\treturn (",
       "\t\t<div>",
       "\t\t\t$0",
@@ -147,15 +145,15 @@
       "export default ${1:${TM_FILENAME_BASE}};",
       ""
     ],
-    "description": "Create a Function Component with turbox"
+    "description": "Create Reactive Function Component"
   },
-  "Create a PureComponent with turbox": {
-    "prefix": "tcpc",
+  "Create Reactive PureComponent": {
+    "prefix": "tcrpc",
     "body": [
       "import React, { PureComponent } from 'react';",
-      "import { Reactive } from 'turbox';",
+      "import { ReactiveReact } from '@turbox3d/turbox3d';",
       "",
-      "@Reactive()",
+      "@ReactiveReact()",
       "class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
       "\trender() {",
       "\t\treturn (",
@@ -169,12 +167,12 @@
       "export default ${1:${TM_FILENAME_BASE}};",
       ""
     ],
-    "description": "Create a PureComponent with turbox"
+    "description": "Create Reactive PureComponent"
   },
-  "Create a reactive function with turbox": {
-    "prefix": "trf",
+  "Create Reactive Function": {
+    "prefix": "tcrf",
     "body": [
-      "import { reactive } from 'turbox';",
+      "import { reactive } from '@turbox3d/turbox3d';",
       "",
       "const ${1:${TM_FILENAME_BASE}} = reactive(() => {",
       "\t$0",
@@ -183,10 +181,10 @@
       "export default ${1:${TM_FILENAME_BASE}};",
       ""
     ],
-    "description": "Create a reactive function with turbox"
+    "description": "Create Reactive Function"
   },
-  "Create middleware": {
-    "prefix": "tmw",
+  "Create Middleware": {
+    "prefix": "tcmw",
     "body": [
       "const ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware} = ({ dispatch }) => (next) => (action) => {",
       "\t$0",
@@ -196,6 +194,273 @@
       "export default ${1:${TM_FILENAME_BASE/(-)(\\w+)(\\..+)?/${2:/capitalize}/g}Middleware};",
       ""
     ],
-    "description": "Create middleware"
+    "description": "Create Middleware"
+  },
+  "Create Reactive ViewEntity3D": {
+    "prefix": "tcrv3",
+    "body": [
+      "import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, EntityObject } from '@turbox3d/turbox3d';",
+      "",
+      "interface IProps extends IViewEntity {",
+      "  model: EntityObject;",
+      "}",
+      "",
+      "@Reactive",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends ViewEntity3D<IProps> {",
+      "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
+      "",
+      "  render() {",
+      "    const { model } = this.props;",
+      "    const views: Element[] = [];",
+      "    views.push({",
+      "      component: ${3:ExampleMesh3D},",
+      "      props: {",
+      "        model,",
+      "      },",
+      "    });",
+      "    return views;",
+      "  }",
+      "",
+      "  private updatePosition() {",
+      "    const { model } = this.props;",
+      "    this.view.position.set(model.position.x, model.position.y, model.position.z);",
+      "  }",
+      "",
+      "  private updateRotation() {",
+      "    const { model } = this.props;",
+      "    this.view.rotation.set(",
+      "      model.rotation.x * MathUtils.DEG2RAD,",
+      "      model.rotation.y * MathUtils.DEG2RAD,",
+      "      model.rotation.z * MathUtils.DEG2RAD",
+      "    );",
+      "  }",
+      "",
+      "  private updateScale() {",
+      "    const { model } = this.props;",
+      "    this.view.scale.set(model.scale.x, model.scale.y, model.scale.z);",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Reactive ViewEntity3D"
+  },
+  "Create Reactive ViewEntity2D": {
+    "prefix": "tcrv2",
+    "body": [
+      "import { IViewEntity, Reactive, ViewEntity2D, MathUtils, Element, EntityObject } from '@turbox3d/turbox3d';",
+      "",
+      "interface IProps extends IViewEntity {",
+      "  model: EntityObject;",
+      "}",
+      "",
+      "@Reactive",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends ViewEntity2D<IProps> {",
+      "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
+      "",
+      "  render() {",
+      "    const { model } = this.props;",
+      "    const views: Element[] = [];",
+      "    views.push({",
+      "      component: ${3:ExampleMesh2D},",
+      "      props: {",
+      "        model,",
+      "      },",
+      "    });",
+      "    return views;",
+      "  }",
+      "",
+      "  private updatePosition() {",
+      "    const { model } = this.props;",
+      "    this.view.position.set(model.position.x, model.position.y);",
+      "  }",
+      "",
+      "  private updateRotation() {",
+      "    const { model } = this.props;",
+      "    this.view.rotation = model.rotation.z * MathUtils.DEG2RAD;",
+      "  }",
+      "",
+      "  private updateScale() {",
+      "    const { model } = this.props;",
+      "    this.view.scale.set(model.scale.x, model.scale.y);",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Reactive ViewEntity2D"
+  },
+  "Create Reactive Graphic Component": {
+    "prefix": "tcrgc",
+    "body": [
+      "import { Reactive, Component } from '@turbox3d/turbox3d';",
+      "",
+      "@Reactive",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Component} extends Component {",
+      "  render() {",
+      "    return [",
+      "      {",
+      "        component: ${3:ExampleMesh3D},",
+      "        props: {",
+      "          ${4:p1}: ${5:v1},",
+      "        },",
+      "      },",
+      "    ];",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Reactive Graphic Component"
+  },
+  "Create Mesh3D": {
+    "prefix": "tcm3",
+    "body": [
+      "import { EntityObject, Mesh3D } from '@turbox3d/turbox3d';",
+      "",
+      "interface IProps {",
+      "  model: EntityObject;",
+      "}",
+      "",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}3D} extends Mesh3D<IProps> {",
+      "  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updateRenderOrder];",
+      "",
+      "  private updateMaterial() {",
+      "  }",
+      "",
+      "  private updateGeometry() {",
+      "  }",
+      "",
+      "  private updateRenderOrder() {",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Mesh3D"
+  },
+  "Create Mesh2D": {
+    "prefix": "tcm2",
+    "body": [
+      "import { EntityObject, Mesh2D } from '@turbox3d/turbox3d';",
+      "",
+      "interface IProps {",
+      "  model: EntityObject;",
+      "}",
+      "",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}3D} extends Mesh2D<IProps> {",
+      "  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updateRenderOrder];",
+      "",
+      "  private updateMaterial() {",
+      "  }",
+      "",
+      "  private updateGeometry() {",
+      "  }",
+      "",
+      "  private updateRenderOrder() {",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Mesh2D"
+  },
+  "Create ViewEntity Element": {
+    "prefix": "tcve",
+    "body": [
+      "{",
+      "  component: ${1:ProductViewEntity},",
+      "  props: {",
+      "    type: ${2:ProductSymbol},",
+      "    id: ${3:entity.id},",
+      "    model: ${4:entity},",
+      "  },",
+      "  key: ${5:entity.id},",
+      "}"
+    ],
+    "description": "Create ViewEntity Element"
+  },
+  "Create Mesh Element": {
+    "prefix": "tcme",
+    "body": [
+      "{",
+      "  component: ${1:Rect3d},",
+      "  props: {",
+      "    ${2:width}: ${3:hotArea},",
+      "    ${4:height}: ${5:hotArea},",
+      "  },",
+      "},"
+    ],
+    "description": "Create Mesh Element"
+  },
+  "Create CommandBox": {
+    "prefix": "tccb",
+    "body": [
+      "import { BaseCommandBox } from '@turbox3d/turbox3d';",
+      "import { DefaultCommand } from './default';",
+      "",
+      "class AppCommandBox extends BaseCommandBox {",
+      "  defaultCommand = new DefaultCommand(this);",
+      "",
+      "  constructor() {",
+      "    super();",
+      "    this.defaultCommand.apply();",
+      "  }",
+      "",
+      "  disposeAll() {",
+      "    this.defaultCommand.select.clearAllSelected();",
+      "    this.defaultCommand.dispose();",
+      "  }",
+      "}",
+      "",
+      "export const appCommandBox = new AppCommandBox();",
+      ""
+    ],
+    "description": "Create CommandBox"
+  },
+  "Create Composed Command": {
+    "prefix": "tccc",
+    "body": [
+      "import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox3d';",
+      "",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends compose({",
+      "  hint: HintCommand,",
+      "  select: SelectionCommand,",
+      "}) {",
+      "  active() {",
+      "    this.select.active({",
+      "      hint: this.hint,",
+      "    });",
+      "    this.hint.active(this.select);",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create Composed Command"
+  },
+  "Create BaseCommand": {
+    "prefix": "tcbc",
+    "body": [
+      "import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3 } from '@turbox3d/turbox3d';",
+      "",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends BaseCommand {",
+      "  private action = Action.create('${2:action}');",
+      "",
+      "  protected onDragStart(viewEntity: IViewEntity, event: SceneEvent, tools: ITool) {",
+      "    const scenePosition = event.getScenePosition(0) as Vec3;",
+      "    this.action.execute(() => {",
+      "",
+      "    });",
+      "  }",
+      "",
+      "  protected onDragMove(viewEntity: IViewEntity, event: SceneEvent, tools: ITool) {",
+      "    const scenePosition = event.getScenePosition(0) as Vec3;",
+      "    this.action.execute(() => {",
+      "      ",
+      "    });",
+      "  }",
+      "",
+      "  protected onDragEnd() {",
+      "    this.action.complete();",
+      "  }",
+      "}",
+      ""
+    ],
+    "description": "Create BaseCommand"
   }
 }
