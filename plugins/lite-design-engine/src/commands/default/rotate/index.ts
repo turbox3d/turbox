@@ -1,5 +1,16 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommand, Action, IViewEntity, SceneEvent, Vec3, Vector3, ITool, MathUtils, EntityObject } from '@turbox3d/turbox3d';
+import {
+  BaseCommand,
+  Action,
+  IViewEntity,
+  SceneEvent,
+  Vec3,
+  Vector3,
+  ITool,
+  MathUtils,
+  EntityObject,
+  IGesturesExtra,
+} from '@turbox3d/turbox3d';
 import { ProductEntity } from '../../../models/entity/product';
 import { appCommandBox } from '../../index';
 import { EntityCategory } from '../../../utils/category';
@@ -102,7 +113,7 @@ export class RotateCommand extends BaseCommand {
       return;
     }
     scaleAndRotateAction.action.execute(() => {
-      const degree = event.gesturesExtra?.rotate || 0;
+      const degree = (event.extra as IGesturesExtra)?.rotate || 0;
       this.degree = degree;
       const { snapped } = this.snap(this.initRotation + degree);
       this.target?.setRotation({

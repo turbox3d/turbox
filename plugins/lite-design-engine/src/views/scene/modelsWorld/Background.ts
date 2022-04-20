@@ -1,4 +1,4 @@
-import { IViewEntity, Mesh3D, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
+import { IViewEntity, Mesh3D, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
 import * as THREE from 'three';
 // import { appCommandBox } from '../../../commands/index';
 // import { WireFrame } from '../helper/index';
@@ -45,12 +45,11 @@ export class BackgroundViewEntity extends ViewEntity3D<IProps> {
     // const isSelected = appCommandBox.defaultCommand.select
     //   .getSelectedEntities()
     //   .includes(model);
-    return [{
-      component: Background,
-      props: {
+    return [
+      createElement(Background, {
         model,
-      },
-    }];
+      }),
+    ];
   }
 
   private updatePosition() {
@@ -82,8 +81,8 @@ interface IBackgroundProps {
 }
 
 export class Background extends Mesh3D<IBackgroundProps> {
-  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updatePosition, this.updateRenderOrder];
-  protected view = new THREE.Sprite();
+  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updateRenderOrder];
+  protected view = new THREE.Mesh();
 
   private updateMaterial() {
     const { model } = this.props;
@@ -95,18 +94,14 @@ export class Background extends Mesh3D<IBackgroundProps> {
   }
 
   private assignTexture(map: THREE.Texture) {
-    this.view.material = new THREE.SpriteMaterial({ map });
+    this.view.material = new THREE.MeshBasicMaterial({ map });
+    this.view.material.transparent = true;
     this.view.material.depthTest = false;
   }
 
   private updateGeometry() {
     const { model } = this.props;
-    this.view.scale.set(model.size.x, model.size.y, model.size.z);
-  }
-
-  private updatePosition() {
-    const { model } = this.props;
-    this.view.position.set(model.position.x, model.position.y, model.position.z);
+    this.view.geometry = new THREE.PlaneGeometry(model.size.x, model.size.y);
   }
 
   private updateRenderOrder() {

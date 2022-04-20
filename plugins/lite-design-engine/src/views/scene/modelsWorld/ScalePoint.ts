@@ -1,9 +1,9 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
+import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
 import { Rect3d } from '../helper/index';
 import { ScalePointEntity } from '../../../models/entity/scalePoint';
 import { RenderOrder } from '../../../consts/scene';
 
-interface IScalePointProps extends IViewEntity {
+interface IScalePointProps {
   model: ScalePointEntity;
 }
 
@@ -16,14 +16,13 @@ export class ScalePointViewEntity extends ViewEntity3D<IScalePointProps> {
   ];
 
   render() {
-    return [{
-      component: Rect3d,
-      props: {
+    return [
+      createElement(Rect3d, {
         width: this.props.model.radius * 1.5,
         height: this.props.model.radius * 1.5,
         renderOrder: RenderOrder.CONTROL_POINT,
-      }
-    }];
+      }),
+    ];
   }
 
   private updatePosition() {

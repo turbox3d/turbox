@@ -5,7 +5,8 @@ export enum EyeDistance {
 export enum RenderOrder {
   EMPTY_BACKGROUND = -2,
   BACKGROUND = -1,
-  Cube = 10,
+  SKY_BOX = 20,
+  Cube = 30,
   CONTROL_POINT = 9999,
 }
 
@@ -39,3 +40,4 @@ export const ClipPointSymbol = Symbol('clip-point');
 export const ClipBorderSymbol = Symbol('clip-border');
 export const AdjustPointSymbol = Symbol('adjust-point');
 export const DeletePointSymbol = Symbol('delete-point');
+export const SkyBoxSymbol = Symbol('sky-box');

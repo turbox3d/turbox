@@ -1,11 +1,12 @@
-import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element } from '@turbox3d/turbox3d';
+import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element, createElement } from '@turbox3d/turbox3d';
 import { ldeStore } from '../../../models/index';
 import { ProductViewEntity } from './Product';
 import { EntityCategory } from '../../../utils/category';
 import { CubeViewEntity } from './Cube';
 import { BackgroundViewEntity } from './Background';
-import { ProductSymbol, BackgroundSymbol, CubeSymbol, AssemblySymbol } from '../../../consts/scene';
+import { ProductSymbol, BackgroundSymbol, CubeSymbol, AssemblySymbol, SkyBoxSymbol } from '../../../consts/scene';
 import { AssemblyViewEntity } from './Assembly';
+import { SkyBoxViewEntity } from '../skyBox/index';
 
 export const SceneUtil = {
   getScene: (): any => {
@@ -56,48 +57,54 @@ export class ModelsWorld extends Component {
   private renderEntityViews = (entities: IterableIterator<EntityObject>) => {
     const views: Element[] = [];
     [...entities].forEach((entity) => {
+      if (EntityCategory.isSkyBox(entity)) {
+        views.push(
+          createElement(SkyBoxViewEntity, {
+            type: SkyBoxSymbol,
+            id: entity.id,
+            model: entity,
+            key: entity.id,
+          }),
+        );
+      }
       if (EntityCategory.isAssembly(entity)) {
-        views.push({
-          component: AssemblyViewEntity,
-          props: {
+        views.push(
+          createElement(AssemblyViewEntity, {
             type: AssemblySymbol,
             id: entity.id,
             model: entity,
             renderEntityViews: this.renderEntityViews,
-          },
-          key: entity.id,
-        });
+            key: entity.id,
+          })
+        );
       }
       if (EntityCategory.isProduct(entity)) {
-        views.push({
-          component: ProductViewEntity,
-          props: {
+        views.push(
+          createElement(ProductViewEntity, {
             type: ProductSymbol,
             id: entity.id,
             model: entity,
-          },
-          key: entity.id,
-        });
+            key: entity.id,
+          }),
+        );
       } else if (EntityCategory.isBackground(entity)) {
-        views.push({
-          component: BackgroundViewEntity,
-          props: {
+        views.push(
+          createElement(BackgroundViewEntity, {
             type: BackgroundSymbol,
             id: entity.id,
             model: entity,
-          },
-          key: entity.id,
-        });
+            key: entity.id,
+          }),
+        );
       } else if (EntityCategory.isCube(entity)) {
-        views.push({
-          component: CubeViewEntity,
-          props: {
+        views.push(
+          createElement(CubeViewEntity, {
             type: CubeSymbol,
             id: entity.id,
             model: entity,
-          },
-          key: entity.id,
-        });
+            key: entity.id,
+          }),
+        );
       }
     });
     return views;

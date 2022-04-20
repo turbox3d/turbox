@@ -2,8 +2,8 @@ import { Domain, reactor, Vector3, mutation } from '@turbox3d/turbox3d';
 import { EyeDistance } from '../../consts/scene';
 
 export class SceneDomain extends Domain {
-  /** 业务类型 */
-  @reactor bizType: 'iPad' | 'PC' = 'iPad';
+  /** 设备类型 */
+  @reactor deviceType: 'iPad' | 'PC' = 'PC';
   @reactor cameraPosition = new Vector3(0, 0, EyeDistance.CAMERA);
   @reactor cameraTarget = new Vector3(0, 0, 0);
   @reactor cameraControlsEnabled = false;

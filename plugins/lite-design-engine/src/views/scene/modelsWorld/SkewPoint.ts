@@ -1,9 +1,9 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
+import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
 import { Circle } from '../helper/index';
 import { SkewPointEntity } from '../../../models/entity/skewPoint';
 import { RenderOrder } from '../../../consts/scene';
 
-interface ISkewPointProps extends IViewEntity {
+interface ISkewPointProps {
   model: SkewPointEntity;
 }
 
@@ -16,14 +16,13 @@ export class SkewPointViewEntity extends ViewEntity3D<ISkewPointProps> {
   ];
 
   render() {
-    return [{
-      component: Circle,
-      props: {
+    return [
+      createElement(Circle, {
         radius: this.props.model.radius,
-        color: 0xBF975B,
+        color: 0xbf975b,
         renderOrder: RenderOrder.CONTROL_POINT,
-      }
-    }];
+      }),
+    ];
   }
 
   private updatePosition() {

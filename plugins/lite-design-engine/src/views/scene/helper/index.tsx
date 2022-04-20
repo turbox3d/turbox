@@ -19,12 +19,12 @@ export class Grid extends Mesh3D {
 export class Axes extends Mesh3D {
   protected view = new THREE.AxesHelper(5000);
 }
-interface IProps {
+export interface IWireFrameProps {
   model: EntityObject;
   renderOrder?: number;
 }
 
-export class WireFrame extends Mesh3D<IProps> {
+export class WireFrame extends Mesh3D<IWireFrameProps> {
   protected reactivePipeLine = [this.updateGeometry];
   protected view = new Wireframe();
 
@@ -46,7 +46,7 @@ export class WireFrame extends Mesh3D<IProps> {
   }
 }
 
-interface IFatLineProps {
+export interface IFatLineProps {
   position: Vector3;
   rotation: Vector3;
   linePositions: number[];
@@ -88,7 +88,7 @@ export class FatLine extends Mesh3D<IFatLineProps> {
   }
 }
 
-interface ICubeProps {
+export interface ICubeProps {
   model: EntityObject;
 }
 
@@ -107,11 +107,13 @@ export class Cube extends Mesh3D<ICubeProps> {
     this.view.material = material;
     this.view.material.depthTest = false;
     this.view.material.transparent = true;
+    this.view.castShadow = true;
+    this.view.receiveShadow = true;
     this.view.position.set(0, 0, 0);
   }
 }
 
-interface ICircleProps {
+export interface ICircleProps {
   radius: number;
   color?: number;
   imgUrl?: string;
@@ -160,7 +162,7 @@ export class Circle extends Mesh3D<ICircleProps> {
   }
 }
 
-interface IClipMaskProps{
+export interface IClipMaskProps{
   model: ProductEntity;
   points: ClipPointEntity[];
   renderOrder?: number;
@@ -196,7 +198,7 @@ export class ClipMask extends Mesh3D<IClipMaskProps> {
 }
 
 
-interface IRect3dProps {
+export interface IRect3dProps {
   width: number;
   height: number;
   color?: number;
@@ -224,7 +226,7 @@ export class Rect3d extends Mesh3D<IRect3dProps> {
   }
 }
 
-interface ICircle2DProps {
+export interface ICircle2DProps {
   x?: number;
   y?: number;
   radius: number;

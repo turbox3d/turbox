@@ -1,4 +1,4 @@
-import { Mesh2D, ViewEntity2D, IViewEntity, MathUtils, Reactive, Rect2d, Polygon, Element } from '@turbox3d/turbox3d';
+import { Mesh2D, ViewEntity2D, MathUtils, Reactive, Rect2d, Polygon, createElement } from '@turbox3d/turbox3d';
 import * as PIXI from 'pixi.js';
 import * as PIXIProjection from 'pixi-projection';
 import { ProductEntity } from '../../../models/entity/product';
@@ -9,7 +9,7 @@ import { ldeStore } from '../../../models/index';
 import { SceneUtil } from '../modelsWorld/index';
 import { Circle2d } from '../helper/index';
 
-interface IProduct2DProps {
+export interface IProduct2DProps {
   model: ProductEntity;
 }
 
@@ -82,7 +82,7 @@ class ProductMesh2D extends Mesh2D<IProduct2DProps> {
   }
 }
 
-interface ISkewPointViewEntityProps extends IViewEntity {
+export interface ISkewPointViewEntityProps {
   model: SkewPointEntity;
 }
 
@@ -97,26 +97,24 @@ class SkewPointViewEntity extends ViewEntity2D<ISkewPointViewEntityProps> {
   render() {
     const { model } = this.props;
     const alpha = ldeStore.scene.hideSkewPoint ? 0 : 1;
-    return [{
-      component: Circle2d,
-      props: {
+    const hotArea = ldeStore.scene.deviceType === 'iPad' ? this.props.model.radius * 6 : this.props.model.radius * 3;
+    return [
+      createElement(Circle2d, {
         radius: model.radius - 2.5,
         lineWidth: 5,
-        lineColor: 0xBF975B,
+        lineColor: 0xbf975b,
         lineAlpha: alpha,
-        fillColor: 0xFFFFFF,
+        fillColor: 0xffffff,
         fillAlpha: alpha,
-      },
-    }, {
-      component: Rect2d,
-      props: {
-        width: model.radius * 6,
-        height: model.radius * 6,
+      }),
+      createElement(Rect2d, {
+        width: hotArea,
+        height: hotArea,
         alpha: 0,
-        fillColor: 0xFFFFFF,
+        fillColor: 0xffffff,
         central: true,
-      },
-    }];
+      }),
+    ];
   }
 
   private updatePosition() {
@@ -139,7 +137,7 @@ class SkewPointViewEntity extends ViewEntity2D<ISkewPointViewEntityProps> {
   }
 }
 
-interface IProductViewEntityProps extends IViewEntity {
+export interface IProductViewEntityProps {
   model: ProductEntity;
 }
 
@@ -185,36 +183,26 @@ export class Product2DViewEntity extends ViewEntity2D<IProductViewEntityProps> {
   render() {
     const { model } = this.props;
     const skewPoints = ldeStore.document.skewModel ? [...ldeStore.document.skewModel.children.values()].filter(c => EntityCategory.isSkewPoint(c)).map((s) => s.position) : [];
-    const views: Element[] = [{
-      component: ProductMesh2D,
-      props: {
-        model,
-      }
-    }];
-    if (skewPoints.length && !ldeStore.scene.hideSkewPoint) {
-      views.push({
-        component: Polygon,
-        props: {
-          path: skewPoints,
-          zIndex: 1,
-          lineColor: 0xBF975B,
-          lineWidth: 2 / ldeStore.scene.canvasZoom,
-          fillAlpha: 0,
-        },
-      });
-    }
-    const sps = (Array.from(model.children).filter(child => EntityCategory.isSkewPoint(child)) as SkewPointEntity[])
-      .map((e) => ({
-        component: SkewPointViewEntity,
-        props: {
-          id: e.id,
-          type: SkewPointSymbol,
-          model: e,
-        },
+    const list = (Array.from(model.children).filter(child => EntityCategory.isSkewPoint(child)) as SkewPointEntity[])
+      .map((e) => createElement(SkewPointViewEntity, {
+        id: e.id,
+        type: SkewPointSymbol,
+        model: e,
         key: e.id,
       }));
-    views.push(...sps);
-    return views;
+    return [
+      createElement(ProductMesh2D, {
+        model,
+      }),
+      skewPoints.length && !ldeStore.scene.hideSkewPoint && createElement<any>(Polygon, {
+        path: skewPoints,
+        zIndex: 1,
+        lineColor: 0xBF975B,
+        lineWidth: 2 / ldeStore.scene.canvasZoom,
+        fillAlpha: 0,
+      }),
+      ...list,
+    ];
   }
 
   private updatePosition() {

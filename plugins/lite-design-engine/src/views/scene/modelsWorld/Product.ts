@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable react/no-array-index-key */
-import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element } from '@turbox3d/turbox3d';
+import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element, createElement } from '@turbox3d/turbox3d';
 import * as THREE from 'three';
 import { appCommandBox } from '../../../commands/index';
 import { WireFrame, FatLine, ClipMask } from '../helper/index';
 import { ProductEntity } from '../../../models/entity/product';
-import { ScalePointViewEntity } from './ScalePoint';
-import { ScalePointEntity } from '../../../models/entity/scalePoint';
-import { RotatePointViewEntity } from './RotatePoint';
-import { RotatePointEntity } from '../../../models/entity/rotatePoint';
+// import { ScalePointViewEntity } from './ScalePoint';
+// import { ScalePointEntity } from '../../../models/entity/scalePoint';
+// import { RotatePointViewEntity } from './RotatePoint';
+// import { RotatePointEntity } from '../../../models/entity/rotatePoint';
 import { EntityCategory } from '../../../utils/category';
-import { ScalePointSymbol, RotatePointSymbol, ClipPointSymbol, AdjustPointSymbol, DeletePointSymbol, RenderOrder } from '../../../consts/scene';
+import { ClipPointSymbol, AdjustPointSymbol, DeletePointSymbol, RenderOrder } from '../../../consts/scene';
 import { ldeStore } from '../../../models/index';
 import { ClipPointEntity } from '../../../models/entity/clipPoint';
 import { ClipPointViewEntity } from './ClipPoint';
@@ -62,147 +62,128 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
   }
 
   render() {
-    const { bizType } = ldeStore.scene;
     const { model } = this.props;
     const isSelected = appCommandBox.defaultCommand.select
       .getSelectedEntities()
       .includes(model);
     const views: Element[] = [];
-    views.push({
-      component: Product,
-      props: {
-        model,
-      }
-    });
     if (isSelected) {
-      views.push({
-        component: WireFrame,
-        props: {
-          model,
-          renderOrder: RenderOrder.CONTROL_POINT,
-        },
-      });
-      if (bizType === 'iPad') {
-        const dps = (Array.from(model.children).filter(child => EntityCategory.isDeletePoint(child)) as DeletePointEntity[])
-          .map((e) => ({
-            component: DeletePointViewEntity,
-            props: {
-              id: e.id,
-              type: DeletePointSymbol,
-              model: e,
-              product: model,
-            },
-            key: e.id,
-          }));
-        const aps = (Array.from(model.children).filter(child => EntityCategory.isAdjustPoint(child)) as AdjustPointEntity[])
-          .map((e) => ({
-            component: AdjustPointViewEntity,
-            props: {
-              id: e.id,
-              type: AdjustPointSymbol,
-              model: e,
-            },
-            key: e.id,
-          }));
-        views.push(...dps, ...aps);
-      } else if (bizType === 'PC') {
-        const dps = (
-          Array.from(model.children).filter(child => EntityCategory.isRotatePoint(child)) as RotatePointEntity[]
-        ).map(e => ({
-          component: RotatePointViewEntity,
-          props: {
-            id: e.id,
-            type: RotatePointSymbol,
-            model: e,
-          },
+      const dps = (
+        Array.from(model.children).filter(child => EntityCategory.isDeletePoint(child)) as DeletePointEntity[]
+      ).map(e =>
+        createElement(DeletePointViewEntity, {
+          id: e.id,
+          type: DeletePointSymbol,
+          model: e,
+          product: model,
           key: e.id,
-        }));
-        const aps = (
-          Array.from(model.children).filter(child => EntityCategory.isScalePoint(child)) as ScalePointEntity[]
-        ).map(e => ({
-          component: ScalePointViewEntity,
-          props: {
-            id: e.id,
-            type: ScalePointSymbol,
-            model: e,
-          },
+        })
+      );
+      const aps = (
+        Array.from(model.children).filter(child => EntityCategory.isAdjustPoint(child)) as AdjustPointEntity[]
+      ).map(e =>
+        createElement(AdjustPointViewEntity, {
+          id: e.id,
+          type: AdjustPointSymbol,
+          model: e,
           key: e.id,
-        }));
-        views.push(...dps, ...aps);
-      }
+        })
+      );
+      views.push(createElement(WireFrame, {
+        model,
+        renderOrder: RenderOrder.CONTROL_POINT,
+      }), ...dps, ...aps);
+      // const dps = (
+      //   Array.from(model.children).filter(child => EntityCategory.isRotatePoint(child)) as RotatePointEntity[]
+      // ).map(e => ({
+      //   component: RotatePointViewEntity,
+      //   props: {
+      //     id: e.id,
+      //     type: RotatePointSymbol,
+      //     model: e,
+      //   },
+      //   key: e.id,
+      // }));
+      // const aps = (
+      //   Array.from(model.children).filter(child => EntityCategory.isScalePoint(child)) as ScalePointEntity[]
+      // ).map(e => ({
+      //   component: ScalePointViewEntity,
+      //   props: {
+      //     id: e.id,
+      //     type: ScalePointSymbol,
+      //     model: e,
+      //   },
+      //   key: e.id,
+      // }));
+      // views.push(...dps, ...aps);
     }
     if (ldeStore.scene.isClipMode && ldeStore.document.clipModel && ldeStore.document.clipModel.id === model.id) {
-      const cps = (Array.from(ldeStore.document.clipModel.children).filter(child => EntityCategory.isClipPoint(child)) as ClipPointEntity[])
-        .map(e => ({
-        component: ClipPointViewEntity,
-        props: {
+      const cps = (
+        Array.from(ldeStore.document.clipModel.children).filter(child =>
+          EntityCategory.isClipPoint(child)
+        ) as ClipPointEntity[]
+      ).map(e =>
+        createElement(ClipPointViewEntity, {
           id: e.id,
           type: ClipPointSymbol,
           model: e,
-        },
-        key: e.id,
-      }));
+          key: e.id,
+        })
+      );
       views.push(
         ...cps,
-        {
-          component: FatLine,
-          props: {
-            dashed: true,
-            dashScale: 0.2,
-            looped: true,
-            color: 0xbf975b,
-            position: new Vector3(0, 0, ldeStore.document.clipModel.position.z + 1),
-            rotation: new Vector3(0, 0, 0),
-            linePositions: (
-              Array.from(ldeStore.document.clipModel.children).filter(child =>
-                EntityCategory.isClipPoint(child)
-              ) as ClipPointEntity[]
-            )
-              .map(p => p.position.toArray())
-              .flat(),
-            renderOrder: RenderOrder.CONTROL_POINT,
-          },
-          key: 1,
-        },
-        {
-          component: ClipMask,
-          props: {
-            model,
-            points: Array.from(ldeStore.document.clipModel.children).filter(child =>
+        createElement(FatLine, {
+          dashed: true,
+          dashScale: 0.2,
+          looped: true,
+          color: 0xbf975b,
+          position: new Vector3(0, 0, ldeStore.document.clipModel.position.z + 1),
+          rotation: new Vector3(0, 0, 0),
+          linePositions: (
+            Array.from(ldeStore.document.clipModel.children).filter(child =>
               EntityCategory.isClipPoint(child)
-            ) as ClipPointEntity[],
-            renderOrder: RenderOrder.CONTROL_POINT,
-          },
-        }
+            ) as ClipPointEntity[]
+          )
+            .map(p => p.position.toArray())
+            .flat(),
+          renderOrder: RenderOrder.CONTROL_POINT,
+          key: 1,
+        }),
+        createElement(ClipMask, {
+          model,
+          points: Array.from(ldeStore.document.clipModel.children).filter(child =>
+            EntityCategory.isClipPoint(child)
+          ) as ClipPointEntity[],
+          renderOrder: RenderOrder.CONTROL_POINT,
+        })
       );
     }
     if (model.snapped) {
       views.push(
-        {
-          component: FatLine,
-          props: {
-            dashed: true,
-            position: new Vector3(0, 0, model.position.z + 1),
-            rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
-            linePositions: [-100, 0, 0, 100, 0, 0],
-            renderOrder: RenderOrder.CONTROL_POINT,
-          },
+        createElement(FatLine, {
+          dashed: true,
+          position: new Vector3(0, 0, model.position.z + 1),
+          rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
+          linePositions: [-100, 0, 0, 100, 0, 0],
+          renderOrder: RenderOrder.CONTROL_POINT,
           key: 2,
-        },
-        {
-          component: FatLine,
-          props: {
-            dashed: true,
-            position: new Vector3(0, 0, model.position.z + 1),
-            rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
-            linePositions: [0, -100, 0, 0, 100, 0],
-            renderOrder: RenderOrder.CONTROL_POINT,
-          },
+        }),
+        createElement(FatLine, {
+          dashed: true,
+          position: new Vector3(0, 0, model.position.z + 1),
+          rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
+          linePositions: [0, -100, 0, 0, 100, 0],
+          renderOrder: RenderOrder.CONTROL_POINT,
           key: 3,
-        }
+        })
       );
     }
-    return views;
+    return [
+      createElement(Product, {
+        model,
+      }),
+      ...views,
+    ];
   }
 
   private updatePosition() {
@@ -234,9 +215,9 @@ interface IProductProps {
 }
 
 export class Product extends Mesh3D<IProductProps> {
-  protected reactivePipeLine = [this.updateMaterial, this.updateRotation, this.updateGeometry, this.updateRenderOrder];
-  protected view = new THREE.Sprite();
-  protected material = new THREE.SpriteMaterial();
+  protected reactivePipeLine = [this.updateMaterial, this.updateGeometry, this.updateRenderOrder];
+  protected view = new THREE.Mesh();
+  protected material = new THREE.MeshBasicMaterial();
   private reaction: Reaction;
 
   updateMaterial() {
@@ -252,6 +233,7 @@ export class Product extends Mesh3D<IProductProps> {
     this.material.map = map;
     this.material.map.minFilter = THREE.LinearFilter;
     this.view.material = this.material;
+    this.view.material.transparent = true;
     this.view.material.depthTest = false;
     this.updateMaterialDirection();
   }
@@ -281,15 +263,9 @@ export class Product extends Mesh3D<IProductProps> {
     }
   }
 
-  updateRotation() {
-    const { model } = this.props;
-    // this.view.rotation.set(model.rotation.x * MathUtils.DEG2RAD, model.rotation.y * MathUtils.DEG2RAD, model.rotation.z * MathUtils.DEG2RAD);
-    this.material.rotation = model.rotation.z * MathUtils.DEG2RAD;
-  }
-
   updateGeometry() {
     const { model } = this.props;
-    this.view.scale.set(model.size.x, model.size.y, model.size.z);
+    this.view.geometry = new THREE.PlaneGeometry(model.size.x, model.size.y);
   }
 
   private updateRenderOrder() {

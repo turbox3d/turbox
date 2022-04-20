@@ -8,6 +8,7 @@ import { SkewPointEntity } from '../models/entity/skewPoint';
 import { ClipPointEntity } from '../models/entity/clipPoint';
 import { AdjustPointEntity } from '../models/entity/adjustPoint';
 import { DeletePointEntity } from '../models/entity/deletePoint';
+import { SkyBoxEntity } from '../models/entity/skyBox';
 
 export const EntityCategory = {
   isProduct(value: unknown): value is ProductEntity {
@@ -39,5 +40,8 @@ export const EntityCategory = {
   },
   isDeletePoint(value: unknown): value is DeletePointEntity {
     return value instanceof DeletePointEntity;
+  },
+  isSkyBox(value: unknown): value is SkyBoxEntity {
+    return value instanceof SkyBoxEntity;
   },
 };

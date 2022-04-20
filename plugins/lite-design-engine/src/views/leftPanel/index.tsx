@@ -3,11 +3,14 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import * as React from 'react';
 import { Button, Input, Slider } from 'antd';
+import * as THREE from 'three';
+import { LoadSystem, Vector3, MathUtils } from '@turbox3d/turbox3d';
 import { ldeStore } from '../../models/index';
 import './index.less';
 import { Z_INDEX_ACTION, MIRROR_ACTION } from '../../consts/scene';
 import { useMaterialDragAndReplace } from '../../hooks/index';
-import { LoadSystem } from '@turbox3d/turbox3d';
+import { SceneUtil } from '../scene/modelsWorld/index';
+import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 
 const images = {
   wardrobe: 'https://img.alicdn.com/imgextra/i4/O1CN01ZA12421w82rWiH8mB_!!6000000006262-2-tps-420-545.png',
@@ -19,6 +22,7 @@ const images = {
 };
 
 export function LeftPanel() {
+  let isShow = false;
   let isPressed = false;
   let timer: number;
   const { dragControl } = useMaterialDragAndReplace();
@@ -155,7 +159,7 @@ export function LeftPanel() {
     //   isPressed = true;
     //   dragControl.current.onMouseDown(url, itemId)(e);
     // }, 300);
-    dragControl.current.onMouseDown(url)(e);
+    dragControl.current.onMouseDown(url)(e.nativeEvent);
   }
   const pointerMoveHandler = () => {
     if (!isPressed) {
@@ -171,6 +175,11 @@ export function LeftPanel() {
     ldeStore.scene.setRenderFlag2d(!ldeStore.scene.renderFlag2d);
   }
 
+  const showSkyBox = () => {
+    isShow = !isShow;
+    ldeStore.actions.showSkyBox(isShow);
+  }
+
   const generateThumbnail = async () => {
     const json = await LoadSystem.loadJSON('https://ihomeimg.oss-cn-beijing.aliyuncs.com/i/qdnj4na7n8c.json');
     const url = await ldeStore.document.generateThumbnail(json, 600) as Blob;
@@ -179,6 +188,33 @@ export function LeftPanel() {
     downloadLink.download = 'thumbnail';
     downloadLink.click();
     URL.revokeObjectURL(downloadLink.href);
+  }
+
+  const addBufferGeometry = async () => {
+    const quadPositions = [new Vector3(-100, 50, 50), new Vector3(100, 50, 10), new Vector3(100, -50, 50), new Vector3(-100, -50, 10)];
+    const widthSegments = 20;
+    const heightSegments = 10;
+    const { indices, vertices, normals, uvs } = MathUtils.generateMeshByQuad(quadPositions, widthSegments, heightSegments);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setIndex(indices);
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    const material = new THREE.MeshPhongMaterial({
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+    material.depthTest = false;
+    const map = await new THREE.TextureLoader().loadAsync('https://tpsjj-publish-pub-backend-filemanager.oss-cn-beijing.aliyuncs.com/90ce3f25b80b47b99ea0232d1973c3c3.png?x-oss-process=image/resize,w_2560/format,webp&ihomelitedesignengine=true');
+    map.needsUpdate = true;
+    material.map = map;
+    material.map.minFilter = THREE.LinearFilter;
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.renderOrder = 1000000;
+    const gui = new GUI();
+    gui.add(material, 'wireframe');
+    const scene = SceneUtil.getScene();
+    scene.add(mesh);
   }
 
   return (
@@ -194,7 +230,9 @@ export function LeftPanel() {
       <div>
         {/* <Button type="primary" className="op" onClick={swipeScene('bottom')}>切换场景下</Button>
         <Button type="primary" className="op" onClick={swipeScene('top')}>切换场景上</Button> */}
+        <Button type="primary" className="op" onClick={addBufferGeometry}>添加BufferGeometry</Button>
         <Button type="primary" className="op" onClick={setBackground}>设为背景</Button>
+        <Button type="primary" className="op" onClick={showSkyBox}>展示天空盒</Button>
         <Button type="primary" className="op" onClick={addCube}>添加立方体</Button>
         <Button type="primary" className="op" onClick={deleteModel}>删除选中模型</Button>
         <Button type="primary" className="op" onClick={updateZ(Z_INDEX_ACTION.TOP)}>置顶</Button>

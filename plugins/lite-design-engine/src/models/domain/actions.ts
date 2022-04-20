@@ -15,6 +15,7 @@ import { SkewPointEntity } from '../entity/skewPoint';
 import { ClipPointEntity } from '../entity/clipPoint';
 import { mirrorImage, cropImage, convertUrl, loadImageElement } from '../../utils/image';
 import { DocumentJSON } from './document';
+import { SkyBoxEntity } from '../entity/skyBox';
 
 function getNeg() {
   const gap = 200;
@@ -276,22 +277,6 @@ export class ActionsDomain extends Domain {
       });
     ldeStore.document.addModel(assembly);
     appCommandBox.defaultCommand.select.select([assembly]);
-  };
-
-  @mutation
-  addCube = () => {
-    const entity = new CubeEntity();
-    entity.setSize({ x: 30, y: 30, z: 30 });
-    entity.setPosition({
-      x: Math.random() * getNeg(),
-      y: Math.random() * getNeg(),
-    });
-    entity.setRotation({
-      x: Math.random() * 180,
-      y: Math.random() * 180,
-      z: Math.random() * 180,
-    });
-    ldeStore.document.addModel(entity, false);
   };
 
   /** 重置画布位置和缩放 */
@@ -856,4 +841,66 @@ export class ActionsDomain extends Domain {
       isPdfMode: true,
     });
   };
+
+  @mutation
+  addCube = () => {
+    this.showSkyBox();
+    const skyBox = ldeStore.document.getSkyBoxModel();
+    const entity = new CubeEntity();
+    entity.setSize({ x: 30, y: 30, z: 30 });
+    entity.setPosition({
+      x: Math.random() * getNeg(),
+      y: Math.random() * getNeg(),
+      z: skyBox ? skyBox.size.z / 2 : 250,
+    });
+    entity.setRotation({
+      x: Math.random() * 180,
+      y: Math.random() * 180,
+      z: Math.random() * 180,
+    });
+    ldeStore.document.addModel(entity, false);
+  };
+
+  /**
+   * 显示天空盒
+   * @param isShowAll 显示所有的面并且设置为可交互，否则只显示底面承接阴影并且不可交互
+   */
+  showSkyBox = (isShowAll = false) => {
+    const skyBox = [...ldeStore.document.models.values()].find(child => EntityCategory.isSkyBox(child));
+    if (!skyBox) {
+      const entity = new SkyBoxEntity();
+      entity.setSize({
+        x: 460,
+        y: 260,
+        z: 522,
+      });
+      entity.setPosition({
+        z: entity.size.z / 2,
+      });
+      ldeStore.document.addModel(entity, false);
+      if (isShowAll) {
+        entity.$update({
+          isShowAllFace: true,
+        });
+        entity.setInteractive(true);
+      } else {
+        entity.$update({
+          isShowAllFace: false,
+        });
+        entity.setInteractive(false);
+      }
+    } else {
+      if (isShowAll) {
+        skyBox.$update({
+          isShowAllFace: true,
+        });
+        skyBox.setInteractive(true);
+      } else {
+        skyBox.$update({
+          isShowAllFace: false,
+        });
+        skyBox.setInteractive(false);
+      }
+    }
+  }
 }

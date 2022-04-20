@@ -1,4 +1,19 @@
-import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool, Vector2, Vec2, BaseScene, CoordinateType } from '@turbox3d/turbox3d';
+import {
+  BaseCommand,
+  Action,
+  IViewEntity,
+  SceneEvent,
+  EntityObject,
+  Vec3,
+  Vector3,
+  ITool,
+  Vector2,
+  Vec2,
+  BaseScene,
+  CoordinateType,
+  IGesturesExtra,
+} from '@turbox3d/turbox3d';
+import { MathAlg, Line2d } from '@turbox3d/homestyler-math';
 import * as THREE from 'three';
 import { ProductEntity } from '../../../models/entity/product';
 import { ScalePointEntity } from '../../../models/entity/scalePoint';
@@ -153,7 +168,7 @@ export class ScaleCommand extends BaseCommand {
       }
       appCommandBox.defaultCommand.select.clearAllSelected();
       this.currentProduct = SceneUtil.getRootView() as THREE.Group;
-      const eventCache = event.gesturesExtra?.eventCache || [];
+      const eventCache = (event.extra as IGesturesExtra)?.eventCache || [];
       const v = tools.coordinateTransform({
         x: (eventCache[1].clientX + eventCache[0].clientX) / 2,
         y: (eventCache[1].clientY + eventCache[0].clientY) / 2,
@@ -178,7 +193,7 @@ export class ScaleCommand extends BaseCommand {
     }
     if (this.currentProduct instanceof THREE.Group && this.pinchScaleOffset && this.pinchScaleInitPosition && this.pinchScaleInitScale) {
       // 缩放画布
-      let ratio = event.gesturesExtra?.scale || 1;
+      let ratio = (event.extra as IGesturesExtra)?.scale || 1;
       const { x: offsetX, y: offsetY } = this.pinchScaleOffset;
       const [min, max] = ldeStore.scene.canvasZoomRange;
       ratio = Math.max(this.pinchScaleInitScale.x * ratio, min) / this.pinchScaleInitScale.x;
@@ -197,7 +212,7 @@ export class ScaleCommand extends BaseCommand {
     } else if (this.initSize) {
       scaleAndRotateAction.action.execute(() => {
         const product = this.currentProduct as ProductEntity;
-        const scale = event.gesturesExtra?.scale || 1;
+        const scale = (event.extra as IGesturesExtra)?.scale || 1;
         const deltaScale = {
           x: (this.initSize!.x * scale) / product.size.x,
           y: (this.initSize!.y * scale) / product.size.y,

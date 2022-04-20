@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as PIXI from 'pixi.js';
-import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, Element } from '@turbox3d/turbox3d';
+import * as THREE from 'three';
+import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, createElement, Element } from '@turbox3d/turbox3d';
 import { FPSMonitorComponent } from '@turbox3d/turbox-dev-tool';
 import { appCommandBox } from '../../commands/index';
 import { OrthographicCamera, PerspectiveCamera } from './camera/index';
-import { Light } from './light/index';
+import { DirectionalLight, AmbientLight, HemisphereLight } from './light/index';
 import { Rect3d } from './helper/index';
 import { ModelsWorld, SceneUtil } from './modelsWorld/index';
 // import './index.less';
@@ -23,19 +24,15 @@ class Shadow extends Component {
     //     {!background && <Rect3d color={0xFFFFFF} width={width} height={height} position={{ x: 0, y: 0, z: 0 }} />}
     //   </>
     // );
-    if (!background) {
-      return [{
-        component: Rect3d,
-        props: {
-          color: 0xFFFFFF,
-          width,
-          height,
-          position: { x: 0, y: 0, z: 0 },
-          renderOrder: RenderOrder.EMPTY_BACKGROUND,
-        },
-      }];
-    }
-    return null;
+    return [
+      !background && createElement(Rect3d, {
+        color: 0xFFFFFF,
+        width,
+        height,
+        position: { x: 0, y: 0, z: 0 },
+        renderOrder: RenderOrder.EMPTY_BACKGROUND,
+      }),
+    ];
   }
 }
 
@@ -76,16 +73,15 @@ const World3D = ReactiveReact(({ className = '', style = {} }) => {
 
 @Reactive
 class GraphicWorld extends Component<{
-  scene2dChildren: Component[];
-  scene3dChildren: Component[];
+  scene2dChildren: Element[];
+  scene3dChildren: Element[];
   maxFPS: number;
   mode: 'orthographic' | 'perspective';
 }> {
   render() {
     const { maxFPS, scene2dChildren, scene3dChildren, mode } = this.props;
-    return [{
-      component: Scene2D,
-      props: {
+    return [
+      createElement(Scene2D, {
         id: 'scene2d',
         draggable: false,
         scalable: false,
@@ -99,13 +95,12 @@ class GraphicWorld extends Component<{
         disableResize: true,
         resolution: ldeStore.scene.resolution,
         renderFlag: ldeStore.scene.renderFlag2d,
-        children: [{
-          component: TempWorld,
-        }, ...scene2dChildren],
-      },
-    }, {
-      component: Scene3D,
-      props: {
+        children: [
+          createElement(TempWorld),
+          ...scene2dChildren
+        ],
+      }),
+      createElement(Scene3D, {
         id: 'scene3d',
         container: 'scene3d',
         backgroundColor: 0xF6F6F6,
@@ -117,17 +112,16 @@ class GraphicWorld extends Component<{
         maxFPS,
         resolution: ldeStore.scene.resolution,
         renderFlag: ldeStore.scene.renderFlag3d,
-        children: [{
-          component: mode === 'orthographic' ? OrthographicCamera : PerspectiveCamera,
-        }, {
-          component: Light,
-        }, {
-          component: ModelsWorld,
-        }, {
-          component: Shadow,
-        }, ...scene3dChildren],
-      },
-    }] as Element[];
+        children: [
+          mode === 'orthographic' ? createElement(OrthographicCamera) : createElement(PerspectiveCamera),
+          createElement(ModelsWorld),
+          createElement(Shadow),
+          mode === 'perspective' && createElement(DirectionalLight),
+          mode === 'perspective' && createElement(AmbientLight),
+          ...scene3dChildren,
+        ],
+      })
+    ];
   }
 }
 
@@ -139,11 +133,12 @@ export class MainScene extends React.Component<{
   scene2dChildren?: any[];
   scene3dChildren?: any[];
   mode?: 'orthographic' | 'perspective';
+  deviceType?: 'iPad' | 'PC';
 }> {
   private reaction: Reaction;
 
   componentDidMount() {
-    const { maxFPS = 60, scene3dChildren = [], scene2dChildren = [], mode = 'orthographic' } = this.props;
+    const { maxFPS = 60, scene3dChildren = [], scene2dChildren = [], mode = 'orthographic', deviceType = 'PC' } = this.props;
     this.reaction = reactive(() => {
       const rootView2d = (SceneUtil.get2DRootView() as PIXI.Container);
       const { sceneWidth, sceneHeight, canvasZoom, canvasPosition } = ldeStore.scene;
@@ -154,15 +149,17 @@ export class MainScene extends React.Component<{
         rootView2d.scale.y = -canvasZoom;
       }
     });
-    render([{
-      component: GraphicWorld,
-      props: {
+    render([
+      createElement(GraphicWorld, {
         scene2dChildren,
         scene3dChildren,
         maxFPS,
         mode,
-      }
-    }]);
+      }),
+    ]);
+    ldeStore.scene.$update({
+      deviceType,
+    });
     window.addEventListener('resize', () => {
       const domElement = document.getElementById('scene3d');
       ldeStore.scene.$update({
@@ -170,6 +167,8 @@ export class MainScene extends React.Component<{
         sceneHeight: domElement!.clientHeight,
       });
     });
+    const app = SceneUtil.getApp() as THREE.WebGLRenderer;
+    app.shadowMap.enabled = true;
   }
 
   componentWillUnmount() {

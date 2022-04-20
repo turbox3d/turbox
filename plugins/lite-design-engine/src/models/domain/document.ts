@@ -9,6 +9,7 @@ import { ldeStore } from '../index';
 import { coordinateStringToArray } from '../../utils/common';
 import { SkewPointEntity } from '../entity/skewPoint';
 import { convertUrl, loadImageElement } from '../../utils/image';
+import { SkyBoxEntity } from '../entity/skyBox';
 
 const DataTypeId = 'lite-design-engine';
 
@@ -160,6 +161,10 @@ export class DocumentDomain extends DocumentSystem {
     }
     this.updateRenderOrder();
   };
+
+  getSkyBoxModel() {
+    return [...this.models.values()].find(m => EntityCategory.isSkyBox(m)) as SkyBoxEntity | undefined;
+  }
 
   getBackgroundModel() {
     return [...this.models.values()].find(m => EntityCategory.isBackground(m)) as BackgroundEntity | undefined;
@@ -415,10 +420,12 @@ export class DocumentDomain extends DocumentSystem {
       );
     }
     const arr = await Promise.all(promises);
-    (arr.filter(p => p.product) as Array<{
-      entity: ProductEntity;
-      product: DocumentItemJSON & CustomBizData;
-    }>).forEach((obj) => {
+    (
+      arr.filter(p => p.product) as Array<{
+        entity: ProductEntity;
+        product: DocumentItemJSON & CustomBizData;
+      }>
+    ).forEach(obj => {
       const { entity, product } = obj;
       this.transformProduct<CustomBizData>(entity, product, data);
     });
@@ -427,7 +434,10 @@ export class DocumentDomain extends DocumentSystem {
   }
 
   @mutation
-  async loadEntity<CustomBizData>(product: DocumentItemJSON & CustomBizData, extraInfoKeys: string[] = []): Promise<{
+  async loadEntity<CustomBizData>(
+    product: DocumentItemJSON & CustomBizData,
+    extraInfoKeys: string[] = []
+  ): Promise<{
     entity: ProductEntity;
     product?: DocumentItemJSON & CustomBizData;
   }> {
@@ -472,7 +482,11 @@ export class DocumentDomain extends DocumentSystem {
     });
   }
 
-  transformProduct<CustomBizData>(entity: ProductEntity, product: DocumentItemJSON & CustomBizData, data: DocumentJSON<CustomBizData>) {
+  transformProduct<CustomBizData>(
+    entity: ProductEntity,
+    product: DocumentItemJSON & CustomBizData,
+    data: DocumentJSON<CustomBizData>
+  ) {
     const bgSize = this.getBackgroundSize();
     const sizeTransformRatio = new Vector2(1, 1);
     const [a, b, backgroundSizeX, backgroundSizeY] = coordinateStringToArray(data.backgroundBounds);

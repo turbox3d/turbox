@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils } from '@turbox3d/turbox3d';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
 import { Circle, Rect3d } from '../helper/index';
 import { DeletePointEntity } from '../../../models/entity/DeletePoint';
 import { ldeStore } from '../../../models/index';
@@ -19,22 +19,20 @@ export class DeletePointViewEntity extends ViewEntity3D<IDeletePointProps> {
   ];
 
   render() {
-    return [{
-      component: Rect3d,
-      props: {
-        width: this.props.model.radius * 6,
-        height: this.props.model.radius * 6,
+    const hotArea = ldeStore.scene.deviceType === 'iPad' ? this.props.model.radius * 6 : this.props.model.radius * 3;
+    return [
+      createElement(Rect3d, {
+        width: hotArea,
+        height: hotArea,
         opacity: 0,
-        renderOrder: RenderOrder.CONTROL_POINT,
-      },
-    }, {
-      component: Circle,
-      props: {
+        renderOrder: RenderOrder.CONTROL_POINT + 1,
+      }),
+      createElement(Circle, {
         radius: this.props.model.radius,
         imgUrl: 'https://img.alicdn.com/imgextra/i3/O1CN01MGEtvl23jmpfiaF3A_!!6000000007292-55-tps-83-83.svg?x-oss-process=image/resize,w_60',
         renderOrder: RenderOrder.CONTROL_POINT,
-      },
-    }];
+      }),
+    ];
   }
 
   onClick() {

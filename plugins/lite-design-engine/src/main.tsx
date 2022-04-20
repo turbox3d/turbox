@@ -17,6 +17,7 @@ ReactDOM.render(
           bottom: 0,
           width: '75%',
         }}
+        mode="perspective"
       />
       <LeftPanel />
     </>
