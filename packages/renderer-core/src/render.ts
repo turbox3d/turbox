@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { IConstructorOf, invariant, remove } from '@turbox3d/shared';
+import { invariant, remove, IConstructorOf, isPlainObject } from '@turbox3d/shared';
 import { BaseScene } from './scene';
-import { Component } from './component';
+import { Component, ComponentProps } from './component';
 import { BaseMesh } from './mesh';
 import { NodeStatus, NodeTag } from './common';
 
-export interface Element<P = any> {
-  component: IConstructorOf<Component<P>>;
-  props?: P;
-  key?: string | number;
+export interface ElementSchema<P = any> {
+  type: IConstructorOf<Component<P>>;
+  props?: ComponentProps<P>;
 }
+
+export type Element<P = any> = ElementSchema<P> | undefined | boolean | null | number | string;
 
 export class VirtualNode<P = any> {
   instance?: Component<P>; // only root node can be undefined
@@ -19,16 +20,16 @@ export class VirtualNode<P = any> {
   parent?: VirtualNode<P>; // only root node can be undefined
   status: NodeStatus = NodeStatus.READY;
   tag: NodeTag = NodeTag.COMPONENT;
-  props?: P = {} as P;
+  props?: ComponentProps<P> = {} as ComponentProps<P>;
   committing = false;
 
   static isBatchUpdate = false;
   static batchQueue: Array<() => VirtualNode> = [];
 
-  static buildNode(el: Element<any>) {
+  static buildNode(el: ElementSchema) {
     const node = new VirtualNode();
     node.props = el.props;
-    const RenderComponent = el.component;
+    const RenderComponent = el.type;
     const rc = new RenderComponent(el.props);
     if (rc instanceof BaseScene) {
       node.tag = NodeTag.SCENE;
@@ -36,7 +37,7 @@ export class VirtualNode<P = any> {
       node.tag = NodeTag.MESH;
     }
     node.instance = rc;
-    node.key = el.key;
+    node.key = el.props?.key || undefined;
     rc._vNode = node;
     return node;
   }
@@ -64,11 +65,12 @@ export class VirtualNode<P = any> {
     return map;
   }
 
-  link(elements: Element<P>[]) {
-    if (!elements.length) {
+  link(elements: Element<any>[]) {
+    const els = elements.filter(e => isPlainObject(e)) as ElementSchema<P>[];
+    if (!els.length) {
       return;
     }
-    this.child = elements.reduceRight((previous, current) => {
+    this.child = els.reduceRight((previous, current) => {
       const node = VirtualNode.buildNode(current);
       node.sibling = previous;
       node.parent = this;
@@ -186,15 +188,16 @@ export class VirtualNode<P = any> {
 
   diff(elements: Element<P>[] | null) {
     const childNodes = this.getChildren();
-    if (elements && elements.length) {
+    const els = elements && (elements.filter(e => isPlainObject(e)) as ElementSchema<P>[]);
+    if (els && els.length) {
       const map = this.validate();
       let previous: VirtualNode | undefined;
-      elements.forEach(el => {
-        const tempNodes = map.get(el.component);
+      els.forEach(el => {
+        const tempNodes = map.get(el.type);
         const keys = tempNodes?.map(n => n.key) || [];
-        if (tempNodes && keys.includes(el.key)) {
+        if (tempNodes && keys.includes(el.props?.key || undefined)) {
           // update
-          const node = tempNodes.find(n => n.key === el.key);
+          const node = tempNodes.find(n => n.key === (el.props?.key || undefined));
           if (node) {
             const needUpdate = node.instance!.shouldComponentUpdate(el.props);
             node.status |= needUpdate ? NodeStatus.UPDATE : NodeStatus.FAKE_UPDATE;
@@ -241,7 +244,7 @@ export class VirtualNode<P = any> {
     }
     this.instance!.componentWillUpdate(this.props);
     const prevProps = this.instance!.props;
-    this.instance!.props = this.props || ({} as P);
+    this.instance!.props = this.props || ({} as ComponentProps<P>);
     const elements = this.instance!.render();
     this.diff(elements);
     this.patch();
@@ -254,7 +257,7 @@ export class VirtualNode<P = any> {
     }
   }
 
-  commitUpdate(prevProps: P) {
+  commitUpdate(prevProps: ComponentProps<P>) {
     // update first, then delete
     if (this.status & NodeStatus.REMOVE) {
       return this;
@@ -285,6 +288,13 @@ export function render(elements: Element<any>[]) {
   if (child) {
     child.create();
   }
+}
+
+export function createElement<P>(type: IConstructorOf<Component<P>>, props?: ComponentProps<P>): ElementSchema<P> {
+  return {
+    type,
+    props,
+  };
 }
 
 export function batchUpdate(callback: () => void, finish?: () => void) {

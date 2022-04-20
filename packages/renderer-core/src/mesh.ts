@@ -1,15 +1,16 @@
+/* eslint-disable react/no-deprecated */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { reactive, Reaction } from '@turbox3d/reactivity';
-import { InteractiveConfig, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
+import { InteractiveConfig, SceneEvent } from '@turbox3d/event-manager';
 import { CommandEventType } from '@turbox3d/command-manager';
 import { invariant } from '@turbox3d/shared';
 import { BaseScene, SceneType } from './scene';
-import { PureComponent } from './component';
+import { PureComponent, ComponentProps } from './component';
 import { getMeshParent } from './utils';
 
 type CommitType = 'update' | 'create' | 'delete';
 
-export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends PureComponent<Props> {
+export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends PureComponent<Props> {
   /** 当前组件的视图对象 */
   protected view: DisplayObject;
   /** 视图对象的类型（有相机、灯光、模型三类，默认为 model） */
@@ -28,16 +29,12 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
 
   private interactiveTask: Reaction;
 
-  constructor(props: Props) {
+  constructor(props = {} as ComponentProps<Props>) {
     super(props);
     this.view = this.createDefaultView();
     this.interactiveTask = reactive(() => {
       this.applyInteractive();
     });
-  }
-
-  render() {
-    return (this.props as any).children || null;
   }
 
   commit(type: CommitType) {
@@ -344,12 +341,12 @@ export abstract class BaseMesh<Props extends Partial<IViewEntity>, State, Applic
    */
   private appendToWorld() {
     if (this.autoAppendToWorld) {
-      let parent = getMeshParent(this) as BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> | undefined;
+      let parent = getMeshParent(this) as BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> | undefined;
       if (parent) {
         const isCameraOrLight = (this.viewType === 'camera' || this.viewType === 'light');
         if (isCameraOrLight) {
           while (parent && !(parent instanceof BaseScene && parent.sceneType === SceneType.Scene3D)) {
-            parent = getMeshParent(parent) as BaseMesh<Props, State, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> | undefined;
+            parent = getMeshParent(parent) as BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point> | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> | undefined;
           }
           if (parent && parent.scene) {
             this.addViewToScene(parent, this.view);

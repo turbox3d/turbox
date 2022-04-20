@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass';
-import { InteractiveConfig, InteractiveType, CoordinateController } from '@turbox3d/event-manager';
-import { BaseScene, SceneType } from '@turbox3d/renderer-core';
+import { InteractiveConfig, InteractiveType, CoordinateController, IViewEntity } from '@turbox3d/event-manager';
+import { BaseScene, SceneType, ComponentProps, BaseSceneProps } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 
 export const Scene3DSymbol = Symbol('scene3d');
@@ -85,6 +85,11 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   raycaster = new THREE.Raycaster();
   composer: EffectComposer;
   private timer: number;
+
+  // eslint-disable-next-line no-useless-constructor
+  constructor(props: Exclude<ComponentProps<BaseSceneProps>, IViewEntity>) {
+    super(props);
+  }
 
   createView() {
     const view = new THREE.Group();
@@ -202,7 +207,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     }
     app.setPixelRatio(this.resolution);
     app.setSize(this.width, this.height);
-    app.setClearColor(backgroundColor);
+    app.setClearColor(backgroundColor, transparent ? 0 : 1);
     if (this.props.outputEncoding) {
       app.outputEncoding = this.props.outputEncoding;
     }

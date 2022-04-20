@@ -1,10 +1,11 @@
+/* eslint-disable react/no-deprecated */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommandBox, CommandEventType, ITool } from '@turbox3d/command-manager';
-import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent } from '@turbox3d/event-manager';
+import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
 import { Vec2, Vec3 } from '@turbox3d/shared';
-import { Component } from './component';
+import { Component, ComponentProps } from './component';
 
 declare global {
   interface Window {
@@ -130,7 +131,15 @@ export interface SceneContext<DisplayObject> {
   getTools: () => ITool;
 }
 
-export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport> extends Component<BaseSceneProps> {
+export abstract class BaseScene<
+  ApplicationContext,
+  Scene,
+  Camera,
+  Raycaster,
+  Container,
+  DisplayObject,
+  Viewport
+> extends Component<BaseSceneProps> {
   /** 默认背景色 */
   static BACKGROUND_COLOR = 0xffffff;
   /** 默认是否透明 */
@@ -181,9 +190,9 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
 
   renderFlag = true;
 
-  constructor(props: BaseSceneProps) {
+  constructor(props: Exclude<ComponentProps<BaseSceneProps>, IViewEntity>) {
     super(props);
-    this.maxFPS = props.maxFPS || 60;
+    this.maxFPS = this.props.maxFPS || 60;
     if (this.props.viewport) {
       this.resolution = this.props.viewport.resolution || window.devicePixelRatio;
     } else {
@@ -301,15 +310,15 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     point: Vec2,
     container: Container,
     configMap: Map<DisplayObject, InteractiveConfig>,
-    interactiveType: InteractiveType,
-  ) => ({
+    interactiveType: InteractiveType
+  ) => {
     /** event 的直接对象 */
     originalTarget?: DisplayObject;
     /** originalTarget 或 originalTarget 的祖先中的第一个可被交互的元素 */
     target?: DisplayObject;
     /** 选中对象的具体场景鼠标位置 */
     originalTargetPoint?: Vec2 | Vec3;
-  });
+  };
 
   /** 更新分辨率 */
   abstract updateResolution(app: ApplicationContext): void;
@@ -401,13 +410,21 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     const ctrl = this.getCurrentInteractiveController();
     return {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      hitTarget: ctrl ? ctrl.hitTarget : (() => { }) as (point: Vec2) => undefined,
+      hitTarget: ctrl ? ctrl.hitTarget : ((() => {}) as (point: Vec2) => undefined),
       coordinateTransform: this.coordinateTransform,
       getCamera: () => this.camera,
       getRaycaster: () => this.raycaster,
       getScene: () => this.scene,
       getRootView: () => this.view,
-      getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
+      getScreenShot: (
+        sx?: number,
+        sy?: number,
+        w?: number,
+        h?: number,
+        fileType?: string,
+        quality?: number,
+        isBase64?: boolean
+      ) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
       getApp: () => this.getCurrentApp(),
     };
   };
@@ -485,7 +502,7 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
       return;
     }
     !disableResize && this.resizeStageByCanvas(app);
-  }
+  };
 
   /** 初始化坐标系控制系统 */
   abstract createCoordinateController(app: ApplicationContext): CoordinateController;
@@ -559,7 +576,13 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
     // resize 提高性能做法：放大对应视口的精灵，先让显示逻辑正确
     const viewportInfo = this.getViewportInfo();
-    if (viewportInfo && viewportInfo.width && viewportInfo.width > 0 && viewportInfo.height && viewportInfo.height > 0) {
+    if (
+      viewportInfo &&
+      viewportInfo.width &&
+      viewportInfo.width > 0 &&
+      viewportInfo.height &&
+      viewportInfo.height > 0
+    ) {
       const ratio = Math.min(viewport.width / viewportInfo.width, viewport.height / viewportInfo.height);
       const scale = viewportInfo!.scale;
       this.setViewportScale({ x: scale.x * ratio, y: scale.y * ratio });
@@ -733,7 +756,12 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
     }
     const ctrl = this.getCurrentInteractiveController();
     if (commandBox && ctrl) {
-      commandBox.distributeEvent(CommandEventType.onZoom, this.getViewEntity(), SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint), this.getTools());
+      commandBox.distributeEvent(
+        CommandEventType.onZoom,
+        this.getViewEntity(),
+        SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint),
+        this.getTools()
+      );
     }
   };
 
@@ -762,5 +790,13 @@ export abstract class BaseScene<ApplicationContext, Scene, Camera, Raycaster, Co
   abstract setViewportVisible(visible: boolean): void;
 
   /** 获取截图 */
-  abstract getScreenShot(sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean): Promise<string | Blob>;
+  abstract getScreenShot(
+    sx?: number,
+    sy?: number,
+    w?: number,
+    h?: number,
+    fileType?: string,
+    quality?: number,
+    isBase64?: boolean
+  ): Promise<string | Blob>;
 }
