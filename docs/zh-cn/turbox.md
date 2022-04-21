@@ -1945,9 +1945,8 @@ export class FrontView extends Component {
     }
     const viewport = doorWindowStore.scene.viewStyles.front;
     const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
-    return [{
-      component: Scene2D,
-      props: {
+    return [
+      createElement(Scene2D, {
         id: 'front-scene-2d'
         commandBox: appCommandBox,
         container: SCENE_2D,
@@ -1958,23 +1957,20 @@ export class FrontView extends Component {
         transparent: false,
         backgroundColor: 0xE6E9EB,
         resizeTo: SCENE_2D,
-        children: [{
-          component: Axis2d,
-          props: {
+        children: [
+          createElement(Axis2d, {
             type: 'front',
-          }
-        }, {
-          component: DoorWindowView,
-          props: {
+          }),
+          createElement(DoorWindowView, {
             model,
             id: model.id,
             type: DoorWindowEntityType.DoorWindowVirtual,
-          },
-          key: model.id,
-        }],
-      },
-      key: 'xxx',
-    }];
+            key: model.id,
+          })
+        ],
+        key: 'xxx',
+      }),
+    ];
   }
 }
 
