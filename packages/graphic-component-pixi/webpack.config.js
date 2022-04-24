@@ -14,23 +14,17 @@ module.exports = {
     libraryTarget: 'umd',
   },
   externals: {
-    react: {
-      commonjs: 'react',
-      commonjs2: 'react',
-      amd: 'react',
-      root: 'React'
-    },
-    'react-dom': {
-      commonjs: 'react-dom',
-      commonjs2: 'react-dom',
-      amd: 'react-dom',
-      root: 'ReactDOM'
-    },
     'pixi.js': {
       commonjs: 'pixi.js',
       commonjs2: 'pixi.js',
       amd: 'pixi.js',
       root: 'PIXI'
+    },
+    three: {
+      commonjs: 'THREE',
+      commonjs2: 'THREE',
+      amd: 'THREE',
+      root: 'THREE',
     },
   },
   // module: {

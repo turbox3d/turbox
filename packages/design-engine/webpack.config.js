@@ -42,7 +42,13 @@ module.exports = {
       commonjs2: 'react-dom',
       amd: 'react-dom',
       root: 'ReactDOM'
-    }
+    },
+    three: {
+      commonjs: 'THREE',
+      commonjs2: 'THREE',
+      amd: 'THREE',
+      root: 'THREE',
+    },
   },
   // module: {
   //   rules: [{

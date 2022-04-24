@@ -32,6 +32,12 @@ module.exports = {
       amd: 'pixi.js',
       root: 'PIXI'
     },
+    three: {
+      commonjs: 'THREE',
+      commonjs2: 'THREE',
+      amd: 'THREE',
+      root: 'THREE',
+    },
   },
   module: {
     rules: [{
