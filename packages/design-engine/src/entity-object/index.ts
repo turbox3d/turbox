@@ -13,6 +13,15 @@ export enum EPerspectiveType {
   LEFT = 'left',
 }
 
+export interface MeshModel {
+  vertices: ArrayBuffer;
+  indices: ArrayBuffer;
+  uvs: ArrayBuffer;
+  normals: ArrayBuffer;
+  tiledImgUrl: string;
+  material?: string;
+}
+
 /**
  *       | y
  *       |
@@ -66,6 +75,8 @@ export default class EntityObject extends Domain {
   @reactor() isPressable = true;
   /** 渲染顺序 */
   @reactor() renderOrder = 0;
+  /** 对应的模型网格 */
+  @reactor() meshes: MeshModel[] = [];
 
   /** 响应式的任务管线 */
   protected reactivePipeLine: Array<{
@@ -258,31 +269,37 @@ export default class EntityObject extends Domain {
   @mutation
   setClickable(clickable: boolean) {
     this.isClickable = clickable;
+    return this;
   }
 
   @mutation
   setHoverable(hoverable: boolean) {
     this.isHoverable = hoverable;
+    return this;
   }
 
   @mutation
   setDraggable(draggable: boolean) {
     this.isDraggable = draggable;
+    return this;
   }
 
   @mutation
   setPinchable(pinchable: boolean) {
     this.isPinchable = pinchable;
+    return this;
   }
 
   @mutation
   setRotatable(rotatable: boolean) {
     this.isRotatable = rotatable;
+    return this;
   }
 
   @mutation
   setPressable(pressable: boolean) {
     this.isPressable = pressable;
+    return this;
   }
 
   /** 设置是否可交互 */
@@ -294,11 +311,13 @@ export default class EntityObject extends Domain {
     this.setPinchable(interactive);
     this.setRotatable(interactive);
     this.setPressable(interactive);
+    return this;
   }
 
   @mutation
   setRenderOrder(renderOrder: number) {
     this.renderOrder = renderOrder;
+    return this;
   }
 
   /** 锁定 */
@@ -345,7 +364,11 @@ export default class EntityObject extends Domain {
     value.decompose(position, quaternion, scale);
     const rotation = new Euler().setFromQuaternion(quaternion).toVector3();
     this.setPosition(position);
-    this.setRotation({ x: rotation.x * MathUtils.RAD2DEG, y: rotation.y * MathUtils.RAD2DEG, z: rotation.z * MathUtils.RAD2DEG });
+    this.setRotation({
+      x: rotation.x * MathUtils.RAD2DEG,
+      y: rotation.y * MathUtils.RAD2DEG,
+      z: rotation.z * MathUtils.RAD2DEG,
+    });
     this.setScale(scale);
     return this;
   }
@@ -382,11 +405,12 @@ export default class EntityObject extends Domain {
   traverse(callback: (current: EntityObject) => boolean | void) {
     const isStop = callback(this);
     if (isStop) {
-      return;
+      return this;
     }
     this.children.forEach(child => {
       child.traverse(callback);
     });
+    return this;
   }
 
   /** 添加子模型 */
@@ -416,7 +440,9 @@ export default class EntityObject extends Domain {
   @mutation
   removeChildren(children?: EntityObject[]) {
     if (!children) {
-      this.children.forEach(child => { child.parent = undefined; });
+      this.children.forEach(child => {
+        child.parent = undefined;
+      });
       this.children.clear();
       return this;
     }
@@ -484,6 +510,12 @@ export default class EntityObject extends Domain {
     return this;
   }
 
+  @mutation
+  setMeshes(value: MeshModel[]) {
+    this.meshes = value;
+    return this;
+  }
+
   getConcatenatedMatrix() {
     const result: Matrix4 = this.getMatrix4().clone();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -526,7 +558,7 @@ export default class EntityObject extends Domain {
       for (let index = 0; index < waitComparePoints.length; index++) {
         const p2 = waitComparePoints[index];
         const v = new Vector2(p2.x - p1.x, p2.y - p1.y);
-        const otherPoints = points.filter((p) => p !== p1 && p !== p2);
+        const otherPoints = points.filter(p => p !== p1 && p !== p2);
         const otherVs = otherPoints.map(p => new Vector2(p.x - p1.x, p.y - p1.y));
         const isAllMatched = otherVs.every(ov => (clockwise ? v.cross(ov) < 0 : v.cross(ov) > 0));
         if (isAllMatched) {
@@ -547,7 +579,10 @@ export default class EntityObject extends Domain {
     const scale = new Vector3();
     matrix.decompose(position, rotation, scale);
     const euler = new Euler().setFromQuaternion(rotation);
-    const [x, y, z] = euler.toArray().slice(0, 3).map(rad => (rad % (Math.PI / 2)) === 0);
+    const [x, y, z] = euler
+      .toArray()
+      .slice(0, 3)
+      .map(rad => rad % (Math.PI / 2) === 0);
     if (type === EPerspectiveType.TOP) {
       // 顶视图情况下，x 轴、z 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
       if (!x || !z) {
@@ -559,7 +594,10 @@ export default class EntityObject extends Domain {
           new Vector2(box3.max.x, box3.min.z),
         ];
       }
-      const newPoints = points.sort((a, b) => b.y - a.y).slice(0, len).map(p => new Vector2(p.x, p.z));
+      const newPoints = points
+        .sort((a, b) => b.y - a.y)
+        .slice(0, len)
+        .map(p => new Vector2(p.x, p.z));
       return this.clockwisePoints(newPoints);
     } else if (type === EPerspectiveType.FRONT) {
       // 正视图情况下，x 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
@@ -572,7 +610,10 @@ export default class EntityObject extends Domain {
           new Vector2(box3.min.x, box3.max.y),
         ];
       }
-      const newPoints = points.sort((a, b) => b.z - a.z).slice(0, len).map(p => new Vector2(p.x, p.y));
+      const newPoints = points
+        .sort((a, b) => b.z - a.z)
+        .slice(0, len)
+        .map(p => new Vector2(p.x, p.y));
       return this.clockwisePoints(newPoints);
     } else if (type === EPerspectiveType.LEFT) {
       // 左视图情况下，z 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
@@ -585,7 +626,10 @@ export default class EntityObject extends Domain {
           new Vector2(box3.min.z, box3.max.y),
         ];
       }
-      const newPoints = points.sort((a, b) => a.x - b.x).slice(0, len).map(p => new Vector2(p.z, p.y));
+      const newPoints = points
+        .sort((a, b) => a.x - b.x)
+        .slice(0, len)
+        .map(p => new Vector2(p.z, p.y));
       return this.clockwisePoints(newPoints);
     }
     return [];
@@ -672,8 +716,8 @@ export default class EntityObject extends Domain {
         this.rotation.x * MathUtils.DEG2RAD,
         this.rotation.y * MathUtils.DEG2RAD,
         this.rotation.z * MathUtils.DEG2RAD,
-        order,
-      ),
+        order
+      )
     );
     const position = new Vector3(this.position.x, this.position.y, this.position.z);
     const scale = new Vector3(this.scale.x, this.scale.y, this.scale.z);
@@ -689,11 +733,23 @@ export default class EntityObject extends Domain {
   getMatrix3(type: EPerspectiveType) {
     const matrix3 = new Matrix3();
     if (type === EPerspectiveType.FRONT) {
-      matrix3.compose(new Vector2(this.position.x, this.position.y), this.rotation.z * MathUtils.DEG2RAD, new Vector2(this.scale.x, this.scale.y));
+      matrix3.compose(
+        new Vector2(this.position.x, this.position.y),
+        this.rotation.z * MathUtils.DEG2RAD,
+        new Vector2(this.scale.x, this.scale.y)
+      );
     } else if (type === EPerspectiveType.TOP) {
-      matrix3.compose(new Vector2(this.position.x, this.position.z), this.rotation.y * MathUtils.DEG2RAD, new Vector2(this.scale.x, this.scale.z));
+      matrix3.compose(
+        new Vector2(this.position.x, this.position.z),
+        this.rotation.y * MathUtils.DEG2RAD,
+        new Vector2(this.scale.x, this.scale.z)
+      );
     } else if (type === EPerspectiveType.LEFT) {
-      matrix3.compose(new Vector2(this.position.z, this.position.y), this.rotation.x * MathUtils.DEG2RAD, new Vector2(this.scale.z, this.scale.y));
+      matrix3.compose(
+        new Vector2(this.position.z, this.position.y),
+        this.rotation.x * MathUtils.DEG2RAD,
+        new Vector2(this.scale.z, this.scale.y)
+      );
     }
     return matrix3;
   }

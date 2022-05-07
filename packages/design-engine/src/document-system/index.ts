@@ -181,11 +181,6 @@ export default class DocumentSystem extends Domain {
     //
   }
 
-  /** 恢复文档 */
-  protected async restore() {
-    //
-  }
-
   /** 载入文档 */
   protected async load() {
     //
