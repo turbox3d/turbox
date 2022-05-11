@@ -24,7 +24,7 @@ export function pointInRect(p: Vec2, rect: Vec2[]) {
  * @param canvas 要接受的 canvas 对象
  */
 export function getRelativePositionFromEvent(vec: Vec2, canvas: HTMLCanvasElement) {
-  const rect = canvas.getBoundingClientRect() as ClientRect;
+  const rect = canvas.getBoundingClientRect();
   const point = {
     x: vec.x - rect.left,
     y: vec.y - rect.top,
