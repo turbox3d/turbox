@@ -12,7 +12,8 @@
     "prerelease": "npx lerna version --no-push",
     "release": "npx lerna publish from-git --yes",
     "post-release": "git push --follow-tags origin",
-    "deploy": "npx lerna bootstrap && npx lerna run build:ts && npx lerna version"
+    "pre-deploy": "npx lerna bootstrap && npx lerna run build:ts",
+    "deploy": "npx lerna publish"
   },
   "tnpm": {
     "mode": "yarn"
