@@ -35,7 +35,6 @@ export abstract class Mesh3D<Props = {}> extends BaseMesh<Props, THREE.WebGLRend
     const isCamera = this.viewType === 'camera';
     if (isCamera) {
       scene3d.camera = view as THREE.Camera;
-      scene3d.controls.object = view as THREE.Camera;
     }
   }
 }

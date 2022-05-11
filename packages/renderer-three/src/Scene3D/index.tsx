@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass';
 import { InteractiveConfig, InteractiveType, CoordinateController, IViewEntity } from '@turbox3d/event-manager';
 import { BaseScene, SceneType, ComponentProps, BaseSceneProps } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';
@@ -81,9 +78,7 @@ class CoordinateControllerThree extends CoordinateController {
 export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
-  controls: OrbitControls;
   raycaster = new THREE.Raycaster();
-  composer: EffectComposer;
   private timer: number;
 
   // eslint-disable-next-line no-useless-constructor
@@ -182,14 +177,8 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     this.scene!.add(this.view);
   }
 
-  componentDidUpdate() {
-    super.componentDidUpdate();
-    const { cameraControls = true } = this.props;
-    this.controls.enabled = cameraControls;
-  }
-
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, cameraTarget, cameraControls = true, preserveDrawingBuffer = true } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, preserveDrawingBuffer = false, ticker } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
@@ -199,12 +188,6 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       antialias: true,
       preserveDrawingBuffer,
     });
-    if (this.props.openSSAO) {
-      this.composer = new EffectComposer(app);
-      const ssaoPass = new SSAOPass(this.scene, this.camera, this.width, this.height);
-      ssaoPass.kernelRadius = 16;
-      this.composer.addPass(ssaoPass);
-    }
     app.setPixelRatio(this.resolution);
     app.setSize(this.width, this.height);
     app.setClearColor(backgroundColor, transparent ? 0 : 1);
@@ -212,14 +195,11 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       app.outputEncoding = this.props.outputEncoding;
     }
     this.updateCameraPosition(cameraPosition as Vec3);
-    this.controls = new OrbitControls(this.camera, app.domElement);
-    this.controls.enabled = cameraControls;
-    this.updateCameraTarget(cameraTarget as Vec3);
     const animate = () => {
       if (this.renderFlag) {
-        this.controls.update();
+        ticker && ticker('before-render');
         app.render(this.scene!, this.camera!);
-        this.composer?.render();
+        ticker && ticker('after-render');
       }
       if (this.maxFPS === 60) {
         this.timer = requestAnimationFrame(animate);
@@ -233,10 +213,6 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
 
   updateCameraPosition(v: Vec3) {
     this.camera?.position.set(v.x || 0, v.y || 0, v.z || 0);
-  }
-
-  updateCameraTarget(cameraTarget: Vec3) {
-    this.controls.target = new THREE.Vector3(cameraTarget?.x || 0, cameraTarget?.y || 0, cameraTarget?.z || 0);
   }
 
   addChildView(view: THREE.Object3D) {
@@ -355,7 +331,6 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
       this.camera.updateProjectionMatrix();
     }
     app.setSize(width, height);
-    this.composer?.setSize(width, height);
   }
 
   setBackGroundImage() {

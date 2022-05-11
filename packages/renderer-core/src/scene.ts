@@ -88,10 +88,6 @@ export interface BaseSceneProps {
   camera2dSize?: Vec2;
   /** 相机的初始位置 */
   cameraPosition: Vec3 | Vec2;
-  /** 相机看向的位置，只有 3d 下有 */
-  cameraTarget?: Vec3;
-  /** 相机控制器的开关，只有 3d 下有 */
-  cameraControls?: boolean;
   /** 视椎体的大小（高度），只供 3d 正交相机使用 */
   frustumSize?: number;
   /** 坐标系类型 */
@@ -106,14 +102,14 @@ export interface BaseSceneProps {
   resizeFramebuffer?: boolean;
   /** 颜色输出模式 renderer.outputEncoding */
   outputEncoding?: number;
-  /** SSAO */
-  openSSAO?: boolean;
   /** 最大帧率限制 */
   maxFPS?: number;
   /** 禁用 resize */
   disableResize?: boolean;
   /** 渲染标志（用来打开或关闭渲染 ticker，若为 false，则当前帧不渲染） */
   renderFlag?: boolean;
+  /** 渲染循环自定义 ticker */
+  ticker?: (type: 'before-render' | 'after-render') => void;
 }
 
 export interface IViewInfo {
@@ -476,12 +472,7 @@ export abstract class BaseScene<
   };
 
   private updateCameraInfo() {
-    const { cameraTarget, cameraPosition } = this.props;
-    this.updateCameraTarget({
-      x: cameraTarget?.x || 0,
-      y: cameraTarget?.y || 0,
-      z: cameraTarget?.z || 0,
-    });
+    const { cameraPosition } = this.props;
     this.updateCameraPosition({
       x: cameraPosition?.x || 0,
       y: cameraPosition?.y || 0,
@@ -491,9 +482,6 @@ export abstract class BaseScene<
 
   /** 更新相机位置 */
   abstract updateCameraPosition(position: Vec3): void;
-
-  /** 更新相机看向的点 */
-  abstract updateCameraTarget(position: Vec3): void;
 
   private resizeHandler = () => {
     const { disableResize = false } = this.props;
