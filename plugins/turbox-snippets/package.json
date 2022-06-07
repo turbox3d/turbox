@@ -1,7 +1,7 @@
 {
   "name": "turbox-snippets",
   "displayName": "Turbox Snippets",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Code snippets for Turbox",
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
@@ -9,7 +9,9 @@
     "type": "git",
     "url": "git+https://github.com/turbox3d/turbox.git"
   },
-  "scripts": {},
+  "scripts": {
+    "deploy": "npx vsce publish"
+  },
   "publisher": "feifan-gff",
 	"engines": {
 		"vscode": "^1.28.0"
