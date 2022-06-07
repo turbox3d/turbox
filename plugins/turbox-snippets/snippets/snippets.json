@@ -187,18 +187,26 @@
     ],
     "description": "Create Middleware"
   },
-  "Create Reactive ViewEntity3D": {
-    "prefix": "tcrv3",
+  "Create Reactive Interactive Mesh3D": {
+    "prefix": "tcrim3",
     "body": [
-      "import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
+      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
       "}",
       "",
       "@Reactive",
-      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends ViewEntity3D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends Mesh3D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
+      "  protected isInteractive = true;",
       "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
+      "",
+      "  // protected getViewEntity() {",
+      "  //   return {",
+      "  //     id: this.props.model.id,",
+      "  //     type: ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Symbol},",
+      "  //   };",
+      "  // }",
       "",
       "  render() {",
       "    const { model } = this.props;",
@@ -232,20 +240,28 @@
       "}",
       ""
     ],
-    "description": "Create Reactive ViewEntity3D"
+    "description": "Create Reactive Interactive Mesh3D"
   },
-  "Create Reactive ViewEntity2D": {
-    "prefix": "tcrv2",
+  "Create Reactive Interactive Mesh2D": {
+    "prefix": "tcrim2",
     "body": [
-      "import { IViewEntity, Reactive, ViewEntity2D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
+      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
       "}",
       "",
       "@Reactive",
-      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends ViewEntity2D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends Mesh2D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
+      "  protected isInteractive = true;",
       "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
+      "",
+      "  // protected getViewEntity() {",
+      "  //   return {",
+      "  //     id: this.props.model.id,",
+      "  //     type: ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Symbol},",
+      "  //   };",
+      "  // }",
       "",
       "  render() {",
       "    const { model } = this.props;",
@@ -275,7 +291,7 @@
       "}",
       ""
     ],
-    "description": "Create Reactive ViewEntity2D"
+    "description": "Create Reactive Interactive Mesh2D"
   },
   "Create Reactive Graphic Component": {
     "prefix": "tcrgc",
