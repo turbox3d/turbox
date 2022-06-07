@@ -1798,7 +1798,7 @@ turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 
 这么设计的原因主要是以下场景：比如在刚进入一个场景时，就默认激活一个 default 指令（可能组合了不同的子指令，比如提供了选择、hint 等默认能力），此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令下，不然事件显然会容易混乱冲突，有了 Box 的能力后，就可以轻松交给框架管理，用户只需要关心我当前需要激活什么指令环境。
 
-上面这个案例是图形业务里面必然要解决的。除此之外，指令也提供了重写 active 和 dispose 方法的接口，与之对应的，用户也可以通过指令的实例来调用对应的 active 和 dispose 方法来主动执行激活或卸载方法。
+上面这个案例是图形业务里面必然要解决的。除此之外，指令也提供了重写 active 和 dispose 方法的接口，与之对应的，用户也可以通过指令的实例来调用对应的 active 和 dispose 方法来主动执行激活或卸载。
 
 > 指令可以通过链式访问的方式来访问指令的子指令、孙子指令上面暴露的方法。
 
@@ -1816,21 +1816,21 @@ class ACommand extends BaseCommand {
   active(param: IActiveParam) {
     this.action = Action.create('doSomething');
   }
-
-  onCarriageEnd(ev: IViewEntity, event: SceneEvent) {
+  // IViewEntity 是视图层定义的可交互 mesh 传递过来的标识信息或自定义信息，在指令系统中可以获取到以标识当前交互对象是谁（传递的来源会在后面视图渲染框架这一节来详细说明）
+  onCarriageEnd(ev: IViewEntity, event: SceneEvent, tools: ITool) {
   }
 
-  onDragEnd(ev: IViewEntity, event: SceneEvent) {
+  onDragEnd(ev: IViewEntity, event: SceneEvent, tools: ITool) {
     this.action.complete();
   }
 
   onRightClick() {
   }
 
-  onCarriageMove(ev: IViewEntity, event: SceneEvent) {
+  onCarriageMove(ev: IViewEntity, event: SceneEvent, tools: ITool) {
   }
 
-  onDragMove(ev: IViewEntity, event: SceneEvent) {
+  onDragMove(ev: IViewEntity, event: SceneEvent, tools: ITool) {
     await this.action.execute(async () => {
       // do something...
       await this.domain.addProduct();
@@ -1929,7 +1929,9 @@ web 3d 工程领域是一个小众领域，市面上大部分 web 3d 业务并�
 
 视图层框架对用户来说常用的就 Scene、Mesh、ViewEntity 三个概念，其余的细节看 ts 提示及注释，这里不再罗列。
 
-Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scene3D 的实现；Mesh 则是一个图形或模型的最小物理表达单元，通常它是只处理模型显示逻辑，它是不可交互的；而 ViewEntity 则是一个最小可交互实体单元，一个 ViewEntity 对应的交互单元可能会包含 N 个 Mesh 来显示它，比如一个门窗是一个交互实体，但是门窗是由玻璃、型材、扇组件、以及一些对应的交互控件如选中框、hint 框等 Mesh 组件组成的。
+Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scene3D 的实现；Mesh 则是一个图形或模型对象的最小物理表达单元，通常它是只处理模型显示逻辑，它是不可交互的；而 ViewEntity 则是一个最小可交互实体单元，一个 ViewEntity 对应的交互单元可能会包含 N 个 Mesh 来显示它，比如一个门窗是一个交互实体，但是门窗是由玻璃、型材、扇组件、以及一些对应的交互控件如选中框、hint 框等 Mesh 组件组成的，但 ViewEntity 不像 Scene 和 Mesh 有对应的 API，它只是一个设计上的概念，实际上它就是一个被声明为可交互的 Mesh，一旦变成可交互的，就会被拾取系统及指令系统获取到，所以如果是可交互的 Mesh 则必须定义 id、type 信息来供拾取系统进行透出给用户用来识别该交互对象。
+
+> 除了 id、type 为必要信息外，你还可以透出其他自定义参数给指令系统获取到
 
 理解了基本概念之后，我们来看一下它的使用方式：
 ```tsx
@@ -1939,7 +1941,7 @@ export class FrontView extends Component {
   render() {
     const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
     if (!wall) {
-        return null;
+      return null;
     }
     const viewport = doorWindowStore.scene.viewStyles.front;
     const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
@@ -1961,6 +1963,7 @@ export class FrontView extends Component {
           }),
           createElement(DoorWindowView, {
             model,
+            // 可交互的 mesh 组件必须传 id 和 type 作为 props，或者在组件内部重写 getViewEntity 方法，下面的例子有，否则会抛出异常
             id: model.id,
             type: DoorWindowEntityType.DoorWindowVirtual,
             key: model.id,
@@ -2003,20 +2006,30 @@ export class FrontView extends React.Component {
   }
 }
 
-// 一个 ViewEntity2D 交互实体单元
+// 一个可交互 mesh2d 组件
 interface IProps extends IViewEntity {
   model: DoorWindowPDMEntity;
   zIndex?: RenderOrder;
 }
 
 @ReactiveReact
-export class DoorWindowView extends ViewEntity2D<IProps> {
+export class DoorWindowView extends Mesh2D<IProps> {
   // 响应式管线，组件第一次 mount 或重新 render 时会按照顺序执行，管线中的每个任务都被 reactive 函数包裹，拥有响应式的能力，也就是说只有当依赖的属性变化时，才会触发该任务的重新执行，以此达到视图层的精细化更新，提高性能（比如只是材质变了，就重新计算材质相关的任务，只是位置变了就计算位置相关的任务
   protected reactivePipeLine = [
     this.updatePosition,
     this.updateRotation,
     this.updateScale,
   ];
+  // 需要声明为可交互，默认为不可交互的 mesh
+  protected isInteractive = true;
+  // 可以重写 getViewEntity 方法，来传递可交互 mesh 的信息，也可以不重写，默认逻辑使用的是 props 上的 id、type 字段，可以从组件外部传入
+  protected getViewEntity() {
+    return {
+      id: this.props.model.id, // 必传字段，对象的 id
+      type: AdjustPointSymbol, // 必传字段，对象的类别
+      viewObject: this.view, // 自定义字段
+    };
+  }
 
   render() {
     const { model } = this.props;
@@ -2191,15 +2204,15 @@ export class MullionMesh2D extends Mesh2D<IMeshProps> {
 }
 ```
 
-> ViewEntity 本身也有对应的一个容器节点（可能是 THREE.Group 或者 PIXI.Container 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问，它 render 的内容的坐标系是相对于这个容器节点的，这跟图形领域的父子节点关系相对应，可以简化视图层的显示逻辑
+> Mesh 本身默认会创建一个图形对象节点，可以在组件中通过 ```this.view``` 访问（可能是 THREE.Object3D 或者 PIXI.DisplayObject 或者其他引擎对应的概念，具体默认创建的是什么，是由对应引擎对 renderer-core 的 binding 实现来决定的，比如在 renderer-three 中默认创建的是 THREE.Group），当然你可以在组件中覆写它
 
-> Mesh 本身也有对应的一个图形展示对象节点（可能是 THREE.Object3D 或者 PIXI.DisplayObject 或者其他引擎对应的概念），可以在组件中通过 ```this.view``` 访问
+> Mesh 组件嵌套 Mesh 组件，子组件会自动添加到父组件对应 view 的图形对象节点下面，如果遇到了空节点（Component 组件），则会继续往祖先节点找，直到顶层的 Scene 组件，最终所有的 Mesh 组件对应的图形对象都会添加到 Scene 中，组件树跟图形框架的场景树是对应的，只不过用声明的方式来表达逻辑上的层次关系，父组件 render 的子组件的坐标系也是相对于这个父节点的，这跟图形领域的父子节点关系也是一致的
 
 > 你还可以通过 onClickable，onDraggable，onHoverable 等钩子来实现该实体的动态交互功能，比如有时候需要禁用某些实体的可交互能力，那么可能它就不会在场景中被 pick 出来，有时候根据某些逻辑又要动态开放出来
 
-> 在使用 react 渲染的框架下，场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景（无 react 依赖的框架不能混用）
+> 在使用 react 渲染的框架下，场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景（无 react 依赖的框架版本下就不能混用）
 
 主要的使用方式就是上面这些，还有一些细节能力，通过 ts 的注释提示来查看，不再罗列
 
 ## 其他
-剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和组件库，文档看 README 和注释，其中部分内容闭源也不再展开介绍
+剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和组件库，文档看 README 和注释，不再展开介绍
