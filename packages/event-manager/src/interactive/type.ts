@@ -18,6 +18,7 @@ export enum CoordinateType {
 export interface IViewEntity {
   id: string;
   type: symbol;
+  [propKey: string]: any;
 }
 
 export interface InteractiveConfig {
@@ -46,7 +47,7 @@ export interface InteractiveConfig {
   onHoverIn: (event: SceneEvent) => void;
   onHoverOut: (event: SceneEvent) => void;
   // 关联的 viewEntity
-  getViewEntity?: () => IViewEntity;
+  getViewEntity: () => IViewEntity;
 }
 
 export interface CanvasHandlers {

@@ -1,8 +1,8 @@
 /* eslint-disable react/no-deprecated */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { reactive, Reaction } from '@turbox3d/reactivity';
-import { InteractiveConfig, SceneEvent } from '@turbox3d/event-manager';
-import { CommandEventType } from '@turbox3d/command-manager';
+import { InteractiveConfig, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
+import { BaseCommandBox, CommandEventType } from '@turbox3d/command-manager';
 import { invariant } from '@turbox3d/shared';
 import { BaseScene, SceneType } from './scene';
 import { PureComponent, ComponentProps } from './component';
@@ -22,8 +22,8 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
   /** 是否默认添加到场景中。默认：true */
   protected autoAppendToWorld = true;
 
-  /** 是否为可交互实体。默认：false */
-  protected isViewEntity = false;
+  /** 是否可交互。默认：false */
+  protected isInteractive = false;
 
   private reactions: Reaction[] = [];
 
@@ -110,33 +110,33 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
    * 标记当前对象是否可点击
    */
   protected onClickable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   /**
    * 标记当前对象是否可 Hover
    */
   protected onHoverable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   /**
    * 标记当前对象是否可拖拽
    */
   protected onDraggable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   protected onPinchable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   protected onRotatable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   protected onPressable() {
-    return this.isViewEntity;
+    return this.isInteractive;
   }
 
   protected get interactiveConfig(): InteractiveConfig {
@@ -148,23 +148,23 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
     const isPressable = this.onPressable();
 
     return {
-      getViewEntity: this.isViewEntity ? this.getViewEntity : undefined,
-      onClick: this.isViewEntity ? this._on$Click : this.onClick.bind(this),
-      onDBClick: this.isViewEntity ? this._on$DBClick : this.onDBClick.bind(this),
-      onRightClick: this.isViewEntity ? this._on$RightClick : this.onRightClick.bind(this),
-      onDragStart: this.isViewEntity ? this._on$DragStart : this.onDragStart.bind(this),
-      onDragMove: this.isViewEntity ? this._on$DragMove : this.onDragMove.bind(this),
-      onDragEnd: this.isViewEntity ? this._on$DragEnd : this.onDragEnd.bind(this),
-      onPinchStart: this.isViewEntity ? this._on$PinchStart : this.onPinchStart.bind(this),
-      onPinch: this.isViewEntity ? this._on$Pinch : this.onPinch.bind(this),
-      onPinchEnd: this.isViewEntity ? this._on$PinchEnd : this.onPinchEnd.bind(this),
-      onRotateStart: this.isViewEntity ? this._on$RotateStart : this.onRotateStart.bind(this),
-      onRotate: this.isViewEntity ? this._on$Rotate : this.onRotate.bind(this),
-      onRotateEnd: this.isViewEntity ? this._on$RotateEnd : this.onRotateEnd.bind(this),
-      onPress: this.isViewEntity ? this._on$Press : this.onPress.bind(this),
-      onPressUp: this.isViewEntity ? this._on$PressUp : this.onPressUp.bind(this),
-      onHoverIn: this.isViewEntity ? this._on$HoverIn : this.onHoverIn.bind(this),
-      onHoverOut: this.isViewEntity ? this._on$HoverOut : this.onHoverOut.bind(this),
+      getViewEntity: this.getViewEntity.bind(this),
+      onClick: this._on$Click,
+      onDBClick: this._on$DBClick,
+      onRightClick: this._on$RightClick,
+      onDragStart: this._on$DragStart,
+      onDragMove: this._on$DragMove,
+      onDragEnd: this._on$DragEnd,
+      onPinchStart: this._on$PinchStart,
+      onPinch: this._on$Pinch,
+      onPinchEnd: this._on$PinchEnd,
+      onRotateStart: this._on$RotateStart,
+      onRotate: this._on$Rotate,
+      onRotateEnd: this._on$RotateEnd,
+      onPress: this._on$Press,
+      onPressUp: this._on$PressUp,
+      onHoverIn: this._on$HoverIn,
+      onHoverOut: this._on$HoverOut,
       isClickable,
       isDraggable,
       isHoverable,
@@ -238,9 +238,17 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
     //
   }
 
-  private getViewEntity = () => {
+  protected getViewEntity(): IViewEntity {
     const { id, type } = this.props;
-    invariant(!!id && !!type, 'you should pass the {id} and {type} props while define as view entity');
+    const isClickable = this.onClickable();
+    const isDraggable = this.onDraggable();
+    const isHoverable = this.onHoverable();
+    const isPinchable = this.onPinchable();
+    const isRotatable = this.onRotatable();
+    const isPressable = this.onPressable();
+    if (isClickable || isHoverable || isDraggable || isPinchable || isRotatable || isPressable) {
+      invariant(!!id && !!type, 'you should pass the {id} and {type} props or rewrite getViewEntity() while mesh component is interactive.');
+    }
     return { id: id!, type: type! };
   }
 
@@ -326,13 +334,12 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
 
   /** 转发事件给CommandBox */
   private forwardToCommand(eventType: CommandEventType, event: SceneEvent) {
-    const commandBox = this.context.getCommandBox();
+    const commandBox = this.context.getCommandBox() as BaseCommandBox;
     const tools = this.context.getTools();
 
     if (commandBox) {
-      const { id, type } = this.props;
-      invariant(!!id && !!type, 'you should pass the {id} and {type} props while define as view entity');
-      commandBox.distributeEvent(eventType, { id: id!, type: type! }, event, tools);
+      const viewEntity = this.getViewEntity();
+      commandBox.distributeEvent(eventType, viewEntity, event, tools);
     }
   }
 
