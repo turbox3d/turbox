@@ -1,9 +1,9 @@
 import { Mesh3D } from '@turbox3d/renderer-three';
 import { EntityObject } from '@turbox3d/design-engine';
 import * as THREE from 'three';
-import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry';
-import { Wireframe as WireFrame } from 'three/examples/jsm/lines/Wireframe';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
+import { Wireframe as WireFrame } from 'three/examples/jsm/lines/Wireframe.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
 interface IProps {
   model: EntityObject;

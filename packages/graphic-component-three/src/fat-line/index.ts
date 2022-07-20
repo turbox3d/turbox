@@ -1,5 +1,5 @@
 import { Mesh3D } from '@turbox3d/renderer-three';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { Vec3 } from '@turbox3d/shared';
