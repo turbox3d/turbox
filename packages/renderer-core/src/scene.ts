@@ -496,14 +496,14 @@ export abstract class BaseScene<
   abstract createCoordinateController(app: ApplicationContext): CoordinateController;
 
   private resizeStageByCanvas(app: ApplicationContext) {
-    const { viewport } = this.props;
+    const { viewport, coordinateType } = this.props;
     if (viewport) {
       this.resizeViewport(app);
     }
     this.resizeStage(app);
     this.width = this.getCanvasView(app).width / this.resolution;
     this.height = this.getCanvasView(app).height / this.resolution;
-    if (this.sceneType === SceneType.Scene2D) {
+    if (this.sceneType === SceneType.Scene2D && coordinateType) {
       this.compute2dOriginView();
     }
   }
