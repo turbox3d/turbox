@@ -178,7 +178,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, preserveDrawingBuffer = false, ticker } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, preserveDrawingBuffer = false } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
@@ -197,9 +197,8 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
     this.updateCameraPosition(cameraPosition as Vec3);
     const animate = () => {
       if (this.renderFlag) {
-        ticker && ticker('before-render');
+        this.tickers.forEach(ticker => ticker());
         app.render(this.scene!, this.camera!);
-        ticker && ticker('after-render');
       }
       if (this.maxFPS === 60) {
         this.timer = requestAnimationFrame(animate);

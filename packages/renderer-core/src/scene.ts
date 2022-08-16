@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommandBox, CommandEventType, ITool } from '@turbox3d/command-manager';
 import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
-import { Vec2, Vec3 } from '@turbox3d/shared';
+import { remove, Vec2, Vec3 } from '@turbox3d/shared';
 import { Component, ComponentProps } from './component';
 
 declare global {
@@ -108,8 +108,6 @@ export interface BaseSceneProps {
   disableResize?: boolean;
   /** 渲染标志（用来打开或关闭渲染 ticker，若为 false，则当前帧不渲染） */
   renderFlag?: boolean;
-  /** 渲染循环自定义 ticker */
-  ticker?: (type: 'before-render' | 'after-render') => void;
 }
 
 export interface IViewInfo {
@@ -167,6 +165,8 @@ export abstract class BaseScene<
   camera?: Camera;
   /** 射线实例，仅 3d 下有 */
   raycaster?: Raycaster;
+
+  tickers: Function[] = [];
 
   width: number = BaseScene.DEFAULT_WIDTH;
 
@@ -422,6 +422,12 @@ export abstract class BaseScene<
         isBase64?: boolean
       ) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
       getApp: () => this.getCurrentApp(),
+      addTicker: (ticker: () => void) => {
+        this.tickers.push(ticker);
+      },
+      removeTicker: (ticker: () => void) => {
+        remove(this.tickers, ticker);
+      },
     };
   };
 

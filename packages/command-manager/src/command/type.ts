@@ -30,8 +30,18 @@ export interface ITool {
   getRaycaster: () => any;
   getScene: () => any;
   getRootView: () => any;
-  getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => Promise<string | Blob>;
+  getScreenShot: (
+    sx?: number,
+    sy?: number,
+    w?: number,
+    h?: number,
+    fileType?: string,
+    quality?: number,
+    isBase64?: boolean
+  ) => Promise<string | Blob>;
   getApp: () => any;
+  addTicker: (ticker: () => void) => void;
+  removeTicker: (ticker: () => void) => void;
 }
 
 export interface IDeclaredMap<T> {
