@@ -18,10 +18,10 @@ export class Component<P = {}> {
   props: ComponentProps<P>;
   _vNode: VirtualNode;
 
-  get context() {
+  get context(): SceneContext<any> {
     const scene = getSceneParent(this);
     if (scene) {
-      return scene.sceneContext || ({} as SceneContext<any>);
+      return ((scene as any).sceneContext || {}) as SceneContext<any>;
     }
     return {} as SceneContext<any>;
   }
