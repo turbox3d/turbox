@@ -21,3 +21,4 @@ export { default as FatLine } from './fat-line/index';
 export { default as Gizmo3d } from './gizmo3d/index';
 export { default as Rect3d } from './rect3d/index';
 export { default as Wireframe } from './wireframe/index';
+export { default as Animation3d } from './animation3d/index';

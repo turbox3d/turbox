@@ -15,18 +15,14 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
   protected view: DisplayObject;
   /** 视图对象的类型（有相机、灯光、模型三类，默认为 model） */
   protected viewType: 'camera' | 'light' | 'model' = 'model';
-
-  /** 响应式的渲染任务管线，与 draw 互斥，有任务就不会执行 draw */
+  /** 响应式的渲染任务管线 */
   protected reactivePipeLine: Array<() => void> = [];
-
   /** 是否默认添加到场景中。默认：true */
   protected autoAppendToWorld = true;
-
   /** 是否可交互。默认：false */
   protected isInteractive = false;
 
   private reactions: Reaction[] = [];
-
   private interactiveTask: Reaction;
 
   constructor(props = {} as ComponentProps<Props>) {
@@ -65,7 +61,7 @@ export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycast
           immediately: false,
         }));
       } else {
-        this.reactivePipeLine.forEach(task => task.call(this));
+        // this.reactivePipeLine.forEach(task => task.call(this));
       }
     }
     if (isCreate) {
