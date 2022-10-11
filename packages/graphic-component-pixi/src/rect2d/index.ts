@@ -1,11 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import DrawUtils from '../draw-utils/index';
+import { IFitStyle } from '../draw-utils/drawRect';
 
 interface IProps {
-  /** The X of the bottom-left of the rectangle */
   x?: number;
-  /** The Y of the bottom-left of the rectangle */
   y?: number;
   width: number;
   height: number;
@@ -13,12 +12,15 @@ interface IProps {
    * 传入的位置坐标是否是矩形中心点
    */
   central?: boolean;
+  radius?: number;
   lineWidth?: number;
   lineColor?: number;
   lineAlpha?: number;
   fillColor?: number;
   fillAlpha?: number;
   alpha?: number;
+  backgroundImage?: string;
+  fit?: IFitStyle;
 }
 
 /** 正方形 */
@@ -40,12 +42,15 @@ export default class Rect2d extends Mesh2D<IProps> {
       width,
       height,
       central,
+      radius,
       lineWidth,
       lineColor,
       lineAlpha,
       fillColor,
       fillAlpha,
       alpha,
+      backgroundImage,
+      fit,
     } = this.props;
     DrawUtils.drawRect(this.view, {
       x,
@@ -53,13 +58,15 @@ export default class Rect2d extends Mesh2D<IProps> {
       width,
       height,
       central,
-    }, {
+      radius,
       lineWidth,
       lineColor,
       lineAlpha,
       fillColor,
       fillAlpha,
       alpha,
+      backgroundImage,
+      fit,
     });
   }
 
