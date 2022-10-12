@@ -1,6 +1,6 @@
 {
-  "name": "@turbox3d/turbox3d",
-  "version": "1.1.9",
+  "name": "@turbox3d/turbox2d",
+  "version": "1.0.0",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -23,20 +23,20 @@
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "peerDependencies": {
+    "pixi.js": ">=5.3",
     "react": "16.x",
-    "react-dom": "16.x",
-    "three": "0.x"
+    "react-dom": "16.x"
   },
   "dependencies": {
     "@turbox3d/command-manager": "^1.1.6",
     "@turbox3d/design-engine": "^1.1.9",
     "@turbox3d/event-manager": "^1.1.6",
-    "@turbox3d/graphic-component-three": "^1.1.9",
+    "@turbox3d/graphic-component-pixi": "^1.1.9",
     "@turbox3d/math": "^1.1.2",
     "@turbox3d/reactivity": "^2.1.6",
     "@turbox3d/reactivity-react": "^1.1.6",
     "@turbox3d/renderer-core": "^0.0.10",
-    "@turbox3d/renderer-three": "^0.0.10"
+    "@turbox3d/renderer-pixi": "^0.0.10"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
@@ -49,7 +49,6 @@
     "@types/node": "^12.11.5",
     "@types/react": "16.x",
     "@types/react-dom": "16.x",
-    "@types/three": "^0.130.1",
     "autoprefixer": "^10.1.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^6.0.3",
@@ -59,13 +58,13 @@
     "less": "^4.0.0",
     "less-loader": "^7.2.0",
     "mini-css-extract-plugin": "^1.3.3",
+    "pixi.js": "^5.3.6",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-loader": "^4.1.0",
     "react": "16.x",
     "react-dom": "16.x",
     "sass-loader": "^10.1.0",
     "style-loader": "^2.0.0",
-    "three": "^0.131.3",
     "ts-jest": "^24.1.0",
     "typescript": "^4.3.5",
     "url-loader": "^4.1.1",
@@ -90,8 +89,8 @@
     "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es",
     "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib",
     "build:watch": "tsc -w -target es2018 -declarationDir ./typings -outDir ./ts & npx babel ts -w --out-dir es",
-    "build:umd": "npx webpack --mode='development' -o dist/turbox3d.js",
-    "build:umd:min": "npx webpack --mode='production' -o dist/turbox3d.min.js",
+    "build:umd": "npx webpack --mode='development' -o dist/turbox2d.js",
+    "build:umd:min": "npx webpack --mode='production' -o dist/turbox2d.min.js",
     "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
     "prepublishOnly": "npm run build:all"
   }
