@@ -44,7 +44,7 @@ export type SetType = Set<any> | WeakSet<any>;
 /**
  * Framework base class 'Domain', class must be extends this base class which is need to be observable.
  */
-export class Domain<S = {}> {
+export class Domain<S extends object = {}> {
   // prompt: add property do not forget sync to black list
   $$turboxProperties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
@@ -497,7 +497,7 @@ interface DomainConfig<R, M, C, A> {
   action?: A;
 }
 
-export function createDomain<R, M, C = {}, A = {}>(domainConfig: DomainConfig<R, M, C, A>) {
+export function createDomain<R extends object, M extends object, C extends object = {}, A extends object = {}>(domainConfig: DomainConfig<R, M, C, A>) {
   const { reactor, mutation: domainMutation, computed: domainComputed, action: domainAction } = domainConfig;
   const domain = new Domain<R>();
   const config: ReactorConfig = {

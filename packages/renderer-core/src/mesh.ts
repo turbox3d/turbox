@@ -10,7 +10,7 @@ import { getMeshParent } from './utils';
 
 type CommitType = 'update' | 'create' | 'delete';
 
-export abstract class BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends PureComponent<Props> {
+export abstract class BaseMesh<Props extends object, ApplicationContext, Scene, Camera, Raycaster, Container extends DisplayObject, DisplayObject, Viewport, Point> extends PureComponent<Props> {
   /** 当前组件的视图对象 */
   protected view: DisplayObject;
   /** 视图对象的类型（有相机、灯光、模型三类，默认为 model） */
