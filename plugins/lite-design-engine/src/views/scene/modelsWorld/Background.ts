@@ -1,4 +1,4 @@
-import { IViewEntity, Mesh3D, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { IViewEntity, Mesh3D, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import * as THREE from 'three';
 // import { appCommandBox } from '../../../commands/index';
 // import { WireFrame } from '../helper/index';

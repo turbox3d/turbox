@@ -1,4 +1,4 @@
-import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element, createElement } from '@turbox3d/turbox3d';
+import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element, createElement } from '@turbox3d/turbox';
 import { ldeStore } from '../../../models/index';
 import { ProductViewEntity } from './Product';
 import { EntityCategory } from '../../../utils/category';

@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { Circle, Rect3d } from '../helper/index';
 import { ClipPointEntity } from '../../../models/entity/clipPoint';
 import { RenderOrder } from '../../../consts/scene';

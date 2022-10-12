@@ -1,4 +1,4 @@
-import { Domain, Vector3, EntityObject, mutation } from '@turbox3d/turbox3d';
+import { Domain, Vector3, EntityObject, mutation } from '@turbox3d/turbox';
 import { EntityCategory } from '../../utils/category';
 import { ScalePointEntity } from '../entity/scalePoint';
 import { RotatePointEntity } from '../entity/rotatePoint';

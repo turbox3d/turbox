@@ -1,4 +1,4 @@
-import { Reactive, Mesh3D } from '@turbox3d/turbox3d';
+import { Reactive, Mesh3D } from '@turbox3d/turbox';
 import { ClipPointEntity } from '../../../models/entity/clipPoint';
 import { BufferGeometry, LineDashedMaterial, LineSegments, Vector3 } from 'three';
 

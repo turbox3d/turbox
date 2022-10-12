@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HintCommand, SelectionCommand, BaseCommandBox, compose, Scene3D, IViewEntity, SceneEvent, Reactive, EntityObject } from '@turbox3d/turbox3d';
+import { HintCommand, SelectionCommand, BaseCommandBox, compose, Scene3D, IViewEntity, SceneEvent, Reactive, EntityObject } from '@turbox3d/turbox';
 import { Box, BoxViewEntity } from './box';
 
 class Entity extends EntityObject {

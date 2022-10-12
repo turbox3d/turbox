@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Action, MaterialDragSystem, CoordinateType, Vec2, IViewEntity, InteractiveEvent } from '@turbox3d/turbox3d';
+import { Action, MaterialDragSystem, CoordinateType, Vec2, IViewEntity, InteractiveEvent } from '@turbox3d/turbox';
 import { ProductEntity } from '../models/entity/product';
 import { ProductSymbol } from '../consts/scene';
 import { SceneUtil } from '../views/scene/modelsWorld/index';

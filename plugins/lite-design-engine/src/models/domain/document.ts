@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DocumentSystem, EntityObject, mutation, reactor, Vector2, MathUtils } from '@turbox3d/turbox3d';
+import { DocumentSystem, EntityObject, mutation, reactor, Vector2, MathUtils } from '@turbox3d/turbox';
 import { ProductEntity } from '../entity/product';
 import { AssemblyEntity } from '../entity/assembly';
 import { Z_INDEX_ACTION } from '../../consts/scene';

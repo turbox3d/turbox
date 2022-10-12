@@ -1,4 +1,4 @@
-import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { Circle } from '../helper/index';
 import { SkewPointEntity } from '../../../models/entity/skewPoint';
 import { RenderOrder } from '../../../consts/scene';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool } from '@turbox3d/turbox3d';
+import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool } from '@turbox3d/turbox';
 import { ClipPointSymbol } from '../../consts/scene';
 import { ClipPointEntity } from '../../models/entity/clipPoint';
 import { ldeStore } from '../../models/index';

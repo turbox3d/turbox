@@ -1,4 +1,4 @@
-import { Mesh2D, ViewEntity2D, MathUtils, Reactive, Rect2d, Polygon, createElement } from '@turbox3d/turbox3d';
+import { Mesh2D, ViewEntity2D, MathUtils, Reactive, Rect2d, Polygon, createElement } from '@turbox3d/turbox';
 import * as PIXI from 'pixi.js';
 import * as PIXIProjection from 'pixi-projection';
 import { ProductEntity } from '../../../models/entity/product';

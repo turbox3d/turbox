@@ -1,4 +1,4 @@
-import { BaseCommandBox } from '@turbox3d/turbox3d';
+import { BaseCommandBox } from '@turbox3d/turbox';
 import { DefaultCommand } from './default';
 import { ClipCommand } from './clip/index';
 import { SkewCommand } from './skew/index';

@@ -1,4 +1,4 @@
-import { EntityObject, mutation, reactor, Vector2, Vector3 } from '@turbox3d/turbox3d';
+import { EntityObject, mutation, reactor, Vector2, Vector3 } from '@turbox3d/turbox';
 import { ScalePointEntity } from './scalePoint';
 import { RotatePointEntity } from './rotatePoint';
 import { AdjustPointEntity } from './adjustPoint';

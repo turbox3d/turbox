@@ -23,7 +23,7 @@
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "@turbox3d/turbox3d": ">=1",
+    "@turbox3d/turbox": ">=1",
     "pixi.js": ">=5.3",
     "react": "16.x",
     "react-dom": "16.x",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@turbox3d/turbox-dev-tool": "^1.0.9",
-    "@turbox3d/turbox3d": "^2.0.4",
+    "@turbox3d/turbox": "^2.0.4",
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",

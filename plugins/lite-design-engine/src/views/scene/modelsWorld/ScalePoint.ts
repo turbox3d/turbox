@@ -1,4 +1,4 @@
-import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { Rect3d } from '../helper/index';
 import { ScalePointEntity } from '../../../models/entity/scalePoint';
 import { RenderOrder } from '../../../consts/scene';

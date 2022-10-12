@@ -12,7 +12,7 @@ import {
   BaseScene,
   CoordinateType,
   IGesturesExtra,
-} from '@turbox3d/turbox3d';
+} from '@turbox3d/turbox';
 import { MathAlg, Line2d } from '@turbox3d/homestyler-math';
 import * as THREE from 'three';
 import { ProductEntity } from '../../../models/entity/product';

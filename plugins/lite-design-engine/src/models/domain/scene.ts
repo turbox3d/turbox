@@ -1,4 +1,4 @@
-import { Domain, reactor, Vector3, mutation } from '@turbox3d/turbox3d';
+import { Domain, reactor, Vector3, mutation } from '@turbox3d/turbox';
 import { EyeDistance } from '../../consts/scene';
 
 export class SceneDomain extends Domain {

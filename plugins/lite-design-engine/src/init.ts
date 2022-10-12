@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { config, Tolerance, EnvSystem, depCollector } from '@turbox3d/turbox3d';
+import { config, Tolerance, EnvSystem, depCollector } from '@turbox3d/turbox';
 import { ldeStore } from './models/index';
 import { appCommandBox } from './commands/index';
 import { SceneUtil } from './views/scene/modelsWorld/index';

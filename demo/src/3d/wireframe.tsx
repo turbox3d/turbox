@@ -1,4 +1,4 @@
-import { EntityObject, Mesh3D } from '@turbox3d/turbox3d';
+import { EntityObject, Mesh3D } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import { color16 } from './box';
 

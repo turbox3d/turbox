@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommand, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool } from '@turbox3d/turbox3d';
+import { BaseCommand, IViewEntity, SceneEvent, EntityObject, Vec3, Vector3, ITool } from '@turbox3d/turbox';
 import { ProductEntity } from '../../models/entity/product';
 import { SkewPointSymbol } from '../../consts/scene';
 import { SkewPointEntity } from '../../models/entity/skewPoint';

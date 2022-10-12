@@ -1,4 +1,4 @@
-import { Domain, Vector2, Vector3, Box2, EntityObject, Box3, mutation, Action, Vec2 } from '@turbox3d/turbox3d';
+import { Domain, Vector2, Vector3, Box2, EntityObject, Box3, mutation, Action, Vec2 } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import { ProductEntity } from '../entity/product';

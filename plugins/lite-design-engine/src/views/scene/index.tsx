@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as PIXI from 'pixi.js';
 import * as THREE from 'three';
-import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, createElement, Element } from '@turbox3d/turbox3d';
+import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, createElement, Element } from '@turbox3d/turbox';
 import { FPSMonitorComponent } from '@turbox3d/turbox-dev-tool';
 import { appCommandBox } from '../../commands/index';
 import { OrthographicCamera, PerspectiveCamera } from './camera/index';

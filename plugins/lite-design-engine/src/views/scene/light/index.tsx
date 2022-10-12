@@ -1,4 +1,4 @@
-import { Mesh3D } from '@turbox3d/turbox3d';
+import { Mesh3D } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import { SceneUtil } from '../modelsWorld/index';
 import { ldeStore } from '../../../models/index';

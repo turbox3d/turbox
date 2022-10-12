@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Button, Input, Slider } from 'antd';
 import * as THREE from 'three';
-import { LoadSystem, Vector3, MathUtils } from '@turbox3d/turbox3d';
+import { LoadSystem, Vector3, MathUtils } from '@turbox3d/turbox';
 import { ldeStore } from '../../models/index';
 import './index.less';
 import { Z_INDEX_ACTION, MIRROR_ACTION } from '../../consts/scene';

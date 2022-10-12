@@ -1,4 +1,4 @@
-import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox3d';
+import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox';
 import { MoveCommand } from './move/index';
 import { ScaleCommand } from './scale/index';
 import { RotateCommand } from './rotate/index';

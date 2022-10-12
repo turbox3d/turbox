@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { Circle, Rect3d, IRect3dProps, ICircleProps } from '../helper/index';
 import { AdjustPointEntity } from '../../../models/entity/AdjustPoint';
 import { RenderOrder } from '../../../consts/scene';

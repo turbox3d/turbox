@@ -1,4 +1,4 @@
-import { EntityObject, Mesh3D, Vector3, Vec3, Mesh2D, DrawUtils } from '@turbox3d/turbox3d';
+import { EntityObject, Mesh3D, Vector3, Vec3, Mesh2D, DrawUtils } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import * as PIXI from 'pixi.js';
 import { color16 } from '../../../utils/color';

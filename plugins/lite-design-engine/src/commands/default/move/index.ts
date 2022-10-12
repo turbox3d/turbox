@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as THREE from 'three';
-import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, ITool } from '@turbox3d/turbox3d';
+import { BaseCommand, Action, IViewEntity, SceneEvent, EntityObject, ITool } from '@turbox3d/turbox';
 import { getRelativePositionFromEvent } from '@turbox3d/shared';
 import { ProductEntity } from '../../../models/entity/product';
 import { appCommandBox } from '../../index';

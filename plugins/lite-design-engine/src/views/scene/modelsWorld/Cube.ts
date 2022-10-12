@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, createElement } from '@turbox3d/turbox3d';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, createElement } from '@turbox3d/turbox';
 import { appCommandBox } from '../../../commands/index';
 import { Cube, WireFrame } from '../helper/index';
 import { CubeEntity } from '../../../models/entity/cube';

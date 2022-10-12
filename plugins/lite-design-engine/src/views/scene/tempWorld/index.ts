@@ -1,4 +1,4 @@
-import { Reactive, Component, createElement } from '@turbox3d/turbox3d';
+import { Reactive, Component, createElement } from '@turbox3d/turbox';
 import { Product2DViewEntity } from './Product2D';
 import { ProductEntity } from '../../../models/entity/product';
 import { ldeStore } from '../../../models/index';

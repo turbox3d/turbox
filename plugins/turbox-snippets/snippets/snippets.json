@@ -2,7 +2,7 @@
   "Create Entry": {
     "prefix": "tce",
     "body": [
-      "import { config, Tolerance, EnvSystem } from '@turbox3d/turbox3d';",
+      "import { config, Tolerance, EnvSystem } from '@turbox3d/turbox';",
       "import * as ReactDOM from 'react-dom';",
       "import * as React from 'react';",
       "",
@@ -48,7 +48,7 @@
   "Create Domain": {
     "prefix": "tcd",
     "body": [
-      "import { Domain, reactor, mutation } from '@turbox3d/turbox3d';",
+      "import { Domain, reactor, mutation } from '@turbox3d/turbox';",
       "",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Domain} extends Domain {",
       "\t@reactor() example = '';",
@@ -111,7 +111,7 @@
     "prefix": "tcrcc",
     "body": [
       "import React, { Component } from 'react';",
-      "import { ReactiveReact } from '@turbox3d/turbox3d';",
+      "import { ReactiveReact } from '@turbox3d/turbox';",
       "",
       "@ReactiveReact()",
       "export class ${1:${TM_FILENAME_BASE}} extends Component {",
@@ -131,7 +131,7 @@
     "prefix": "tcrfc",
     "body": [
       "import React from 'react';",
-      "import { ReactiveReact } from '@turbox3d/turbox3d';",
+      "import { ReactiveReact } from '@turbox3d/turbox';",
       "",
       "export const ${1:${TM_FILENAME_BASE}} = ReactiveReact(() => {",
       "\treturn (",
@@ -148,7 +148,7 @@
     "prefix": "tcrpc",
     "body": [
       "import React, { PureComponent } from 'react';",
-      "import { ReactiveReact } from '@turbox3d/turbox3d';",
+      "import { ReactiveReact } from '@turbox3d/turbox';",
       "",
       "@ReactiveReact()",
       "export class ${1:${TM_FILENAME_BASE}} extends PureComponent {",
@@ -167,7 +167,7 @@
   "Create Reactive Function": {
     "prefix": "tcrf",
     "body": [
-      "import { reactive } from '@turbox3d/turbox3d';",
+      "import { reactive } from '@turbox3d/turbox';",
       "",
       "export const ${1:${TM_FILENAME_BASE}} = reactive(() => {",
       "\t$0",
@@ -190,7 +190,7 @@
   "Create Reactive Interactive Mesh3D": {
     "prefix": "tcrim3",
     "body": [
-      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
+      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
@@ -245,7 +245,7 @@
   "Create Reactive Interactive Mesh2D": {
     "prefix": "tcrim2",
     "body": [
-      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox3d';",
+      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
@@ -296,7 +296,7 @@
   "Create Reactive Graphic Component": {
     "prefix": "tcrgc",
     "body": [
-      "import { Reactive, Component, createElement } from '@turbox3d/turbox3d';",
+      "import { Reactive, Component, createElement } from '@turbox3d/turbox';",
       "",
       "@Reactive",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Component} extends Component {",
@@ -315,7 +315,7 @@
   "Create Mesh3D": {
     "prefix": "tcm3",
     "body": [
-      "import { EntityObject, Mesh3D } from '@turbox3d/turbox3d';",
+      "import { EntityObject, Mesh3D } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}3D}Props {",
       "  model: EntityObject;",
@@ -340,7 +340,7 @@
   "Create Mesh2D": {
     "prefix": "tcm2",
     "body": [
-      "import { EntityObject, Mesh2D } from '@turbox3d/turbox3d';",
+      "import { EntityObject, Mesh2D } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}2D}Props {",
       "  model: EntityObject;",
@@ -387,7 +387,7 @@
   "Create CommandBox": {
     "prefix": "tccb",
     "body": [
-      "import { BaseCommandBox } from '@turbox3d/turbox3d';",
+      "import { BaseCommandBox } from '@turbox3d/turbox';",
       "import { DefaultCommand } from './default';",
       "",
       "class AppCommandBox extends BaseCommandBox {",
@@ -412,7 +412,7 @@
   "Create Composed Command": {
     "prefix": "tccc",
     "body": [
-      "import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox3d';",
+      "import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox';",
       "",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends compose({",
       "  hint: HintCommand,",
@@ -432,7 +432,7 @@
   "Create BaseCommand": {
     "prefix": "tcbc",
     "body": [
-      "import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3 } from '@turbox3d/turbox3d';",
+      "import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3 } from '@turbox3d/turbox';",
       "",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends BaseCommand {",
       "  private action = Action.create('${2:action}');",

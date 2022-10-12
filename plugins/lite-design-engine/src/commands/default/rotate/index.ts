@@ -10,7 +10,7 @@ import {
   MathUtils,
   EntityObject,
   IGesturesExtra,
-} from '@turbox3d/turbox3d';
+} from '@turbox3d/turbox';
 import { ProductEntity } from '../../../models/entity/product';
 import { appCommandBox } from '../../index';
 import { EntityCategory } from '../../../utils/category';

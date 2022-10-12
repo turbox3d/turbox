@@ -6,9 +6,9 @@ English | [简体中文](./README.zh-CN.md)
 
 [![build status](https://img.shields.io/travis/com/turbox3d/turbox/master.svg?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
 [![license](https://img.shields.io/github/license/turbox3d/turbox?style=flat-square)](https://travis-ci.com/github/turbox3d/turbox)
-[![npm version](https://img.shields.io/npm/v/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
-[![npm downloads](https://img.shields.io/npm/dm/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
-[![install size](https://img.shields.io/bundlephobia/minzip/@turbox3d/turbox3d?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox3d)
+[![npm version](https://img.shields.io/npm/v/@turbox3d/turbox?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
+[![npm downloads](https://img.shields.io/npm/dm/@turbox3d/turbox?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
+[![install size](https://img.shields.io/bundlephobia/minzip/@turbox3d/turbox?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
 
 <h2 align="center">Turbox</h2>
 

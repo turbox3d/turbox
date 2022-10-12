@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable react/no-array-index-key */
-import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element, createElement } from '@turbox3d/turbox3d';
+import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element, createElement } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import { appCommandBox } from '../../../commands/index';
 import { WireFrame, FatLine, ClipMask } from '../helper/index';

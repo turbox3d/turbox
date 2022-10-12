@@ -1,4 +1,4 @@
-import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { Circle } from '../helper/index';
 import { RotatePointEntity } from '../../../models/entity/rotatePoint';
 import { RenderOrder } from '../../../consts/scene';

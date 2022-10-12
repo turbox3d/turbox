@@ -1,4 +1,4 @@
-import { Domain, Vector3, reactor } from '@turbox3d/turbox3d';
+import { Domain, Vector3, reactor } from '@turbox3d/turbox';
 
 export class MeasureDomain extends Domain {
   @reactor() start?: Vector3;

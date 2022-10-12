@@ -1,4 +1,4 @@
-import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3, Vector3 } from '@turbox3d/turbox3d';
+import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3, Vector3 } from '@turbox3d/turbox';
 import { MeasureDomain } from './domain';
 
 export class MeasureCommand extends BaseCommand {

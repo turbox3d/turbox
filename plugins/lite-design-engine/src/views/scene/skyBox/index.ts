@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Reactive, EntityObject, ViewEntity3D, Mesh3D, MathUtils, createElement } from '@turbox3d/turbox3d';
+import { Reactive, EntityObject, ViewEntity3D, Mesh3D, MathUtils, createElement } from '@turbox3d/turbox';
 import { SkyBoxEntity } from '../../../models/entity/skyBox';
 import { RenderOrder } from '../../../consts/scene';
 

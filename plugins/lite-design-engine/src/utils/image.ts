@@ -1,4 +1,4 @@
-import { Vector2, Vec2 } from '@turbox3d/turbox3d';
+import { Vector2, Vec2 } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import { SceneUtil } from '../views/scene/modelsWorld/index';
 
