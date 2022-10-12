@@ -5,14 +5,14 @@ import { Component, ComponentProps } from './component';
 import { BaseMesh } from './mesh';
 import { NodeStatus, NodeTag } from './common';
 
-export interface ElementSchema<P = any> {
+export interface ElementSchema<P extends object = any> {
   type: IConstructorOf<Component<P>>;
   props?: ComponentProps<P>;
 }
 
-export type Element<P = any> = ElementSchema<P> | undefined | boolean | null | number | string;
+export type Element<P extends object = any> = ElementSchema<P> | undefined | boolean | null | number | string;
 
-export class VirtualNode<P = any> {
+export class VirtualNode<P extends object = any> {
   instance?: Component<P>; // only root node can be undefined
   key?: string | number;
   child?: VirtualNode<P>;
@@ -290,7 +290,7 @@ export function render(elements: Element<any>[]) {
   }
 }
 
-export function createElement<P>(type: IConstructorOf<Component<P>>, props?: ComponentProps<P>): ElementSchema<P> {
+export function createElement<P extends object>(type: IConstructorOf<Component<P>>, props?: ComponentProps<P>): ElementSchema<P> {
   return {
     type,
     props,

@@ -14,7 +14,7 @@ export type ComponentProps<P> = PreserveProps & Partial<IViewEntity> & P;
 /**
  * graphic render component
  */
-export class Component<P = {}> {
+export class Component<P extends object = {}> {
   props: ComponentProps<P>;
   _vNode: VirtualNode;
 
@@ -63,7 +63,7 @@ export class Component<P = {}> {
   }
 }
 
-export class PureComponent<P = {}> extends Component<P> {
+export class PureComponent<P extends object = {}> extends Component<P> {
   shouldComponentUpdate(nextProps: Readonly<ComponentProps<P>>) {
     return !shallowEqual(this.props, nextProps);
   }

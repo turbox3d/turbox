@@ -1,4 +1,13 @@
-import { isPlainObject, hasOwn, isObject, bind, includes, invariant, generateUUID, canObserve } from '@turbox3d/shared';
+import {
+  isPlainObject,
+  hasOwn,
+  isObject,
+  bind,
+  includes,
+  invariant,
+  generateUUID,
+  canObserve,
+} from '@turbox3d/shared';
 import { NAMESPACE, EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
 import { Mutation } from '../interfaces';
 import { depCollector, triggerCollector } from './collector';
@@ -15,7 +24,7 @@ import { isDomain } from '../utils/common';
 
 export enum KeyPathType {
   property = 'property',
-  index = 'index'
+  index = 'index',
 }
 export const proxyCache = new WeakMap<any, any>();
 export const rawCache = new WeakMap<any, any>();
@@ -44,7 +53,7 @@ export type SetType = Set<any> | WeakSet<any>;
 /**
  * Framework base class 'Domain', class must be extends this base class which is need to be observable.
  */
-export class Domain<S = {}> {
+export class Domain<S extends object = {}> {
   // prompt: add property do not forget sync to black list
   $$turboxProperties: { [key in keyof this]?: this[key] } = {};
   private reactorConfigMap: { [key in keyof this]?: ReactorConfig } = {};
@@ -75,34 +84,50 @@ export class Domain<S = {}> {
       // hasInitializer won't trigger setter when first init value, need trigger it manually
       this.propertySet(key, v, config);
     }
-    const mergedConfig = Object.assign({}, {
-      isNeedRecord: this.context.isNeedRecord,
-    }, config);
+    const mergedConfig = Object.assign(
+      {},
+      {
+        isNeedRecord: this.context.isNeedRecord,
+      },
+      config
+    );
     this.reactorConfigMap[key] = mergedConfig;
 
     depCollector.collect(this, key);
 
-    return isObject(v) && !isDomain(v) && mergedConfig.deepProxy ? this.proxyReactive(v, [{ type: KeyPathType.property, value: key }]) : v;
+    return isObject(v) && !isDomain(v) && mergedConfig.deepProxy
+      ? this.proxyReactive(v, [{ type: KeyPathType.property, value: key }])
+      : v;
   }
 
   propertySet(key: string, v: any, config: ReactorConfig) {
     ctx.strictMode && this.illegalAssignmentCheck(this, key);
     const oldValue = this.$$turboxProperties[key];
-    const mergedConfig = Object.assign({}, {
-      isNeedRecord: this.context.isNeedRecord,
-    }, config);
+    const mergedConfig = Object.assign(
+      {},
+      {
+        isNeedRecord: this.context.isNeedRecord,
+      },
+      config
+    );
     this.reactorConfigMap[key] = mergedConfig;
 
     if (oldValue !== v) {
       this.$$turboxProperties[key] = v;
-      triggerCollector.trigger(this, key, {
-        type: ECollectType.SET,
-        beforeUpdate: oldValue,
-        didUpdate: v,
-      }, mergedConfig.isNeedRecord, {
-        keyPath: [{ type: KeyPathType.property, value: key }],
-        domain: this.constructor.name
-      });
+      triggerCollector.trigger(
+        this,
+        key,
+        {
+          type: ECollectType.SET,
+          beforeUpdate: oldValue,
+          didUpdate: v,
+        },
+        mergedConfig.isNeedRecord,
+        {
+          keyPath: [{ type: KeyPathType.property, value: key }],
+          domain: this.constructor.name,
+        }
+      );
     }
   }
 
@@ -117,27 +142,35 @@ export class Domain<S = {}> {
     const cc = this.computedProperties[key] as ComputedConfig<T>;
     const lazy = options && options.lazy !== void 0 ? options.lazy : false;
     if (!cc.reaction) {
-      cc.reaction = createReaction(() => {
-        cc.dirty = true;
-        if (cc.needReComputed) {
-          cc.value = cc.computeRunner!();
+      cc.reaction = createReaction(
+        () => {
+          cc.dirty = true;
+          if (cc.needReComputed) {
+            cc.value = cc.computeRunner!();
+          }
+          if (cc.needTrigger) {
+            triggerCollector.trigger(
+              this,
+              key,
+              {
+                type: ECollectType.SET,
+                beforeUpdate: void 0,
+                didUpdate: void 0,
+              },
+              false
+            );
+          }
+        },
+        {
+          name: key,
+          computed: true,
+          lazy,
         }
-        if (cc.needTrigger) {
-          triggerCollector.trigger(this, key, {
-            type: ECollectType.SET,
-            beforeUpdate: void 0,
-            didUpdate: void 0,
-          }, false);
-        }
-      }, {
-        name: key,
-        computed: true,
-        lazy,
-      });
+      );
     }
 
     if (!cc.computeRunner && descriptor) {
-      cc.computeRunner = bind(descriptor.get, this) as (() => T);
+      cc.computeRunner = bind(descriptor.get, this) as () => T;
     }
     if (cc.dirty) {
       cc.needReComputed = true;
@@ -173,7 +206,14 @@ export class Domain<S = {}> {
   /**
    * the syntax sweet of updating state out of mutation
    */
-  $update<K extends keyof S>(obj: Pick<S, K> | S, actionName?: string, displayName?: string, forceSaveHistory?: boolean, isNeedRecord?: boolean, immediately?: boolean): void {
+  $update<K extends keyof S>(
+    obj: Pick<S, K> | S,
+    actionName?: string,
+    displayName?: string,
+    forceSaveHistory?: boolean,
+    isNeedRecord?: boolean,
+    immediately?: boolean
+  ): void {
     invariant(isPlainObject(obj), 'resetState(...) param type error. Param should be a plain object.');
     this.dispatch(obj as object, actionName, displayName, forceSaveHistory, isNeedRecord, immediately);
   }
@@ -192,28 +232,40 @@ export class Domain<S = {}> {
     // do nothing if target is in the prototype chain
     if (target === proxyCache.get(receiver)) {
       if (key === ESpecialReservedKey.ARRAY_LENGTH || value !== oldValue) {
-        triggerCollector.trigger(target, key, {
-          type: ECollectType.SET,
-          beforeUpdate: key === ESpecialReservedKey.ARRAY_LENGTH ? this.originalArrayLength : oldValue,
-          didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath: [{ type: KeyPathType.property, value: key }],
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          key,
+          {
+            type: ECollectType.SET,
+            beforeUpdate: key === ESpecialReservedKey.ARRAY_LENGTH ? this.originalArrayLength : oldValue,
+            didUpdate: value,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath: [{ type: KeyPathType.property, value: key }],
+            domain: this.constructor.name,
+          }
+        );
         if (key === ESpecialReservedKey.ARRAY_LENGTH) {
           this.currentTarget = void 0;
           this.originalArrayLength = void 0;
         }
       }
       if (!hadKey) {
-        triggerCollector.trigger(target, key, {
-          type: ECollectType.ADD,
-          beforeUpdate: oldValue,
-          didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath: [{ type: KeyPathType.property, value: key }],
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          key,
+          {
+            type: ECollectType.ADD,
+            beforeUpdate: oldValue,
+            didUpdate: value,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath: [{ type: KeyPathType.property, value: key }],
+            domain: this.constructor.name,
+          }
+        );
       }
       const result = Reflect.set(target, key, value, receiver);
       return result;
@@ -238,7 +290,10 @@ export class Domain<S = {}> {
     }
 
     return isObject(res) && !isDomain(res)
-      ? this.proxyReactive(res, [...keyPath, { type: Array.isArray(target) ? KeyPathType.index : KeyPathType.property, value: key }])
+      ? this.proxyReactive(res, [
+          ...keyPath,
+          { type: Array.isArray(target) ? KeyPathType.index : KeyPathType.property, value: key },
+        ])
       : res;
   }
 
@@ -246,14 +301,20 @@ export class Domain<S = {}> {
     const keyPath = keyPathCache.get(target)!;
     const rootKey = keyPath[0].value;
     const oldValue = target[key];
-    triggerCollector.trigger(target, key, {
-      type: ECollectType.DELETE,
-      beforeUpdate: oldValue,
-      didUpdate: void 0,
-    }, this.reactorConfigMap[rootKey].isNeedRecord, {
-      keyPath: [{ type: KeyPathType.property, value: key }],
-      domain: this.constructor.name
-    });
+    triggerCollector.trigger(
+      target,
+      key,
+      {
+        type: ECollectType.DELETE,
+        beforeUpdate: oldValue,
+        didUpdate: void 0,
+      },
+      this.reactorConfigMap[rootKey].isNeedRecord,
+      {
+        keyPath: [{ type: KeyPathType.property, value: key }],
+        domain: this.constructor.name,
+      }
+    );
     return Reflect.deleteProperty(target, key);
   }
 
@@ -282,14 +343,16 @@ export class Domain<S = {}> {
     if (!canObserve(raw)) {
       return raw;
     }
-    const proxyHandler: ProxyHandler<object> = includes(collectionTypes, raw.constructor) ? {
-      get: bind(_this.collectionProxyHandler, _this),
-    } : {
-      get: bind(_this.proxyGet, _this),
-      set: bind(_this.proxySet, _this),
-      ownKeys: bind(_this.proxyOwnKeys, _this),
-      deleteProperty: bind(_this.proxyDeleteProperty, _this),
-    };
+    const proxyHandler: ProxyHandler<object> = includes(collectionTypes, raw.constructor)
+      ? {
+          get: bind(_this.collectionProxyHandler, _this),
+        }
+      : {
+          get: bind(_this.proxyGet, _this),
+          set: bind(_this.proxySet, _this),
+          ownKeys: bind(_this.proxyOwnKeys, _this),
+          deleteProperty: bind(_this.proxyDeleteProperty, _this),
+        };
     const proxy = new Proxy(raw, proxyHandler);
     proxyCache.set(proxy, raw);
     rawCache.set(raw, proxy);
@@ -348,18 +411,29 @@ export class Domain<S = {}> {
       const hadValue = has.call(target, value);
 
       if (!hadValue) {
-        triggerCollector.trigger(target, value, {
-          type: ECollectType.SET_ADD,
-          beforeUpdate: void 0,
-          didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath,
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          value,
+          {
+            type: ECollectType.SET_ADD,
+            beforeUpdate: void 0,
+            didUpdate: value,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath,
+            domain: this.constructor.name,
+          }
+        );
 
-        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-          type: ECollectType.SET_ADD,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        triggerCollector.trigger(
+          target,
+          ESpecialReservedKey.ITERATE,
+          {
+            type: ECollectType.SET_ADD,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord
+        );
       }
 
       return add.call(target, value);
@@ -372,19 +446,30 @@ export class Domain<S = {}> {
       const oldValue = get.call(target, key);
 
       if (value !== oldValue) {
-        triggerCollector.trigger(target, key, {
-          type: ECollectType.MAP_SET,
-          beforeUpdate: oldValue,
-          didUpdate: value,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath,
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          key,
+          {
+            type: ECollectType.MAP_SET,
+            beforeUpdate: oldValue,
+            didUpdate: value,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath,
+            domain: this.constructor.name,
+          }
+        );
       }
       if (!hadKey) {
-        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-          type: ECollectType.MAP_SET,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        triggerCollector.trigger(
+          target,
+          ESpecialReservedKey.ITERATE,
+          {
+            type: ECollectType.MAP_SET,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord
+        );
       }
       return set.call(target, key, value);
     },
@@ -400,30 +485,52 @@ export class Domain<S = {}> {
 
       if (proto.constructor === Map || proto.constructor === WeakMap) {
         const oldValue = (proto as MapType).get.call(target, key);
-        triggerCollector.trigger(target, key, {
-          type: ECollectType.MAP_DELETE,
-          beforeUpdate: oldValue,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath,
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          key,
+          {
+            type: ECollectType.MAP_DELETE,
+            beforeUpdate: oldValue,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath,
+            domain: this.constructor.name,
+          }
+        );
 
-        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-          type: ECollectType.MAP_DELETE,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        triggerCollector.trigger(
+          target,
+          ESpecialReservedKey.ITERATE,
+          {
+            type: ECollectType.MAP_DELETE,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord
+        );
       }
       if (proto.constructor === Set || proto.constructor === WeakSet) {
-        triggerCollector.trigger(target, key, {
-          type: ECollectType.SET_DELETE,
-          beforeUpdate: key,
-        }, this.reactorConfigMap[rootKey].isNeedRecord, {
-          keyPath,
-          domain: this.constructor.name
-        });
+        triggerCollector.trigger(
+          target,
+          key,
+          {
+            type: ECollectType.SET_DELETE,
+            beforeUpdate: key,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord,
+          {
+            keyPath,
+            domain: this.constructor.name,
+          }
+        );
 
-        triggerCollector.trigger(target, ESpecialReservedKey.ITERATE, {
-          type: ECollectType.SET_DELETE,
-        }, this.reactorConfigMap[rootKey].isNeedRecord);
+        triggerCollector.trigger(
+          target,
+          ESpecialReservedKey.ITERATE,
+          {
+            type: ECollectType.SET_DELETE,
+          },
+          this.reactorConfigMap[rootKey].isNeedRecord
+        );
       }
 
       return proto.delete.call(target, key);
@@ -453,15 +560,22 @@ export class Domain<S = {}> {
       const firstLevelMaterial = materialCallStack.stack[length - 1] || EMaterialType.DEFAULT;
       invariant(
         firstLevelMaterial.type === EMaterialType.MUTATION ||
-        firstLevelMaterial.type === EMaterialType.UPDATE ||
-        firstLevelMaterial.type === EMaterialType.UNDO ||
-        firstLevelMaterial.type === EMaterialType.REDO,
-        'You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({}).',
+          firstLevelMaterial.type === EMaterialType.UPDATE ||
+          firstLevelMaterial.type === EMaterialType.UNDO ||
+          firstLevelMaterial.type === EMaterialType.REDO,
+        "You cannot update value to observed '@reactor property' directly. Please use mutation or $update({})."
       );
     }
   }
 
-  private dispatch(obj: object, actionName?: string, displayName?: string, forceSaveHistory?: boolean, isNeedRecord?: boolean, immediately?: boolean) {
+  private dispatch(
+    obj: object,
+    actionName?: string,
+    displayName?: string,
+    forceSaveHistory?: boolean,
+    isNeedRecord?: boolean,
+    immediately?: boolean
+  ) {
     const original = function () {
       const keys = Object.keys(obj);
       for (let i = 0, len = keys.length; i < len; i++) {
@@ -497,7 +611,9 @@ interface DomainConfig<R, M, C, A> {
   action?: A;
 }
 
-export function createDomain<R, M, C = {}, A = {}>(domainConfig: DomainConfig<R, M, C, A>) {
+export function createDomain<R extends object, M extends object, C extends object = {}, A extends object = {}>(
+  domainConfig: DomainConfig<R, M, C, A>
+) {
   const { reactor, mutation: domainMutation, computed: domainComputed, action: domainAction } = domainConfig;
   const domain = new Domain<R>();
   const config: ReactorConfig = {
@@ -506,40 +622,42 @@ export function createDomain<R, M, C = {}, A = {}>(domainConfig: DomainConfig<R,
     isNeedRecord: true,
   };
 
-  Object.keys(reactor).forEach((property) => {
+  Object.keys(reactor).forEach(property => {
     const value = reactor[property];
     Object.defineProperty(domain, property, {
       enumerable: true,
       configurable: true,
       get() {
-        const current = (this as Domain);
+        const current = this as Domain;
         return current.propertyGet(property, config);
       },
       set(newVal: any) {
-        const current = (this as Domain);
+        const current = this as Domain;
         current.propertySet(property, newVal, config);
       },
     });
     domain[property] = value;
   });
 
-  Object.keys(domainMutation).forEach((methodKey) => {
+  Object.keys(domainMutation).forEach(methodKey => {
     const original = domainMutation[methodKey];
     const f = mutation(methodKey, bind(original, domain));
     domain[methodKey] = f;
   });
 
-  domainComputed && Object.keys(domainComputed).forEach((property) => {
-    const original = domainComputed[property] as Pick<C, keyof C>;
-    const ref = computed(bind(original, domain));
-    domain[property] = ref;
-  });
+  domainComputed &&
+    Object.keys(domainComputed).forEach(property => {
+      const original = domainComputed[property] as Pick<C, keyof C>;
+      const ref = computed(bind(original, domain));
+      domain[property] = ref;
+    });
 
-  domainAction && Object.keys(domainAction).forEach((methodKey) => {
-    const original = domainAction[methodKey];
-    const f = action(methodKey, bind(original, domain));
-    domain[methodKey] = f;
-  });
+  domainAction &&
+    Object.keys(domainAction).forEach(methodKey => {
+      const original = domainAction[methodKey];
+      const f = action(methodKey, bind(original, domain));
+      domain[methodKey] = f;
+    });
 
   return domain;
 }
