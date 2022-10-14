@@ -21,6 +21,7 @@ interface IProps {
   alpha?: number;
   backgroundImage?: string;
   fit?: IFitStyle;
+  zIndex?: number;
 }
 
 /** 正方形 */
@@ -71,7 +72,8 @@ export default class Rect2d extends Mesh2D<IProps> {
   }
 
   updateMaterial() {
-    //
+    const { zIndex = 0 } = this.props;
+    this.view.zIndex = zIndex;
   }
 
   updatePosition() {

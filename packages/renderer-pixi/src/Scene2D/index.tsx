@@ -86,6 +86,7 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   createView() {
     const view = new PIXI.Container();
     view.name = Scene2DSymbol.toString();
+    view.sortableChildren = true;
     return view;
   }
 

@@ -1,12 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
-import { fail } from '@turbox3d/shared';
+import { fail, Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
 
 interface IProps {
   x?: number;
   y?: number;
+  position?: Vec2;
   width: number;
   height: number;
   /**
@@ -24,11 +25,12 @@ interface IProps {
   fit?: IFitStyle;
   padding?: string;
   margin?: string;
+  zIndex?: number;
 }
 
 /** 正方形 */
 export default class Container2d extends Mesh2D<IProps> {
-  protected view = new PIXI.Container();
+  protected view: PIXI.Container;
   protected reactivePipeLine = [
     this.updateGeometry,
     this.updateMaterial,
@@ -41,6 +43,9 @@ export default class Container2d extends Mesh2D<IProps> {
   private mask = new PIXI.Graphics();
 
   componentDidMount() {
+    this.g.zIndex = -1;
+    this.s.zIndex = -1;
+    this.mask.zIndex = -1;
     this.view.addChild(this.g);
     this.view.addChild(this.s);
     this.view.addChild(this.mask);
@@ -139,11 +144,16 @@ export default class Container2d extends Mesh2D<IProps> {
   }
 
   updateMaterial() {
-    //
+    const { zIndex = 0 } = this.props;
+    this.view.zIndex = zIndex;
   }
 
   updatePosition() {
-    //
+    const { position } = this.props;
+    if (position) {
+      this.view.position.x = position.x;
+      this.view.position.y = position.y;
+    }
   }
 
   updateRotation() {

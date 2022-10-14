@@ -25,3 +25,4 @@ export { default as AngleDimension } from './angle-dimension/index';
 export { default as Axis2d } from './axis2d/index';
 export { default as Arrow2d } from './arrow2d/index';
 export { default as Gizmo2d } from './gizmo2d/index';
+export { default as Text2d } from './text2d/index';
