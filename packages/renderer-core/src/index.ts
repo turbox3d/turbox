@@ -1,6 +1,6 @@
 import { init, registerExternalBatchUpdate } from '@turbox3d/reactivity';
 import { Component, PureComponent, ComponentProps } from './component';
-import { Element, VirtualNode, render, batchUpdate, ElementSchema, createElement } from './render';
+import { Element, VirtualNode, render, batchUpdate, ElementSchema, g } from './render';
 import { IdCustomType } from './common';
 import { Reactive } from './reactive';
 import { BaseMesh } from './mesh';
@@ -19,7 +19,7 @@ export {
   ElementSchema,
   VirtualNode,
   render,
-  createElement,
+  g,
   batchUpdate,
   Reactive,
   BaseMesh,

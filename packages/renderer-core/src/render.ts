@@ -290,7 +290,7 @@ export function render(elements: Element<any>[]) {
   }
 }
 
-export function createElement<P extends object>(type: IConstructorOf<Component<P>>, props?: ComponentProps<P>): ElementSchema<P> {
+export function g<P extends object>(type: IConstructorOf<Component<P>>, props?: ComponentProps<P>): ElementSchema<P> {
   return {
     type,
     props,

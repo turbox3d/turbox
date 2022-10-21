@@ -1,4 +1,4 @@
-import { Reactive, Component, createElement } from '@turbox3d/turbox';
+import { Reactive, Component, g } from '@turbox3d/turbox';
 import { Product2DViewEntity } from './Product2D';
 import { ProductEntity } from '../../../models/entity/product';
 import { ldeStore } from '../../../models/index';
@@ -13,7 +13,7 @@ export class TempWorld extends Component {
     SceneUtil.get2DRootView = this.context.getTools().getRootView;
     if (ldeStore.document.skewModel) {
       return [
-        createElement(Product2DViewEntity, {
+        g(Product2DViewEntity, {
           model: ldeStore.document.skewModel as ProductEntity,
           id: ldeStore.document.skewModel.id,
           type: Product2DSymbol,

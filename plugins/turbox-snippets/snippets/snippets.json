@@ -190,7 +190,7 @@
   "Create Reactive Interactive Mesh3D": {
     "prefix": "tcrim3",
     "body": [
-      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox';",
+      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
@@ -212,7 +212,7 @@
       "    const { model } = this.props;",
       "    const views: Element[] = [];",
       "    views.push(",
-      "      createElement(${3:ExampleMesh3D}, {",
+      "      g(${3:ExampleMesh3D}, {",
       "        model,",
       "      }),",
       "    );",
@@ -245,7 +245,7 @@
   "Create Reactive Interactive Mesh2D": {
     "prefix": "tcrim2",
     "body": [
-      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, createElement } from '@turbox3d/turbox';",
+      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
       "",
       "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
       "  model: EntityObject;",
@@ -267,7 +267,7 @@
       "    const { model } = this.props;",
       "    const views: Element[] = [];",
       "    views.push(",
-      "      createElement(${3:ExampleMesh2D}, {",
+      "      g(${3:ExampleMesh2D}, {",
       "        model,",
       "      }),",
       "    );",
@@ -296,13 +296,13 @@
   "Create Reactive Graphic Component": {
     "prefix": "tcrgc",
     "body": [
-      "import { Reactive, Component, createElement } from '@turbox3d/turbox';",
+      "import { Reactive, Component, g } from '@turbox3d/turbox';",
       "",
       "@Reactive",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Component} extends Component {",
       "  render() {",
       "    return [",
-      "      createElement(${3:ExampleComponent}, {",
+      "      g(${3:ExampleComponent}, {",
       "        ${4:p1}: ${5:v1},",
       "      }),",
       "    ];",
@@ -365,7 +365,7 @@
   "Create ViewEntity Element": {
     "prefix": "tcve",
     "body": [
-      "createElement(${1:ProductViewEntity}, {",
+      "g(${1:ProductViewEntity}, {",
       "  type: ${2:ProductSymbol},",
       "  id: ${3:entity.id},",
       "  model: ${4:entity},",
@@ -377,7 +377,7 @@
   "Create Mesh Element": {
     "prefix": "tcme",
     "body": [
-      "createElement(${1:Rect3d}, {",
+      "g(${1:Rect3d}, {",
       "  ${2:width}: ${3:hotArea},",
       "  ${4:height}: ${5:hotArea},",
       "}),"

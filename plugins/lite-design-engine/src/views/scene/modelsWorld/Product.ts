@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable react/no-array-index-key */
-import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element, createElement } from '@turbox3d/turbox';
+import { IViewEntity, MathUtils, Mesh3D, Reactive, ViewEntity3D, reactive, Reaction, Vector3, Element, g } from '@turbox3d/turbox';
 import * as THREE from 'three';
 import { appCommandBox } from '../../../commands/index';
 import { WireFrame, FatLine, ClipMask } from '../helper/index';
@@ -71,7 +71,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
       const dps = (
         Array.from(model.children).filter(child => EntityCategory.isDeletePoint(child)) as DeletePointEntity[]
       ).map(e =>
-        createElement(DeletePointViewEntity, {
+        g(DeletePointViewEntity, {
           id: e.id,
           type: DeletePointSymbol,
           model: e,
@@ -82,14 +82,14 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
       const aps = (
         Array.from(model.children).filter(child => EntityCategory.isAdjustPoint(child)) as AdjustPointEntity[]
       ).map(e =>
-        createElement(AdjustPointViewEntity, {
+        g(AdjustPointViewEntity, {
           id: e.id,
           type: AdjustPointSymbol,
           model: e,
           key: e.id,
         })
       );
-      views.push(createElement(WireFrame, {
+      views.push(g(WireFrame, {
         model,
         renderOrder: RenderOrder.CONTROL_POINT,
       }), ...dps, ...aps);
@@ -123,7 +123,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
           EntityCategory.isClipPoint(child)
         ) as ClipPointEntity[]
       ).map(e =>
-        createElement(ClipPointViewEntity, {
+        g(ClipPointViewEntity, {
           id: e.id,
           type: ClipPointSymbol,
           model: e,
@@ -132,7 +132,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
       );
       views.push(
         ...cps,
-        createElement(FatLine, {
+        g(FatLine, {
           dashed: true,
           dashScale: 0.2,
           looped: true,
@@ -149,7 +149,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
           renderOrder: RenderOrder.CONTROL_POINT,
           key: 1,
         }),
-        createElement(ClipMask, {
+        g(ClipMask, {
           model,
           points: Array.from(ldeStore.document.clipModel.children).filter(child =>
             EntityCategory.isClipPoint(child)
@@ -160,7 +160,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
     }
     if (model.snapped) {
       views.push(
-        createElement(FatLine, {
+        g(FatLine, {
           dashed: true,
           position: new Vector3(0, 0, model.position.z + 1),
           rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
@@ -168,7 +168,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
           renderOrder: RenderOrder.CONTROL_POINT,
           key: 2,
         }),
-        createElement(FatLine, {
+        g(FatLine, {
           dashed: true,
           position: new Vector3(0, 0, model.position.z + 1),
           rotation: new Vector3(0, 0, -model.rotation.z * MathUtils.DEG2RAD),
@@ -179,7 +179,7 @@ export class ProductViewEntity extends ViewEntity3D<IProps> {
       );
     }
     return [
-      createElement(Product, {
+      g(Product, {
         model,
       }),
       ...views,

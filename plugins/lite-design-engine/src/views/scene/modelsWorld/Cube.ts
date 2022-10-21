@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, createElement } from '@turbox3d/turbox';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, Element, g } from '@turbox3d/turbox';
 import { appCommandBox } from '../../../commands/index';
 import { Cube, WireFrame } from '../helper/index';
 import { CubeEntity } from '../../../models/entity/cube';
@@ -25,13 +25,13 @@ export class CubeViewEntity extends ViewEntity3D<IProps> {
     const views: Element[] = [];
     if (isSelected) {
       views.push(
-        createElement(WireFrame, {
+        g(WireFrame, {
           model,
         }),
       );
     }
     views.push(
-      createElement(Cube, {
+      g(Cube, {
         model,
       })
     );

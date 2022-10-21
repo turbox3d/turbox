@@ -1,4 +1,4 @@
-import { Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
+import { Reactive, ViewEntity3D, MathUtils, g } from '@turbox3d/turbox';
 import { Circle } from '../helper/index';
 import { RotatePointEntity } from '../../../models/entity/rotatePoint';
 import { RenderOrder } from '../../../consts/scene';
@@ -17,7 +17,7 @@ export class RotatePointViewEntity extends ViewEntity3D<IRotatePointProps> {
 
   render() {
     return [
-      createElement(Circle, {
+      g(Circle, {
         radius: this.props.model.radius,
         imgUrl: 'https://img.alicdn.com/imgextra/i3/O1CN01Ekra8c1aK1gwa57wE_!!6000000003310-2-tps-200-200.png?x-oss-process=image/resize,w_60/format,webp',
         renderOrder: RenderOrder.CONTROL_POINT,

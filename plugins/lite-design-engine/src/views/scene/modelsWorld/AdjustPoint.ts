@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, g } from '@turbox3d/turbox';
 import { Circle, Rect3d, IRect3dProps, ICircleProps } from '../helper/index';
 import { AdjustPointEntity } from '../../../models/entity/AdjustPoint';
 import { RenderOrder } from '../../../consts/scene';
@@ -21,13 +21,13 @@ export class AdjustPointViewEntity extends ViewEntity3D<IAdjustPointProps> {
       Math.min(this.props.model.parent!.size.x / 3, this.props.model.parent!.size.y / 3)
     );
     return [
-      createElement<IRect3dProps>(Rect3d, {
+      g<IRect3dProps>(Rect3d, {
         width: hotArea,
         height: hotArea,
         opacity: 0,
         renderOrder: RenderOrder.CONTROL_POINT + 1,
       }),
-      createElement<ICircleProps>(Circle, {
+      g<ICircleProps>(Circle, {
         radius: this.props.model.radius,
         imgUrl: 'https://img.alicdn.com/imgextra/i4/O1CN01maNEP21pAbn3qjNFa_!!6000000005320-55-tps-91-90.svg?x-oss-process=image/resize,w_60',
         imgScale: { x: this.props.model.radius * 3 - 8, y: this.props.model.radius * 3 - 8, z: 1 },

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as PIXI from 'pixi.js';
 import * as THREE from 'three';
-import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, createElement, Element } from '@turbox3d/turbox';
+import { Reactive, Scene3D, Scene2D, MountSystem, reactive, Reaction, Component, render, ReactiveReact, g, Element } from '@turbox3d/turbox';
 import { FPSMonitorComponent } from '@turbox3d/turbox-dev-tool';
 import { appCommandBox } from '../../commands/index';
 import { OrthographicCamera, PerspectiveCamera } from './camera/index';
@@ -25,7 +25,7 @@ class Shadow extends Component {
     //   </>
     // );
     return [
-      !background && createElement(Rect3d, {
+      !background && g(Rect3d, {
         color: 0xFFFFFF,
         width,
         height,
@@ -81,7 +81,7 @@ class GraphicWorld extends Component<{
   render() {
     const { maxFPS, scene2dChildren, scene3dChildren, mode } = this.props;
     return [
-      createElement(Scene2D, {
+      g(Scene2D, {
         id: 'scene2d',
         draggable: false,
         scalable: false,
@@ -96,11 +96,11 @@ class GraphicWorld extends Component<{
         resolution: ldeStore.scene.resolution,
         renderFlag: ldeStore.scene.renderFlag2d,
         children: [
-          createElement(TempWorld),
+          g(TempWorld),
           ...scene2dChildren
         ],
       }),
-      createElement(Scene3D, {
+      g(Scene3D, {
         id: 'scene3d',
         container: 'scene3d',
         backgroundColor: 0xF6F6F6,
@@ -113,11 +113,11 @@ class GraphicWorld extends Component<{
         resolution: ldeStore.scene.resolution,
         renderFlag: ldeStore.scene.renderFlag3d,
         children: [
-          mode === 'orthographic' ? createElement(OrthographicCamera) : createElement(PerspectiveCamera),
-          createElement(ModelsWorld),
-          createElement(Shadow),
-          mode === 'perspective' && createElement(DirectionalLight),
-          mode === 'perspective' && createElement(AmbientLight),
+          mode === 'orthographic' ? g(OrthographicCamera) : g(PerspectiveCamera),
+          g(ModelsWorld),
+          g(Shadow),
+          mode === 'perspective' && g(DirectionalLight),
+          mode === 'perspective' && g(AmbientLight),
           ...scene3dChildren,
         ],
       })
@@ -150,7 +150,7 @@ export class MainScene extends React.Component<{
       }
     });
     render([
-      createElement(GraphicWorld, {
+      g(GraphicWorld, {
         scene2dChildren,
         scene3dChildren,
         maxFPS,

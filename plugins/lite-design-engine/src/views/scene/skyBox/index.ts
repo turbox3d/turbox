@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Reactive, EntityObject, ViewEntity3D, Mesh3D, MathUtils, createElement } from '@turbox3d/turbox';
+import { Reactive, EntityObject, ViewEntity3D, Mesh3D, MathUtils, g } from '@turbox3d/turbox';
 import { SkyBoxEntity } from '../../../models/entity/skyBox';
 import { RenderOrder } from '../../../consts/scene';
 
@@ -43,7 +43,7 @@ export class SkyBoxViewEntity extends ViewEntity3D<ISkyBoxProps> {
 
   render() {
     return [
-      createElement(SkyBox, {
+      g(SkyBox, {
         model: this.props.model,
         color: 0xbf975b,
       }),

@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, createElement } from '@turbox3d/turbox';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, g } from '@turbox3d/turbox';
 import { Circle, Rect3d } from '../helper/index';
 import { ClipPointEntity } from '../../../models/entity/clipPoint';
 import { RenderOrder } from '../../../consts/scene';
@@ -19,19 +19,19 @@ export class ClipPointViewEntity extends ViewEntity3D<IClipPointProps> {
   render() {
     const hotArea = ldeStore.scene.deviceType === 'iPad' ? this.props.model.radius * 6 : this.props.model.radius * 3;
     return [
-      createElement(Rect3d, {
+      g(Rect3d, {
         width: hotArea,
         height: hotArea,
         opacity: 0,
         renderOrder: RenderOrder.CONTROL_POINT + 1,
       }),
-      createElement(Circle, {
+      g(Circle, {
         radius: this.props.model.radius - 5,
         color: 0xffffff,
         renderOrder: RenderOrder.CONTROL_POINT,
         key: 1,
       }),
-      createElement(Circle, {
+      g(Circle, {
         radius: this.props.model.radius,
         color: 0xbf975b,
         renderOrder: RenderOrder.CONTROL_POINT,

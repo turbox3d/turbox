@@ -1,4 +1,4 @@
-import { IViewEntity, Reactive, ViewEntity3D, MathUtils, EntityObject, Element, createElement } from '@turbox3d/turbox';
+import { IViewEntity, Reactive, ViewEntity3D, MathUtils, EntityObject, Element, g } from '@turbox3d/turbox';
 import { AssemblyEntity } from '../../../models/entity/assembly';
 import { WireFrame } from '../helper/index';
 import { appCommandBox } from '../../../commands/index';
@@ -25,7 +25,7 @@ export class AssemblyViewEntity extends ViewEntity3D<IAssemblyProps> {
     if (isSelected) {
       return [
         ...views,
-        createElement(WireFrame, {
+        g(WireFrame, {
           model,
         }),
       ];

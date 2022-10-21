@@ -1,4 +1,4 @@
-import { Mesh2D, ViewEntity2D, MathUtils, Reactive, Rect2d, Polygon, createElement } from '@turbox3d/turbox';
+import { Mesh2D, ViewEntity2D, MathUtils, Reactive, Rect2d, Polygon, g } from '@turbox3d/turbox';
 import * as PIXI from 'pixi.js';
 import * as PIXIProjection from 'pixi-projection';
 import { ProductEntity } from '../../../models/entity/product';
@@ -99,7 +99,7 @@ class SkewPointViewEntity extends ViewEntity2D<ISkewPointViewEntityProps> {
     const alpha = ldeStore.scene.hideSkewPoint ? 0 : 1;
     const hotArea = ldeStore.scene.deviceType === 'iPad' ? this.props.model.radius * 6 : this.props.model.radius * 3;
     return [
-      createElement(Circle2d, {
+      g(Circle2d, {
         radius: model.radius - 2.5,
         lineWidth: 5,
         lineColor: 0xbf975b,
@@ -107,7 +107,7 @@ class SkewPointViewEntity extends ViewEntity2D<ISkewPointViewEntityProps> {
         fillColor: 0xffffff,
         fillAlpha: alpha,
       }),
-      createElement(Rect2d, {
+      g(Rect2d, {
         width: hotArea,
         height: hotArea,
         alpha: 0,
@@ -184,17 +184,17 @@ export class Product2DViewEntity extends ViewEntity2D<IProductViewEntityProps> {
     const { model } = this.props;
     const skewPoints = ldeStore.document.skewModel ? [...ldeStore.document.skewModel.children.values()].filter(c => EntityCategory.isSkewPoint(c)).map((s) => s.position) : [];
     const list = (Array.from(model.children).filter(child => EntityCategory.isSkewPoint(child)) as SkewPointEntity[])
-      .map((e) => createElement(SkewPointViewEntity, {
+      .map((e) => g(SkewPointViewEntity, {
         id: e.id,
         type: SkewPointSymbol,
         model: e,
         key: e.id,
       }));
     return [
-      createElement(ProductMesh2D, {
+      g(ProductMesh2D, {
         model,
       }),
-      skewPoints.length && !ldeStore.scene.hideSkewPoint && createElement<any>(Polygon, {
+      skewPoints.length && !ldeStore.scene.hideSkewPoint && g<any>(Polygon, {
         path: skewPoints,
         zIndex: 1,
         lineColor: 0xBF975B,

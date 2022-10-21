@@ -1946,7 +1946,7 @@ export class FrontView extends Component {
     const viewport = doorWindowStore.scene.viewStyles.front;
     const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
     return [
-      createElement(Scene2D, {
+      g(Scene2D, { // g() 是 graphicscript 的简称，类似 vue 中的 h() 函数，意思是用于生成图形对象的 js 声明式脚本
         id: 'front-scene-2d'
         commandBox: appCommandBox,
         container: SCENE_2D,
@@ -1958,10 +1958,10 @@ export class FrontView extends Component {
         backgroundColor: 0xE6E9EB,
         resizeTo: SCENE_2D,
         children: [
-          createElement(Axis2d, {
+          g(Axis2d, {
             type: 'front',
           }),
-          createElement(DoorWindowView, {
+          g(DoorWindowView, {
             model,
             // 可交互的 mesh 组件必须传 id 和 type 作为 props，或者在组件内部重写 getViewEntity 方法，下面的例子有，否则会抛出异常
             id: model.id,

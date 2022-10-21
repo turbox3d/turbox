@@ -1,4 +1,4 @@
-import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element, createElement } from '@turbox3d/turbox';
+import { Reactive, Vec3, EntityObject, Vec2, CoordinateType, Component, Element, g } from '@turbox3d/turbox';
 import { ldeStore } from '../../../models/index';
 import { ProductViewEntity } from './Product';
 import { EntityCategory } from '../../../utils/category';
@@ -59,7 +59,7 @@ export class ModelsWorld extends Component {
     [...entities].forEach((entity) => {
       if (EntityCategory.isSkyBox(entity)) {
         views.push(
-          createElement(SkyBoxViewEntity, {
+          g(SkyBoxViewEntity, {
             type: SkyBoxSymbol,
             id: entity.id,
             model: entity,
@@ -69,7 +69,7 @@ export class ModelsWorld extends Component {
       }
       if (EntityCategory.isAssembly(entity)) {
         views.push(
-          createElement(AssemblyViewEntity, {
+          g(AssemblyViewEntity, {
             type: AssemblySymbol,
             id: entity.id,
             model: entity,
@@ -80,7 +80,7 @@ export class ModelsWorld extends Component {
       }
       if (EntityCategory.isProduct(entity)) {
         views.push(
-          createElement(ProductViewEntity, {
+          g(ProductViewEntity, {
             type: ProductSymbol,
             id: entity.id,
             model: entity,
@@ -89,7 +89,7 @@ export class ModelsWorld extends Component {
         );
       } else if (EntityCategory.isBackground(entity)) {
         views.push(
-          createElement(BackgroundViewEntity, {
+          g(BackgroundViewEntity, {
             type: BackgroundSymbol,
             id: entity.id,
             model: entity,
@@ -98,7 +98,7 @@ export class ModelsWorld extends Component {
         );
       } else if (EntityCategory.isCube(entity)) {
         views.push(
-          createElement(CubeViewEntity, {
+          g(CubeViewEntity, {
             type: CubeSymbol,
             id: entity.id,
             model: entity,
