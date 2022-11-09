@@ -1,7 +1,7 @@
 import { getRelativePositionFromEvent, pointInRect, Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
 import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, IGesturesExtra, IExtra } from './type';
-import { isMouseMoved, MoveTolerance } from './utils';
+import { isMouseMoved } from './utils';
 import { IViewportInfo } from '../type';
 
 /**
@@ -9,6 +9,7 @@ import { IViewportInfo } from '../type';
  * 将目标画布上的鼠标事件转化为场景之间，诸如：onClick, onDrag, onCarriage, onHover ...
  */
 export class InteractiveListener {
+  static moveTolerance = 4;
   static touchableDevice = 'ontouchstart' in window;
   static create(canvas: HTMLCanvasElement, viewport?: IViewportInfo, coordinateType?: string) {
     return new InteractiveListener(canvas, viewport, coordinateType);
@@ -253,7 +254,7 @@ export class InteractiveListener {
       }
     } else if (
       this.mouseDealType === MouseDealType.Drag ||
-      (this.mouseDownInfo && isMouseMoved(this.mouseDownInfo, event, MoveTolerance))
+      (this.mouseDownInfo && isMouseMoved(this.mouseDownInfo, event, InteractiveListener.moveTolerance))
     ) {
       window.clearTimeout(this.pressTimer);
       this.mouseDealType = MouseDealType.Drag;
