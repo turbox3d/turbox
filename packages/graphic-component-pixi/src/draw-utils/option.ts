@@ -7,6 +7,8 @@ class GraphicOption {
   lineWidth = 0;
   lineColor = 0x0;
   lineAlpha = 1;
+  alignment = 0.5;
+  native = false;
   // 填充样式
   fillColor = 0x0;
   fillAlpha = 1;
@@ -32,11 +34,13 @@ export function setCommonOption(graphic: PIXI.Graphics, option?: IGraphicOption)
     lineWidth = defaultOption.lineWidth,
     lineColor = defaultOption.lineColor,
     lineAlpha = defaultOption.lineAlpha,
+    alignment = defaultOption.alignment,
+    native = defaultOption.native,
     alpha = defaultOption.alpha,
   } = parseGraphicOption(option);
   graphic.alpha = alpha;
   graphic.beginFill(fillColor, fillAlpha);
-  graphic.lineStyle(lineWidth, lineColor, lineAlpha, 0);
+  graphic.lineStyle(lineWidth, lineColor, lineAlpha, alignment, native);
 }
 
 class FillTextureOption {
