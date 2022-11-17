@@ -15,7 +15,7 @@ turbox 框架包含几个子框架/库：
 * event-manager -> 事件管理库，处理图形对象基础事件与交互的库
 * graphic-component-pixi/graphic-component-three -> 基础图形组件库，2d for pixi、3d for three 常用的图形控件库
 * math -> 数学库，主要是一些常用几何算法和容差的支持
-* reactivity/reactivity-react -> 响应式数据流框架（有框架无关的版本及 for react 的版本）
+* reactivity/reactivity-react -> 响应式数据流事务框架（有框架无关的版本及 for react 的版本）
 * renderer-core/renderer-pixi/renderer-three -> 视图渲染库，处理视图层声明式、组件化渲染对象的库（有引擎无关的核心部分及基于核心实现基础常用能力的 2d for pixi、3d for three 的版本）
 * shared -> 共享工具库，仅仅给框架开发内部使用
 * turbox/turbox2d/turbox3d -> 整合的主包，turbox是2D/3D混合应用场景的主包，turbox2d是2D应用场景的主包，turbox3d是3D应用场景的主包
@@ -31,16 +31,28 @@ turbox 框架包含几个子框架/库：
 
 ## 谁在使用
 <div style="display: flex; align-items: center;">
-  <img width="92" height="38" src="https://img.alicdn.com/imgextra/i2/O1CN01JJDzEQ1JXuD4kQApO_!!6000000001039-2-tps-184-76.png" />
+  <img style="border-radius: 10px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tiktok.png" />
+  <img style="border-radius: 10px; margin-left: 30px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/taobao-icon.jpeg" />
+  <img style="border-radius: 10px; margin-left: 30px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tmall.jpeg" />
   <img style="margin-left: 30px;" width="42" height="42" src="https://img.alicdn.com/imgextra/i3/O1CN01CfwNBY1ZuNUksgIiC_!!6000000003254-2-tps-160-160.png" />
   <img style="margin-left: 30px;" width="42" height="42" src="https://img.alicdn.com/imgextra/i2/O1CN01Yc7aDt1NmL9kqPxEW_!!6000000001612-2-tps-144-144.png" />
 </div>
 
-## 响应式数据流事务框架
-### 架构图
-![framework](https://img.alicdn.com/tfs/TB1fRl5g79l0K4jSZFKXXXFjpXa-2231-1777.png)
+## 使用说明
 
-### 快速上手
+### 安装
+```
+$ npm install @turbox3d/turbox --save
+
+$ yarn add @turbox3d/turbox
+```
+
+> 本框架有依赖装饰器 decorator，需要把 tsconfig 对应的配置开启。如果是 js 编译场景，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
+
+### 兼容性
+**turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
+
+## 快速上手
 一个最简单和典型的例子：
 ```js
 /** 创建一个 Line 的响应式数据模型 */
@@ -223,21 +235,8 @@ export const Container = () => {
 };
 ```
 
-### 使用说明
-
-#### 安装
-```
-$ npm install @turbox3d/turbox --save
-
-$ yarn add @turbox3d/turbox
-```
-
-> 本框架有依赖装饰器 decorator，需要把 tsconfig 对应的配置开启。如果是 js 编译场景，你需要安装 transform-decorators-legacy, transform-class-properties, babel7 的话用 @babel/plugin-proposal-decorators
-
-#### 兼容性
-**turbox** 支持大部分现代浏览器，由于使用了 Proxy API，在 IE 和一些低版本浏览器下不支持，还使用了 Reflect、Symbol、Promise、Map、Set API，如需兼容需要自行引入 polyfill
-
-### API & 概念
+## 基础原理
+### 响应式数据流事务框架
 #### reactor
 在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，这样框架就能代理掉属性的 getter、setter 等操作，如下代码所示：
 ```js
@@ -842,15 +841,15 @@ action.redo(keepHistory = false);
 
 所以我举的例子其实也比较简单，比如同时有三个异步事务在执行，这时候有这样一个需求，当满足某个条件的时候，我需要抛弃掉指定的前面几次事务，只保留最后一次，这就要求框架需要提供一个事务池，让使用者可以灵活控制这些事务。如下图：
 
-![Image](https://pic4.zhimg.com/80/v2-cb6aee237e90a74cda9f3082e12f485a.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-cb6aee237e90a74cda9f3082e12f485a.png" />
 
 不仅要暂停前面两次事务往后执行，也要回退掉已经发生的变化，不然会导致状态错乱：
 
-![Image](https://pic4.zhimg.com/80/v2-caa2fc7e874b7741f2033b0b62335e74.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-caa2fc7e874b7741f2033b0b62335e74.png" />
 
 等到全部完成清理掉事务池中的前面两次事务：
 
-![Image](https://pic4.zhimg.com/80/v2-07f73c81a830a3fbc51552d870883698.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-07f73c81a830a3fbc51552d870883698.png" />
 
 当然这只是比较简单的例子，实际场景中会有更多应用
 
@@ -1324,11 +1323,11 @@ let ctx = {
 
 建立组件树实例 id 和对应依赖的关系，跟执行栈保持一致：
 
-![Image](https://pic4.zhimg.com/80/v2-3fdc61967e0ada486deed870c3b05d54.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-3fdc61967e0ada486deed870c3b05d54.png" />
 
 依赖树的数据结构：
 
-![Image](https://pic4.zhimg.com/80/v2-72b85933305c1987c5d7b1b66f77718d.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-72b85933305c1987c5d7b1b66f77718d.png" />
 
 触发依赖只需要去依赖树中找到对应的 reactionId，即可触发对应的重新渲染或回调
 
@@ -1336,24 +1335,24 @@ let ctx = {
 
 第一次我们都标记为 latest：
 
-![Image](https://pic4.zhimg.com/80/v2-56180b3e4825497f97bb6c989ba023c6.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-56180b3e4825497f97bb6c989ba023c6.png" />
 
 收集后我们把依赖都标记为 observed：
 
-![Image](https://pic4.zhimg.com/80/v2-59e0adf7d9ce1b25f4eb589aedd3e6f2.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-59e0adf7d9ce1b25f4eb589aedd3e6f2.png" />
 
 再次更新后，把这次依赖到的属性标记为 latest：
 
-![Image](https://pic4.zhimg.com/80/v2-70b7df24d78d952554ac5e8e9780b6d1.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-70b7df24d78d952554ac5e8e9780b6d1.png" />
 
 那么在这次收集完成后，我们只要把 latest 置为 observed，把 observed 的置为 not observed 的，然后把 not observed 的依赖清除掉即可：
 
-![Image](https://pic4.zhimg.com/80/v2-968ae78cc27e91ad594d9bd151e67c03.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-968ae78cc27e91ad594d9bd151e67c03.png" />
 
 #### 数据更新原理
 虽然是响应式数据流，但是并不希望那么灵活，在实际的业务开发中，我们依然还是需要类似 action 或者说指令的概念，之前也有提到为什么需要包在 mutation 里做更新，因为底层我仍然需要有撤销恢复、渲染时机的控制、中间件等机制，所以不管你怎么响应式，我底层就是个 store.dispatch 只不过那肯定是要比 redux 复杂的多，才能实现这些能力，流程图如下：
 
-![Image](https://pic4.zhimg.com/80/v2-541564db26c835c43c16c323e78d8dc8.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-541564db26c835c43c16c323e78d8dc8.png" />
 
 这里简单提一下副作用这个概念，这个概念应该是 redux 提出来的，有这个概念的原因是一次数据的 snapshot 对应一个视图状态，当一次 action 操作产生了两次或多次对应的视图状态，则被认为是副作用，通常发生在异步场景。而在 turbox reactivity 中，所谓的副作用其实用个 async 函数就能体现，await 之前比如是一次数据更新，await 之后是另一次，甚至都不应该叫做副作用。
 
@@ -1453,83 +1452,9 @@ static undoHandler(history: History) {
 
 最后附上一张简单的图：
 
-![Image](https://pic4.zhimg.com/80/v2-cdc19140bdcc1cd3190743ee22aec6e3.png)
+<img width="700" src="https://pic4.zhimg.com/80/v2-cdc19140bdcc1cd3190743ee22aec6e3.png" />
 
-### 最佳实践
-图形业务，以单插件为例：
-```
-├── src
-│   ├── api // 接口层，可以做一些防腐
-│   ├── assets // 文件资产，全局样式，mixin 等
-│   │   ├── images
-│   │   └── styles
-|   ├── commands // 指令层，全局业务指令或可复用指令
-│   ├── components // 插件内部的公共组件
-│   │   ├── 2D
-│   │   ├── 3D
-│   │   └── web
-│   ├── config // 全局配置文件，包括 axios 和主题配置等
-│   │   ├── axios
-│   │   └── theme
-│   ├── const // 存放一些常量和枚举
-│   ├── helpers // 帮助函数，一些通用的函数
-│   ├── models // 数据层，里面的结构可以自己设计
-│   │   ├── domain
-│   │   │   ├── document
-│   │   │   ├── scene
-│   │   └── entity
-|   |   │   ├── product
-│   │   │   ├── background
-│   ├── permission // 权限点相关
-│   ├── services // 服务层，当前插件对外暴露的方法
-│   │   ├── common
-│   │   └── search
-│   ├── types // 全局声明、ts 常用自定义类型
-│   ├── utils // 工具函数，纯函数，可写单测的
-│   │   └── __tests__
-│   └── views // 视图层
-│   │   ├── FunctionPanel
-│   │   ├── Scene
-│   │   └── TopBar
-│   └── plugin.ts // 插件入口文件
-```
-web 业务：
-```
-├── @domain // 领域模型层，只关注当前领域模型的操作和职责，可能有互相依赖
-│   ├── column.js
-│   └── tag.js
-├── @api // api 防腐层
-│   └── index.js
-├── @components // 展示型纯组件或自己维护状态的组件
-│   └── design-column
-│       ├── index.jsx
-│       └── index.scss
-└── @blocks // 区块组件，包含状态管理业务逻辑的业务组件
-    └── live-list
-        ├── index.jsx
-        └── index.scss
-├── @presenter // 处理呈现层，可以向上组合、调用 domain 层，一般是和视图模块一一对应的关系，描述每个模块容器组件触发的行为过程以及一些处理
-│   └── list.js
-│   └── head.js
-├── modules // 模块
-│   └── list // 列表模块
-│   │   ├── index.jsx
-│   │   └── index.scss
-│   └── head // 头部模块
-│       ├── index.jsx
-│       └── index.scss
-├── Layout.jsx // 最外层的根布局组件，组装各种模块拼合页面
-├── README.md
-├── entry.js // 入口文件，挂载 Layout 到 dom 上以及做一些初始化操作
-├── layout.scss
-├── page.json
-└── tpl.pug
-```
-
-### 如何快速生成 turbox API？
-可以在 vscode 插件商店搜索 turbox，下载 turbox snippets 插件，通过一些简单的指令即可快速生成 API，提升开发效率
-
-### 注意事项
+#### 注意事项
 避免死循环写法
 * 尽量不要在 render 里面触发 mutation，请放到生命周期里
 * 尽量不要在 reactive 里面触发 mutation，除非你能保证不会死循环（未改变值被框架拦下来）
@@ -1561,40 +1486,40 @@ class component 的表现是：
 
 function component 并不会等 useEffect 执行，先完成 batchUpdate 再执行 useEffect 逻辑，而 class component 会等生命周期里面的逻辑都执行完，才算执行完这次 batchUpdate
 
-### 框架特性对比
+#### 框架特性对比
 以下简单介绍几个业界比较流行的框架和 **turbox** 框架，让不了解状态管理的童鞋可以快速找到自己适合的框架。
 
-#### react-redux
+##### react-redux
 **react-redux** 是比较经典的状态管理框架，最优秀的地方在于可扩展性和可预测性，个人使用感受来说适合一些复杂稳定的业务，并且还是比较考验架构设计的，**redux**（以下代指 **react-redux**） 相对来说还是给了开发者比较多折腾的空间，核心代码不多，扩展能力强，但直接裸用 **redux** 开发链路较长，心智负担较多，效率不算很高。
 
 [如何评价数据流管理框架 redux？](https://www.zhihu.com/question/38591713)
 
-#### react-redux 架构图
-![redux](https://qhstaticssl.kujiale.com/as/ddae6a4d54ba1e65b5833508fd59ff5c/redux.png)
+##### react-redux 架构图
+<img width="700" src="https://qhstaticssl.kujiale.com/as/ddae6a4d54ba1e65b5833508fd59ff5c/redux.png" />
 
-#### dva
+##### dva
 **dva** 是基于 **redux** 的状态管理框架，但它不仅仅是个状态管理框架，还捆绑了 cli、router、saga 等能力，配合 **umi** 这套整体解决方案，看起来对于快速搭建应用还不错，它的能力非常强大，集合了多个框架再封装，几乎不怎么再需要添加其他三方库了，不过因为直接依赖了一些三方库，更新维护成本和难度还是挺高的，在社区上不算是很活跃，概念也非常多，适合一些对 redux 系列库比较熟悉的开发者。
 
 [如何评价前端应用框架 dva？](https://www.zhihu.com/question/51831855?from=profile_question_card)
 
-#### dva架构图
-![dva](https://qhstaticssl.kujiale.com/as/99322f8bdbfcaa47da9ce3cdd5854075/dva.png)
+##### dva架构图
+<img width="700" src="https://qhstaticssl.kujiale.com/as/99322f8bdbfcaa47da9ce3cdd5854075/dva.png" />
 
-#### mobx
+##### mobx
 响应式数据流的代表 **mobx** 和 **vue** 的写法有相似之处。很多人说，**mobx-react** 是给 **vue** 的狂热粉丝用来写 **react** 的，这个说法很有趣，但在实际普通 web 业务开发中，不可否认它们的写法确实更无脑也更方便，很惊艳也很容易上手，概念也比较少，还是挺适合大部分 web 项目的。不过会比较难测试、难调试，流程复杂的项目自描述能力也比较差，更容易写出过程式代码，扩展和生态都不算是很好，但 mobx 的作者更新还是比较频繁，现在能力也越来越强大了。
 
 [如何评价数据流管理框架 mobx？](https://www.zhihu.com/question/52219898)
 
-#### mobx-react架构图
-![mobx](https://qhstaticssl.kujiale.com/as/654ae258534c4b8c8f5b21f8f1282e52/mobx.png)
+##### mobx-react架构图
+<img width="700" src="https://qhstaticssl.kujiale.com/as/654ae258534c4b8c8f5b21f8f1282e52/mobx.png" />
 
-#### vuex
+##### vuex
 **vuex** 是 **vue** 的状态管理框架，整个流程上的理念基本和 **redux** 没有太大区别，主要的区别是在 **vue** 中可以直接更新 state，不需要拷贝，因为这个过程并没有像 reducer 纯函数那样具有明确的输入输出，所以 **vuex** 给它起了个名字，叫做 mutation，因为概念上任何一次相同的输入都得到相同的输出才更符合 reducer 纯函数的特性，所以“突变”更加适合 **vuex** 中的更新行为。
 
-#### vuex架构图
-![vuex](https://qhstaticssl.kujiale.com/as/e738c068c874a74d0192c83b039980e9/vuex.png)
+##### vuex架构图
+<img width="700" src="https://qhstaticssl.kujiale.com/as/e738c068c874a74d0192c83b039980e9/vuex.png" />
 
-#### turbox
+##### turbox
 **turbox** 是一个包含了状态管理的图形或 web 应用开发框架，它的灵感主要还是来源于社区和部分复杂业务场景，**turbox** 设计的初衷是想用友好易懂的使用方式满足复杂业务场景，吸收传统图形开发与互联网 web 领域的优秀思想，解决复杂通用的软件工程问题，并提供一些周边工具来进一步提效，尽可能把一些不易改变的决定抽离出来，规范统一大家的代码认知，提升多人研发协作效率，这就是 **turbox** 框架的意义所在。
 
 - 面向 web/2d/3d 应用友好，拥有较多大型复杂 web 2d/3d 多人项目的线上实践案例与针对性优化
@@ -1612,6 +1537,9 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 - 默认支持 react/pixi/three 框架，且可以满足混用场景
 - 基础库 0 依赖，外部三方框架无关，是个纯自研、精简的解决方案，有较好的抽象分层，可基于基础库扩展不同的自定义实现，升级维护都比较容易，不容易腐烂
 - 友好的文档和最佳实践，即使对于没有用过状态管理框架的新手来说，也比较容易上手
+
+##### turbox架构图
+<img width="700" src="https://img.alicdn.com/tfs/TB1fRl5g79l0K4jSZFKXXXFjpXa-2231-1777.png" />
 
 #### 为什么不是 redux？
 这个应该比较好理解，业界也比较公认它的一些缺点
@@ -1632,7 +1560,7 @@ function component 并不会等 useEffect 执行，先完成 batchUpdate 再执�
 * 最后就是也完美支持 ts 和 react hooks。保证所有的依赖声明都是可以推导和反向依赖分析的。并且没有任何三方依赖，不依赖外部库意味着体积小、性能可控、非常容易维护和升级，腐烂的速度会比较慢一些。包体积很小，gzip 后只有 6.9 k，这还没有让库直接依赖混淆的版本，比如 react，不然应该在 3-5 k左右，是 mobx 体积的一半。
 * 无法适应复杂 web 2d/3d 应用场景
 
-### 性能分析
+#### 性能分析
 状态管理部分，turbox 和 mobx 最接近，所以做个性能对比，如下是测试代码：
 ```js
 import { reactor, mutation, Domain, reactive, init, config } from '@turbox3d/turbox';
@@ -1729,7 +1657,7 @@ const tm = new TestMobx();
 })();
 ```
 
-#### 测试结果
+##### 测试结果
 innerDo：
 
 turbox nextTick 模式：
@@ -1754,7 +1682,7 @@ mobx：
 
 ![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
 
-#### 结论分析
+##### 结论分析
 性能快和慢一定是有原因的，实现机制、功能上的不一样都会造成差异。
 
 如果按照方式 1 来跑，更新 1000 次：turbox 是 13.7 ms，mobx 是 430.9 ms
@@ -1823,7 +1751,7 @@ turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 
 综上来看，turbox 的机制在性能和功能覆盖度的权衡上会更贴合现有业务场景，实际上 web 场景根本遇不到这么复杂的情况，mobx 也完全可以胜任（不考虑中间件和时间旅行），但在 3d 场景，哪怕是结合 web 技术的时候，差异还是很大的
 
-## 指令管理框架
+### 指令管理库
 简单来说，这是一个处理图形 entity 交互逻辑的管理器，不同于 web，图形业务中的交互事件通常会比较复杂，由多个事件组合完成，并且也会处理比较多的临时计算、事务等逻辑，有些临时计算还需要反馈到界面上，该框架主要目的是解决如何更好的内聚、扩展、启用卸载交互模块，以达到复用、组合出不同的交互指令，让业务开发更高效、可维护性更高，不耦合视图层和 model 层。
 
 指令管理主要就两个概念 BaseCommand 以及 BaseCommandBox。前者是指令组件的基本单元，要声明一个指令只需要继承 BaseCommand 即可，指令可以通过 compose 方法组合出一个新的指令，组合过的指令还可以继续自由组合，指令组件可以理解成一个物料，此时它还没生效。而后者就是用来装载指令使其生效的，通常一个场景对应一个 BaseCommandBox，Box 中可以添加不同的指令，但要特别注意的是，同一时间只有一个指令会被激活，也就是说假如有 ABC 三个指令，你激活了 A，那么 BC 自动会被卸载，激活了 B，AC 自动会被卸载，他们之间是互斥的。
@@ -1924,7 +1852,7 @@ class DemoCommandBox extends BaseCommandBox {
 const demoCommandBox = new DemoCommandBox();
 ```
 
-## 事件交互管理框架
+### 事件管理库
 主要实现了 2d、3d 场景中的交互系统、快捷键系统、坐标系系统、自定义合成事件的实现及管理
 
 此框架对于用户来说通常只会用到快捷键系统，其他功能一般是和其他子框架配合使用
@@ -1946,7 +1874,7 @@ HotKey.on({
 HotKey.off(Key.Escape, () => {});
 ```
 
-## 视图渲染框架
+### 视图渲染库
 顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层有无外部依赖的渲染框架，也有基于 react 封装的框架（暂停维护，不推荐使用）。
 
 > 推荐使用无外部依赖的版本，性能更好、内存开销更小，是个纯粹的针对图形场景的渲染器。
@@ -2198,5 +2126,79 @@ export class MullionMesh2D extends Mesh2D<IMeshProps> {
 
 主要的使用方式就是上面这些，还有一些细节能力，通过 ts 的注释提示来查看，不再罗列
 
-## 其他
+### 其他
 剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和组件库，文档看 README 和注释，不再展开介绍
+
+## 最佳实践
+图形业务，以单插件为例：
+```
+├── src
+│   ├── api // 接口层，可以做一些防腐
+│   ├── assets // 文件资产，全局样式，mixin 等
+│   │   ├── images
+│   │   └── styles
+|   ├── commands // 指令层，全局业务指令或可复用指令
+│   ├── components // 插件内部的公共组件
+│   │   ├── 2D
+│   │   ├── 3D
+│   │   └── web
+│   ├── config // 全局配置文件，包括 axios 和主题配置等
+│   │   ├── axios
+│   │   └── theme
+│   ├── const // 存放一些常量和枚举
+│   ├── helpers // 帮助函数，一些通用的函数
+│   ├── models // 数据层，里面的结构可以自己设计
+│   │   ├── domain
+│   │   │   ├── document
+│   │   │   ├── scene
+│   │   └── entity
+|   |   │   ├── product
+│   │   │   ├── background
+│   ├── permission // 权限点相关
+│   ├── services // 服务层，当前插件对外暴露的方法
+│   │   ├── common
+│   │   └── search
+│   ├── types // 全局声明、ts 常用自定义类型
+│   ├── utils // 工具函数，纯函数，可写单测的
+│   │   └── __tests__
+│   └── views // 视图层
+│   │   ├── FunctionPanel
+│   │   ├── Scene
+│   │   └── TopBar
+│   └── plugin.ts // 插件入口文件
+```
+web 业务：
+```
+├── @domain // 领域模型层，只关注当前领域模型的操作和职责，可能有互相依赖
+│   ├── column.js
+│   └── tag.js
+├── @api // api 防腐层
+│   └── index.js
+├── @components // 展示型纯组件或自己维护状态的组件
+│   └── design-column
+│       ├── index.jsx
+│       └── index.scss
+└── @blocks // 区块组件，包含状态管理业务逻辑的业务组件
+    └── live-list
+        ├── index.jsx
+        └── index.scss
+├── @presenter // 处理呈现层，可以向上组合、调用 domain 层，一般是和视图模块一一对应的关系，描述每个模块容器组件触发的行为过程以及一些处理
+│   └── list.js
+│   └── head.js
+├── modules // 模块
+│   └── list // 列表模块
+│   │   ├── index.jsx
+│   │   └── index.scss
+│   └── head // 头部模块
+│       ├── index.jsx
+│       └── index.scss
+├── Layout.jsx // 最外层的根布局组件，组装各种模块拼合页面
+├── README.md
+├── entry.js // 入口文件，挂载 Layout 到 dom 上以及做一些初始化操作
+├── layout.scss
+├── page.json
+└── tpl.pug
+```
+
+## 如何快速生成 turbox API？
+可以在 vscode 插件商店搜索 turbox，下载 turbox snippets 插件，通过一些简单的指令即可快速生成 API，提升开发效率
