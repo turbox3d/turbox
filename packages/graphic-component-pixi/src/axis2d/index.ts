@@ -29,18 +29,18 @@ export default class Axis2d extends Mesh2D<IProps> {
       y0: 0,
       x1: Number.MAX_SAFE_INTEGER,
       y1: 0,
-    }, {
       lineWidth: 5,
       lineColor: lineColors[0],
+      alignment: 0.5,
     });
     DrawUtils.drawLine(this.view, {
       x0: 0,
       y0: 0,
       x1: 0,
       y1: Number.MAX_SAFE_INTEGER,
-    }, {
       lineWidth: 5,
       lineColor: lineColors[1],
+      alignment: 0.5,
     });
   }
 }

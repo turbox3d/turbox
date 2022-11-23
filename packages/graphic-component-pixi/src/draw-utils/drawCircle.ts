@@ -6,9 +6,9 @@ interface ICircleParam {
   radius: number;
 }
 
-export function drawCircle(graphic: PIXI.Graphics, param: ICircleParam, option?: IGraphicOption) {
+export function drawCircle(graphic: PIXI.Graphics, param: ICircleParam & IGraphicOption) {
   // 样式配置
-  setCommonOption(graphic, option);
+  setCommonOption(graphic, param);
 
   const { cx, cy, radius } = param;
   graphic.drawCircle(cx, cy, radius);

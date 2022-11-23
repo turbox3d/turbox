@@ -5,9 +5,9 @@ interface IPolygonParam {
   path: Array<{ x: number; y: number }>;
 }
 
-export function drawPolygon(graphic: PIXI.Graphics, param: IPolygonParam, option?: IGraphicOption) {
+export function drawPolygon(graphic: PIXI.Graphics, param: IPolygonParam & IGraphicOption) {
   // 样式配置
-  setCommonOption(graphic, option);
+  setCommonOption(graphic, param);
 
   const points = param.path.map(p => new Point(p.x, p.y));
   graphic.drawPolygon(points);

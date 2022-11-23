@@ -19,6 +19,8 @@ interface IProps {
   fillAlpha?: number;
   alpha?: number;
   zIndex?: number;
+  alignment?: number;
+  native?: boolean;
 }
 
 /** 多边形 */
@@ -48,17 +50,20 @@ export default class Polygon extends Mesh2D<IProps> {
       fillAlpha,
       alpha,
       zIndex,
+      alignment,
+      native,
     } = this.props;
     zIndex && (this.view.zIndex = zIndex);
     DrawUtils.drawPolygon(this.view, {
       path: path.map(p => ({ x: p.x, y: p.y })),
-    }, {
       lineWidth,
       lineColor,
       lineAlpha,
       fillColor,
       fillAlpha,
       alpha,
+      alignment,
+      native,
     });
   }
 

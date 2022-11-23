@@ -18,6 +18,8 @@ interface IProps {
   lineWidth?: number;
   lineColor?: number;
   lineAlpha?: number;
+  alignment?: number;
+  native?: boolean;
   fillColor?: number;
   fillAlpha?: number;
   alpha?: number;
@@ -65,6 +67,8 @@ export default class Container2d extends Mesh2D<IProps> {
       lineWidth = 0,
       lineColor = 0x0,
       lineAlpha = 1,
+      alignment = 0,
+      native,
       fillColor = 0x0,
       fillAlpha = 1,
       alpha = 1,
@@ -81,18 +85,31 @@ export default class Container2d extends Mesh2D<IProps> {
       lineWidth,
       lineColor,
       lineAlpha,
+      alignment,
+      native,
       fillColor,
       fillAlpha,
       alpha,
     });
+    let alignParam = alignment;
+    if (alignment === 0) {
+      alignParam = 1;
+    } else if (alignment === 1) {
+      alignParam = 0;
+    }
+    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
+    const fillPos = { x: posX + lineWidth * alignParam, y: posY + lineWidth * alignParam };
+    const rw = width - lineWidth * 2 * alignParam;
+    const rh = height - lineWidth * 2 * alignParam;
     DrawUtils.drawRect(this.mask, {
-      x: x + lineWidth,
-      y: y + lineWidth,
-      width: width - lineWidth * 2,
-      height: height - lineWidth * 2,
-      central,
-      radius: radius - lineWidth,
+      x: fillPos.x,
+      y: fillPos.y,
+      width: rw,
+      height: rh,
+      central: false,
+      radius: radius - lineWidth * alignParam,
       fillColor,
+      native,
     });
     if (!backgroundImage) {
       return;
@@ -105,14 +122,10 @@ export default class Container2d extends Mesh2D<IProps> {
     }
     this.s.texture = t;
     this.s.visible = true;
-    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
     const { width: tw, height: th } = t;
     const imgRatio = tw / th;
-    const rw = width - lineWidth * 2;
-    const rh = height - lineWidth * 2;
     const rectRatio = width / height;
     const center = { x: posX + width / 2, y: posY + height / 2 };
-    const fillPos = { x: posX + lineWidth, y: posY + lineWidth };
     if (fit === 'none') {
       this.s.position.set(center.x - tw / 2, center.y - th / 2);
     } else if (fit === 'fill') {

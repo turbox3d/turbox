@@ -22,6 +22,8 @@ interface IProps {
   backgroundImage?: string;
   fit?: IFitStyle;
   zIndex?: number;
+  alignment?: number;
+  native?: boolean;
 }
 
 /** 正方形 */
@@ -52,6 +54,8 @@ export default class Rect2d extends Mesh2D<IProps> {
       alpha,
       backgroundImage,
       fit,
+      alignment,
+      native,
     } = this.props;
     DrawUtils.drawRect(this.view, {
       x,
@@ -68,6 +72,8 @@ export default class Rect2d extends Mesh2D<IProps> {
       alpha,
       backgroundImage,
       fit,
+      alignment,
+      native,
     });
   }
 

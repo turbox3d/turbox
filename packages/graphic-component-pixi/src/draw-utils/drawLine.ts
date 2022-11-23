@@ -14,10 +14,10 @@ interface ILinesParam {
 /**
  * 绘制一条从 (x0, y0) 到 (x1, y1) 的线
  */
-export function drawLine(graphic: PIXI.Graphics, param: ILineParam, option?: IGraphicOption) {
+export function drawLine(graphic: PIXI.Graphics, param: ILineParam & IGraphicOption) {
   // 样式配置
-  const { lineWidth, lineColor, lineAlpha } = parseGraphicOption(option);
-  graphic.lineStyle(lineWidth, lineColor, lineAlpha);
+  const { lineWidth, lineColor, lineAlpha, alignment, native } = parseGraphicOption(param);
+  graphic.lineStyle(lineWidth, lineColor, lineAlpha, alignment, native);
   // 坐标配置
   const { x0, y0, x1, y1 } = param;
   graphic.moveTo(x0, y0);
@@ -25,10 +25,10 @@ export function drawLine(graphic: PIXI.Graphics, param: ILineParam, option?: IGr
   return graphic;
 }
 
-export function drawLines(graphic: PIXI.Graphics, param: ILinesParam, option?: IGraphicOption) {
+export function drawLines(graphic: PIXI.Graphics, param: ILinesParam & IGraphicOption) {
   // 样式配置
-  const { lineWidth, lineColor, lineAlpha } = parseGraphicOption(option);
-  graphic.lineStyle(lineWidth, lineColor, lineAlpha);
+  const { lineWidth, lineColor, lineAlpha, alignment, native } = parseGraphicOption(param);
+  graphic.lineStyle(lineWidth, lineColor, lineAlpha, alignment, native);
   // 坐标配置
   const [x0, y0] = param.points;
   graphic.moveTo(x0, y0);

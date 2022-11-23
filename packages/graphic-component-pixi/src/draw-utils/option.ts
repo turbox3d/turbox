@@ -7,7 +7,7 @@ class GraphicOption {
   lineWidth = 0;
   lineColor = 0x0;
   lineAlpha = 1;
-  alignment = 0.5;
+  alignment = 0;
   native = false;
   // 填充样式
   fillColor = 0x0;
@@ -91,18 +91,18 @@ export async function setFillTexture(graphic: PIXI.Graphics, fillTextureUrl: str
   } else if (fit === 'cover') {
     if (imgRatio <= rectRatio) {
       matrix.scale(rw / width, rw / imgRatio / height);
-      matrix.translate(posX, posY + rh / 2 - rw / imgRatio / 2);
+      matrix.translate(posX, posY + (rh / 2) - (rw / imgRatio / 2));
     } else {
-      matrix.scale((rh * imgRatio) / width, rh / height);
-      matrix.translate(posX + rw / 2 - (rh * imgRatio) / 2, posY);
+      matrix.scale(rh * imgRatio / width, rh / height);
+      matrix.translate(posX + (rw / 2) - (rh * imgRatio / 2), posY);
     }
   } else if (fit === 'contain') {
     if (imgRatio <= rectRatio) {
-      matrix.scale((rh * imgRatio) / width, rh / height);
-      matrix.translate(posX + rw / 2 - (rh * imgRatio) / 2, posY);
+      matrix.scale(rh * imgRatio / width, rh / height);
+      matrix.translate(posX + (rw / 2) - (rh * imgRatio / 2), posY);
     } else {
       matrix.scale(rw / width, rw / imgRatio / height);
-      matrix.translate(posX, posY + rh / 2 - rw / imgRatio / 2);
+      matrix.translate(posX, posY + (rh / 2) - (rw / imgRatio / 2));
     }
   }
   graphic.beginTextureFill({

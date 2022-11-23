@@ -14,7 +14,7 @@ interface IPathParam {
 /**
  * 绘制一条路径
  */
-export function drawPath(graphic: PIXI.Graphics, param: IPathParam, option?: IGraphicOption) {
+export function drawPath(graphic: PIXI.Graphics, param: IPathParam & IGraphicOption) {
   const { path, closed = false } = param;
   const length = path.length - 1;
 
@@ -23,8 +23,8 @@ export function drawPath(graphic: PIXI.Graphics, param: IPathParam, option?: IGr
   }
 
   // 样式配置
-  const { lineWidth, lineColor, lineAlpha } = parseGraphicOption(option);
-  graphic.lineStyle(lineWidth, lineColor, lineAlpha);
+  const { lineWidth, lineColor, lineAlpha, alignment, native } = parseGraphicOption(param);
+  graphic.lineStyle(lineWidth, lineColor, lineAlpha, alignment, native);
 
   for (let i = 0; i < length; i++) {
     drawLine(graphic, {
@@ -32,7 +32,12 @@ export function drawPath(graphic: PIXI.Graphics, param: IPathParam, option?: IGr
       y0: path[i].y,
       x1: path[i + 1].x,
       y1: path[i + 1].y,
-    }, { lineWidth, lineColor, lineAlpha });
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      alignment,
+      native,
+    });
   }
 
   if (closed) {
@@ -41,6 +46,11 @@ export function drawPath(graphic: PIXI.Graphics, param: IPathParam, option?: IGr
       y0: path[length].y,
       x1: path[0].x,
       y1: path[0].y,
-    }, { lineWidth, lineColor, lineAlpha });
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      alignment,
+      native,
+    });
   }
 }
