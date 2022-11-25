@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/reactivity-react",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Large-scale reactive state management library for react",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -55,7 +55,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@turbox3d/reactivity": "^2.1.7",
+    "@turbox3d/reactivity": "^2.1.8",
     "@turbox3d/shared": "^1.1.4"
   },
   "files": [
