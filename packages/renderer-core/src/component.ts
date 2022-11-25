@@ -1,6 +1,6 @@
-import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
+import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import { shallowEqual } from '@turbox3d/shared';
-import { ITool } from '@turbox3d/command-manager';
+import { SceneTool } from '@turbox3d/command-manager';
 import { Element, VirtualNode } from './render';
 import { getSceneParent } from './utils';
 import { SceneContext } from './scene';
@@ -8,25 +8,25 @@ import { SceneContext } from './scene';
 export interface PreserveProps {
   key?: string | number;
   children?: Element<any>[];
-  onClick?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onDBClick?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onRightClick?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onDragStart?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onDragMove?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onDragEnd?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onPinchStart?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onPinch?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onPinchEnd?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onRotateStart?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onRotate?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onRotateEnd?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onPress?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onPressUp?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onHoverIn?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
-  onHoverOut?: (viewEntity: Partial<IViewEntity>, event: SceneEvent, tools: ITool) => void;
+  onClick?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onDBClick?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onRightClick?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onDragStart?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onDragMove?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onDragEnd?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onPinchStart?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onPinch?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onPinchEnd?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onRotateStart?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onRotate?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onRotateEnd?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onPress?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onPressUp?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onHoverIn?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  onHoverOut?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
 }
 
-export type ComponentProps<P> = PreserveProps & Partial<IViewEntity> & P;
+export type ComponentProps<P> = PreserveProps & Partial<ViewEntity> & P;
 
 /**
  * graphic render component
@@ -35,12 +35,12 @@ export class Component<P extends object = {}> {
   props: ComponentProps<P>;
   _vNode: VirtualNode;
 
-  get context(): SceneContext<any> {
+  get context(): SceneContext {
     const scene = getSceneParent(this);
     if (scene) {
-      return ((scene as any).sceneContext || {}) as SceneContext<any>;
+      return ((scene as any).sceneContext || {}) as SceneContext;
     }
-    return {} as SceneContext<any>;
+    return {} as SceneContext;
   }
 
   constructor(props = {} as ComponentProps<P>) {

@@ -4,7 +4,7 @@ import { Element, VirtualNode, render, batchUpdate, ElementSchema, g } from './r
 import { IdCustomType } from './common';
 import { Reactive } from './reactive';
 import { BaseMesh } from './mesh';
-import { BaseScene, SceneContext, BaseSceneProps, IViewportInfo, IViewInfo, SceneType } from './scene';
+import { BaseScene, SceneContext, BaseSceneProps, ViewportInfo, ViewInfo, SceneType } from './scene';
 
 init();
 registerExternalBatchUpdate({
@@ -26,8 +26,8 @@ export {
   SceneContext,
   BaseScene,
   BaseSceneProps,
-  IViewportInfo,
-  IViewInfo,
+  ViewportInfo,
+  ViewInfo,
   SceneType,
   ComponentProps,
 };

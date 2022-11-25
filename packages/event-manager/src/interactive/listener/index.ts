@@ -1,8 +1,8 @@
 import { getRelativePositionFromEvent, pointInRect, Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
-import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, IGesturesExtra, IExtra } from './type';
+import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, GesturesExtra, Extra } from './type';
 import { isMouseMoved } from './utils';
-import { IViewportInfo } from '../type';
+import { ViewportInfo } from '../type';
 
 /**
  * 场景鼠标交互事件转化器
@@ -11,7 +11,7 @@ import { IViewportInfo } from '../type';
 export class InteractiveListener {
   static moveTolerance = 4;
   static touchableDevice = 'ontouchstart' in window;
-  static create(canvas: HTMLCanvasElement, viewport?: IViewportInfo, coordinateType?: string) {
+  static create(canvas: HTMLCanvasElement, viewport?: ViewportInfo, coordinateType?: string) {
     return new InteractiveListener(canvas, viewport, coordinateType);
   }
   private listeners: Map<InteractiveEvent, IFunc[]> = new Map();
@@ -25,7 +25,7 @@ export class InteractiveListener {
   /** 当次鼠标事件处理类型 */
   private mouseDealType?: MouseDealType;
   /** 视口信息 */
-  private viewport?: IViewportInfo;
+  private viewport?: ViewportInfo;
   /** 坐标轴类型 */
   private coordinateType?: string;
   /** 缓存事件池，用于多点触控 */
@@ -42,13 +42,13 @@ export class InteractiveListener {
   /** 使用 x 还是 y 轴间距作为缩放系数计算因子 */
   private useX?: boolean;
 
-  constructor(canvas: HTMLCanvasElement, viewport?: IViewportInfo, coordinateType?: string) {
+  constructor(canvas: HTMLCanvasElement, viewport?: ViewportInfo, coordinateType?: string) {
     this.canvas = canvas;
     this.viewport = viewport;
     this.coordinateType = coordinateType;
   }
 
-  updateViewportInfo = (viewport: IViewportInfo) => {
+  updateViewportInfo = (viewport: ViewportInfo) => {
     this.viewport = viewport;
   };
 
@@ -123,7 +123,7 @@ export class InteractiveListener {
     }
   }
 
-  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra) {
+  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: GesturesExtra | Extra) {
     // 判断是否在当前视口，不在的过滤掉，不触发
     if (this.viewport) {
       const { x, y, width, height } = this.viewport;

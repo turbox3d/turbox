@@ -85,7 +85,7 @@ export default class Animation3d extends Mesh3D<IAnimationProps> {
 
   componentDidMount() {
     // 加入循环
-    this.context.getTools().addTicker(() => {
+    this.context.getSceneTools().addTicker(() => {
       this.tick();
     });
   }

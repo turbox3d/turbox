@@ -3,7 +3,7 @@ export type Key = string | string[];
 export type Handler = () => void;
 export type Condition = () => boolean;
 
-export interface IHotKeyConfig {
+export interface HotKeyConfig {
   /**
    * 快捷键字符
    *
@@ -42,7 +42,7 @@ export interface IHotKeyConfig {
   condition?: Condition;
 }
 
-export interface IHotKeyData {
+export interface HotKeyData {
   key: string;
   name?: string;
   description?: string;

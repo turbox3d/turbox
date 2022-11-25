@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as THREE from 'three';
-import { InteractiveConfig, InteractiveType, CoordinateController, IViewEntity } from '@turbox3d/event-manager';
+import { InteractiveConfig, InteractiveType, CoordinateController, ViewEntity } from '@turbox3d/event-manager';
 import { BaseScene, SceneType, ComponentProps, BaseSceneProps } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 
@@ -82,7 +82,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   private timer: number;
 
   // eslint-disable-next-line no-useless-constructor
-  constructor(props: Exclude<ComponentProps<BaseSceneProps>, IViewEntity>) {
+  constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
     super(props);
   }
 

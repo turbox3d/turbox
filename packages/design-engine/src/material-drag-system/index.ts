@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { IExtra, IGesturesExtra, InteractiveEvent } from '@turbox3d/event-manager';
+import { Extra, GesturesExtra, InteractiveEvent } from '@turbox3d/event-manager';
 import { Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
 
@@ -31,7 +31,7 @@ export default class MaterialDragSystem {
   /** 入参 */
   args: any[];
   /** 事件回调处理 */
-  handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: IGesturesExtra | IExtra) => void;
+  handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: GesturesExtra | Extra) => void;
   maxFPS = 60;
 
   static touchableDevice = 'ontouchstart' in window;
@@ -61,7 +61,7 @@ export default class MaterialDragSystem {
   private useX?: boolean;
 
   constructor(
-    handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: IGesturesExtra | IExtra) => void,
+    handler: (e: InteractiveEvent, event: PointerEvent | WheelEvent | React.PointerEvent | Touch, extra?: GesturesExtra | Extra) => void,
     maxFPS = 60
   ) {
     this.handler = handler;
@@ -101,7 +101,7 @@ export default class MaterialDragSystem {
     }
   }
 
-  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra) {
+  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: GesturesExtra | Extra) {
     this.handler(e, event, extra);
   }
 

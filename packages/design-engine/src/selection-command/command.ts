@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BaseCommand } from '@turbox3d/command-manager';
-import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
+import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import EntityObject from '../entity-object';
 import { Selection } from './domain';
 import HintCommand from '../hint-command/index';
@@ -126,19 +126,19 @@ export class SelectionCommand extends BaseCommand {
     }
   }
 
-  protected onClick(viewEntity: IViewEntity, event: SceneEvent) {
+  protected onClick(viewEntity: ViewEntity, event: SceneEvent) {
     if ((event.event as any).shiftKey) {
       this.setMultiSelect(true);
     }
     this.selectHandler(viewEntity, EClickAction.CLICK);
   }
 
-  protected onDBClick(viewEntity: IViewEntity) {
+  protected onDBClick(viewEntity: ViewEntity) {
     this.selectHandler(viewEntity, EClickAction.DOUBLE_CLICK);
   }
 
   /** 选中实体通用逻辑 */
-  selectHandler(viewEntity: IViewEntity, action: EClickAction) {
+  selectHandler(viewEntity: ViewEntity, action: EClickAction) {
     if (action === EClickAction.CLICK) {
       if (!this.selection.selectEntityTypes || !this.selection.selectEntityTypes.includes(viewEntity.type)) {
         this.selection.setLayerDepth(this.modeMap[this.selection.selectMode]);

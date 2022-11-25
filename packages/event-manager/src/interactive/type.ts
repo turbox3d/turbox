@@ -15,7 +15,7 @@ export enum CoordinateType {
   SceneToCanvas,
 }
 
-export interface IViewEntity {
+export interface ViewEntity {
   id: string;
   type: symbol;
   [propKey: string]: any;
@@ -47,7 +47,7 @@ export interface InteractiveConfig {
   onHoverIn: (event: SceneEvent) => void;
   onHoverOut: (event: SceneEvent) => void;
   // 关联的 viewEntity
-  getViewEntity: () => IViewEntity;
+  getViewEntity: () => ViewEntity;
 }
 
 export interface CanvasHandlers {
@@ -73,7 +73,7 @@ export interface CanvasHandlers {
 
 export type InteractiveType = 'isClickable' | 'isDraggable' | 'isHoverable' | 'isPinchable' | 'isRotatable' | 'isPressable';
 
-export interface IViewportInfo {
+export interface ViewportInfo {
   x: number;
   y: number;
   width: number;

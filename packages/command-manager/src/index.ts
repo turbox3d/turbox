@@ -1,4 +1,4 @@
-import { CommandEventType, ITool } from './command/type';
+import { CommandEventType, SceneTool } from './command/type';
 import { BaseCommand } from './command/BaseCommand';
 import { BaseCommandBox } from './command/BaseCommandBox';
 import { compose } from './command/compose';
@@ -10,5 +10,5 @@ export {
   CommandEventType,
   compose,
   isCommandBox,
-  ITool,
+  SceneTool,
 };

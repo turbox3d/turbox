@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { HotKeyListener } from './listener';
-import { Handler, IHotKeyConfig, IHotKeyData, Key } from './type';
+import { Handler, HotKeyConfig, HotKeyData, Key } from './type';
 
 interface IKeyMap {
-  [key: string]: IHotKeyConfig;
+  [key: string]: HotKeyConfig;
 }
 
 /**
@@ -24,7 +24,7 @@ class HotKeyController {
    *
    * 快捷键冲突会给 Warn 并添加失败
    */
-  on(config: IHotKeyConfig) {
+  on(config: HotKeyConfig) {
     const hotkeys = Array.isArray(config.key) ? config.key : [config.key];
     hotkeys.forEach((hotkey) => {
       this.listener.register(hotkey);
@@ -70,7 +70,7 @@ class HotKeyController {
    * 该接口设计用来给展示快捷键的地方用
    */
   getHotKeyData() {
-    const data: IHotKeyData[] = [];
+    const data: HotKeyData[] = [];
     // todo 这样数据可能一个被拆成了多个返回
     Object.keys(this.keyMap).forEach(hotkey => {
       const config = this.keyMap[hotkey];
@@ -100,5 +100,5 @@ class HotKeyController {
 const HotKey = new HotKeyController();
 
 export {
-  HotKey, HotKeyController, IHotKeyConfig, IHotKeyData
+  HotKey, HotKeyController, HotKeyConfig, HotKeyData
 };

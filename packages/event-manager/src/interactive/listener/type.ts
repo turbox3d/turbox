@@ -50,7 +50,7 @@ export enum InteractiveEvent {
 }
 
 interface PointerEventFunc {
-  (event: PointerEvent | Touch, extra?: IGesturesExtra | IExtra): void;
+  (event: PointerEvent | Touch, extra?: GesturesExtra | Extra): void;
 }
 
 interface WheelEventFunc {
@@ -59,7 +59,7 @@ interface WheelEventFunc {
 
 export type ICallBack<E extends InteractiveEvent> = E extends InteractiveEvent.Wheel ? WheelEventFunc : PointerEventFunc;
 
-export interface IGesturesExtra {
+export interface GesturesExtra {
   scale?: number;
   deltaScale?: number;
   rotate?: number;
@@ -67,10 +67,10 @@ export interface IGesturesExtra {
   eventCache?: (PointerEvent | Touch)[];
 }
 
-export interface IExtra {
+export interface Extra {
   mouseDownInfo?: Vec2;
 }
 
 export interface IFunc {
-  (event: PointerEvent | WheelEvent | Touch, extra?: IGesturesExtra | IExtra): void;
+  (event: PointerEvent | WheelEvent | Touch, extra?: GesturesExtra | Extra): void;
 }

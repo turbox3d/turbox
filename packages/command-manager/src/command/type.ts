@@ -1,4 +1,4 @@
-import { IViewEntity, CoordinateType } from '@turbox3d/event-manager';
+import { ViewEntity, CoordinateType, InteractiveConfig } from '@turbox3d/event-manager';
 import { Vec2, Vec3, IConstructorOf } from '@turbox3d/shared';
 
 export enum CommandEventType {
@@ -23,8 +23,10 @@ export enum CommandEventType {
   onZoom,
 }
 
-export interface ITool {
-  hitTarget: (point: { x: number; y: number }) => IViewEntity | undefined;
+export interface SceneTool {
+  updateInteractiveObject: (view: any, config?: InteractiveConfig) => void;
+  updateCursor: (cursor?: string) => void;
+  hitTarget: (point: { x: number; y: number }) => ViewEntity | undefined;
   coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType, z?: number) => Vec2 | Vec3;
   getCamera: () => any;
   getRaycaster: () => any;

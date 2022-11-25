@@ -1,6 +1,6 @@
 import { Domain, mutation, reactor } from '@turbox3d/reactivity';
 import { BaseCommand } from '@turbox3d/command-manager';
-import { IViewEntity } from '@turbox3d/event-manager';
+import { ViewEntity } from '@turbox3d/event-manager';
 import SelectionCommand from '../selection-command/index';
 import EntityObject from '../entity-object';
 
@@ -44,7 +44,7 @@ export default class HintCommand extends BaseCommand {
     this.hintDomain.unHint();
   }
 
-  onHoverIn(viewEntity: IViewEntity) {
+  onHoverIn(viewEntity: ViewEntity) {
     const model = EntityObject.getEntityById(viewEntity.id);
     if (!model) {
       this.hintDomain.unHint();

@@ -2,14 +2,14 @@ import { Vec2 } from '@turbox3d/shared';
 import { CoordinateController } from './coordinate';
 import { HitResult } from './index';
 import { CoordinateType } from './type';
-import { IGesturesExtra, IExtra } from './listener/type';
+import { GesturesExtra, Extra } from './listener/type';
 
 export class SceneEvent<DisplayObject = any> {
   static create<DisplayObject = any>(
     event: PointerEvent | WheelEvent | Touch,
     getCoordinateCtrl: () => CoordinateController,
     hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>,
-    extra?: IGesturesExtra | IExtra,
+    extra?: GesturesExtra | Extra,
   ) {
     return new SceneEvent<DisplayObject>(event, getCoordinateCtrl, hitTargetOriginalByPoint, extra);
   }
@@ -17,13 +17,13 @@ export class SceneEvent<DisplayObject = any> {
   event: PointerEvent | WheelEvent | Touch;
   getCoordinateCtrl: () => CoordinateController;
   hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>;
-  extra?: IGesturesExtra | IExtra;
+  extra?: GesturesExtra | Extra;
 
   constructor(
     event: PointerEvent | WheelEvent | Touch,
     getCoordinateCtrl: () => CoordinateController,
     hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>,
-    extra?: IGesturesExtra | IExtra,
+    extra?: GesturesExtra | Extra,
   ) {
     this.event = event;
     this.getCoordinateCtrl = getCoordinateCtrl;
@@ -35,7 +35,7 @@ export class SceneEvent<DisplayObject = any> {
    * 屏幕坐标
    */
   get screenPosition() {
-    const extra = this.extra as IExtra | undefined;
+    const extra = this.extra as Extra | undefined;
     if (extra && extra.mouseDownInfo) {
       return {
         x: extra.mouseDownInfo.x,

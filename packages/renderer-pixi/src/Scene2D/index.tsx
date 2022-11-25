@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { CoordinateController, InteractiveConfig, InteractiveType, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
+import { CoordinateController, InteractiveConfig, InteractiveType, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import { BaseScene, BaseSceneProps, ComponentProps, SceneType } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
@@ -65,7 +65,7 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
 
   private originalResizeFramebufferFunction: Function;
 
-  constructor(props: Exclude<ComponentProps<BaseSceneProps>, IViewEntity>) {
+  constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
     super(props);
     this.view.sortableChildren = true;
   }

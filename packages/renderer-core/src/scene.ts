@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react/no-deprecated */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommandBox, CommandEventType, ITool } from '@turbox3d/command-manager';
-import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, IViewEntity } from '@turbox3d/event-manager';
+import { BaseCommandBox, CommandEventType, SceneTool } from '@turbox3d/command-manager';
+import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import { remove, Vec2, Vec3 } from '@turbox3d/shared';
 import { Component, ComponentProps } from './component';
 
@@ -17,7 +18,7 @@ interface IInteractiveControllerInfo<Container, DisplayObject> {
   [id: string]: InteractiveController<Container, DisplayObject>;
 }
 
-export interface IViewportInfo {
+export interface ViewportInfo {
   x: number;
   y: number;
   width: number;
@@ -49,7 +50,7 @@ export interface BaseSceneProps {
   /**
    * 根视图容器参数（在一个 renderer 中渲染多个子视图并互相隔离时使用）
    */
-  viewport?: IViewportInfo;
+  viewport?: ViewportInfo;
   /**
    * 画布背景色，使用十六进制。默认：0xffffff
    */
@@ -108,9 +109,11 @@ export interface BaseSceneProps {
   disableResize?: boolean;
   /** 渲染标志（用来打开或关闭渲染 ticker，若为 false，则当前帧不渲染） */
   renderFlag?: boolean;
+  /** 场景初始化完成的回调 */
+  initialized?: (sceneTool: SceneTool) => void;
 }
 
-export interface IViewInfo {
+export interface ViewInfo {
   position: Vec2 | Vec3;
   scale: Vec2 | Vec3;
   visible: boolean;
@@ -118,11 +121,9 @@ export interface IViewInfo {
   height?: number;
 }
 
-export interface SceneContext<DisplayObject> {
-  updateInteractiveObject: (view: DisplayObject, config?: InteractiveConfig) => void;
-  updateCursor: (cursor?: string) => void;
+export interface SceneContext {
   getCommandBox: () => BaseCommandBox | undefined;
-  getTools: () => ITool;
+  getSceneTools: () => SceneTool;
 }
 
 export abstract class BaseScene<
@@ -176,7 +177,7 @@ export abstract class BaseScene<
 
   mountTimer: number;
 
-  sceneContext: SceneContext<DisplayObject>;
+  sceneContext: SceneContext;
 
   resolution: number;
 
@@ -186,7 +187,7 @@ export abstract class BaseScene<
 
   renderFlag = true;
 
-  constructor(props: Exclude<ComponentProps<BaseSceneProps>, IViewEntity>) {
+  constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
     super(props);
     this.maxFPS = this.props.maxFPS || 60;
     if (this.props.viewport) {
@@ -210,18 +211,15 @@ export abstract class BaseScene<
     }
     // 初始化交互控制器
     this.initInteractiveController();
-    const ctrl = this.getCurrentInteractiveController();
     this.sceneContext = {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => {},
-      updateCursor: this.getCursor,
       getCommandBox: () => this.props.commandBox,
-      getTools: this.getTools,
+      getSceneTools: this.getSceneTools,
     };
   }
 
   componentDidMount() {
     this.mountCanvas();
+    this.props.initialized && this.props.initialized(this.getSceneTools());
   }
 
   componentDidUpdate() {
@@ -291,7 +289,7 @@ export abstract class BaseScene<
   abstract createView(): Container;
 
   /** 获取根视图的基本信息（position、scale、visible） */
-  abstract getViewInfo(): IViewInfo;
+  abstract getViewInfo(): ViewInfo;
 
   /** 添加子视图的接口 */
   abstract addChildView(view: DisplayObject): void;
@@ -392,7 +390,7 @@ export abstract class BaseScene<
 
   getCurrentApp = () => BaseScene.appMap.get(this.props.container) as ApplicationContext | undefined;
 
-  private getCursor = (cursor = 'inherit') => {
+  private updateCursorHandler = (cursor = 'inherit') => {
     const app = this.getCurrentApp();
     if (!app) {
       return;
@@ -402,10 +400,12 @@ export abstract class BaseScene<
 
   abstract updateCursor(app: ApplicationContext, cursor: string): void;
 
-  private getTools = () => {
+  private getSceneTools = () => {
     const ctrl = this.getCurrentInteractiveController();
     return {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
+      updateInteractiveObject: ctrl ? ctrl.updateInteractiveObject : () => {},
+      updateCursor: this.updateCursorHandler,
       hitTarget: ctrl ? ctrl.hitTarget : ((() => {}) as (point: Vec2) => undefined),
       coordinateTransform: this.coordinateTransform,
       getCamera: () => this.camera,
@@ -616,7 +616,7 @@ export abstract class BaseScene<
       onClickNothing(event);
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onClick, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -626,7 +626,7 @@ export abstract class BaseScene<
       onClickNothing(event);
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDBClick, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onDBClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -636,7 +636,7 @@ export abstract class BaseScene<
       onClickNothing(event);
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRightClick, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onRightClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -646,7 +646,7 @@ export abstract class BaseScene<
       this.canvasDragImpl(event, 'start');
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragStart, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onDragStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -656,7 +656,7 @@ export abstract class BaseScene<
       this.canvasDragImpl(event, 'move');
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragMove, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onDragMove, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -666,14 +666,14 @@ export abstract class BaseScene<
       this.canvasDragImpl(event, 'end');
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragEnd, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onDragEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPinchStart = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinchStart, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onPinchStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -683,63 +683,63 @@ export abstract class BaseScene<
       this.canvasScaleImpl(event);
     }
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinch, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onPinch, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPinchEnd = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinchEnd, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onPinchEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotateStart = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotateStart, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onRotateStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotate = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotate, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onRotate, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotateEnd = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotateEnd, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onRotateEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPress = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPress, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onPress, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPressUp = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPressUp, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onPressUp, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPointerMove = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onCarriageMove, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onCarriageMove, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPointerUp = (event: SceneEvent) => {
     const { commandBox } = this.props;
     if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onCarriageEnd, this.getViewEntity(), event, this.getTools());
+      commandBox.distributeEvent(CommandEventType.onCarriageEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
@@ -754,7 +754,7 @@ export abstract class BaseScene<
         CommandEventType.onZoom,
         this.getViewEntity(),
         SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint),
-        this.getTools()
+        this.getSceneTools()
       );
     }
   };
@@ -769,7 +769,7 @@ export abstract class BaseScene<
   abstract getViewport(): Viewport | undefined;
 
   /** 获取视口基础信息的实现 */
-  abstract getViewportInfo(): IViewInfo | undefined;
+  abstract getViewportInfo(): ViewInfo | undefined;
 
   /** 初始化视口，给 viewport 设值 */
   abstract createViewport(): void;

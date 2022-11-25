@@ -1,13 +1,4 @@
-import {
-  isPlainObject,
-  hasOwn,
-  isObject,
-  bind,
-  includes,
-  invariant,
-  generateUUID,
-  canObserve,
-} from '@turbox3d/shared';
+import { isPlainObject, hasOwn, isObject, bind, includes, invariant, generateUUID, canObserve } from '@turbox3d/shared';
 import { NAMESPACE, EMPTY_ACTION_NAME, TURBOX_PREFIX } from '../const/symbol';
 import { Mutation } from '../interfaces';
 import { depCollector, triggerCollector } from './collector';

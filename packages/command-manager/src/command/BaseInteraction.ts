@@ -1,90 +1,90 @@
-import { IViewEntity, SceneEvent } from '@turbox3d/event-manager';
-import { CommandEventType, ITool } from './type';
+import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
+import { CommandEventType, SceneTool } from './type';
 
 class BaseInteraction {
-  protected onClick(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onClick(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onDBClick(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onDBClick(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onRightClick(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onRightClick(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onDragStart(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onDragStart(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onDragMove(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onDragMove(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onDragEnd(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onDragEnd(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onPinchStart(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onPinchStart(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onPinch(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onPinch(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onPinchEnd(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onPinchEnd(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onRotateStart(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onRotateStart(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onRotate(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onRotate(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onRotateEnd(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onRotateEnd(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onPress(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onPress(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onPressUp(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onPressUp(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onHoverIn(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onHoverIn(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onHoverOut(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onHoverOut(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onCarriageMove(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onCarriageMove(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
-  protected onCarriageEnd(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onCarriageEnd(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
   /**
    * 画布的缩放事件
    */
-  protected onZoom(entity: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected onZoom(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
   /**
    * 将交互事件分发给自身的回调函数处理
    */
-  protected distributeToSelf(eventType: CommandEventType, ev: IViewEntity, event: SceneEvent, tools: ITool) {
+  protected distributeToSelf(eventType: CommandEventType, ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
     switch (eventType) {
     case CommandEventType.onClick:
       this.onClick(ev, event, tools);

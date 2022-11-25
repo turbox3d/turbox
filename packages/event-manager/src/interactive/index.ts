@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { TaskPriority, throttleInAFrame, Vec2, Vec3, getRelativePositionFromEvent } from '@turbox3d/shared';
-import { CanvasHandlers, InteractiveConfig, InteractiveType, IViewportInfo } from './type';
+import { CanvasHandlers, InteractiveConfig, InteractiveType, ViewportInfo } from './type';
 import { InteractiveListener } from './listener/index';
-import { InteractiveEvent, IGesturesExtra, IExtra } from './listener/type';
+import { InteractiveEvent, GesturesExtra, Extra } from './listener/type';
 import { SceneEvent } from './sceneEvent';
 import { CoordinateController } from './coordinate';
 
@@ -20,7 +20,7 @@ interface Option<Container, DisplayObject> {
   container: Container;
   canvasHandler: CanvasHandlers;
   coordinateType?: string;
-  viewport?: IViewportInfo;
+  viewport?: ViewportInfo;
   getCoordinateCtrl: () => CoordinateController;
   getHitTargetOriginal: (
     point: Vec2,
@@ -52,7 +52,7 @@ export class InteractiveController<Container, DisplayObject> {
   /** 上次点击命中的目标 */
   private lastClickTarget?: DisplayObject;
   /** 当前视口的区域信息 */
-  private viewport?: IViewportInfo;
+  private viewport?: ViewportInfo;
   /** 坐标系类型 */
   private coordinateType?: string;
   /** hitTarget 的实现，不同渲染引擎不一样 */
@@ -92,7 +92,7 @@ export class InteractiveController<Container, DisplayObject> {
   };
 
   /** 更新视口信息 */
-  updateViewportInfo = (viewport: IViewportInfo) => {
+  updateViewportInfo = (viewport: ViewportInfo) => {
     this.viewport = viewport;
     this.interactiveListener.updateViewportInfo(viewport);
   };
@@ -244,7 +244,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onRightClick(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onDragStart = (event: PointerEvent | Touch, extra?: IExtra) => {
+  private onDragStart = (event: PointerEvent | Touch, extra?: Extra) => {
     const { target } = this.hitTargetHandler(event, 'isDraggable');
     if (target) {
       const config = this.interactiveConfig.get(target);
@@ -280,7 +280,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onDragEnd(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onPinchStart = (event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onPinchStart = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     const { target } = this.hitTargetHandler(event, 'isPinchable');
     if (target) {
       const config = this.interactiveConfig.get(target);
@@ -293,7 +293,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onPinchStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onPinch = throttleInAFrame((event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onPinch = throttleInAFrame((event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isPinchable && config.onPinch) {
@@ -304,7 +304,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onPinch(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   }, TaskPriority.UserAction, this.maxFPS);
 
-  private onPinchEnd = (event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onPinchEnd = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isPinchable && config.onPinchEnd) {
@@ -316,7 +316,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onPinchEnd(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onRotateStart = (event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onRotateStart = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     const { target } = this.hitTargetHandler(event, 'isRotatable');
     if (target) {
       const config = this.interactiveConfig.get(target);
@@ -329,7 +329,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onRotateStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onRotate = throttleInAFrame((event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onRotate = throttleInAFrame((event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isRotatable && config.onRotate) {
@@ -340,7 +340,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onRotate(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   }, TaskPriority.UserAction, this.maxFPS);
 
-  private onRotateEnd = (event: PointerEvent | Touch, extra?: IGesturesExtra) => {
+  private onRotateEnd = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isRotatable && config.onRotateEnd) {
