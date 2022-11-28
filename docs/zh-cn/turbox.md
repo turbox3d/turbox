@@ -1776,21 +1776,21 @@ class ACommand extends BaseCommand {
   active(param: IActiveParam) {
     this.action = Action.create('doSomething');
   }
-  // IViewEntity 是视图层定义的可交互 mesh 传递过来的标识信息或自定义信息，在指令系统中可以获取到以标识当前交互对象是谁（传递的来源会在后面视图渲染框架这一节来详细说明）
-  onCarriageEnd(ev: IViewEntity, event: SceneEvent, tools: ITool) {
+  // ViewEntity 是视图层定义的可交互 mesh 传递过来的标识信息或自定义信息，在指令系统中可以获取到以标识当前交互对象是谁（传递的来源会在后面视图渲染框架这一节来详细说明）
+  onCarriageEnd(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
   }
 
-  onDragEnd(ev: IViewEntity, event: SceneEvent, tools: ITool) {
+  onDragEnd(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
     this.action.complete();
   }
 
   onRightClick() {
   }
 
-  onCarriageMove(ev: IViewEntity, event: SceneEvent, tools: ITool) {
+  onCarriageMove(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
   }
 
-  onDragMove(ev: IViewEntity, event: SceneEvent, tools: ITool) {
+  onDragMove(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
     await this.action.execute(async () => {
       // do something...
       await this.domain.addProduct();
@@ -1939,7 +1939,7 @@ export class FrontView extends Component {
 }
 
 // 一个可交互 mesh2d 组件
-interface IProps extends IViewEntity {
+interface IProps extends ViewEntity {
   model: DoorWindowPDMEntity;
   x?: number;
   y?: number;
@@ -1967,7 +1967,7 @@ export class DoorWindowView extends Mesh2D<IProps> {
     };
   }
   // 你也可以直接在组件内部重写事件回调逻辑
-  onClick(iv: IViewEntity, ev: SceneEvent, tools: ITool) {
+  onClick(iv: ViewEntity, ev: SceneEvent, tools: SceneTool) {
     super.onClick(iv, ev, tools); // 默认会调用 props 上的 onClick 回调
   }
 
