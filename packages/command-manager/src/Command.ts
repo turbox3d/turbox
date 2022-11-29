@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
-import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
-import { BaseCommandBox } from './BaseCommandBox';
-import { BaseInteraction } from './BaseInteraction';
-import { CommandEventType, SceneTool } from './type';
+import { ViewEntity, SceneEvent, EventType } from '@turbox3d/event-manager';
+import { CommandManager } from './CommandManager';
+import { Interaction } from './Interaction';
+import { SceneTool } from './type';
 
-export abstract class BaseCommand extends BaseInteraction {
-  protected $children: { [key: string]: BaseCommand } = {};
-  private activeChildren: BaseCommand[] = [];
+export abstract class Command extends Interaction {
+  protected $children: { [key: string]: Command } = {};
+  private activeChildren: Command[] = [];
 
-  constructor(protected holder: BaseCommandBox, private parent?: BaseCommand) {
+  constructor(protected holder: CommandManager, private parent?: Command) {
     super();
     const activeFunc = this.active.bind(this);
     const disposeFunc = this.dispose.bind(this);
@@ -23,7 +23,7 @@ export abstract class BaseCommand extends BaseInteraction {
       activeFunc(...args);
     };
     this.dispose = (...args) => {
-      // 如果自身是应用在 Box 上的 Command，则要清理掉
+      // 如果自身是应用在 Mgr 上的 Command，则要清理掉
       if (this.holder.isCommandActive(this)) {
         this.holder.clearCommand();
       } else {
@@ -39,7 +39,7 @@ export abstract class BaseCommand extends BaseInteraction {
 
   /**
    * 应用当前 Command 来处理场景中的交互行为
-   * CommandBox 上永远只能有一个 Command 处于应用状态
+   * CommandManager 上永远只能有一个 Command 处于应用状态
    * 永远不用重写该方法，相关初始化逻辑请在 active 接口中编码
    */
   apply(...args: any[]) {
@@ -63,7 +63,7 @@ export abstract class BaseCommand extends BaseInteraction {
     //
   }
 
-  distributeEvent(eventType: CommandEventType, ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+  distributeEvent(eventType: EventType, ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
     // step 1 先让子 Commands 处理事件
     // Object.values(this.$children).forEach(command => command.distributeEvent(eventType, ev, event));
     this.activeChildren.forEach(command => command.distributeEvent(eventType, ev, event, tools));
@@ -71,13 +71,13 @@ export abstract class BaseCommand extends BaseInteraction {
     this.distributeToSelf(eventType, ev, event, tools);
   }
 
-  private onChildActive(command: BaseCommand) {
+  private onChildActive(command: Command) {
     if (this.activeChildren.indexOf(command) === -1) {
       this.activeChildren.push(command);
     }
   }
 
-  private onChildDispose(command: BaseCommand) {
+  private onChildDispose(command: Command) {
     const index = this.activeChildren.indexOf(command);
     if (index !== -1) {
       this.activeChildren.splice(index, 1);

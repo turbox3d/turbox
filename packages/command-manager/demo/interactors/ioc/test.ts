@@ -1,20 +1,19 @@
-import { Inject, Injectable } from './index';
+// import { Inject, Injectable } from './index';
 
+// @Injectable()
+// class A {
+//   log(str: string) {
+//     console.log(str);
+//   }
+// }
 
-@Injectable()
-class A {
-    log(str: string) {
-        console.log(str);
-    }
-}
+// class B {
+//   @Inject() a: A;
 
-class B {
-    @Inject() a: A;
+//   log() {
+//     this.a.log('quan');
+//   }
+// }
 
-    log() {
-        this.a.log('quan');
-    }
-}
-
-const b = new B();
-b.log();
+// const b = new B();
+// b.log();

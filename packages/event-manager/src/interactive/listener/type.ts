@@ -35,7 +35,7 @@ export enum InteractiveEvent {
   DragStart, // 涵盖移动端的 pan
   DragMove, // 涵盖移动端的 pan
   DragEnd, // 涵盖移动端的 pan
-  Carriage,
+  CarriageMove,
   CarriageEnd,
   Hover,
   Wheel,
@@ -47,6 +47,28 @@ export enum InteractiveEvent {
   RotateEnd,
   Press,
   PressUp,
+}
+
+export enum EventType {
+  onClick,
+  onDBClick,
+  onRightClick,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
+  onCarriageMove,
+  onCarriageEnd,
+  onHoverIn,
+  onHoverOut,
+  onWheel,
+  onPinchStart,
+  onPinch,
+  onPinchEnd,
+  onRotateStart,
+  onRotate,
+  onRotateEnd,
+  onPress,
+  onPressUp,
 }
 
 interface PointerEventFunc {

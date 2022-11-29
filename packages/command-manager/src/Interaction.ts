@@ -1,7 +1,7 @@
-import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
-import { CommandEventType, SceneTool } from './type';
+import { ViewEntity, SceneEvent, EventType } from '@turbox3d/event-manager';
+import { SceneTool } from './type';
 
-class BaseInteraction {
+class Interaction {
   protected onClick(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
@@ -77,75 +77,75 @@ class BaseInteraction {
   /**
    * 画布的缩放事件
    */
-  protected onZoom(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
+  protected onWheel(entity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     //
   }
 
   /**
    * 将交互事件分发给自身的回调函数处理
    */
-  protected distributeToSelf(eventType: CommandEventType, ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+  protected distributeToSelf(eventType: EventType, ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
     switch (eventType) {
-    case CommandEventType.onClick:
+    case EventType.onClick:
       this.onClick(ev, event, tools);
       break;
-    case CommandEventType.onDBClick:
+    case EventType.onDBClick:
       this.onDBClick(ev, event, tools);
       break;
-    case CommandEventType.onRightClick:
+    case EventType.onRightClick:
       this.onRightClick(ev, event, tools);
       break;
-    case CommandEventType.onDragStart:
+    case EventType.onDragStart:
       this.onDragStart(ev, event, tools);
       break;
-    case CommandEventType.onDragMove:
+    case EventType.onDragMove:
       this.onDragMove(ev, event, tools);
       break;
-    case CommandEventType.onDragEnd:
+    case EventType.onDragEnd:
       this.onDragEnd(ev, event, tools);
       break;
-    case CommandEventType.onPinchStart:
+    case EventType.onPinchStart:
       this.onPinchStart(ev, event, tools);
       break;
-    case CommandEventType.onPinch:
+    case EventType.onPinch:
       this.onPinch(ev, event, tools);
       break;
-    case CommandEventType.onPinchEnd:
+    case EventType.onPinchEnd:
       this.onPinchEnd(ev, event, tools);
       break;
-    case CommandEventType.onRotateStart:
+    case EventType.onRotateStart:
       this.onRotateStart(ev, event, tools);
       break;
-    case CommandEventType.onRotate:
+    case EventType.onRotate:
       this.onRotate(ev, event, tools);
       break;
-    case CommandEventType.onRotateEnd:
+    case EventType.onRotateEnd:
       this.onRotateEnd(ev, event, tools);
       break;
-    case CommandEventType.onPress:
+    case EventType.onPress:
       this.onPress(ev, event, tools);
       break;
-    case CommandEventType.onPressUp:
+    case EventType.onPressUp:
       this.onPressUp(ev, event, tools);
       break;
-    case CommandEventType.onHoverIn:
+    case EventType.onHoverIn:
       this.onHoverIn(ev, event, tools);
       break;
-    case CommandEventType.onHoverOut:
+    case EventType.onHoverOut:
       this.onHoverOut(ev, event, tools);
       break;
-    case CommandEventType.onCarriageMove:
+    case EventType.onCarriageMove:
       this.onCarriageMove(ev, event, tools);
       break;
-    case CommandEventType.onCarriageEnd:
+    case EventType.onCarriageEnd:
       this.onCarriageEnd(ev, event, tools);
       break;
-    case CommandEventType.onZoom:
-      this.onZoom(ev, event, tools);
+    case EventType.onWheel:
+      this.onWheel(ev, event, tools);
       break;
     default: break;
     }
   }
 }
 
-export { BaseInteraction };
+export { Interaction };

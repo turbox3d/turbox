@@ -190,15 +190,14 @@
   "Create Reactive Interactive Mesh3D": {
     "prefix": "tcrim3",
     "body": [
-      "import { IViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
+      "import { ViewEntity, Reactive, Mesh3D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
       "",
-      "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
+      "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props {",
       "  model: EntityObject;",
       "}",
       "",
       "@Reactive",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends Mesh3D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
-      "  protected isInteractive = true;",
       "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
       "",
       "  // protected getViewEntity() {",
@@ -245,15 +244,14 @@
   "Create Reactive Interactive Mesh2D": {
     "prefix": "tcrim2",
     "body": [
-      "import { IViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
+      "import { ViewEntity, Reactive, Mesh2D, MathUtils, Element, EntityObject, g } from '@turbox3d/turbox';",
       "",
-      "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props extends IViewEntity {",
+      "export interface I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props {",
       "  model: EntityObject;",
       "}",
       "",
       "@Reactive",
       "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity} extends Mesh2D<I${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}ViewEntity}Props> {",
-      "  protected isInteractive = true;",
       "  protected reactivePipeLine = [this.updatePosition, this.updateRotation, this.updateScale];",
       "",
       "  // protected getViewEntity() {",
@@ -384,13 +382,13 @@
     ],
     "description": "Create Mesh Element"
   },
-  "Create CommandBox": {
+  "Create CommandManager": {
     "prefix": "tccb",
     "body": [
-      "import { BaseCommandBox } from '@turbox3d/turbox';",
+      "import { CommandManager } from '@turbox3d/turbox';",
       "import { DefaultCommand } from './default';",
       "",
-      "class AppCommandBox extends BaseCommandBox {",
+      "class AppCommandManager extends CommandManager {",
       "  defaultCommand = new DefaultCommand(this);",
       "",
       "  constructor() {",
@@ -404,17 +402,17 @@
       "  }",
       "}",
       "",
-      "export const appCommandBox = new AppCommandBox();",
+      "export const appCommandMgr = new AppCommandManager();",
       ""
     ],
-    "description": "Create CommandBox"
+    "description": "Create CommandManager"
   },
   "Create Composed Command": {
     "prefix": "tccc",
     "body": [
-      "import { compose, SelectionCommand, HintCommand } from '@turbox3d/turbox';",
+      "import { CommandManager, SelectionCommand, HintCommand } from '@turbox3d/turbox';",
       "",
-      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends compose({",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends CommandManager.compose({",
       "  hint: HintCommand,",
       "  select: SelectionCommand,",
       "}) {",
@@ -429,22 +427,22 @@
     ],
     "description": "Create Composed Command"
   },
-  "Create BaseCommand": {
+  "Create Command": {
     "prefix": "tcbc",
     "body": [
-      "import { BaseCommand, IViewEntity, SceneEvent, ITool, Action, Vec3 } from '@turbox3d/turbox';",
+      "import { Command, ViewEntity, SceneEvent, SceneTool, Action, Vec3 } from '@turbox3d/turbox';",
       "",
-      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends BaseCommand {",
+      "export class ${1:${TM_FILENAME_BASE/(-|^)(\\w+)(\\..+)?/${2:/capitalize}/g}Command} extends Command {",
       "  private action = Action.create('${2:action}');",
       "",
-      "  protected onDragStart(viewEntity: IViewEntity, event: SceneEvent, tools: ITool) {",
+      "  protected onDragStart(viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {",
       "    const scenePosition = event.getScenePosition(0) as Vec3;",
       "    this.action.execute(() => {",
       "",
       "    });",
       "  }",
       "",
-      "  protected onDragMove(viewEntity: IViewEntity, event: SceneEvent, tools: ITool) {",
+      "  protected onDragMove(viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {",
       "    const scenePosition = event.getScenePosition(0) as Vec3;",
       "    this.action.execute(() => {",
       "      ",
@@ -457,6 +455,6 @@
       "}",
       ""
     ],
-    "description": "Create BaseCommand"
+    "description": "Create Command"
   }
 }

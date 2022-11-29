@@ -3,9 +3,9 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommandBox, CommandEventType, SceneTool } from '@turbox3d/command-manager';
-import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
+import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, EventType, ViewEntity } from '@turbox3d/event-manager';
 import { remove, Vec2, Vec3 } from '@turbox3d/shared';
+import { SceneTool, CommandManager } from '@turbox3d/command-manager';
 import { Component, ComponentProps } from './component';
 
 declare global {
@@ -80,9 +80,9 @@ export interface BaseSceneProps {
    */
   onClickNothing?: (event: SceneEvent) => void;
   /**
-   * 处理本场景的 commandBox
+   * 处理本场景的 commandMgr
    */
-  commandBox?: BaseCommandBox;
+  commandMgr?: CommandManager;
   /**
    * 2d 相机的尺寸（x是宽度、y是高度）单位：毫米
    */
@@ -122,7 +122,7 @@ export interface ViewInfo {
 }
 
 export interface SceneContext {
-  getCommandBox: () => BaseCommandBox | undefined;
+  getCommandManager: () => CommandManager | undefined;
   getSceneTools: () => SceneTool;
 }
 
@@ -212,7 +212,7 @@ export abstract class BaseScene<
     // 初始化交互控制器
     this.initInteractiveController();
     this.sceneContext = {
-      getCommandBox: () => this.props.commandBox,
+      getCommandManager: () => this.props.commandMgr,
       getSceneTools: this.getSceneTools,
     };
   }
@@ -611,147 +611,147 @@ export abstract class BaseScene<
   abstract addRootViewContainer(app: ApplicationContext): void;
 
   onClick = (event: SceneEvent) => {
-    const { onClickNothing, commandBox } = this.props;
+    const { onClickNothing, commandMgr } = this.props;
     if (onClickNothing) {
       onClickNothing(event);
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onClick, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onDBClick = (event: SceneEvent) => {
-    const { onClickNothing, commandBox } = this.props;
+    const { onClickNothing, commandMgr } = this.props;
     if (onClickNothing) {
       onClickNothing(event);
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDBClick, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onDBClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRightClick = (event: SceneEvent) => {
-    const { onClickNothing, commandBox } = this.props;
+    const { onClickNothing, commandMgr } = this.props;
     if (onClickNothing) {
       onClickNothing(event);
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRightClick, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onRightClick, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onDragStart = (event: SceneEvent) => {
-    const { draggable = true, commandBox } = this.props;
+    const { draggable = true, commandMgr } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'start');
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragStart, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onDragStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onDragMove = (event: SceneEvent) => {
-    const { draggable = true, commandBox } = this.props;
+    const { draggable = true, commandMgr } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'move');
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragMove, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onDragMove, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onDragEnd = (event: SceneEvent) => {
-    const { draggable = true, commandBox } = this.props;
+    const { draggable = true, commandMgr } = this.props;
     if (draggable) {
       this.canvasDragImpl(event, 'end');
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onDragEnd, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onDragEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPinchStart = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinchStart, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onPinchStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPinch = (event: SceneEvent) => {
-    const { scalable = true, commandBox } = this.props;
+    const { scalable = true, commandMgr } = this.props;
     if (scalable) {
       this.canvasScaleImpl(event);
     }
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinch, this.getViewEntity(), event, this.getSceneTools());
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onPinch, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPinchEnd = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPinchEnd, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onPinchEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotateStart = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotateStart, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onRotateStart, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotate = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotate, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onRotate, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onRotateEnd = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onRotateEnd, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onRotateEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPress = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPress, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onPress, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPressUp = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onPressUp, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onPressUp, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPointerMove = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onCarriageMove, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onCarriageMove, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onPointerUp = (event: SceneEvent) => {
-    const { commandBox } = this.props;
-    if (commandBox) {
-      commandBox.distributeEvent(CommandEventType.onCarriageEnd, this.getViewEntity(), event, this.getSceneTools());
+    const { commandMgr } = this.props;
+    if (commandMgr) {
+      commandMgr.distributeEvent(EventType.onCarriageEnd, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 
   onWheel = (event: WheelEvent) => {
-    const { scalable = true, commandBox } = this.props;
+    const { scalable = true, commandMgr } = this.props;
     if (scalable) {
       this.canvasScaleImpl(event);
     }
     const ctrl = this.getCurrentInteractiveController();
-    if (commandBox && ctrl) {
-      commandBox.distributeEvent(
-        CommandEventType.onZoom,
+    if (commandMgr && ctrl) {
+      commandMgr.distributeEvent(
+        EventType.onWheel,
         this.getViewEntity(),
         SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint),
         this.getSceneTools()

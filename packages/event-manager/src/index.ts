@@ -13,6 +13,7 @@ export { SceneEvent } from './interactive/sceneEvent';
 export { CoordinateController } from './interactive/coordinate';
 export {
   InteractiveEvent,
+  EventType,
   GesturesExtra,
   Extra,
 } from './interactive/listener/type';

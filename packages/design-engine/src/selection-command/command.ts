@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { BaseCommand } from '@turbox3d/command-manager';
+import { Command } from '@turbox3d/command-manager';
 import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import EntityObject from '../entity-object';
 import { Selection } from './domain';
@@ -32,7 +32,7 @@ interface ISelectCommandParams {
   onUnselectHandler?: (models: EntityObject[]) => void;
 }
 
-export class SelectionCommand extends BaseCommand {
+export class SelectionCommand extends Command {
   static ESelectMode = ESelectMode;
   private selection = new Selection();
   private targetRootEntity?: EntityObject;

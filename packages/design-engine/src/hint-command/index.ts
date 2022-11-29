@@ -1,5 +1,5 @@
 import { Domain, mutation, reactor } from '@turbox3d/reactivity';
-import { BaseCommand } from '@turbox3d/command-manager';
+import { Command } from '@turbox3d/command-manager';
 import { ViewEntity } from '@turbox3d/event-manager';
 import SelectionCommand from '../selection-command/index';
 import EntityObject from '../entity-object';
@@ -18,7 +18,7 @@ class Hint extends Domain {
   }
 }
 
-export default class HintCommand extends BaseCommand {
+export default class HintCommand extends Command {
   private hintDomain = new Hint();
   private selection?: SelectionCommand;
 

@@ -234,7 +234,7 @@ export default class MaterialDragSystem {
       this.moveHandler(event, this.eventCache);
     } else {
       this.triggerEvent(InteractiveEvent.Hover, event);
-      this.triggerEvent(InteractiveEvent.Carriage, event);
+      this.triggerEvent(InteractiveEvent.CarriageMove, event);
     }
   };
 

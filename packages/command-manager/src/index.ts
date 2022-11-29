@@ -1,14 +1,11 @@
-import { CommandEventType, SceneTool } from './command/type';
-import { BaseCommand } from './command/BaseCommand';
-import { BaseCommandBox } from './command/BaseCommandBox';
-import { compose } from './command/compose';
-import { isCommandBox } from './command/util';
+import { Command } from './Command';
+import { CommandManager } from './CommandManager';
+import { isCommandManager } from './util';
+import { SceneTool } from './type';
 
 export {
-  BaseCommand,
-  BaseCommandBox,
-  CommandEventType,
-  compose,
-  isCommandBox,
+  Command,
+  CommandManager,
+  isCommandManager,
   SceneTool,
 };

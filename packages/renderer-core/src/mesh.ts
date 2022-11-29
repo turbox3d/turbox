@@ -1,8 +1,8 @@
 /* eslint-disable react/no-deprecated */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { reactive, Reaction } from '@turbox3d/reactivity';
-import { InteractiveConfig, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
-import { BaseCommandBox, CommandEventType, SceneTool } from '@turbox3d/command-manager';
+import { InteractiveConfig, SceneEvent, ViewEntity, EventType } from '@turbox3d/event-manager';
+import { CommandManager, SceneTool } from '@turbox3d/command-manager';
 import { warn } from '@turbox3d/shared';
 import { BaseScene, SceneType } from './scene';
 import { PureComponent, ComponentProps } from './component';
@@ -31,8 +31,6 @@ export abstract class BaseMesh<
   protected reactivePipeLine: Array<() => void> = [];
   /** 是否默认添加到场景中。默认：true */
   protected autoAppendToWorld = true;
-  /** 是否可交互。默认：false */
-  protected isInteractive = false;
 
   private reactions: Reaction[] = [];
   private interactiveTask: Reaction;
@@ -118,33 +116,33 @@ export abstract class BaseMesh<
    * 标记当前对象是否可点击
    */
   protected onClickable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   /**
    * 标记当前对象是否可 Hover
    */
   protected onHoverable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   /**
    * 标记当前对象是否可拖拽
    */
   protected onDraggable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   protected onPinchable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   protected onRotatable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   protected onPressable() {
-    return this.isInteractive;
+    return this.props.id !== void 0 && this.props.type !== void 0;
   }
 
   protected get interactiveConfig(): InteractiveConfig {
@@ -264,151 +262,151 @@ export abstract class BaseMesh<
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onClick, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onClick, viewEntity as ViewEntity, event, tools);
+      return this.onClick(viewEntity, event, tools);
     }
-    return this.onClick(viewEntity, event, tools);
   };
 
   private _on$DBClick = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onDBClick, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onDBClick, viewEntity as ViewEntity, event, tools);
+      return this.onDBClick(viewEntity, event, tools);
     }
-    return this.onDBClick(viewEntity, event, tools);
   };
 
   private _on$RightClick = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onRightClick, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onRightClick, viewEntity as ViewEntity, event, tools);
+      return this.onRightClick(viewEntity, event, tools);
     }
-    return this.onRightClick(viewEntity, event, tools);
   };
 
   private _on$DragStart = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onDragStart, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onDragStart, viewEntity as ViewEntity, event, tools);
+      return this.onDragStart(viewEntity, event, tools);
     }
-    return this.onDragStart(viewEntity, event, tools);
   };
 
   private _on$DragMove = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onDragMove, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onDragMove, viewEntity as ViewEntity, event, tools);
+      return this.onDragMove(viewEntity, event, tools);
     }
-    return this.onDragMove(viewEntity, event, tools);
   };
 
   private _on$DragEnd = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onDragEnd, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onDragEnd, viewEntity as ViewEntity, event, tools);
+      return this.onDragEnd(viewEntity, event, tools);
     }
-    return this.onDragEnd(viewEntity, event, tools);
   };
 
   private _on$PinchStart = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onPinchStart, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onPinchStart, viewEntity as ViewEntity, event, tools);
+      return this.onPinchStart(viewEntity, event, tools);
     }
-    return this.onPinchStart(viewEntity, event, tools);
   };
 
   private _on$Pinch = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onPinch, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onPinch, viewEntity as ViewEntity, event, tools);
+      return this.onPinch(viewEntity, event, tools);
     }
-    return this.onPinch(viewEntity, event, tools);
   };
 
   private _on$PinchEnd = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onPinchEnd, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onPinchEnd, viewEntity as ViewEntity, event, tools);
+      return this.onPinchEnd(viewEntity, event, tools);
     }
-    return this.onPinchEnd(viewEntity, event, tools);
   };
 
   private _on$RotateStart = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onRotateStart, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onRotateStart, viewEntity as ViewEntity, event, tools);
+      return this.onRotateStart(viewEntity, event, tools);
     }
-    return this.onRotateStart(viewEntity, event, tools);
   };
 
   private _on$Rotate = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onRotate, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onRotate, viewEntity as ViewEntity, event, tools);
+      return this.onRotate(viewEntity, event, tools);
     }
-    return this.onRotate(viewEntity, event, tools);
   };
 
   private _on$RotateEnd = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onRotateEnd, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onRotateEnd, viewEntity as ViewEntity, event, tools);
+      return this.onRotateEnd(viewEntity, event, tools);
     }
-    return this.onRotateEnd(viewEntity, event, tools);
   };
 
   private _on$Press = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onPress, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onPress, viewEntity as ViewEntity, event, tools);
+      return this.onPress(viewEntity, event, tools);
     }
-    return this.onPress(viewEntity, event, tools);
   };
 
   private _on$PressUp = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onPressUp, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onPressUp, viewEntity as ViewEntity, event, tools);
+      return this.onPressUp(viewEntity, event, tools);
     }
-    return this.onPressUp(viewEntity, event, tools);
   };
 
   private _on$HoverIn = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onHoverIn, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onHoverIn, viewEntity as ViewEntity, event, tools);
+      return this.onHoverIn(viewEntity, event, tools);
     }
-    return this.onHoverIn(viewEntity, event, tools);
   };
 
   private _on$HoverOut = (event: SceneEvent) => {
     const tools = this.context.getSceneTools();
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
-      this.forwardToCommand(CommandEventType.onHoverOut, viewEntity as ViewEntity, event, tools);
+      this.forwardToCommand(EventType.onHoverOut, viewEntity as ViewEntity, event, tools);
+      return this.onHoverOut(viewEntity, event, tools);
     }
-    return this.onHoverOut(viewEntity, event, tools);
   };
 
-  /** 转发事件给CommandBox */
-  private forwardToCommand(eventType: CommandEventType, viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {
-    const commandBox = this.context.getCommandBox() as BaseCommandBox;
-    if (commandBox) {
-      commandBox.distributeEvent(eventType, viewEntity, event, tools);
+  /** 转发事件给CommandManager */
+  private forwardToCommand(eventType: EventType, viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {
+    const commandMgr = this.context.getCommandManager() as CommandManager;
+    if (commandMgr) {
+      commandMgr.distributeEvent(eventType, viewEntity, event, tools);
     }
   }
 

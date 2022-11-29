@@ -103,7 +103,7 @@ export class InteractiveController<Container, DisplayObject> {
    * @param canvas
    */
   startListener(canvas: HTMLCanvasElement) {
-    const { Click, DBClick, RightClick, DragStart, DragMove, DragEnd, Hover, Carriage, CarriageEnd, Wheel, PinchStart, Pinch, PinchEnd, RotateStart, Rotate, RotateEnd, Press, PressUp } = InteractiveEvent;
+    const { Click, DBClick, RightClick, DragStart, DragMove, DragEnd, Hover, CarriageMove, CarriageEnd, Wheel, PinchStart, Pinch, PinchEnd, RotateStart, Rotate, RotateEnd, Press, PressUp } = InteractiveEvent;
     this.interactiveListener = InteractiveListener.create(canvas, this.viewport, this.coordinateType);
     this.interactiveListener.registerListener();
     this.interactiveListener
@@ -114,7 +114,7 @@ export class InteractiveController<Container, DisplayObject> {
       .addEventListener(DragMove, this.onDragMove)
       .addEventListener(DragEnd, this.onDragEnd)
       .addEventListener(Hover, this.onHover)
-      .addEventListener(Carriage, this.onCarriage)
+      .addEventListener(CarriageMove, this.onCarriageMove)
       .addEventListener(CarriageEnd, this.onCarriageEnd)
       .addEventListener(Wheel, this.onWheel)
       .addEventListener(PinchStart, this.onPinchStart)
@@ -132,7 +132,7 @@ export class InteractiveController<Container, DisplayObject> {
    * @param canvas
    */
   removeAllListener() {
-    const { Click, DBClick, RightClick, DragStart, DragMove, DragEnd, Hover, Carriage, CarriageEnd, Wheel, PinchStart, Pinch, PinchEnd, RotateStart, Rotate, RotateEnd, Press, PressUp } = InteractiveEvent;
+    const { Click, DBClick, RightClick, DragStart, DragMove, DragEnd, Hover, CarriageMove, CarriageEnd, Wheel, PinchStart, Pinch, PinchEnd, RotateStart, Rotate, RotateEnd, Press, PressUp } = InteractiveEvent;
     this.interactiveListener
       .removeEventListener(Click, this.onClick)
       .removeEventListener(DBClick, this.onDBClick)
@@ -141,7 +141,7 @@ export class InteractiveController<Container, DisplayObject> {
       .removeEventListener(DragMove, this.onDragMove)
       .removeEventListener(DragEnd, this.onDragEnd)
       .removeEventListener(Hover, this.onHover)
-      .removeEventListener(Carriage, this.onCarriage)
+      .removeEventListener(CarriageMove, this.onCarriageMove)
       .removeEventListener(CarriageEnd, this.onCarriageEnd)
       .removeEventListener(Wheel, this.onWheel)
       .removeEventListener(PinchStart, this.onPinchStart)
@@ -380,7 +380,7 @@ export class InteractiveController<Container, DisplayObject> {
     this.canvasHandlers.onPressUp(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onCarriage = throttleInAFrame((event: PointerEvent) => {
+  private onCarriageMove = throttleInAFrame((event: PointerEvent) => {
     this.canvasHandlers.onPointerMove(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }, TaskPriority.UserAction, this.maxFPS);
 
