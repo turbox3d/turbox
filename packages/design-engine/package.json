@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/design-engine",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "Large-scale design application engine library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -77,7 +77,7 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "^1.1.10",
+    "@turbox3d/command-manager": "^1.1.11",
     "@turbox3d/event-manager": "^1.1.9",
     "@turbox3d/math": "^1.1.2",
     "@turbox3d/reactivity": "^2.1.8",
