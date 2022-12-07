@@ -1754,15 +1754,17 @@ turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 ### 指令管理库
 简单来说，这是一个处理图形 entity 交互逻辑的管理器，不同于 web，图形业务中的交互事件通常会比较复杂，由多个事件组合完成，并且也会处理比较多的临时计算、事务等逻辑，有些临时计算还需要反馈到界面上，该框架主要目的是解决如何更好的内聚、扩展、启用卸载交互模块，以达到复用、组合出不同的交互指令，让业务开发更高效、可维护性更高，不耦合视图层和 model 层。
 
-指令管理主要就两个概念 Command 以及 CommandManager。前者是指令组件的基本单元，要声明一个指令只需要继承 Command 即可，指令可以通过 CommandManager.compose 方法组合出一个新的指令，组合过的指令还可以继续自由组合，指令组件可以理解成一个物料，此时它还没生效。而后者就是用来装载指令使其生效的，通常一个场景对应一个 CommandManager，Manager 中可以添加不同的指令，但要特别注意的是，同一时间只有一个指令会被激活，也就是说假如有 ABC 三个指令，你激活了 A，那么 BC 自动会被卸载，激活了 B，AC 自动会被卸载，他们之间是互斥的。
+指令管理主要就两个概念 Command 以及 CommandManager。前者是指令组件的基本单元，要声明一个指令只需要继承 Command 即可，指令还可以通过 CommandManager.compose 方法组合出一个新的指令，组合过的指令还可以继续自由组合，最终可以形成一棵指令节点树。但此时指令并没有生效，只是一个定义，需要通过 CommandManager 来装载指令集合（多棵指令节点树）使他们生效，CommandManager 也有对应的装载完成后的生命周期钩子，装载后就可以在 manager 实例上访问到这些顶层指令集。
 
-这么设计的原因主要是以下场景：比如在刚进入一个场景时，就默认激活一个 default 指令（可能组合了不同的子指令，比如提供了选择、hint 等默认能力），此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令下，不然事件显然会容易混乱冲突，有了 Manager 的能力后，就可以轻松交给框架管理，用户只需要关心我当前需要激活什么指令环境。
+> 通常一个应用场景对应一个 CommandManager 实例，如需指令能力就要把实例传入场景组件的对应 props 中
 
-上面这个案例是图形业务里面必然要解决的。除此之外，指令也提供了重写 active 和 dispose 方法的接口，与之对应的，用户也可以通过指令的实例来调用对应的 active 和 dispose 方法来主动执行激活或卸载。
+Command 上常用的三个方法是 active、apply、dispose。active 用来激活当前 Command 及其子级，为即将到来的交互事件做好准备，但不会使交互事件直接生效（常规情况下用户不需要主动调用）；apply 用来应用当前 Command 及其子级，该方法不仅会强制激活当前 Command 及其子级（调用它们的 active 方法），还会使它们的交互事件生效，通常我们会用它来切换指令集交互事件的作用范围，需要注意的是，同时只能有一个 Command 节点及其子树处于应用状态（这样子就有可能形成兄弟节点的交互事件是互斥的情况，这有助于组织一些交互互斥的业务逻辑，比如在刚进入一个场景时，就默认激活一个 default 指令，可能组合了不同的子指令，比如提供了选择、hint 等默认能力，此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令集下，不然事件显然会冲突，有了这个设计去满足这种场景，代码组织就会变得很简单）；dispose 则是用来注销当前 Command 及其子级，同时将停止响应该指令及子级的交互事件。
 
-> 指令可以通过链式访问的方式来访问指令的子指令、孙子指令上面暴露的方法。
+> 用户可以重写 active 和 dispose 方法，来实现自定义功能
 
-> active、dispose 方法可以传参，从而实现配置化使用指令组件的效果
+> 指令可以通过链式访问的方式来访问指令的子指令、孙子指令上面暴露的方法
+
+> active、dispose 方法可以传参，从而实现指令组件的不同实现效果
 
 > 指令对应的事件回调可以参考 ts 提示的接口，这里不再罗列
 
@@ -1826,17 +1828,15 @@ class ABDCommand extends CommandManager.compose({
 }
 
 // 创建应用唯一的 Manager
-class DemoCommandManager extends CommandManager {
+class DemoCommandManager extends CommandManager.install({
   // 使用独立的 Command
-  aCommand = new ACommand(this);
-
-  eCommand = new ECommand(this);
-
+  aCommand: ACommand,
+  eCommand: ECommand,
   // 使用合成的 Command
-  abdCommand =  new ABDCommand(this);
-
-  constructor() {
-    super();
+  abdCommand: ABDCommand,
+}) {
+  // 声明安装指令集后执行的钩子
+  installed() {
     // 默认启用一个指令
     this.aCommand.apply();
   }
