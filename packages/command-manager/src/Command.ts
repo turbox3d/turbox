@@ -38,8 +38,8 @@ export abstract class Command extends Interaction {
   }
 
   /**
-   * 应用当前 Command 来处理场景中的交互行为
-   * CommandManager 上永远只能有一个 Command 处于应用状态
+   * 应用当前 Command 及其子级，该方法不仅会强制激活当前 Command 及其子级，还会使它们的交互事件生效
+   * 同时只能有一个 Command 节点处于应用状态（兄弟节点的交互事件是互斥的）
    * 永远不用重写该方法，相关初始化逻辑请在 active 接口中编码
    */
   apply(...args: any[]) {
@@ -48,7 +48,7 @@ export abstract class Command extends Interaction {
   }
 
   /**
-   * 激活当前 Command ，将会收到场景视图中的交互事件
+   * 激活当前 Command 及其子级，为即将到来的交互事件做好准备
    */
   active(...args: any[]): void {
     // 将子 command 也激活
@@ -56,8 +56,7 @@ export abstract class Command extends Interaction {
   }
 
   /**
-   * 注销当前 Command
-   * Command 将停止响应场景视图中的交互事件
+   * 注销当前 Command 及其子级，同时将停止响应该指令及子级的交互事件
    */
   dispose(...args: any[]) {
     //

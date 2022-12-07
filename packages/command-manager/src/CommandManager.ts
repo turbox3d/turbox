@@ -4,6 +4,7 @@ import { create } from './create';
 import { compose } from './compose';
 import { manager } from './manager';
 import { SceneTool } from './type';
+import { install } from './install';
 
 export abstract class CommandManager {
   /**
@@ -21,9 +22,17 @@ export abstract class CommandManager {
    */
   static manager = manager;
   /**
+   * 安装声明一系列指令集
+   */
+  static install = install;
+  /**
    * 当前激活的 Command
    */
   protected activeCommand?: Command;
+
+  installed() {
+    //
+  }
 
   toggleCommand(command?: Command) {
     this.activeCommand = command;
