@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/renderer-pixi",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Large-scale declarative 2d graphic ui framework based on pixi",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -68,8 +68,8 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/event-manager": "^1.1.9",
-    "@turbox3d/renderer-core": "^1.0.6",
+    "@turbox3d/event-manager": "^1.1.10",
+    "@turbox3d/renderer-core": "^1.0.7",
     "@turbox3d/shared": "^1.1.4"
   }
 }
