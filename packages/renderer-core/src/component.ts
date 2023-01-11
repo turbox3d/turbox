@@ -24,6 +24,12 @@ export interface PreserveProps {
   onPressUp?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
   onHoverIn?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
   onHoverOut?: (viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) => void;
+  clickable?: boolean;
+  hoverable?: boolean;
+  draggable?: boolean;
+  pinchable?: boolean;
+  rotatable?: boolean;
+  pressable?: boolean;
 }
 
 export type ComponentProps<P> = PreserveProps & Partial<ViewEntity> & P;

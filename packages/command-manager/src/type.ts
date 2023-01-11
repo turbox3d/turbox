@@ -14,7 +14,7 @@ export type ComposedCommand<B, T, M extends IDeclaredMap<T>> = IConstructorOf<B 
 export interface SceneTool {
   updateInteractiveObject: (view: any, config?: InteractiveConfig) => void;
   updateCursor: (cursor?: string) => void;
-  hitTarget: (point: { x: number; y: number }) => ViewEntity | undefined;
+  hitTarget: (point: { x: number; y: number }) => Partial<ViewEntity> | undefined;
   coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType, z?: number) => Vec2 | Vec3;
   getCamera: () => any;
   getRaycaster: () => any;

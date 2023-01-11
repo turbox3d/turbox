@@ -47,7 +47,7 @@ export interface InteractiveConfig {
   onHoverIn: (event: SceneEvent) => void;
   onHoverOut: (event: SceneEvent) => void;
   // 关联的 viewEntity
-  getViewEntity: () => ViewEntity;
+  getViewEntity: () => Partial<ViewEntity>;
 }
 
 export interface CanvasHandlers {

@@ -71,7 +71,8 @@ export abstract class BaseMesh<
           immediately: false,
         }));
       } else {
-        // this.reactivePipeLine.forEach(task => task.call(this));
+        // props上的属性值变了，会强制全部重新执行（因为可能存在非响应式属性传入的情况，导致pipeLine不会重新执行）
+        this.reactivePipeLine.forEach(task => task.call(this));
       }
     }
     if (isCreate) {
@@ -116,33 +117,33 @@ export abstract class BaseMesh<
    * 标记当前对象是否可点击
    */
   protected onClickable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.clickable;
   }
 
   /**
    * 标记当前对象是否可 Hover
    */
   protected onHoverable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.hoverable;
   }
 
   /**
    * 标记当前对象是否可拖拽
    */
   protected onDraggable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.draggable;
   }
 
   protected onPinchable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.pinchable;
   }
 
   protected onRotatable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.rotatable;
   }
 
   protected onPressable() {
-    return this.props.id !== void 0 && this.props.type !== void 0;
+    return !!this.props.pressable;
   }
 
   protected get interactiveConfig(): InteractiveConfig {
@@ -263,8 +264,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onClick, viewEntity as ViewEntity, event, tools);
-      return this.onClick(viewEntity, event, tools);
     }
+    return this.onClick(viewEntity, event, tools);
   };
 
   private _on$DBClick = (event: SceneEvent) => {
@@ -272,8 +273,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onDBClick, viewEntity as ViewEntity, event, tools);
-      return this.onDBClick(viewEntity, event, tools);
     }
+    return this.onDBClick(viewEntity, event, tools);
   };
 
   private _on$RightClick = (event: SceneEvent) => {
@@ -281,8 +282,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onRightClick, viewEntity as ViewEntity, event, tools);
-      return this.onRightClick(viewEntity, event, tools);
     }
+    return this.onRightClick(viewEntity, event, tools);
   };
 
   private _on$DragStart = (event: SceneEvent) => {
@@ -290,8 +291,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onDragStart, viewEntity as ViewEntity, event, tools);
-      return this.onDragStart(viewEntity, event, tools);
     }
+    return this.onDragStart(viewEntity, event, tools);
   };
 
   private _on$DragMove = (event: SceneEvent) => {
@@ -299,8 +300,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onDragMove, viewEntity as ViewEntity, event, tools);
-      return this.onDragMove(viewEntity, event, tools);
     }
+    return this.onDragMove(viewEntity, event, tools);
   };
 
   private _on$DragEnd = (event: SceneEvent) => {
@@ -308,8 +309,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onDragEnd, viewEntity as ViewEntity, event, tools);
-      return this.onDragEnd(viewEntity, event, tools);
     }
+    return this.onDragEnd(viewEntity, event, tools);
   };
 
   private _on$PinchStart = (event: SceneEvent) => {
@@ -317,8 +318,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onPinchStart, viewEntity as ViewEntity, event, tools);
-      return this.onPinchStart(viewEntity, event, tools);
     }
+    return this.onPinchStart(viewEntity, event, tools);
   };
 
   private _on$Pinch = (event: SceneEvent) => {
@@ -326,8 +327,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onPinch, viewEntity as ViewEntity, event, tools);
-      return this.onPinch(viewEntity, event, tools);
     }
+    return this.onPinch(viewEntity, event, tools);
   };
 
   private _on$PinchEnd = (event: SceneEvent) => {
@@ -335,8 +336,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onPinchEnd, viewEntity as ViewEntity, event, tools);
-      return this.onPinchEnd(viewEntity, event, tools);
     }
+    return this.onPinchEnd(viewEntity, event, tools);
   };
 
   private _on$RotateStart = (event: SceneEvent) => {
@@ -344,8 +345,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onRotateStart, viewEntity as ViewEntity, event, tools);
-      return this.onRotateStart(viewEntity, event, tools);
     }
+    return this.onRotateStart(viewEntity, event, tools);
   };
 
   private _on$Rotate = (event: SceneEvent) => {
@@ -353,8 +354,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onRotate, viewEntity as ViewEntity, event, tools);
-      return this.onRotate(viewEntity, event, tools);
     }
+    return this.onRotate(viewEntity, event, tools);
   };
 
   private _on$RotateEnd = (event: SceneEvent) => {
@@ -362,8 +363,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onRotateEnd, viewEntity as ViewEntity, event, tools);
-      return this.onRotateEnd(viewEntity, event, tools);
     }
+    return this.onRotateEnd(viewEntity, event, tools);
   };
 
   private _on$Press = (event: SceneEvent) => {
@@ -371,8 +372,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onPress, viewEntity as ViewEntity, event, tools);
-      return this.onPress(viewEntity, event, tools);
     }
+    return this.onPress(viewEntity, event, tools);
   };
 
   private _on$PressUp = (event: SceneEvent) => {
@@ -380,8 +381,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onPressUp, viewEntity as ViewEntity, event, tools);
-      return this.onPressUp(viewEntity, event, tools);
     }
+    return this.onPressUp(viewEntity, event, tools);
   };
 
   private _on$HoverIn = (event: SceneEvent) => {
@@ -389,8 +390,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onHoverIn, viewEntity as ViewEntity, event, tools);
-      return this.onHoverIn(viewEntity, event, tools);
     }
+    return this.onHoverIn(viewEntity, event, tools);
   };
 
   private _on$HoverOut = (event: SceneEvent) => {
@@ -398,8 +399,8 @@ export abstract class BaseMesh<
     const viewEntity = this.getViewEntity();
     if (viewEntity.id !== void 0 && viewEntity.type !== void 0) {
       this.forwardToCommand(EventType.onHoverOut, viewEntity as ViewEntity, event, tools);
-      return this.onHoverOut(viewEntity, event, tools);
     }
+    return this.onHoverOut(viewEntity, event, tools);
   };
 
   /** 转发事件给CommandManager */
