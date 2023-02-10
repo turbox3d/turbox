@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/event-manager",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Large-scale productivity application event management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -63,6 +63,6 @@
   },
   "dependencies": {
     "@turbox3d/math": "^1.1.2",
-    "@turbox3d/shared": "^1.1.4"
+    "@turbox3d/shared": "^1.1.5"
   }
 }
