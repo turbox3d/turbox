@@ -17,17 +17,23 @@ export function pointInRect(p: Vec2, rect: Vec2[]) {
   return c1 <= 0 && c2 <= 0;
 }
 
+interface ICanvasRect {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}
+
 /**
  * 获得点击位置相对于 canvas 的坐标
  * 如果输入参数不合法，或点击位置超出 canvas 的 clientRect 则返回 undefined
  * @param vec 事件坐标
  * @param canvas 要接受的 canvas 对象
  */
-export function getRelativePositionFromEvent(vec: Vec2, canvas: HTMLCanvasElement) {
-  const rect = canvas.getBoundingClientRect();
+export function getRelativePositionFromEvent(vec: Vec2, rect: ICanvasRect) {
   const point = {
-    x: vec.x - rect.left,
-    y: vec.y - rect.top,
+    x: vec.x - rect.x,
+    y: vec.y - rect.y,
   };
   if (point.x <= 0 || point.y <= 0 || point.x > rect.width || point.y > rect.height) {
     return undefined;

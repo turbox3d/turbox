@@ -3,7 +3,7 @@ import { BaseMesh, ComponentProps } from '@turbox3d/renderer-core';
 import { Vec2 } from '@turbox3d/shared';
 import { Scene3D } from '../Scene3D/index';
 
-export abstract class Mesh3D<Props extends object = {}> extends BaseMesh<Props, THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite, Vec2> {
+export abstract class Mesh3D<Props extends object = {}> extends BaseMesh<Props, THREE.WebGLRenderer, HTMLCanvasElement, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite, Vec2> {
   constructor(props = {} as ComponentProps<Props>) {
     super(props);
   }

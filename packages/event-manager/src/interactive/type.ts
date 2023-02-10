@@ -68,7 +68,7 @@ export interface CanvasHandlers {
   onPressUp: (event: SceneEvent) => void;
   onPointerMove: (event: SceneEvent) => void;
   onPointerUp: (event: SceneEvent) => void;
-  onWheel: (event: WheelEvent) => void;
+  onWheel: (event: SceneEvent) => void;
 }
 
 export type InteractiveType = 'isClickable' | 'isDraggable' | 'isHoverable' | 'isPinchable' | 'isRotatable' | 'isPressable';
@@ -81,3 +81,12 @@ export interface ViewportInfo {
   visible: boolean;
   resolution?: number;
 }
+
+interface ICustomEvent {
+  clientX: number;
+  clientY: number;
+  [key: string]: any;
+}
+
+// 原生事件集合
+export type NativeEventSet = PointerEvent | WheelEvent | Touch | ICustomEvent;

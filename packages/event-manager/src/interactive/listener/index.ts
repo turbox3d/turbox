@@ -1,22 +1,21 @@
-import { getRelativePositionFromEvent, pointInRect, Vec2 } from '@turbox3d/shared';
+import { getRelativePositionFromEvent, pointInRect, Vec2, getContextEnv } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
 import { DragStatus, ICallBack, IFunc, InteractiveEvent, MouseDealType, GesturesExtra, Extra } from './type';
 import { isMouseMoved } from './utils';
-import { ViewportInfo } from '../type';
+import { ViewportInfo, NativeEventSet } from '../type';
 
 /**
  * 场景鼠标交互事件转化器
  * 将目标画布上的鼠标事件转化为场景之间，诸如：onClick, onDrag, onCarriage, onHover ...
  */
-export class InteractiveListener {
+export class InteractiveListener<Renderer> {
   static moveTolerance = 4;
-  static touchableDevice = 'ontouchstart' in window;
-  static create(canvas: HTMLCanvasElement, viewport?: ViewportInfo, coordinateType?: string) {
+  static create<Renderer>(canvas: Renderer, viewport?: ViewportInfo, coordinateType?: string) {
     return new InteractiveListener(canvas, viewport, coordinateType);
   }
   private listeners: Map<InteractiveEvent, IFunc[]> = new Map();
   /** 渲染器的 canvas 元素 */
-  private canvas: HTMLCanvasElement;
+  private canvas: Renderer;
   /** 当前鼠标是否处于按下状态 */
   private isMouseDown = false;
   private mouseDownInfo?: Vec2;
@@ -42,7 +41,7 @@ export class InteractiveListener {
   /** 使用 x 还是 y 轴间距作为缩放系数计算因子 */
   private useX?: boolean;
 
-  constructor(canvas: HTMLCanvasElement, viewport?: ViewportInfo, coordinateType?: string) {
+  constructor(canvas: Renderer, viewport?: ViewportInfo, coordinateType?: string) {
     this.canvas = canvas;
     this.viewport = viewport;
     this.coordinateType = coordinateType;
@@ -52,7 +51,7 @@ export class InteractiveListener {
     this.viewport = viewport;
   };
 
-  addEventListener<E extends InteractiveEvent>(event: E, func: ICallBack<E>) {
+  addEventListener<E extends InteractiveEvent>(event: E, func: ICallBack) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
@@ -61,7 +60,7 @@ export class InteractiveListener {
     return this;
   }
 
-  removeEventListener<E extends InteractiveEvent>(event: E, func?: ICallBack<E>) {
+  removeEventListener<E extends InteractiveEvent>(event: E, func?: ICallBack) {
     if (this.listeners.has(event)) {
       if (!func) {
         // 停止监听当前事件
@@ -88,42 +87,56 @@ export class InteractiveListener {
   }
 
   dispose() {
-    if (InteractiveListener.touchableDevice) {
-      this.canvas.removeEventListener('touchstart', this.onTouchDown);
-      document.removeEventListener('touchmove', this.onTouchMove);
-      document.removeEventListener('touchend', this.onTouchUp);
-      document.removeEventListener('touchcancel', this.onTouchUp);
+    if (getContextEnv() === 'browser') {
+      const canvas = this.canvas as unknown as HTMLCanvasElement;
+      if ('ontouchstart' in window) {
+        canvas.removeEventListener('touchstart', this.onTouchDown);
+        document.removeEventListener('touchmove', this.onTouchMove);
+        document.removeEventListener('touchend', this.onTouchUp);
+        document.removeEventListener('touchcancel', this.onTouchUp);
+      } else {
+        canvas.removeEventListener('pointerdown', this.onMouseDown);
+        document.removeEventListener('pointermove', this.onMouseMove);
+        document.removeEventListener('pointerup', this.onMouseUp);
+        document.removeEventListener('pointercancel', this.onMouseUp);
+        document.removeEventListener('pointerleave', this.onMouseUp);
+        canvas.removeEventListener('dblclick', this.onDBClick);
+        canvas.removeEventListener('wheel', this.onWheel);
+        canvas.removeEventListener('contextmenu', this.preventDefault);
+      }
     } else {
-      this.canvas.removeEventListener('pointerdown', this.onMouseDown);
-      document.removeEventListener('pointermove', this.onMouseMove);
-      document.removeEventListener('pointerup', this.onMouseUp);
-      document.removeEventListener('pointercancel', this.onMouseUp);
-      document.removeEventListener('pointerleave', this.onMouseUp);
-      this.canvas.removeEventListener('dblclick', this.onDBClick);
-      this.canvas.removeEventListener('wheel', this.onWheel);
-      this.canvas.removeEventListener('contextmenu', this.preventDefault);
+      // vm 环境事件通过 context 清除
+      // global.disposeAllEvent
     }
   }
 
   registerListener() {
-    if (InteractiveListener.touchableDevice) {
-      this.canvas.addEventListener('touchstart', this.onTouchDown);
-      document.addEventListener('touchmove', this.onTouchMove);
-      document.addEventListener('touchend', this.onTouchUp);
-      document.addEventListener('touchcancel', this.onTouchUp);
+    if (getContextEnv() === 'browser') {
+      const canvas = this.canvas as unknown as HTMLCanvasElement;
+      if ('ontouchstart' in window) {
+        canvas.addEventListener('touchstart', this.onTouchDown);
+        document.addEventListener('touchmove', this.onTouchMove);
+        document.addEventListener('touchend', this.onTouchUp);
+        document.addEventListener('touchcancel', this.onTouchUp);
+      } else {
+        canvas.addEventListener('pointerdown', this.onMouseDown);
+        document.addEventListener('pointermove', this.onMouseMove);
+        document.addEventListener('pointerup', this.onMouseUp);
+        document.addEventListener('pointercancel', this.onMouseUp);
+        document.addEventListener('pointerleave', this.onMouseUp);
+        canvas.addEventListener('dblclick', this.onDBClick);
+        canvas.addEventListener('wheel', this.onWheel);
+        canvas.addEventListener('contextmenu', this.preventDefault);
+      }
     } else {
-      this.canvas.addEventListener('pointerdown', this.onMouseDown);
-      document.addEventListener('pointermove', this.onMouseMove);
-      document.addEventListener('pointerup', this.onMouseUp);
-      document.addEventListener('pointercancel', this.onMouseUp);
-      document.addEventListener('pointerleave', this.onMouseUp);
-      this.canvas.addEventListener('dblclick', this.onDBClick);
-      this.canvas.addEventListener('wheel', this.onWheel);
-      this.canvas.addEventListener('contextmenu', this.preventDefault);
+      // vm 环境事件通过 context 传递
+      // global.onClick = (e) => {
+      //   this.triggerEvent(InteractiveEvent.Click, e);
+      // };
     }
   }
 
-  private triggerEvent(e: InteractiveEvent, event: PointerEvent | WheelEvent | Touch, extra?: GesturesExtra | Extra) {
+  private triggerEvent(e: InteractiveEvent, event: NativeEventSet, extra?: GesturesExtra | Extra) {
     // 判断是否在当前视口，不在的过滤掉，不触发
     if (this.viewport) {
       const { x, y, width, height } = this.viewport;
@@ -133,13 +146,20 @@ export class InteractiveListener {
         y: y + height,
       };
       const rect = [p1, p2];
-      const point = getRelativePositionFromEvent(
-        {
-          x: event.clientX,
-          y: event.clientY,
-        },
-        this.canvas
-      );
+      let point: Vec2 | undefined;
+      if (getContextEnv() === 'browser') {
+        const canvas = this.canvas as unknown as HTMLCanvasElement;
+        point = getRelativePositionFromEvent(
+          {
+            x: event.clientX,
+            y: event.clientY,
+          },
+          canvas.getBoundingClientRect(),
+        );
+      } else {
+        // vm 环境
+        // global.getRelativePositionFromEvent
+      }
       if (!point) {
         return;
       }
@@ -292,7 +312,7 @@ export class InteractiveListener {
     }
     if (this.isMouseDown) {
       // 多点触控下，当前用于识别的事件先默认取第一个
-      if (eventArr[0].target === this.canvas) {
+      if (eventArr[0].target === this.canvas as unknown as HTMLCanvasElement) {
         event.preventDefault();
       }
       this.moveHandler(eventArr[0], eventArr);
@@ -307,7 +327,7 @@ export class InteractiveListener {
       if (this.mouseDealType === MouseDealType.Drag) {
         this.triggerEvent(InteractiveEvent.DragEnd, event);
       } else if (this.mouseDealType === MouseDealType.Click) {
-        if (InteractiveListener.touchableDevice) {
+        if ('ontouchstart' in window) {
           this.triggerEvent(InteractiveEvent.Click, event);
         } else {
           const tempEvent = event as PointerEvent;
@@ -350,14 +370,15 @@ export class InteractiveListener {
   private onTouchUp = (event: TouchEvent) => {
     const eventArr = Array.from(event.targetTouches || event.touches);
     // 多点触控下，当前用于识别的事件先默认取第一个
-    if (event.changedTouches[0].target === this.canvas) {
+    if (event.changedTouches[0].target === this.canvas as unknown as HTMLCanvasElement) {
       event.preventDefault();
     }
     this.upHandler(event.changedTouches[0], eventArr);
   };
 
   private onWheel = (event: WheelEvent) => {
-    this.preventDefault(event);
+    event.preventDefault();
+    event.stopImmediatePropagation();
     this.triggerEvent(InteractiveEvent.Wheel, event);
   };
 

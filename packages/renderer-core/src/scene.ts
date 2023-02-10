@@ -4,7 +4,7 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, EventType, ViewEntity } from '@turbox3d/event-manager';
-import { remove, Vec2, Vec3 } from '@turbox3d/shared';
+import { remove, Vec2, Vec3, getContextParam, getContextEnv } from '@turbox3d/shared';
 import { SceneTool, CommandManager } from '@turbox3d/command-manager';
 import { Component, ComponentProps } from './component';
 
@@ -14,8 +14,14 @@ declare global {
   }
 }
 
-interface IInteractiveControllerInfo<Container, DisplayObject> {
-  [id: string]: InteractiveController<Container, DisplayObject>;
+interface IInteractiveControllerInfo<Container, DisplayObject, Renderer> {
+  [id: string]: InteractiveController<Container, DisplayObject, Renderer>;
+}
+
+interface ICanvasInfo<Renderer> {
+  height: number;
+  width: number;
+  renderer: Renderer;
 }
 
 export interface ViewportInfo {
@@ -35,18 +41,18 @@ export enum SceneType {
 export interface BaseSceneProps {
   /**
    * 用以标示当前场景的 ID
+   * 当多个不同 id 的场景关联到同一容器中时，可用于区分场景和隔离交互控制器
    */
   id: string;
   /**
-   * 用以标示当前场景的 symbol
+   * 用以标示当前场景的类型
    */
   type?: symbol;
   /**
-   * 画布的 DOM 容器
-   * 可接受 ID 或者 DOM 元素
-   * 当多个场景向同一个 dom 插入时默认创建多个根视图容器，而不是新的 canvas
+   * 画布容器标识
+   * 多个不同 id 的场景可关联同一个容器/渲染器上下文
    */
-  container: string | HTMLElement;
+  container: string;
   /**
    * 根视图容器参数（在一个 renderer 中渲染多个子视图并互相隔离时使用）
    */
@@ -88,13 +94,13 @@ export interface BaseSceneProps {
    */
   camera2dSize?: Vec2;
   /** 相机的初始位置 */
-  cameraPosition: Vec3 | Vec2;
+  cameraPosition?: Vec3 | Vec2;
   /** 视椎体的大小（高度），只供 3d 正交相机使用 */
   frustumSize?: number;
   /** 坐标系类型 */
   coordinateType?: 'top' | 'front' | 'left';
   /** resizeTo 适配的 dom id 或元素引用 */
-  resizeTo?: string | HTMLElement | Window;
+  resizeTo?: string | Window;
   /** 分辨率 */
   resolution?: number;
   /** 保留绘制缓存数据，用来截图 */
@@ -128,12 +134,13 @@ export interface SceneContext {
 
 export abstract class BaseScene<
   ApplicationContext,
+  Renderer,
   Scene,
   Camera,
   Raycaster,
   Container,
   DisplayObject,
-  Viewport
+  Viewport,
 > extends Component<BaseSceneProps> {
   /** 默认背景色 */
   static BACKGROUND_COLOR = 0xffffff;
@@ -147,11 +154,11 @@ export abstract class BaseScene<
   static SCALE_BIGGER = 1.1;
   static SCALE_SMALLER = 1 / 1.1;
   /** 挂载点与应用上下文的映射关系 */
-  static appMap = new Map<string | HTMLElement, any>();
+  static appMap = new Map<string, any>();
   /** 应用上下文与不同视角交互控制器的映射关系 */
-  static interactiveMap = new Map<any, IInteractiveControllerInfo<any, any>>();
+  static interactiveMap = new Map<any, IInteractiveControllerInfo<any, any, any>>();
   /** 应用上下文是否已经挂载的状态 */
-  static appMountedStatus = new Map<string | HTMLElement, boolean>();
+  static appMountedStatus = new Map<string, boolean>();
   /** 模型实际容器 */
   view: Container;
   /** 默认的场景视图类型标识 */
@@ -191,9 +198,9 @@ export abstract class BaseScene<
     super(props);
     this.maxFPS = this.props.maxFPS || 60;
     if (this.props.viewport) {
-      this.resolution = this.props.viewport.resolution || window.devicePixelRatio;
+      this.resolution = this.props.viewport.resolution || getContextParam('devicePixelRatio');
     } else {
-      this.resolution = this.props.resolution || window.devicePixelRatio;
+      this.resolution = this.props.resolution || getContextParam('devicePixelRatio');
     }
     this.updateRenderFlag(this.props.renderFlag);
     if (!BaseScene.appMap.has(this.props.container)) {
@@ -205,9 +212,9 @@ export abstract class BaseScene<
     }
     this.view = this.createView();
     // 初始化坐标系系统
-    const tempApp = this.getCurrentApp();
-    if (tempApp) {
-      this.coordinate = this.createCoordinateController(tempApp);
+    const currentApp = this.getCurrentApp();
+    if (currentApp) {
+      this.coordinate = this.createCoordinateController(currentApp);
     }
     // 初始化交互控制器
     this.initInteractiveController();
@@ -218,8 +225,7 @@ export abstract class BaseScene<
   }
 
   componentDidMount() {
-    this.mountCanvas();
-    this.props.initialized && this.props.initialized(this.getSceneTools());
+    this.loadCanvas();
   }
 
   componentDidUpdate() {
@@ -234,7 +240,7 @@ export abstract class BaseScene<
       this.updateCameraInfo();
     }
     if (!viewport) {
-      this.resolution = this.props.resolution || window.devicePixelRatio;
+      this.resolution = this.props.resolution || getContextParam('devicePixelRatio');
       this.updateResolution(app);
       !disableResize && this.resizeStageByCanvas(app);
       return;
@@ -243,23 +249,26 @@ export abstract class BaseScene<
     if (ctrl) {
       ctrl.updateViewportInfo(viewport);
     }
-    this.resolution = viewport.resolution || window.devicePixelRatio;
+    this.resolution = viewport.resolution || getContextParam('devicePixelRatio');
     this.updateResolution(app);
     !disableResize && this.resizeStageByCanvas(app);
     // 重新计算 viewport
     this.computeViewport();
   }
 
+  /**
+   * 卸载画布的钩子（主要做一些清理回收工作，浏览器环境下无需另外实现）
+   */
+  abstract unmountCanvas(): void;
+
   componentWillUnmount() {
-    if (window.$$turbox_hot) {
+    if (getContextParam('$$turbox_hot')) {
       const app = this.getCurrentApp();
       if (app) {
         this.removeAppChildrenView(app);
       }
       return;
     }
-    // 如果视图还未挂载，则取消挂在任务
-    this.mountTimer && cancelAnimationFrame(this.mountTimer);
     // 取消事件监听
     const ctrl = this.getCurrentInteractiveController();
     if (ctrl) {
@@ -273,7 +282,13 @@ export abstract class BaseScene<
       BaseScene.appMap.delete(this.props.container);
       BaseScene.appMountedStatus.delete(this.props.container);
     }
-    window.removeEventListener('resize', this.resizeHandler, false);
+    if (getContextEnv() === 'browser') {
+      this.mountTimer && cancelAnimationFrame(this.mountTimer);
+      window.removeEventListener('resize', this.resizeHandler, false);
+    } else {
+      // vm 环境
+      this.unmountCanvas();
+    }
   }
 
   /** 移除应用子视图 */
@@ -297,7 +312,7 @@ export abstract class BaseScene<
   /** 关闭渲染器的默认交互 */
   abstract destroyRendererInteraction(app: ApplicationContext): void;
 
-  abstract getCanvasView(app: ApplicationContext): HTMLCanvasElement;
+  abstract getCanvasView(app: ApplicationContext): ICanvasInfo<Renderer>;
 
   /** 获取 hitTarget 的原始实现方法 */
   abstract getHitTargetOriginal(): (
@@ -322,8 +337,8 @@ export abstract class BaseScene<
     if (!app) {
       return;
     }
-    const interactiveController = new InteractiveController<Container, DisplayObject>({
-      renderer: this.getCanvasView(app),
+    const interactiveController = InteractiveController.create<Container, DisplayObject, Renderer>({
+      renderer: this.getCanvasView(app).renderer,
       container: this.view,
       viewport: this.props.viewport,
       coordinateType: this.props.coordinateType,
@@ -437,27 +452,40 @@ export abstract class BaseScene<
   private coordinateTransform = (point: Vec2, type: CoordinateType, z?: number) => (this.coordinate ? this.coordinate.transform(point, type, z) : { x: 0, y: 0 });
 
   /**
-   * 挂在画布到容器上
+   * 将渲染器/画布挂载到视图布局上（浏览器环境下无需另外实现）
    */
-  private mountCanvas = () => {
-    const { container } = this.props;
-    const el = typeof container === 'string' ? document.getElementById(container) : container;
-    // 如果容器 DOM 没有准备好，留到下一帧再检测
-    if (!el) {
-      this.mountTimer = requestAnimationFrame(this.mountCanvas);
-      return;
-    }
+  abstract mountCanvas(renderer: Renderer): void;
+
+  private loadCanvas() {
     const app = this.getCurrentApp();
     if (!app) {
       return;
     }
-    // 挂载
-    if (!BaseScene.appMountedStatus.has(container)) {
-      BaseScene.appMountedStatus.set(container, true);
-      if (window.$$turbox_hot) {
-        el.innerHTML = '';
+    const renderer = this.getCanvasView(app).renderer;
+    if (getContextEnv() === 'browser') {
+      const { container } = this.props;
+      const el = document.getElementById(container);
+      // 如果容器 DOM 没有准备好，留到下一帧再检测
+      if (!el) {
+        this.mountTimer = requestAnimationFrame(this.loadCanvas);
+        return;
       }
-      el.appendChild(this.getCanvasView(app));
+      // 挂载
+      if (!BaseScene.appMountedStatus.has(container)) {
+        BaseScene.appMountedStatus.set(container, true);
+        if (getContextParam('$$turbox_hot')) {
+          el.innerHTML = '';
+        }
+        el.appendChild(renderer as unknown as HTMLCanvasElement);
+      }
+      window.addEventListener('resize', this.resizeHandler, false);
+    } else {
+      // vm 环境
+      const { container } = this.props;
+      if (!BaseScene.appMountedStatus.has(container)) {
+        BaseScene.appMountedStatus.set(container, true);
+        this.mountCanvas(renderer);
+      }
     }
     // 根据容器大小确定画布大小
     this.resizeStageByCanvas(app);
@@ -470,12 +498,12 @@ export abstract class BaseScene<
       this.initSkyBox(app);
     }
     // 初始化模型容器
-    this.initViewContainer();
+    this.addRootViewContainer(app);
     // 开始监听画布上的交互
     const ctrl = this.getCurrentInteractiveController();
-    ctrl && ctrl.startListener(this.getCanvasView(app));
-    window.addEventListener('resize', this.resizeHandler, false);
-  };
+    ctrl && ctrl.startListener();
+    this.props.initialized && this.props.initialized(this.getSceneTools());
+  }
 
   private updateCameraInfo() {
     const { cameraPosition } = this.props;
@@ -539,9 +567,9 @@ export abstract class BaseScene<
     const scale = Math.min(width / rangeW, height / rangeH);
     const centerX = width / 2;
     const centerY = height / 2;
-    const pX = cameraPosition.x === void 0 ? centerX : cameraPosition.x;
+    const pX = cameraPosition?.x === void 0 ? centerX : cameraPosition.x;
     let pY: number;
-    if (cameraPosition.y === void 0) {
+    if (cameraPosition?.y === void 0) {
       pY = centerY;
     } else if (coordinateType === 'front' || coordinateType === 'left') {
       pY = -cameraPosition.y;
@@ -597,15 +625,6 @@ export abstract class BaseScene<
 
   /** 设置根视图是否可见 */
   abstract setViewVisible(visible: boolean): void;
-
-  /** 初始化模型容器 */
-  private initViewContainer() {
-    const app = this.getCurrentApp();
-    if (!app) {
-      return;
-    }
-    this.addRootViewContainer(app);
-  }
 
   /** 添加根视图容器到 app stage 的实现 */
   abstract addRootViewContainer(app: ApplicationContext): void;
@@ -743,7 +762,7 @@ export abstract class BaseScene<
     }
   };
 
-  onWheel = (event: WheelEvent) => {
+  onWheel = (event: SceneEvent) => {
     const { scalable = true, commandMgr } = this.props;
     if (scalable) {
       this.canvasScaleImpl(event);
@@ -753,7 +772,7 @@ export abstract class BaseScene<
       commandMgr.distributeEvent(
         EventType.onWheel,
         this.getViewEntity(),
-        SceneEvent.create(event, this.getCoordinateCtrl, ctrl.hitTargetOriginalByPoint),
+        event,
         this.getSceneTools()
       );
     }
@@ -763,7 +782,7 @@ export abstract class BaseScene<
   abstract canvasDragImpl(event: SceneEvent, type: 'start' | 'move' | 'end'): void;
 
   /** 画布缩放功能的实现，注意：如果已经引入其他交互插件则无需重复实现，避免实现上的冲突 */
-  abstract canvasScaleImpl(event: WheelEvent | SceneEvent): void;
+  abstract canvasScaleImpl(event: SceneEvent): void;
 
   /** 获取视口的实现 */
   abstract getViewport(): Viewport | undefined;

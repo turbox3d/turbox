@@ -8,7 +8,7 @@ interface Listener {
  * 快捷键注册器
  */
 class HotKeyListener {
-  private dom: HTMLDocument;
+  private dom: Document;
 
   private listener: Listener;
 
@@ -19,7 +19,7 @@ class HotKeyListener {
    */
   private keyMap: { [key: string]: string } = {};
 
-  constructor(dom: HTMLDocument, listener: Listener) {
+  constructor(dom: Document, listener: Listener) {
     this.dom = dom;
     this.listener = listener;
 
@@ -46,14 +46,14 @@ class HotKeyListener {
     return true;
   }
 
-  private addListener(dom: HTMLDocument) {
+  private addListener(dom: Document) {
     // todo 考虑 keydown keypress keyup 的补充场景
     dom.addEventListener('keydown', this.onKeyDown);
     // dom.addEventListener('keypress', this.onKeyPress);
     // dom.addEventListener('keyup', this.onKeyUp);
   }
 
-  private removeListener(dom: HTMLDocument) {
+  private removeListener(dom: Document) {
     dom.removeEventListener('keydown', this.onKeyDown);
     // dom.removeEventListener('keypress', this.onKeyPress);
     //   dom.removeEventListener('keyup', this.onKeyUp);

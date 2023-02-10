@@ -1,4 +1,5 @@
 import { Vec2 } from '@turbox3d/shared';
+import { NativeEventSet } from '../type';
 
 /** 标示拖拽阶段 */
 export enum DragStatus {
@@ -71,22 +72,16 @@ export enum EventType {
   onPressUp,
 }
 
-interface PointerEventFunc {
-  (event: PointerEvent | Touch, extra?: GesturesExtra | Extra): void;
-}
-
-interface WheelEventFunc {
-  (event: WheelEvent): void;
-}
-
-export type ICallBack<E extends InteractiveEvent> = E extends InteractiveEvent.Wheel ? WheelEventFunc : PointerEventFunc;
+export type ICallBack = {
+  (event: NativeEventSet, extra?: GesturesExtra | Extra): void;
+};
 
 export interface GesturesExtra {
   scale?: number;
   deltaScale?: number;
   rotate?: number;
   deltaRotate?: number;
-  eventCache?: (PointerEvent | Touch)[];
+  eventCache?: NativeEventSet[];
 }
 
 export interface Extra {
@@ -94,5 +89,5 @@ export interface Extra {
 }
 
 export interface IFunc {
-  (event: PointerEvent | WheelEvent | Touch, extra?: GesturesExtra | Extra): void;
+  (event: NativeEventSet, extra?: GesturesExtra | Extra): void;
 }

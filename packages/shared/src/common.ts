@@ -160,3 +160,19 @@ export function updateQueryStringParameter(url: string, key: string, value: stri
   }
   return `${url}${separator}${key}=${value}`;
 }
+
+export function getContextEnv() {
+  return typeof window !== 'undefined' ? 'browser' : 'vm';
+}
+
+export function getContextParam(key: string) {
+  let value: any;
+  const env = getContextEnv();
+  if (env === 'browser') {
+    value = window[key];
+  }
+  if (env === 'vm') {
+    value = global[key];
+  }
+  return value;
+}

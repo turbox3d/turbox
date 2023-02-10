@@ -15,6 +15,7 @@ const WARN_TXT = 'Passing the {id} and {type} props or rewrite getViewEntity() i
 export abstract class BaseMesh<
   Props extends object,
   ApplicationContext,
+  Renderer,
   Scene,
   Camera,
   Raycaster,
@@ -417,16 +418,16 @@ export abstract class BaseMesh<
   private appendToWorld() {
     if (this.autoAppendToWorld) {
       let parent = getMeshParent(this) as
-        | BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point>
-        | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>
+        | BaseMesh<Props, ApplicationContext, Renderer, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point>
+        | BaseScene<ApplicationContext, Renderer, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>
         | undefined;
       if (parent) {
         const isCameraOrLight = this.viewType === 'camera' || this.viewType === 'light';
         if (isCameraOrLight) {
           while (parent && !(parent instanceof BaseScene && parent.sceneType === SceneType.Scene3D)) {
             parent = getMeshParent(parent) as
-              | BaseMesh<Props, ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point>
-              | BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>
+              | BaseMesh<Props, ApplicationContext, Renderer, Scene, Camera, Raycaster, Container, DisplayObject, Viewport, Point>
+              | BaseScene<ApplicationContext, Renderer, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>
               | undefined;
           }
           if (parent && parent.scene) {
@@ -443,7 +444,7 @@ export abstract class BaseMesh<
 
   /** 往场景中添加对象 */
   abstract addViewToScene(
-    scene: BaseScene<ApplicationContext, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>,
+    scene: BaseScene<ApplicationContext, Renderer, Scene, Camera, Raycaster, Container, DisplayObject, Viewport>,
     view: DisplayObject
   ): void;
 

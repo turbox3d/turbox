@@ -2,13 +2,18 @@
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import { CoordinateType } from './type';
 
+interface ICanvasRect {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+}
+
 export abstract class CoordinateController {
-  private canvas: HTMLCanvasElement;
-
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-  }
-
   /**
    * 将坐标进行转化
    */
@@ -32,7 +37,7 @@ export abstract class CoordinateController {
   }
 
   private screenToCanvas(point: Vec2) {
-    const { x, y } = this.getRect();
+    const { x, y } = this.getCanvasRectImpl();
     return {
       x: point.x - x,
       y: point.y - y,
@@ -40,7 +45,7 @@ export abstract class CoordinateController {
   }
 
   private canvasToScreen(point: Vec2) {
-    const { x, y } = this.getRect();
+    const { x, y } = this.getCanvasRectImpl();
     return {
       x: point.x + x,
       y: point.y + y,
@@ -55,6 +60,9 @@ export abstract class CoordinateController {
     return this.sceneToCanvasImpl(point);
   }
 
+  /** 获取画布矩形包围盒的实现 */
+  abstract getCanvasRectImpl(): ICanvasRect;
+
   /** 画布屏幕坐标转场景世界坐标的实现 */
   abstract canvasToSceneImpl(point: Vec2, z?: number): Vec2 | Vec3;
 
@@ -67,9 +75,5 @@ export abstract class CoordinateController {
 
   private sceneToScreen(point: Vec2 | Vec3) {
     return this.canvasToScreen(this.sceneToCanvas(point));
-  }
-
-  private getRect() {
-    return this.canvas.getBoundingClientRect();
   }
 }

@@ -8,10 +8,16 @@ export const Scene3DSymbol = Symbol('scene3d');
 
 class CoordinateControllerThree extends CoordinateController {
   scene3d: Scene3D;
+  canvas: HTMLCanvasElement;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene3D) {
-    super(canvas);
+    super();
+    this.canvas = canvas;
     this.scene3d = scene;
+  }
+
+  getCanvasRectImpl() {
+    return this.canvas.getBoundingClientRect();
   }
 
   canvasToSceneImpl(point: Vec2, z?: number) {
@@ -75,7 +81,7 @@ class CoordinateControllerThree extends CoordinateController {
   }
 }
 
-export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
+export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
   raycaster = new THREE.Raycaster();
@@ -219,7 +225,20 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   getCanvasView(app: THREE.WebGLRenderer) {
-    return app.domElement;
+    const canvas = app.domElement;
+    return {
+      width: canvas.width,
+      height: canvas.height,
+      renderer: canvas,
+    };
+  }
+
+  unmountCanvas() {
+    //
+  }
+
+  mountCanvas() {
+    //
   }
 
   getHitTargetOriginal() {
@@ -299,11 +318,11 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, THREE.Scene, THREE.C
   }
 
   updateCursor = (app: THREE.WebGLRenderer, cursor: string) => {
-    this.getCanvasView(app).style.cursor = cursor;
+    this.getCanvasView(app).renderer.style.cursor = cursor;
   };
 
   createCoordinateController(app: THREE.WebGLRenderer) {
-    return new CoordinateControllerThree(this.getCanvasView(app), this);
+    return new CoordinateControllerThree(this.getCanvasView(app).renderer, this);
   }
 
   resizeStage = (app: THREE.WebGLRenderer) => {

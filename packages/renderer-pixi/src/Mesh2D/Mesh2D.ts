@@ -2,7 +2,7 @@ import { BaseMesh, ComponentProps } from '@turbox3d/renderer-core';
 import { Vec2 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 
-export abstract class Mesh2D<Props extends object = {}> extends BaseMesh<Props, PIXI.Application, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite, Vec2> {
+export abstract class Mesh2D<Props extends object = {}> extends BaseMesh<Props, PIXI.Application, HTMLCanvasElement, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite, Vec2> {
   constructor(props = {} as ComponentProps<Props>) {
     super(props);
     if (this.view instanceof PIXI.Container) {

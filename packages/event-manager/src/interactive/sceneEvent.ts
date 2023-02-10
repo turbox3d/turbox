@@ -1,29 +1,29 @@
 import { Vec2 } from '@turbox3d/shared';
 import { CoordinateController } from './coordinate';
 import { HitResult } from './index';
-import { CoordinateType } from './type';
+import { CoordinateType, NativeEventSet } from './type';
 import { GesturesExtra, Extra } from './listener/type';
 
 export class SceneEvent<DisplayObject = any> {
   static create<DisplayObject = any>(
-    event: PointerEvent | WheelEvent | Touch,
+    event: NativeEventSet,
     getCoordinateCtrl: () => CoordinateController,
     hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>,
-    extra?: GesturesExtra | Extra,
+    extra?: GesturesExtra | Extra
   ) {
     return new SceneEvent<DisplayObject>(event, getCoordinateCtrl, hitTargetOriginalByPoint, extra);
   }
 
-  event: PointerEvent | WheelEvent | Touch;
+  event: NativeEventSet;
   getCoordinateCtrl: () => CoordinateController;
   hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>;
   extra?: GesturesExtra | Extra;
 
   constructor(
-    event: PointerEvent | WheelEvent | Touch,
+    event: NativeEventSet,
     getCoordinateCtrl: () => CoordinateController,
     hitTargetOriginalByPoint: (point: Vec2) => HitResult<DisplayObject>,
-    extra?: GesturesExtra | Extra,
+    extra?: GesturesExtra | Extra
   ) {
     this.event = event;
     this.getCoordinateCtrl = getCoordinateCtrl;

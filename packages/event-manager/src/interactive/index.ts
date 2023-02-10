@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { TaskPriority, throttleInAFrame, Vec2, Vec3, getRelativePositionFromEvent } from '@turbox3d/shared';
+import { TaskPriority, throttleInAFrame, Vec2, Vec3, getRelativePositionFromEvent, getContextEnv } from '@turbox3d/shared';
 import { CanvasHandlers, InteractiveConfig, InteractiveType, ViewportInfo } from './type';
 import { InteractiveListener } from './listener/index';
 import { InteractiveEvent, GesturesExtra, Extra } from './listener/type';
@@ -15,8 +15,8 @@ export interface HitResult<DisplayObject> {
   originalTargetPoint?: Vec2 | Vec3;
 }
 
-interface Option<Container, DisplayObject> {
-  renderer: HTMLCanvasElement;
+interface Option<Container, DisplayObject, Renderer> {
+  renderer: Renderer;
   container: Container;
   canvasHandler: CanvasHandlers;
   coordinateType?: string;
@@ -31,12 +31,15 @@ interface Option<Container, DisplayObject> {
   maxFPS: number;
 }
 
-export class InteractiveController<Container, DisplayObject> {
+export class InteractiveController<Container, DisplayObject, Renderer> {
+  static create<Container, DisplayObject, Renderer>(option: Option<Container, DisplayObject, Renderer>) {
+    return new InteractiveController(option);
+  }
   /** 渲染器对应的 canvas */
-  private renderer: HTMLCanvasElement;
+  private renderer: Renderer;
   /** 根容器 */
   private container: Container;
-  private interactiveListener: InteractiveListener;
+  private interactiveListener: InteractiveListener<Renderer>;
   /** 交互对象的配置 */
   private interactiveConfig: Map<DisplayObject, InteractiveConfig> = new Map();
   /** 画布处理事件 */
@@ -66,7 +69,7 @@ export class InteractiveController<Container, DisplayObject> {
   /** 最大帧率限制 */
   private maxFPS = 60;
 
-  constructor(option: Option<Container, DisplayObject>) {
+  constructor(option: Option<Container, DisplayObject, Renderer>) {
     this.renderer = option.renderer;
     this.container = option.container;
     this.canvasHandlers = option.canvasHandler;
@@ -102,9 +105,9 @@ export class InteractiveController<Container, DisplayObject> {
    *
    * @param canvas
    */
-  startListener(canvas: HTMLCanvasElement) {
+  startListener() {
     const { Click, DBClick, RightClick, DragStart, DragMove, DragEnd, Hover, CarriageMove, CarriageEnd, Wheel, PinchStart, Pinch, PinchEnd, RotateStart, Rotate, RotateEnd, Press, PressUp } = InteractiveEvent;
-    this.interactiveListener = InteractiveListener.create(canvas, this.viewport, this.coordinateType);
+    this.interactiveListener = InteractiveListener.create<Renderer>(this.renderer, this.viewport, this.coordinateType);
     this.interactiveListener.registerListener();
     this.interactiveListener
       .addEventListener(Click, this.onClick)
@@ -175,11 +178,17 @@ export class InteractiveController<Container, DisplayObject> {
    * 获取本次鼠标事件的交互对象
    */
   private hitTargetHandler(event: PointerEvent | Touch, type: InteractiveType) {
-    // 相对于 canvas 左上角的点击位置，量度与事件点击相同
-    let originalPoint = getRelativePositionFromEvent({
-      x: event.clientX,
-      y: event.clientY,
-    }, this.renderer);
+    let originalPoint: Vec2 | undefined;
+    if (getContextEnv() === 'browser') {
+      const canvas = this.renderer as unknown as HTMLCanvasElement;
+      originalPoint = getRelativePositionFromEvent({
+        x: event.clientX,
+        y: event.clientY,
+      }, canvas.getBoundingClientRect());
+    } else {
+      // vm 环境
+      // global.getRelativePositionFromEvent
+    }
     // 无法根据事件和 renderer 获取合法的点击位置
     if (!originalPoint) {
       return {};
@@ -424,8 +433,6 @@ export class InteractiveController<Container, DisplayObject> {
   }
 
   private onWheel = throttleInAFrame((event: WheelEvent) => {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    this.canvasHandlers.onWheel(event);
+    this.canvasHandlers.onWheel(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   }, TaskPriority.UserAction, this.maxFPS);
 }

@@ -9,10 +9,16 @@ export const Scene2DSymbol = Symbol('scene2d');
 
 class CoordinateControllerPixi extends CoordinateController {
   scene2d: Scene2D;
+  canvas: HTMLCanvasElement;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene2D) {
-    super(canvas);
+    super();
+    this.canvas = canvas;
     this.scene2d = scene;
+  }
+
+  getCanvasRectImpl() {
+    return this.canvas.getBoundingClientRect();
   }
 
   canvasToSceneImpl(point: Vec2) {
@@ -52,7 +58,7 @@ class CoordinateControllerPixi extends CoordinateController {
   }
 }
 
-export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
+export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
 
   sceneType = SceneType.Scene2D;
@@ -276,7 +282,20 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   getCanvasView(app: PIXI.Application) {
-    return app.view;
+    const canvas = app.view;
+    return {
+      width: canvas.width,
+      height: canvas.height,
+      renderer: canvas,
+    };
+  }
+
+  unmountCanvas() {
+    //
+  }
+
+  mountCanvas() {
+    //
   }
 
   getHitTargetOriginal() {
@@ -301,11 +320,11 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
   }
 
   updateCursor = (app: PIXI.Application, cursor: string) => {
-    this.getCanvasView(app).style.cursor = cursor;
+    this.getCanvasView(app).renderer.style.cursor = cursor;
   };
 
   createCoordinateController(app: PIXI.Application) {
-    return new CoordinateControllerPixi(this.getCanvasView(app), this);
+    return new CoordinateControllerPixi(this.getCanvasView(app).renderer, this);
   }
 
   resizeStage = (app: PIXI.Application) => {
@@ -388,16 +407,16 @@ export class Scene2D extends BaseScene<PIXI.Application, never, never, never, PI
     });
   }
 
-  canvasScaleImpl(event: WheelEvent | SceneEvent) {
+  canvasScaleImpl(event: SceneEvent) {
     const { coordinateType } = this.props;
     let ratio = 1;
     let offsetX = 0;
     let offsetY = 0;
-    if (event instanceof WheelEvent) {
-      ratio = event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
-      offsetX = event.offsetX;
-      offsetY = event.offsetY;
-    } else if (event instanceof SceneEvent) {
+    if (event.event instanceof WheelEvent) {
+      ratio = event.event.deltaY > 0 ? BaseScene.SCALE_SMALLER : BaseScene.SCALE_BIGGER;
+      offsetX = event.event.offsetX;
+      offsetY = event.event.offsetY;
+    } else {
       ratio = (event.extra as any)?.deltaScale || 1;
       offsetX = event.event.clientX;
       offsetY = event.event.clientY;
