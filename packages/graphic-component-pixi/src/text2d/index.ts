@@ -47,7 +47,7 @@ export default class Text2d extends Mesh2D<IProps> {
     } else {
       const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
       const parentNode = this._vNode.parent;
-      if (parentNode && parentNode instanceof Container2d) {
+      if (parentNode && parentNode.instance instanceof Container2d) {
         this.view.position.x += left;
         if (parentNode.child === this._vNode) {
           this.view.position.y += top;
