@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox2d",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -31,7 +31,7 @@
     "@turbox3d/command-manager": "^1.1.13",
     "@turbox3d/design-engine": "^1.1.16",
     "@turbox3d/event-manager": "^1.1.11",
-    "@turbox3d/graphic-component-pixi": "^1.1.21",
+    "@turbox3d/graphic-component-pixi": "^1.1.22",
     "@turbox3d/math": "^1.1.2",
     "@turbox3d/reactivity": "^2.1.9",
     "@turbox3d/reactivity-react": "^1.1.9",
