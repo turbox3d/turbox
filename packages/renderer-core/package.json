@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/renderer-core",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Large-scale declarative graphic ui core renderer",
   "main": "./lib/index.js",
   "module": "./es/index.js",
