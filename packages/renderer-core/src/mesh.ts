@@ -72,7 +72,10 @@ export abstract class BaseMesh<
           immediately: false,
         }));
       } else {
-        // props上的属性值变了，会强制全部重新执行（因为可能存在非响应式属性传入的情况，导致pipeLine不会重新执行）
+        /*
+         * props上的属性值变了，会强制全部重新执行（因为可能存在非响应式属性传入的情况，导致pipeLine不会重新执行）
+         * @todo props 和 pipeLine 同时都执行，需要合并
+         */
         this.reactivePipeLine.forEach(task => task.call(this));
       }
     }

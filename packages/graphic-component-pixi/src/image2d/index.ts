@@ -3,6 +3,7 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { fail, Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
+import Container2d from '../container2d';
 
 interface IProps {
   x?: number;
@@ -28,12 +29,12 @@ interface IProps {
   /** top,right,bottom,left */
   // padding?: string;
   /** top,right,bottom,left */
-  // margin?: string;
+  margin?: string;
   zIndex?: number;
 }
 
-/** UI组件-容器 */
-export default class Container2d extends Mesh2D<IProps> {
+/** UI组件-图片 */
+export default class Image2d extends Mesh2D<IProps> {
   protected view: PIXI.Container;
   protected reactivePipeLine = [
     this.updateGeometry,
@@ -117,7 +118,7 @@ export default class Container2d extends Mesh2D<IProps> {
       return;
     }
     const t = await PIXI.Texture.fromURL(backgroundImage).catch(() => {
-      fail('Load container2d backgroundImage texture failed.');
+      fail('Load Image2d backgroundImage texture failed.');
     });
     if (!t) {
       return;
@@ -164,10 +165,25 @@ export default class Container2d extends Mesh2D<IProps> {
   }
 
   updatePosition() {
-    const { position } = this.props;
+    const { position, margin, height } = this.props;
     if (position) {
-      this.view.position.x = position.x;
-      this.view.position.y = position.y;
+      this.view.position.x = position.x || 0;
+      this.view.position.y = position.y || 0;
+    } else {
+      const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
+      const parentNode = this._vNode.parent;
+      if (parentNode && parentNode instanceof Container2d) {
+        this.view.position.x += left;
+        if (parentNode.child === this._vNode) {
+          this.view.position.y += top;
+        }
+        if (this._vNode.sibling) {
+          const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
+          if (this._vNode.sibling?.instance instanceof Mesh2D) {
+            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + height + bottom + siblingMargin[0];
+          }
+        }
+      }
     }
   }
 
