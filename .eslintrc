@@ -75,36 +75,6 @@
       }
     ],
     "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/member-ordering": [
-      1,
-      {
-        "default": [
-          "signature",
-
-          "public-static-field",
-          "protected-static-field",
-          "private-static-field",
-          "public-static-method",
-          "protected-static-method",
-          "private-static-method",
-
-          "public-instance-field",
-          "protected-instance-field",
-          "private-instance-field",
-
-          "public-constructor",
-          "protected-constructor",
-          "private-constructor",
-
-          "public-abstract-method",
-          "protected-abstract-method",
-          "private-abstract-method",
-          "public-instance-method",
-          "protected-instance-method",
-          "private-instance-method"
-        ]
-      }
-    ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "object-curly-newline": [
