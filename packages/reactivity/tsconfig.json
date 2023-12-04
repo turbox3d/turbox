@@ -15,7 +15,6 @@
     "emitDecoratorMetadata": true,
     "sourceMap": false,
     "downlevelIteration": true,
-    "watch": false,
     "target": "es5",
     "moduleResolution": "node",
     "lib": [

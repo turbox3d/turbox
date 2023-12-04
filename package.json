@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "start": "webpack-dev-server --config ./demo/webpack.config.js",
+    "start": "webpack serve --config ./demo/webpack.config.js",
     "build": "NODE_ENV=production webpack ./demo/src/main --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
     "build:doc": "npx typedoc packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/renderer-core/src/index.ts packages/renderer-pixi/src/index.ts packages/renderer-three/src/index.ts packages/math/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts --out typedocs",
@@ -55,6 +55,7 @@
     "@types/webpack-env": "^1.18.4",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
+    "@webpack-cli/serve": "^2.0.5",
     "antd": "^4.24.15",
     "axios": "^0.20.0",
     "babel-loader": "^8.3.0",
@@ -80,15 +81,15 @@
     "react-dom": "~16.14.0",
     "three": "^0.131.3",
     "ts-jest": "^24.3.0",
-    "ts-loader": "^7.0.5",
+    "ts-loader": "^9.5.1",
     "typedoc": "^0.21.10",
-    "typescript": "^4.9.5",
+    "typescript": "^5.3.2",
     "url-loader": "^4.1.1",
     "vsce": "^1.103.1",
-    "webpack": "^4.47.0",
-    "webpack-bundle-analyzer": "^3.9.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.3"
+    "webpack": "~5.89.0",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.15.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
