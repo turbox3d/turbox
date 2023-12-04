@@ -19,3 +19,4 @@ pluginB
 packages/atom
 build
 typedocs
+pnpm-publish-summary.json

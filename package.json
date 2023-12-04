@@ -1,6 +1,7 @@
 {
   "name": "turbox",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --config ./demo/webpack.config.js",
@@ -9,7 +10,8 @@
     "build:doc": "npx typedoc packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/renderer-core/src/index.ts packages/renderer-pixi/src/index.ts packages/renderer-three/src/index.ts packages/math/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts --out typedocs",
     "build:main-doc": "npx typedoc packages/turbox/src/index.ts packages/turbox2d/src/index.ts packages/turbox3d/src/index.ts --out typedocs",
     "build:all": "pnpm run -r build:all",
-    "publish:pre": "pnpm -r publish --dry-run --report-summary"
+    "publish:pre": "pnpm -r publish --dry-run --report-summary --no-git-checks --force",
+    "publish": "pnpm -r publish"
   },
   "repository": {
     "type": "git",
