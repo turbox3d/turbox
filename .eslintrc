@@ -63,6 +63,10 @@
         "allowForLoopAfterthoughts": true
       }
     ],
+    "no-shadow": "warn",
+    "no-use-before-define": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/explicit-member-accessibility": 0,
     "@typescript-eslint/explicit-function-return-type": 0,

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { TaskPriority, throttleInAFrame, Vec2, Vec3, getRelativePositionFromEvent, getContextEnv } from '@turbox3d/shared';
 import { CanvasHandlers, InteractiveConfig, InteractiveType, ViewportInfo } from './type';
 import { InteractiveListener } from './listener/index';

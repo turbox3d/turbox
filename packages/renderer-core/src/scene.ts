@@ -2,7 +2,6 @@
 /* eslint-disable react/no-deprecated */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/require-default-props */
-/* eslint-disable @typescript-eslint/member-ordering */
 import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, EventType, ViewEntity } from '@turbox3d/event-manager';
 import { remove, Vec2, Vec3, getContextParam, getContextEnv } from '@turbox3d/shared';
 import { SceneTool, CommandManager } from '@turbox3d/command-manager';
@@ -10,6 +9,7 @@ import { Component, ComponentProps } from './component';
 
 declare global {
   interface Window {
+    // eslint-disable-next-line camelcase
     $$turbox_hot: boolean;
   }
 }

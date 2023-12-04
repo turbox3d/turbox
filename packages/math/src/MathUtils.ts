@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 import { Quaternion } from './base/Quaternion';
 import { Tolerance } from './base/Tolerance';
 import { Vector3 } from './base/Vector3';

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import { CoordinateType } from './type';
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 function isMergeableObject(val) {
   const nonNullObject = val && typeof val === 'object';
 
@@ -12,7 +13,6 @@ function emptyTarget(val) {
 
 function cloneIfNecessary(value, optionsArgument) {
   const clone = optionsArgument && optionsArgument.clone === true;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return (clone && isMergeableObject(value)) ? deepMerge(emptyTarget(value), value, optionsArgument) : value;
 }
 
@@ -22,7 +22,6 @@ function defaultArrayMerge(target, source, optionsArgument) {
     if (typeof destination[i] === 'undefined') {
       destination[i] = cloneIfNecessary(e, optionsArgument);
     } else if (isMergeableObject(e)) {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       destination[i] = deepMerge(target[i], e, optionsArgument);
     } else if (target.indexOf(e) === -1) {
       destination.push(cloneIfNecessary(e, optionsArgument));
@@ -42,7 +41,6 @@ function mergeObject(target, source, optionsArgument) {
     if (!isMergeableObject(source[key]) || !target[key]) {
       destination[key] = cloneIfNecessary(source[key], optionsArgument);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       destination[key] = deepMerge(target[key], source[key], optionsArgument);
     }
   });

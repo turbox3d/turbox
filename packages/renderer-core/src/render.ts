@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { invariant, remove, IConstructorOf, isPlainObject } from '@turbox3d/shared';
 import { BaseScene } from './scene';
 import { Component, ComponentProps } from './component';

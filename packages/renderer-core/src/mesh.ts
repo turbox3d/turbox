@@ -1,5 +1,4 @@
 /* eslint-disable react/no-deprecated */
-/* eslint-disable @typescript-eslint/member-ordering */
 import { reactive, Reaction } from '@turbox3d/reactivity';
 import { InteractiveConfig, SceneEvent, ViewEntity, EventType } from '@turbox3d/event-manager';
 import { CommandManager, SceneTool } from '@turbox3d/command-manager';
