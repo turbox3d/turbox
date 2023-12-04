@@ -282,9 +282,9 @@ export class Domain<S extends object = {}> {
 
     return isObject(res) && !isDomain(res)
       ? this.proxyReactive(res, [
-          ...keyPath,
-          { type: Array.isArray(target) ? KeyPathType.index : KeyPathType.property, value: key },
-        ])
+        ...keyPath,
+        { type: Array.isArray(target) ? KeyPathType.index : KeyPathType.property, value: key },
+      ])
       : res;
   }
 
@@ -336,14 +336,14 @@ export class Domain<S extends object = {}> {
     }
     const proxyHandler: ProxyHandler<object> = includes(collectionTypes, raw.constructor)
       ? {
-          get: bind(_this.collectionProxyHandler, _this),
-        }
+        get: bind(_this.collectionProxyHandler, _this),
+      }
       : {
-          get: bind(_this.proxyGet, _this),
-          set: bind(_this.proxySet, _this),
-          ownKeys: bind(_this.proxyOwnKeys, _this),
-          deleteProperty: bind(_this.proxyDeleteProperty, _this),
-        };
+        get: bind(_this.proxyGet, _this),
+        set: bind(_this.proxySet, _this),
+        ownKeys: bind(_this.proxyOwnKeys, _this),
+        deleteProperty: bind(_this.proxyDeleteProperty, _this),
+      };
     const proxy = new Proxy(raw, proxyHandler);
     proxyCache.set(proxy, raw);
     rawCache.set(raw, proxy);

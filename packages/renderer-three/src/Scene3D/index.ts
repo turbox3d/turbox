@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import * as THREE from 'three';
 import { InteractiveConfig, InteractiveType, CoordinateController, ViewEntity } from '@turbox3d/event-manager';
 import { BaseScene, SceneType, ComponentProps, BaseSceneProps } from '@turbox3d/renderer-core';

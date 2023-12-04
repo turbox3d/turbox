@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Command } from '@turbox3d/command-manager';
 import { ViewEntity, SceneEvent } from '@turbox3d/event-manager';
 import EntityObject from '../entity-object';

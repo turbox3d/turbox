@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/default-props-match-prop-types */
 import * as React from 'react';
 import { Reactive } from '@turbox3d/reactivity-react';
 import EnvSystem from '../env-system/index';

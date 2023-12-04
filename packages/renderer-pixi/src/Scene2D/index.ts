@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { CoordinateController, InteractiveConfig, InteractiveType, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import { BaseScene, BaseSceneProps, ComponentProps, SceneType } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';

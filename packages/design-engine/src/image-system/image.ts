@@ -41,11 +41,11 @@ export const mirrorImage = (image: string | Blob, materialDirection: Vector2, is
 };
 
 export const getRenderTargetImageData = (
-  app: THREE.WebGLRenderer,
+  app: any,
   width: number,
   height: number,
-  scene: THREE.Scene,
-  camera: THREE.Camera,
+  scene: any,
+  camera: any,
   fileType = 'image/png',
   quality = 1
 ) => {

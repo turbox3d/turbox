@@ -66,6 +66,7 @@
     "no-shadow": "warn",
     "no-use-before-define": "warn",
     "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/explicit-member-accessibility": 0,

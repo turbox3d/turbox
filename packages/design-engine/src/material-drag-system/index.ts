@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Extra, GesturesExtra, InteractiveEvent } from '@turbox3d/event-manager';
 import { Vec2 } from '@turbox3d/shared';
 import { Vector2, MathUtils } from '@turbox3d/math';
