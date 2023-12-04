@@ -43,6 +43,7 @@
     "@babel/preset-env": "^7.23.5",
     "@babel/preset-react": "^7.23.3",
     "@babel/runtime": "^7.23.5",
+    "@changesets/cli": "^2.27.1",
     "@turbox3d/reactivity-react": "workspace:^",
     "@turbox3d/turbox": "workspace:^",
     "@types/jest": "^24.9.1",
