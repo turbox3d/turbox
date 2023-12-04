@@ -20,9 +20,6 @@
     "taobao",
     "state-management"
   ],
-  "tnpm": {
-    "mode": "yarn"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -34,29 +31,29 @@
     "react-dom": "16.x"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
-    "@babel/plugin-transform-runtime": "^7.6.2",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/runtime": "^7.6.3",
-    "@types/jest": "^24.0.19",
-    "@types/node": "^12.19.8",
-    "@types/react": "16.x",
-    "@types/react-dom": "16.x",
-    "@types/webpack-env": "^1.16.0",
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/plugin-transform-runtime": "^7.23.4",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/runtime": "^7.23.5",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.20.55",
+    "@types/react": "~16.14.52",
+    "@types/react-dom": "~16.9.24",
+    "@types/webpack-env": "^1.18.4",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
-    "react": "16.x",
-    "react-dom": "16.x",
-    "ts-jest": "^24.1.0",
-    "typescript": "^4.3.5",
-    "webpack": "^4.42.1",
+    "react": "~16.14.0",
+    "react-dom": "~16.14.0",
+    "ts-jest": "^24.3.0",
+    "typescript": "^4.9.5",
+    "webpack": "^4.47.0",
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@turbox3d/reactivity": "^2.1.9",
-    "@turbox3d/shared": "^1.1.5"
+    "@turbox3d/reactivity": "workspace:^",
+    "@turbox3d/shared": "workspace:^"
   },
   "files": [
     "src/",

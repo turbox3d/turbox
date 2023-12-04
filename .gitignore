@@ -5,7 +5,6 @@
 lerna-debug.log*
 npm-debug.log*
 node_modules
-.npmrc
 yarn-debug.log*
 yarn-error.log*
 lib
@@ -19,3 +18,4 @@ pluginA
 pluginB
 packages/atom
 build
+typedocs

@@ -15,9 +15,6 @@
     "declarative-graphic-ui",
     "three"
   ],
-  "tnpm": {
-    "mode": "yarn"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -28,22 +25,22 @@
     "three": "0.x"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.14.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
-    "@babel/plugin-transform-runtime": "^7.6.2",
-    "@babel/preset-env": "^7.14.1",
-    "@babel/runtime": "^7.14.0",
-    "@types/jest": "^24.0.19",
-    "@types/node": "^12.20.12",
-    "@types/three": "^0.130.1",
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/plugin-transform-runtime": "^7.23.4",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/runtime": "^7.23.5",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.20.55",
+    "@types/three": "^0.130.2",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
     "three": "^0.131.3",
-    "ts-jest": "^24.1.0",
-    "typescript": "^4.3.5",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.9"
+    "ts-jest": "^24.3.0",
+    "typescript": "^4.9.5",
+    "webpack": "^4.47.0",
+    "webpack-cli": "^3.3.12"
   },
   "files": [
     "src/",
@@ -69,8 +66,8 @@
     "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
-    "@turbox3d/event-manager": "^1.1.11",
-    "@turbox3d/renderer-core": "^1.0.9",
-    "@turbox3d/shared": "^1.1.5"
+    "@turbox3d/event-manager": "workspace:^",
+    "@turbox3d/renderer-core": "workspace:^",
+    "@turbox3d/shared": "workspace:^"
   }
 }

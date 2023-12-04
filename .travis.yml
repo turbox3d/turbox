@@ -1,8 +1,16 @@
 language: node_js
 cache:
-  yarn: true
+  npm: false
+  directories:
+    - "~/.pnpm-store"
 node_js:
   - 12.16.2
+before_install:
+  - corepack enable
+  - corepack prepare pnpm@latest-8 --activate
+  - pnpm config set store-dir ~/.pnpm-store
+install:
+  - pnpm install
 
 stages:
   - test
