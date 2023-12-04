@@ -23,15 +23,13 @@ jobs:
   include:
     - stage: test
       script:
-        - lerna bootstrap
-        - lerna run build:ts
-        - lerna run test
+        - pnpm run -r build:ts
+        - pnpm run -r test
     - stage: deploy
       script:
-        - lerna bootstrap
-        - lerna run build:all
+        - pnpm run -r build:all
         - cp .npmrc.template $HOME/.npmrc
-        - lerna publish from-package --yes
+        - pnpm -r publish
     - stage: deploy-plugin
       script:
         - cp .vsce.template $HOME/.vsce

@@ -11,7 +11,8 @@
     "build:main-doc": "npx typedoc packages/turbox/src/index.ts packages/turbox2d/src/index.ts packages/turbox3d/src/index.ts --out typedocs",
     "build:all": "pnpm run -r build:all",
     "publish:pre": "pnpm -r publish --dry-run --report-summary --no-git-checks --force",
-    "publish": "pnpm -r publish"
+    "publish:cs": "pnpm changeset",
+    "publish": "pnpm install && pnpm -r publish"
   },
   "repository": {
     "type": "git",
