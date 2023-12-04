@@ -1,7 +1,7 @@
 /**
  * from redux compose
  */
-export function compose(...funcs) {
+export function compose(...funcs: any[]) {
   if (funcs.length === 0) {
     return arg => arg;
   }
