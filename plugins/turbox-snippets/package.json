@@ -1,7 +1,7 @@
 {
   "name": "turbox-snippets",
   "displayName": "Turbox Snippets",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Code snippets for Turbox",
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
@@ -13,15 +13,15 @@
     "deploy": "npx vsce publish"
   },
   "publisher": "feifan-gff",
-	"engines": {
-		"vscode": "^1.28.0"
-	},
-	"categories": [
-		"Snippets"
+  "engines": {
+    "vscode": "^1.28.0"
+  },
+  "categories": [
+    "Snippets"
   ],
   "icon": "images/turbox.png",
-	"contributes": {
-		"snippets": [
+  "contributes": {
+    "snippets": [
       {
         "language": "javascript",
         "path": "./snippets/snippets.json"
@@ -39,5 +39,5 @@
         "path": "./snippets/snippets.json"
       }
     ]
-	}
+  }
 }

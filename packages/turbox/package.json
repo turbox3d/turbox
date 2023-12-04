@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox",
-  "version": "1.1.22",
+  "version": "1.1.23",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",

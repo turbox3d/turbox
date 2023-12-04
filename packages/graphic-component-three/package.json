@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/graphic-component-three",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "description": "Graphic component library based on three",
   "main": "./lib/index.js",
   "module": "./es/index.js",
