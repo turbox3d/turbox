@@ -48,8 +48,8 @@
     "react-dom": "~16.14.0",
     "ts-jest": "^24.3.0",
     "typescript": "4.3.5",
-    "webpack": "~5.89.0",
-    "webpack-cli": "^4.10.0"
+    "webpack": "4.x",
+    "webpack-cli": "3.x"
   },
   "dependencies": {
     "@turbox3d/reactivity": "workspace:^",

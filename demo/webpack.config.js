@@ -17,9 +17,7 @@ module.exports = {
     publicPath: "/build/",
   },
   devServer: {
-    static: {
-      directory: path.resolve(__dirname),
-    },
+    contentBase: path.resolve(__dirname),
     compress: true,
     port: 9000,
     host: '0.0.0.0'
