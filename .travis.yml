@@ -27,9 +27,8 @@ jobs:
         - pnpm run -r test
     - stage: deploy
       script:
-        - pnpm run -r build:all
         - cp .npmrc.template $HOME/.npmrc
-        - pnpm -r publish
+        - pnpm run publish
     - stage: deploy-plugin
       script:
         - cp .vsce.template $HOME/.vsce
