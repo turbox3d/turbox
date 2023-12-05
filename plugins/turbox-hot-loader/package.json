@@ -16,7 +16,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@turbox3d/reactivity": "workspace:^",
-    "react": "16.x"
+    "react": ">=16"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -28,11 +28,11 @@
     "@turbox3d/reactivity": "workspace:^",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.20.55",
-    "@types/react": "~16.14.52",
+    "@types/react": "~17.0.71",
     "@types/webpack-env": "^1.18.4",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
-    "react": "~16.14.0",
+    "react": "~17.0.2",
     "ts-jest": "^24.3.0",
     "typescript": "4.6.4",
     "webpack": "4.42.1",
