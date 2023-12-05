@@ -63,10 +63,10 @@
     "sass-loader": "^10.4.1",
     "style-loader": "^2.0.0",
     "ts-jest": "^24.3.0",
-    "typescript": "4.3.5",
+    "typescript": "4.6.4",
     "url-loader": "^4.1.1",
     "webpack": "4.42.1",
-    "webpack-cli": "3.x"
+    "webpack-cli": "~3.3.12"
   },
   "files": [
     "src/",
@@ -88,7 +88,6 @@
     "build:watch": "tsc -w -target es2018 -declarationDir ./typings -outDir ./ts & npx babel ts -w --out-dir es",
     "build:umd": "npx webpack --mode='development' -o dist/turbox2d.js",
     "build:umd:min": "npx webpack --mode='production' -o dist/turbox2d.min.js",
-    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "prepublishOnly": "npm run build:all"
+    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
   }
 }

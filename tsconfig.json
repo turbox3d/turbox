@@ -29,7 +29,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "packages/**/src/**/*"
+    "packages/**/src/**/*",
+    "plugins/**/src/**/*"
   ],
   "exclude": [
     "node_modules",

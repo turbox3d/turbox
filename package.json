@@ -7,13 +7,11 @@
     "start": "webpack-dev-server --config ./demo/webpack.config.js",
     "build": "NODE_ENV=production webpack ./demo/src/main --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
-    "build:doc": "npx typedoc packages/command-manager/src/index.ts packages/design-engine/src/index.ts packages/event-manager/src/index.ts packages/graphic-component-pixi/src/index.ts packages/graphic-component-three/src/index.ts packages/renderer-core/src/index.ts packages/renderer-pixi/src/index.ts packages/renderer-three/src/index.ts packages/math/src/index.ts packages/reactivity/src/index.ts packages/reactivity-react/src/index.ts packages/shared/src/index.ts --out typedocs",
-    "build:main-doc": "npx typedoc packages/turbox/src/index.ts packages/turbox2d/src/index.ts packages/turbox3d/src/index.ts --out typedocs",
-    "build:all": "pnpm run -r build:all",
+    "typedoc": "rm -rf typedocs && npx ./typedoc.js",
+    "build:all": "pnpm run -r build:all && pnpm run typedoc",
     "git:cl": "git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
-    "publish:pre": "pnpm -r publish --dry-run --report-summary --no-git-checks --force",
-    "version": "pnpm changeset && pnpm changeset version && pnpm run git:cl && pnpm changeset tag",
-    "publish": "pnpm install && pnpm -r publish"
+    "publish": "pnpm run build:all && pnpm changeset && pnpm changeset version && pnpm run git:cl && pnpm changeset tag && pnpm -r publish",
+    "publish:pre": "pnpm run build:all && pnpm -r publish --dry-run --report-summary --no-git-checks --force"
   },
   "repository": {
     "type": "git",
@@ -81,15 +79,15 @@
     "react-dom": "~16.14.0",
     "three": "^0.131.3",
     "ts-jest": "^24.3.0",
-    "ts-loader": "8.x",
-    "typedoc": "^0.21.10",
-    "typescript": "4.3.5",
+    "ts-loader": "~8.4.0",
+    "typedoc": "^0.25.4",
+    "typescript": "4.6.4",
     "url-loader": "^4.1.1",
     "vsce": "^1.103.1",
-    "webpack": "4.x",
+    "webpack": "4.42.1",
     "webpack-bundle-analyzer": "^4.10.1",
-    "webpack-cli": "3.x",
-    "webpack-dev-server": "3.x"
+    "webpack-cli": "~3.3.12",
+    "webpack-dev-server": "3.10.3"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
