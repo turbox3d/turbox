@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.19
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/math@1.1.5
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/reactivity-react@1.1.12
+  - @turbox3d/shared@1.1.8
+
 ## 1.1.18
 
 ### Patch Changes

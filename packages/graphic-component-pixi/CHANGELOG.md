@@ -1,5 +1,15 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.25
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/renderer-pixi@1.0.13
+  - @turbox3d/shared@1.1.8
+
 ## 1.1.24
 
 ### Patch Changes

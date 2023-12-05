@@ -1,5 +1,16 @@
 # @turbox3d/renderer-core
 
+## 1.0.12
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/shared@1.1.8
+
 ## 1.0.11
 
 ### Patch Changes

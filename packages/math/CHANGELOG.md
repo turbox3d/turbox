@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.5
+
+### Patch Changes
+
+- Upgrade react version
+
 ## 1.1.4
 
 ### Patch Changes

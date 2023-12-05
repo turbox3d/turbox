@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.13
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.12
+
 ## 1.0.12
 
 ### Patch Changes
