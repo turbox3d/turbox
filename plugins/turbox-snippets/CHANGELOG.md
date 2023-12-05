@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.13
+
+### Patch Changes
+
+- Lint change
+
 ## 1.0.12
 
 ### Patch Changes

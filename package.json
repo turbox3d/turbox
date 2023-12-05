@@ -12,7 +12,7 @@
     "build:all": "pnpm run -r build:all",
     "git:cl": "git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
     "publish:pre": "pnpm -r publish --dry-run --report-summary --no-git-checks --force",
-    "publish:cs": "pnpm changeset && pnpm changeset version",
+    "version": "pnpm changeset && pnpm changeset version && pnpm run git:cl && pnpm changeset tag",
     "publish": "pnpm install && pnpm -r publish"
   },
   "repository": {

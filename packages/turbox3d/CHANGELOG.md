@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.21
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/design-engine@1.1.18
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/graphic-component-three@1.1.21
+  - @turbox3d/math@1.1.4
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/reactivity-react@1.1.11
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/renderer-three@1.0.11
+
 ## 1.1.20
 
 ### Patch Changes
