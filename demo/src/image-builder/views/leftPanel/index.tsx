@@ -4,7 +4,7 @@ import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 
-import './index.scss';
+import './index.less';
 import { appCommandManager } from '../../commands/index';
 import { useMaterialDragAndReplace } from '../../hooks/index';
 import { FrameEntity } from '../../models/entity/frame';

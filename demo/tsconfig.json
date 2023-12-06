@@ -1,7 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "es6",
+    "module": "esnext",
     "noImplicitAny": false,
     "declaration": false,
     "strictNullChecks": true,

@@ -6,7 +6,7 @@ import { appCommandManager } from './commands/index';
 import { ldeStore } from './models/index';
 import { LeftPanel } from './views/leftPanel/index';
 import { MainScene } from './views/scene';
-import './common/styles/base.scss';
+import './common/styles/base.less';
 import 'antd/dist/antd.css';
 import { SceneUtil } from './views/scene/modelsWorld/index';
 

@@ -17,10 +17,10 @@ export interface IProduct2DProps {
 
 class ProductMesh2D extends Mesh2D<IProduct2DProps> {
   protected reactivePipeLine = [this.updateMaterial];
-  protected view: PIXIProjection.Sprite2d;
-  texture?: PIXI.Texture;
+  protected view: any;
+  texture?: any;
   modelUrl?: string | Blob;
-  currentTicker?: PIXI.TickerCallback<any>;
+  currentTicker?: any;
 
   componentWillUnmount() {
     const app = this.context.getSceneTools().getApp() as PIXI.Application;

@@ -4,16 +4,15 @@
 import { Button, Input, Slider } from 'antd';
 import * as React from 'react';
 import * as THREE from 'three';
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import { LoadSystem, Vector3, MathUtils } from '@turbox3d/turbox';
 
 import { Z_INDEX_ACTION, MIRROR_ACTION } from '../../common/consts/scene';
-import Image from '../../common/imgs/eden.png';
 import { useMaterialDragAndReplace } from '../../hooks/index';
 import { ldeStore } from '../../models/index';
-import './index.scss';
+import './index.less';
 import { SceneUtil } from '../scene/modelsWorld/index';
 
 const images = {
@@ -217,8 +216,8 @@ export function LeftPanel() {
     material.map.minFilter = THREE.LinearFilter;
     const mesh = new THREE.Mesh(geometry, material);
     mesh.renderOrder = 1000000;
-    const gui = new GUI();
-    gui.add(material, 'wireframe');
+    // const gui = new GUI();
+    // gui.add(material, 'wireframe');
     const scene = SceneUtil.getScene();
     scene.add(mesh);
   };
@@ -276,7 +275,6 @@ export function LeftPanel() {
 
   return (
     <div className="left-panel">
-      <img width={60} src={Image} />
       <div className="material">
         {Object.keys(images).map(key => (
           <div

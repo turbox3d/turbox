@@ -28,7 +28,7 @@ import { OrthographicCamera, PerspectiveCamera } from './camera/index';
 import { Rect3d } from './helper/index';
 import { DirectionalLight, AmbientLight, HemisphereLight } from './light/index';
 import { ModelsWorld, SceneUtil } from './modelsWorld/index';
-import './index.scss';
+import './index.less';
 import { TempWorld } from './tempWorld/index';
 
 export const m = {

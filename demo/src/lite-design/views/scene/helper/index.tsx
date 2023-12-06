@@ -278,8 +278,6 @@ export class Circle2d extends Mesh2D<ICircle2DProps> {
         cx: x,
         cy: y,
         radius: radius / ldeStore.scene.canvasZoom,
-      },
-      {
         lineWidth: lineWidth / ldeStore.scene.canvasZoom,
         lineColor,
         lineAlpha,

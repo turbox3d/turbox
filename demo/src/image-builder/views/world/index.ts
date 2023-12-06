@@ -1,4 +1,3 @@
-import { imageBuilderStore } from 'image-builder/models';
 import * as PIXI from 'pixi.js';
 
 import { Reactive, Component, g, Axis2d, Text2d, Container2d, Image2d } from '@turbox3d/turbox';
@@ -9,6 +8,7 @@ import { ItemEntity } from '../../models/entity/item';
 
 import { FrameViewEntity } from './frame/index';
 import { ItemViewEntity } from './item/index';
+import { imageBuilderStore } from '../../models/index';
 
 @Reactive
 export class World extends Component {

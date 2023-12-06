@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
-import { Mesh3D } from '@turbox3d/renderer-three';
-import { IDictionary } from '@turbox3d/shared';
+import { Mesh3D } from '@turbox3d/turbox';
+import { IDictionary } from '../../../types/types';
 
 // 确定需要哪些变更属性
 interface IAnimationProps {
