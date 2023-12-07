@@ -12,9 +12,7 @@
 
 ## Documentation
 
-* <a href="https://turbox3d.github.io/turbox/#/zh-cn/turbox" target="_blank">turbox</a>
-* <a href="https://turbox3d.github.io/turbox/#/zh-cn/cli" target="_blank">turbox-cli</a>
-* <a href="https://turbox3d.github.io/turbox/#/zh-cn/dev-tool" target="_blank">turbox-dev-tool</a>
+WIP...
 
 ## Ecosystem
 
