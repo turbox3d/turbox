@@ -17,9 +17,10 @@
 ## 生态系统
 | Project | Status | Description |
 |---------|--------|-------------|
-| turbox-cli     | - | 命令行工程工具 |
-| turbox-dev-tool      | - | 浏览器扩展插件 |
-| turbox-snippets  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | vscode 代码片段生成插件 |
+| turbox-cli       | - | Project cli tool, include scaffolding |
+| turbox-dev-tool  | - | Browser DevTools extension |
+| turbox-loader    | - | Turbox loader for webpack |
+| turbox-snippets  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | Vscode snippet extension |
 
 ## 文档
 [中文文档](https://turbox3d.github.io/turbox/#/zh-cn/turbox)
