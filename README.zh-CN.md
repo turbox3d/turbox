@@ -37,4 +37,4 @@ Visit [turbox official website](https://turbox3d.github.io/turbox/#/en-us/).
 ## 许可证
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2020-present, Feifan Gu (feifan, geoff)
+Copyright (c) 2020-present, Felix Koo

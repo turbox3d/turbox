@@ -32,4 +32,4 @@
 ## 许可证
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2020-present, Feifan Gu (feifan, geoff)
+Copyright (c) 2020-present, Felix Koo

@@ -12,8 +12,9 @@
 ## Ecosystem
 | Project | Status | Description |
 |---------|--------|-------------|
-| turbox-cli      | - | Project cli tool, include scaffolding |
-| turbox-dev-tool       | - | Browser DevTools extension |
+| turbox-cli       | - | Project cli tool, include scaffolding |
+| turbox-dev-tool  | - | Browser DevTools extension |
+| turbox-loader    | - | Turbox loader for webpack |
 | turbox-snippets  | [see marketplace](https://marketplace.visualstudio.com/items?itemName=feifan-gff.turbox-snippets) | Vscode snippet extension |
 
 ## Documentation
@@ -30,4 +31,4 @@ Detailed changes for each release are documented in the [changelog](https://turb
 ## License
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2020-present, Feifan Gu (feifan, geoff)
+Copyright (c) 2020-present, Felix Koo
