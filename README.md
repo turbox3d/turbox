@@ -32,9 +32,6 @@ Visit [turbox official website](https://turbox3d.github.io/turbox/#/en-us/).
 | --- | --- |
 | [turbox3d/turbox/issues](https://github.com/turbox3d/turbox/issues) | <img src="https://img.alicdn.com/tfs/TB1jrwCEQY2gK0jSZFgXXc5OFXa-670-614.png" width="120" /> |
 
-## Changelog
-Detailed changes for each release are documented in the [changelog](https://turbox3d.github.io/turbox/#/CHANGELOG).
-
 ## License
 [MIT](http://opensource.org/licenses/MIT)
 
