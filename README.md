@@ -37,4 +37,4 @@ Detailed changes for each release are documented in the [changelog](https://turb
 ## License
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2020-present, Feifan Gu (feifan, geoff)
+Copyright (c) 2020-present, Felix Koo
