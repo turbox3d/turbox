@@ -36,7 +36,7 @@ async function main() {
       }
     }
   });
-  if (docEnv === DOC_ENV.TYPEDOC) {
+  if (docEnv === DOC_ENV.TYPEDOC && entryPoints.length) {
     /** Generate type doc */
     try {
       const app = await TypeDoc.Application.bootstrapWithPlugins({
@@ -54,30 +54,35 @@ async function main() {
       console.error(error);
     }
   }
-  if (docEnv === DOC_ENV.CHANGELOG) {
+  if (docEnv === DOC_ENV.CHANGELOG && clEntryPoints.length) {
     /** Generate changelog */
-    const readerStream = spawn('cat', clEntryPoints).stdout;
     const writerStream = fs.createWriteStream('./docs/CHANGELOG.md');
-
-    readerStream.on('data', (chunk) => {
-      writerStream.write(chunk);
-    });
-
-    readerStream.on('end', () => {
-      writerStream.end();
-    });
-
-    readerStream.on('error', (err) => {
-      console.error(err);
-    });
 
     writerStream.on('finish', () => {
       console.log('*** Generate changelog success! ***');
     });
-
     writerStream.on('error', (err) => {
       console.error(err);
     });
+
+    function mergeFile(entryPoints, ws) {
+      if (!entryPoints.length) {
+        return ws.end();
+      }
+      const rs = fs.createReadStream(entryPoints.shift());
+      rs.pipe(ws, { end: false });
+      rs.on('end', () => {
+        if (entryPoints.length) {
+          ws.write('\r\n');
+        }
+        mergeFile(entryPoints, ws);
+      });
+      rs.on('error', (error) => {
+        ws.destroy(error);
+      });
+    }
+
+    mergeFile(clEntryPoints, writerStream);
   }
 }
 
