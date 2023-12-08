@@ -31,11 +31,14 @@ turbox 框架包含几个子框架/库：
 
 ## 谁在使用
 <div style="display: flex; align-items: center;">
-  <img style="border-radius: 10px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tiktok.png" />
-  <img style="border-radius: 10px; margin-left: 30px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/taobao-icon.jpeg" />
-  <img style="border-radius: 10px; margin-left: 30px;" width="42" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tmall.jpeg" />
-  <img style="margin-left: 30px;" width="42" height="42" src="https://img.alicdn.com/imgextra/i3/O1CN01CfwNBY1ZuNUksgIiC_!!6000000003254-2-tps-160-160.png" />
-  <img style="margin-left: 30px;" width="42" height="42" src="https://img.alicdn.com/imgextra/i2/O1CN01Yc7aDt1NmL9kqPxEW_!!6000000001612-2-tps-144-144.png" />
+  <img style="border-radius: 10px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tiktok.png" />
+  <img style="border-radius: 10px; margin-left: 30px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/taobao-icon.jpeg" />
+  <img style="border-radius: 10px; margin-left: 30px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/tmall.jpeg" />
+  <img style="border-radius: 10px; margin-left: 30px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/eleme.png" />
+  <img style="margin-left: 30px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/koubei.png" />
+  <img style="margin-left: 30px;" height="42" src="https://img.alicdn.com/imgextra/i3/O1CN01CfwNBY1ZuNUksgIiC_!!6000000003254-2-tps-160-160.png" />
+  <img style="margin-left: 30px;" height="42" src="https://img.alicdn.com/imgextra/i2/O1CN01Yc7aDt1NmL9kqPxEW_!!6000000001612-2-tps-144-144.png" />
+  <img style="border-radius: 10px; margin-left: 30px;" height="42" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/kjl.png" />
 </div>
 
 ## 使用说明
