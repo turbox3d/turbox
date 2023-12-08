@@ -1,72 +1,539 @@
-# Changelog
+# @turbox3d/turbox3d
 
-> **Tags:**
-> - :boom:       [Breaking Change]
-> - :rocket:     [New Feature]
-> - :bug:        [Bug Fix]
-> - :memo:       [Documentation]
-> - :house:      [Internal]
-> - :nail_care:  [Polish]
+## 1.1.22
 
-## 2020-05-14
-turbox 1.0.0 released.
+### Patch Changes
 
-<!-- ## 2020-04-02
-@tacky/store 2.0.9 released.
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/design-engine@1.1.19
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/graphic-component-three@1.1.22
+  - @turbox3d/math@1.1.5
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/reactivity-react@1.1.12
+  - @turbox3d/renderer-core@1.0.12
+  - @turbox3d/renderer-three@1.0.12
 
-#### :boom: Modify api
-* @state -> @reactor
-* @stick -> @reactive
+## 1.1.21
 
-## 2019-11-29
-@tacky/store 2.0.3 released.
+### Patch Changes
 
-* remove `reset`
-* remove domain `lazyLoad、destroy`
-* support time travelling, add `undo、redo、getTimeTravelStatus`
-* enhance inner updating rule
-* support graph data structure
-* add transcation rule
-* higher updating performance
-* lower memory cost
-* fix some bugs
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/design-engine@1.1.18
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/graphic-component-three@1.1.21
+  - @turbox3d/math@1.1.4
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/reactivity-react@1.1.11
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/renderer-three@1.0.11
 
-## 2019-06-16
-@tacky/store 1.0.13 released.
+## 1.1.20
 
-#### :bug: Bug Fix
-* `@tacky/store`
-  * Support pass domain state interface.
+### Patch Changes
 
-## 2019-06-12
-@tacky/store 1.0.12 released.
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.14
+  - @turbox3d/design-engine@1.1.17
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/graphic-component-three@1.1.20
+  - @turbox3d/math@1.1.3
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/reactivity-react@1.1.10
+  - @turbox3d/renderer-core@1.0.10
+  - @turbox3d/renderer-three@1.0.10
+# @turbox3d/turbox2d
 
-#### :bug: Bug Fix
-* `@tacky/store`
-  * Fix `stick()` type error when pass props.
+## 1.0.16
 
-## 2019-06-12
-@tacky/store 1.0.11 released.
+### Patch Changes
 
-#### :rocket: New Feature
-* `@tacky/store`
-  * Decorator support pass param or no param now.
-  * Stick support pass a function component with react hooks.
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/design-engine@1.1.19
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/graphic-component-pixi@1.1.25
+  - @turbox3d/math@1.1.5
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/reactivity-react@1.1.12
+  - @turbox3d/renderer-core@1.0.12
+  - @turbox3d/renderer-pixi@1.0.13
 
-## 2019-06-06
-@tacky/store 1.0.10 released.
+## 1.0.15
 
-#### :bug: Bug Fix
-* `@tacky/store`
-  * Fix property decorator bug for reducer, mutation and effect.
+### Patch Changes
 
-## 2019-06-05
-@tacky/store 1.0.9 released.
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/design-engine@1.1.18
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/graphic-component-pixi@1.1.24
+  - @turbox3d/math@1.1.4
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/reactivity-react@1.1.11
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/renderer-pixi@1.0.12
 
-#### :rocket: New Feature
-* `@tacky/store`
-  * Added the `init` method, the same as `render` method except render component feature.
+## 1.0.14
 
-#### :house: Internal
-* `@tacky/store`
-  * Enhance the `render` method by calling the `init` method. -->
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.14
+  - @turbox3d/design-engine@1.1.17
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/graphic-component-pixi@1.1.23
+  - @turbox3d/math@1.1.3
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/reactivity-react@1.1.10
+  - @turbox3d/renderer-core@1.0.10
+  - @turbox3d/renderer-pixi@1.0.11
+# @turbox3d/turbox
+
+## 1.1.25
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/design-engine@1.1.19
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/graphic-component-pixi@1.1.25
+  - @turbox3d/graphic-component-three@1.1.22
+  - @turbox3d/math@1.1.5
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/reactivity-react@1.1.12
+  - @turbox3d/renderer-core@1.0.12
+  - @turbox3d/renderer-pixi@1.0.13
+  - @turbox3d/renderer-three@1.0.12
+
+## 1.1.24
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/design-engine@1.1.18
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/graphic-component-pixi@1.1.24
+  - @turbox3d/graphic-component-three@1.1.21
+  - @turbox3d/math@1.1.4
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/reactivity-react@1.1.11
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/renderer-pixi@1.0.12
+  - @turbox3d/renderer-three@1.0.11
+
+## 1.1.23
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.14
+  - @turbox3d/design-engine@1.1.17
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/graphic-component-pixi@1.1.23
+  - @turbox3d/graphic-component-three@1.1.20
+  - @turbox3d/math@1.1.3
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/reactivity-react@1.1.10
+  - @turbox3d/renderer-core@1.0.10
+  - @turbox3d/renderer-pixi@1.0.11
+  - @turbox3d/renderer-three@1.0.10
+# @turbox3d/shared
+
+## 1.1.8
+
+### Patch Changes
+
+- Upgrade react version
+
+## 1.1.7
+
+### Patch Changes
+
+- Lint change
+
+## 1.1.6
+
+### Patch Changes
+
+- Replace pnpm from lerna
+# @turbox3d/renderer-three
+
+## 1.0.12
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/renderer-core@1.0.12
+  - @turbox3d/shared@1.1.8
+
+## 1.0.11
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/shared@1.1.7
+
+## 1.0.10
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/renderer-core@1.0.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/renderer-pixi
+
+## 1.0.13
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/renderer-core@1.0.12
+  - @turbox3d/shared@1.1.8
+
+## 1.0.12
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/renderer-core@1.0.11
+  - @turbox3d/shared@1.1.7
+
+## 1.0.11
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/renderer-core@1.0.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/renderer-core
+
+## 1.0.12
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/shared@1.1.8
+
+## 1.0.11
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/shared@1.1.7
+
+## 1.0.10
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.14
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/reactivity-react
+
+## 1.1.12
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/shared@1.1.8
+
+## 1.1.11
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/shared@1.1.7
+
+## 1.1.10
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/reactivity
+
+## 2.1.12
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/shared@1.1.8
+
+## 2.1.11
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/shared@1.1.7
+
+## 2.1.10
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/shared@1.1.6
+# @turbox3d/math
+
+## 1.1.5
+
+### Patch Changes
+
+- Upgrade react version
+
+## 1.1.4
+
+### Patch Changes
+
+- Lint change
+
+## 1.1.3
+
+### Patch Changes
+
+- Replace pnpm from lerna
+# @turbox3d/graphic-component-three
+
+## 1.1.22
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.12
+  - @turbox3d/shared@1.1.8
+
+## 1.1.21
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.11
+  - @turbox3d/shared@1.1.7
+
+## 1.1.20
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/graphic-component-pixi
+
+## 1.1.25
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/renderer-pixi@1.0.13
+  - @turbox3d/shared@1.1.8
+
+## 1.1.24
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/renderer-pixi@1.0.12
+  - @turbox3d/shared@1.1.7
+
+## 1.1.23
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/renderer-pixi@1.0.11
+  - @turbox3d/shared@1.1.6
+# @turbox3d/event-manager
+
+## 1.1.14
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/math@1.1.5
+  - @turbox3d/shared@1.1.8
+
+## 1.1.13
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/math@1.1.4
+  - @turbox3d/shared@1.1.7
+
+## 1.1.12
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/math@1.1.3
+  - @turbox3d/shared@1.1.6
+# @turbox3d/design-engine
+
+## 1.1.19
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.16
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/math@1.1.5
+  - @turbox3d/reactivity@2.1.12
+  - @turbox3d/reactivity-react@1.1.12
+  - @turbox3d/shared@1.1.8
+
+## 1.1.18
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.15
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/math@1.1.4
+  - @turbox3d/reactivity@2.1.11
+  - @turbox3d/reactivity-react@1.1.11
+  - @turbox3d/shared@1.1.7
+
+## 1.1.17
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.14
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/math@1.1.3
+  - @turbox3d/reactivity@2.1.10
+  - @turbox3d/reactivity-react@1.1.10
+  - @turbox3d/shared@1.1.6
+# @turbox3d/command-manager
+
+## 1.1.16
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.14
+  - @turbox3d/shared@1.1.8
+
+## 1.1.15
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.13
+  - @turbox3d/shared@1.1.7
+
+## 1.1.14
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.12
+  - @turbox3d/shared@1.1.6
+# @turbox3d/turbox-hot-loader
+
+## 1.0.13
+
+### Patch Changes
+
+- Upgrade react version
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.12
+
+## 1.0.12
+
+### Patch Changes
+
+- Lint change
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.11
+
+## 1.0.11
+
+### Patch Changes
+
+- Replace pnpm from lerna
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.10
+# @turbox3d/turbox-dev-tool
+
+## 1.0.10
+
+### Patch Changes
+
+- Upgrade react version
+
+## 1.0.9
+
+### Patch Changes
+
+- Lint change
+
+## 1.0.8
+
+### Patch Changes
+
+- Replace pnpm from lerna

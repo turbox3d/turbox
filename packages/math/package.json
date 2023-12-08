@@ -27,7 +27,7 @@
     "@babel/preset-env": "^7.23.5",
     "@babel/runtime": "^7.23.5",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.20.55",
+    "@types/node": "~16.18.68",
     "@types/react": "~17.0.71",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",

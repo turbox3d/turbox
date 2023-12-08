@@ -27,7 +27,7 @@
     "@babel/runtime": "^7.23.5",
     "@turbox3d/reactivity": "workspace:^",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.20.55",
+    "@types/node": "~16.18.68",
     "@types/react": "~17.0.71",
     "@types/webpack-env": "^1.18.4",
     "cross-env": "^6.0.3",
