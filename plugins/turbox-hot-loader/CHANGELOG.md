@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.14
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.13
+
 ## 1.0.13
 
 ### Patch Changes

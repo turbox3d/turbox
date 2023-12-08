@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.13
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.13
+  - @turbox3d/shared@1.1.9
+
 ## 1.1.12
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.17
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.15
+  - @turbox3d/shared@1.1.9
+
 ## 1.1.16
 
 ### Patch Changes

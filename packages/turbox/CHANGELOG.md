@@ -1,5 +1,23 @@
 # @turbox3d/turbox
 
+## 1.1.26
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.17
+  - @turbox3d/design-engine@1.1.20
+  - @turbox3d/event-manager@1.1.15
+  - @turbox3d/graphic-component-pixi@1.1.26
+  - @turbox3d/graphic-component-three@1.1.23
+  - @turbox3d/math@1.1.6
+  - @turbox3d/reactivity@2.1.13
+  - @turbox3d/reactivity-react@1.1.13
+  - @turbox3d/renderer-core@1.0.13
+  - @turbox3d/renderer-pixi@1.0.14
+  - @turbox3d/renderer-three@1.0.13
+
 ## 1.1.25
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.9
+
+### Patch Changes
+
+- Add doc gen building process
+
 ## 1.1.8
 
 ### Patch Changes

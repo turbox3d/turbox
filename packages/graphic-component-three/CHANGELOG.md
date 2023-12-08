@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.23
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.13
+  - @turbox3d/shared@1.1.9
+
 ## 1.1.22
 
 ### Patch Changes

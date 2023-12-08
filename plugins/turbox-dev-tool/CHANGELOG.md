@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.11
+
+### Patch Changes
+
+- Add doc gen building process
+
 ## 1.0.10
 
 ### Patch Changes

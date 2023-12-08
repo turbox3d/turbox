@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.6
+
+### Patch Changes
+
+- Add doc gen building process
+
 ## 1.1.5
 
 ### Patch Changes

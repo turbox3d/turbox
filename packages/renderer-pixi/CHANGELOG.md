@@ -1,5 +1,15 @@
 # @turbox3d/renderer-pixi
 
+## 1.0.14
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.15
+  - @turbox3d/renderer-core@1.0.13
+  - @turbox3d/shared@1.1.9
+
 ## 1.0.13
 
 ### Patch Changes

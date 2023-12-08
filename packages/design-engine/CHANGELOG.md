@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.20
+
+### Patch Changes
+
+- Add doc gen building process
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.17
+  - @turbox3d/event-manager@1.1.15
+  - @turbox3d/math@1.1.6
+  - @turbox3d/reactivity@2.1.13
+  - @turbox3d/reactivity-react@1.1.13
+  - @turbox3d/shared@1.1.9
+
 ## 1.1.19
 
 ### Patch Changes
