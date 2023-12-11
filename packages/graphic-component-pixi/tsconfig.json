@@ -1,40 +1,8 @@
 {
-  "compileOnSave": true,
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "es6",
-    "noImplicitAny": false,
-    "declaration": true,
-    "strictNullChecks": true,
-    "allowJs": false,
-    "jsx": "react",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "sourceMap": false,
-    "downlevelIteration": true,
-    "target": "ES2018",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "declarationDir": "./typings",
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
-    "types": [
-      "node",
-      "jest"
-    ],
-    "skipLibCheck": true
+    "outDir": "./ts"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/node_modules/**/*",
-    "**/__tests__/**/*"
-  ]
+  "include": ["src"]
 }

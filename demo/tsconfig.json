@@ -15,15 +15,16 @@
     "emitDecoratorMetadata": true,
     "sourceMap": false,
     "downlevelIteration": true,
-    "target": "es5",
+    "target": "ES2018",
     "moduleResolution": "node",
     "lib": [
       "DOM",
-      "ESNext"
+      "ESNext",
     ],
     "types": [
       "node",
-      "jest"
+      "jest",
+      "webpack-env"
     ],
     "skipLibCheck": true
   },

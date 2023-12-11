@@ -1,7 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "esnext",
+    "module": "es6",
     "noImplicitAny": false,
     "declaration": true,
     "strictNullChecks": true,
@@ -15,11 +15,12 @@
     "emitDecoratorMetadata": true,
     "sourceMap": false,
     "downlevelIteration": true,
-    "target": "es5",
+    "target": "ES2018",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "lib": [
       "DOM",
-      "ESNext",
+      "ESNext"
     ],
     "types": [
       "node",

@@ -16,6 +16,7 @@ import { store, registerExternalBatchUpdate } from './core/store';
 import { REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from './const/symbol';
 
 export * from './utils/event';
+export * from './interfaces';
 
 init();
 

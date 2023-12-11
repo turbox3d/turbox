@@ -4,7 +4,7 @@ import { Domain, mutation, reactor, computed, Action, action } from '@turbox3d/r
 import { Line } from './line';
 import { Point } from './point';
 import { EPointType } from '../types/enum';
-import axios from 'axios';
+// import axios from 'axios';
 
 export class Countertop extends Domain {
   @reactor() points: Point[];

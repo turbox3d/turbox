@@ -31,16 +31,10 @@
     "@babel/plugin-transform-runtime": "^7.23.4",
     "@babel/preset-env": "^7.23.5",
     "@babel/runtime": "^7.23.5",
-    "@types/jest": "^24.9.1",
-    "@types/node": "~16.18.68",
+    "@types/node": "~20.10.4",
     "@types/three": "^0.130.2",
-    "cross-env": "^6.0.3",
-    "jest": "^24.9.0",
     "three": "^0.131.3",
-    "ts-jest": "^24.3.0",
-    "typescript": "4.6.4",
-    "webpack": "4.42.1",
-    "webpack-cli": "~3.3.12"
+    "typescript": "4.6.4"
   },
   "files": [
     "src/",
@@ -56,17 +50,18 @@
   "scripts": {
     "test": "npx jest --forceExit --coverage --verbose --passWithNoTests",
     "test:watch": "npm run test -- --watchAll",
-    "build:ts": "rm -rf ts && tsc -target es2018 -declarationDir ./typings -outDir ./ts",
-    "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es",
-    "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib",
-    "build:watch": "tsc -w -target es2018 -declarationDir ./typings -outDir ./ts & npx babel ts -w --out-dir es",
-    "build:umd": "npx webpack --mode='development' -o dist/turbox-renderer-three.js",
-    "build:umd:min": "npx webpack --mode='production' -o dist/turbox-renderer-three.min.js",
+    "build:dts": "cross-env GEN_ENV=dts npx ../../gen.js",
+    "build:ts": "rm -rf ts && tsc && npm run build:dts && copyfiles -u 1 src/**/*.less ./ts",
+    "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es && copyfiles -u 1 src/**/*.less ./es",
+    "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib && copyfiles -u 1 src/**/*.less ./lib",
+    "build:watch": "tsc -w & npx babel ts -w --out-dir es & copyfiles -u 1 src/**/*.less ./es",
+    "build:umd": "npx webpack --node-env=development --mode=development",
+    "build:umd:min": "npx webpack --node-env=production --mode=production",
     "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
   },
   "dependencies": {
-    "@turbox3d/event-manager": "workspace:^",
-    "@turbox3d/renderer-core": "workspace:^",
-    "@turbox3d/shared": "workspace:^"
+    "@turbox3d/event-manager": "^1.1.15",
+    "@turbox3d/renderer-core": "^1.0.13",
+    "@turbox3d/shared": "^1.1.9"
   }
 }

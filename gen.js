@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('node:child_process');
 const TypeDoc = require('typedoc');
 const json = require('./typedoc.json');
 
@@ -8,16 +7,24 @@ const workspaceDirs = ['packages', 'plugins'];
 const ignorePackages = ['turbox-snippets'];
 const entryPath = './src/index.ts';
 const clEntryPath = './CHANGELOG.md';
-const docEnv = process.env.DOC_ENV;
+const genEnv = process.env.GEN_ENV;
 
-const DOC_ENV = {
+const GEN_ENV = {
   TYPEDOC: 'typedoc',
-  CHANGELOG: 'changelog'
+  CHANGELOG: 'changelog',
+  DTS: 'dts',
 };
+const cwd = process.cwd();
 
 async function main() {
   const entryPoints = [];
   const clEntryPoints = [];
+  /** Generate index.d.ts */
+  if (genEnv === GEN_ENV.DTS) {
+    const pkg = require(path.resolve(cwd, './package.json'));
+    fs.writeFileSync(path.resolve(cwd, './index.d.ts'), `export * from './typings/index';\n\ndeclare module '${pkg.name}';\n`);
+    return;
+  }
   workspaceDirs.forEach(dir => {
     const files = fs.readdirSync(dir);
     for (let i = files.length - 1; i >= 0; i--) {
@@ -36,8 +43,8 @@ async function main() {
       }
     }
   });
-  if (docEnv === DOC_ENV.TYPEDOC && entryPoints.length) {
-    /** Generate type doc */
+  /** Generate type doc */
+  if (genEnv === GEN_ENV.TYPEDOC && entryPoints.length) {
     try {
       const app = await TypeDoc.Application.bootstrapWithPlugins({
         entryPoints,
@@ -54,8 +61,8 @@ async function main() {
       console.error(error);
     }
   }
-  if (docEnv === DOC_ENV.CHANGELOG && clEntryPoints.length) {
-    /** Generate changelog */
+  /** Generate changelog */
+  if (genEnv === GEN_ENV.CHANGELOG && clEntryPoints.length) {
     const writerStream = fs.createWriteStream('./docs/CHANGELOG.md');
 
     writerStream.on('finish', () => {
@@ -73,7 +80,7 @@ async function main() {
       rs.pipe(ws, { end: false });
       rs.on('end', () => {
         if (entryPoints.length) {
-          ws.write('\r\n');
+          ws.write('\n');
         }
         mergeFile(entryPoints, ws);
       });

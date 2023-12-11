@@ -17,19 +17,15 @@ module.exports = {
     publicPath: '/build/',
   },
   devServer: {
-    contentBase: path.resolve(__dirname),
+    static: {
+      directory: path.resolve(__dirname),
+    },
     compress: true,
     port: 9000,
     host: '0.0.0.0',
     historyApiFallback: true
   },
   externals: {
-    // turbox: {
-    //   commonjs: 'turbox',
-    //   commonjs2: 'turbox',
-    //   amd: 'turbox',
-    //   root: 'Turbox'
-    // },
     // react: {
     //   commonjs: 'react',
     //   commonjs2: 'react',
@@ -42,9 +38,18 @@ module.exports = {
     //   amd: 'react-dom',
     //   root: 'ReactDOM'
     // },
-    // turbox: 'Turbox',
-    // react: 'React',
-    // 'react-dom': 'ReactDOM',
+    // 'pixi.js': {
+    //   commonjs: 'pixi.js',
+    //   commonjs2: 'pixi.js',
+    //   amd: 'pixi.js',
+    //   root: 'PIXI'
+    // },
+    // three: {
+    //   commonjs: 'THREE',
+    //   commonjs2: 'THREE',
+    //   amd: 'THREE',
+    //   root: 'THREE',
+    // },
   },
   module: {
     rules: [{
