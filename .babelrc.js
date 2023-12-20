@@ -23,7 +23,7 @@ if (cjs) {
 }
 
 module.exports = (api) => {
-  api.cache(true);
+  api && api.cache(true);
   return {
     presets,
     plugins,
