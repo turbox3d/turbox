@@ -12,7 +12,7 @@ module.exports = {
   },
   mode: 'development',
   output: {
-    path: path.join(process.cwd(), process.env.BUILD_DEST || '../build'),
+    path: path.resolve(process.cwd(), process.env.BUILD_DEST || './build'),
     filename: 'bundle.js',
     publicPath: '/build/',
   },
