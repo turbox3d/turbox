@@ -1,5 +1,15 @@
 # @turbox3d/renderer-three
 
+## 1.0.14
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/shared@1.1.10
+
 ## 1.0.13
 
 ### Patch Changes

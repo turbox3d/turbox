@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.15
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.14
+
 ## 1.0.14
 
 ### Patch Changes

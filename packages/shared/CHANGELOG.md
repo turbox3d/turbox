@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.10
+
+### Patch Changes
+
+- Update build script&config file
+
 ## 1.1.9
 
 ### Patch Changes

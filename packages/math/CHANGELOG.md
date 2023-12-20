@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.7
+
+### Patch Changes
+
+- Update build script&config file
+
 ## 1.1.6
 
 ### Patch Changes

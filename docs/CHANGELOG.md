@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.24
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.18
+  - @turbox3d/design-engine@1.1.21
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/graphic-component-three@1.1.24
+  - @turbox3d/math@1.1.7
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/reactivity-react@1.1.14
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/renderer-three@1.0.14
+
 ## 1.1.23
 
 ### Patch Changes
@@ -66,6 +82,22 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.18
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.18
+  - @turbox3d/design-engine@1.1.21
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/graphic-component-pixi@1.1.27
+  - @turbox3d/math@1.1.7
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/reactivity-react@1.1.14
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/renderer-pixi@1.0.15
+
 ## 1.0.17
 
 ### Patch Changes
@@ -131,6 +163,24 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.27
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.18
+  - @turbox3d/design-engine@1.1.21
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/graphic-component-pixi@1.1.27
+  - @turbox3d/graphic-component-three@1.1.24
+  - @turbox3d/math@1.1.7
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/reactivity-react@1.1.14
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/renderer-pixi@1.0.15
+  - @turbox3d/renderer-three@1.0.14
 
 ## 1.1.26
 
@@ -206,6 +256,12 @@
 
 # @turbox3d/shared
 
+## 1.1.10
+
+### Patch Changes
+
+- Update build script&config file
+
 ## 1.1.9
 
 ### Patch Changes
@@ -231,6 +287,16 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.14
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/shared@1.1.10
 
 ## 1.0.13
 
@@ -274,6 +340,16 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.15
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/renderer-core@1.0.14
+  - @turbox3d/shared@1.1.10
+
 ## 1.0.14
 
 ### Patch Changes
@@ -315,6 +391,17 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.14
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.18
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/shared@1.1.10
 
 ## 1.0.13
 
@@ -362,6 +449,15 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.14
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/shared@1.1.10
+
 ## 1.1.13
 
 ### Patch Changes
@@ -400,6 +496,14 @@
 
 # @turbox3d/reactivity
 
+## 2.1.14
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/shared@1.1.10
+
 ## 2.1.13
 
 ### Patch Changes
@@ -434,6 +538,12 @@
 
 # @turbox3d/math
 
+## 1.1.7
+
+### Patch Changes
+
+- Update build script&config file
+
 ## 1.1.6
 
 ### Patch Changes
@@ -459,6 +569,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.24
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.14
+  - @turbox3d/shared@1.1.10
 
 ## 1.1.23
 
@@ -497,6 +616,16 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.27
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/renderer-pixi@1.0.15
+  - @turbox3d/shared@1.1.10
 
 ## 1.1.26
 
@@ -540,6 +669,15 @@
 
 # @turbox3d/event-manager
 
+## 1.1.16
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/math@1.1.7
+  - @turbox3d/shared@1.1.10
+
 ## 1.1.15
 
 ### Patch Changes
@@ -577,6 +715,19 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.21
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.18
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/math@1.1.7
+  - @turbox3d/reactivity@2.1.14
+  - @turbox3d/reactivity-react@1.1.14
+  - @turbox3d/shared@1.1.10
 
 ## 1.1.20
 
@@ -632,6 +783,15 @@
 
 # @turbox3d/command-manager
 
+## 1.1.18
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/shared@1.1.10
+
 ## 1.1.17
 
 ### Patch Changes
@@ -670,6 +830,14 @@
 
 # @turbox3d/turbox-hot-loader
 
+## 1.0.15
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.14
+
 ## 1.0.14
 
 ### Patch Changes
@@ -703,6 +871,12 @@
   - @turbox3d/reactivity@2.1.10
 
 # @turbox3d/turbox-dev-tool
+
+## 1.0.12
+
+### Patch Changes
+
+- Update build script&config file
 
 ## 1.0.11
 

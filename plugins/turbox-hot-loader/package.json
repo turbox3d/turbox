@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox-hot-loader",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Turbox hot loader",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -15,7 +15,7 @@
   "author": "feifan <darknight3@vip.qq.com>",
   "license": "MIT",
   "peerDependencies": {
-    "@turbox3d/reactivity": ">=2",
+    "@turbox3d/reactivity": ">=2.1.14",
     "react": ">=16"
   },
   "devDependencies": {
@@ -25,7 +25,7 @@
     "@babel/plugin-transform-runtime": "^7.23.4",
     "@babel/preset-env": "^7.23.5",
     "@babel/runtime": "^7.23.5",
-    "@turbox3d/reactivity": "^2.1.13",
+    "@turbox3d/reactivity": "^2.1.14",
     "@types/node": "~20.10.4",
     "@types/react": "~17.0.71",
     "@types/webpack-env": "^1.18.4",

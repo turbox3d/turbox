@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.12
+
+### Patch Changes
+
+- Update build script&config file
+
 ## 1.0.11
 
 ### Patch Changes

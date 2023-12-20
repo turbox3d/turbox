@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.18
+
+### Patch Changes
+
+- Update build script&config file
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.16
+  - @turbox3d/shared@1.1.10
+
 ## 1.1.17
 
 ### Patch Changes
