@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.8
+
+### Patch Changes
+
+- Move dts file to dist
+
 ## 1.1.7
 
 ### Patch Changes

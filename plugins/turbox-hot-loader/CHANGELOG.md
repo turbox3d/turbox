@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.16
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.15
+
 ## 1.0.15
 
 ### Patch Changes

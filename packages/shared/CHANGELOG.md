@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.11
+
+### Patch Changes
+
+- Move dts file to dist
+
 ## 1.1.10
 
 ### Patch Changes

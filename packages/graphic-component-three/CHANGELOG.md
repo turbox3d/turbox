@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.25
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.24
 
 ### Patch Changes

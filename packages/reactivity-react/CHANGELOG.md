@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.14
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.28
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/renderer-pixi@1.0.16
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.27
 
 ### Patch Changes

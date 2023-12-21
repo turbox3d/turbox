@@ -1,5 +1,16 @@
 # @turbox3d/renderer-core
 
+## 1.0.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.0.14
 
 ### Patch Changes

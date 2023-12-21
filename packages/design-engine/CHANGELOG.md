@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.22
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/math@1.1.8
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/reactivity-react@1.1.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.21
 
 ### Patch Changes

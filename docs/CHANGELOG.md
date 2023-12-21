@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.25
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/design-engine@1.1.22
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/graphic-component-three@1.1.25
+  - @turbox3d/math@1.1.8
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/reactivity-react@1.1.15
+  - @turbox3d/renderer-core@1.0.15
+  - @turbox3d/renderer-three@1.0.15
+
 ## 1.1.24
 
 ### Patch Changes
@@ -82,6 +98,22 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.19
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/design-engine@1.1.22
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/graphic-component-pixi@1.1.28
+  - @turbox3d/math@1.1.8
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/reactivity-react@1.1.15
+  - @turbox3d/renderer-core@1.0.15
+  - @turbox3d/renderer-pixi@1.0.16
+
 ## 1.0.18
 
 ### Patch Changes
@@ -163,6 +195,24 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.28
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/design-engine@1.1.22
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/graphic-component-pixi@1.1.28
+  - @turbox3d/graphic-component-three@1.1.25
+  - @turbox3d/math@1.1.8
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/reactivity-react@1.1.15
+  - @turbox3d/renderer-core@1.0.15
+  - @turbox3d/renderer-pixi@1.0.16
+  - @turbox3d/renderer-three@1.0.15
 
 ## 1.1.27
 
@@ -256,6 +306,12 @@
 
 # @turbox3d/shared
 
+## 1.1.11
+
+### Patch Changes
+
+- Move dts file to dist
+
 ## 1.1.10
 
 ### Patch Changes
@@ -287,6 +343,16 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/renderer-core@1.0.15
+  - @turbox3d/shared@1.1.11
 
 ## 1.0.14
 
@@ -340,6 +406,16 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.16
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/renderer-core@1.0.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.0.15
 
 ### Patch Changes
@@ -391,6 +467,17 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/shared@1.1.11
 
 ## 1.0.14
 
@@ -449,6 +536,15 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.14
 
 ### Patch Changes
@@ -496,6 +592,14 @@
 
 # @turbox3d/reactivity
 
+## 2.1.15
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/shared@1.1.11
+
 ## 2.1.14
 
 ### Patch Changes
@@ -538,6 +642,12 @@
 
 # @turbox3d/math
 
+## 1.1.8
+
+### Patch Changes
+
+- Move dts file to dist
+
 ## 1.1.7
 
 ### Patch Changes
@@ -569,6 +679,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.25
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.15
+  - @turbox3d/shared@1.1.11
 
 ## 1.1.24
 
@@ -616,6 +735,16 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.28
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/renderer-pixi@1.0.16
+  - @turbox3d/shared@1.1.11
 
 ## 1.1.27
 
@@ -669,6 +798,15 @@
 
 # @turbox3d/event-manager
 
+## 1.1.17
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/math@1.1.8
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.16
 
 ### Patch Changes
@@ -715,6 +853,19 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.22
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.19
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/math@1.1.8
+  - @turbox3d/reactivity@2.1.15
+  - @turbox3d/reactivity-react@1.1.15
+  - @turbox3d/shared@1.1.11
 
 ## 1.1.21
 
@@ -783,6 +934,15 @@
 
 # @turbox3d/command-manager
 
+## 1.1.19
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.18
 
 ### Patch Changes
@@ -830,6 +990,14 @@
 
 # @turbox3d/turbox-hot-loader
 
+## 1.0.16
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.15
+
 ## 1.0.15
 
 ### Patch Changes
@@ -871,6 +1039,12 @@
   - @turbox3d/reactivity@2.1.10
 
 # @turbox3d/turbox-dev-tool
+
+## 1.0.13
+
+### Patch Changes
+
+- Move dts file to dist
 
 ## 1.0.12
 

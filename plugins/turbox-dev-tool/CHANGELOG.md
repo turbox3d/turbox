@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.13
+
+### Patch Changes
+
+- Move dts file to dist
+
 ## 1.0.12
 
 ### Patch Changes

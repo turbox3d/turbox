@@ -1,5 +1,14 @@
 # @turbox3d/event-manager
 
+## 1.1.17
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/math@1.1.8
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.16
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.19
+
+### Patch Changes
+
+- Move dts file to dist
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.17
+  - @turbox3d/shared@1.1.11
+
 ## 1.1.18
 
 ### Patch Changes
