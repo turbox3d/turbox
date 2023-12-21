@@ -4,7 +4,7 @@
   "description": "Turbox hot loader",
   "main": "./lib/index.js",
   "module": "./es/index.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "hot loader"
   ],
@@ -33,10 +33,10 @@
     "typescript": "4.6.4"
   },
   "files": [
+    "dist/",
     "src/",
     "lib/",
     "es/",
-    "index.d.ts",
     "typings"
   ],
   "repository": {

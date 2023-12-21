@@ -22,7 +22,7 @@ async function main() {
   /** Generate index.d.ts */
   if (genEnv === GEN_ENV.DTS) {
     const pkg = require(path.resolve(cwd, './package.json'));
-    fs.writeFileSync(path.resolve(cwd, './index.d.ts'), `export * from './typings/index';\n\ndeclare module '${pkg.name}';\n`);
+    fs.writeFileSync(path.resolve(cwd, './dist/index.d.ts'), `export * from '../typings/index';\n\ndeclare module '${pkg.name}';\n`);
     return;
   }
   workspaceDirs.forEach(dir => {

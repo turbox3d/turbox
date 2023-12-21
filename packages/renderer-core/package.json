@@ -4,7 +4,7 @@
   "description": "Large-scale declarative graphic ui core renderer",
   "main": "./lib/index.js",
   "module": "./es/index.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "framework",
     "front-end",
@@ -31,10 +31,10 @@
     "typescript": "4.6.4"
   },
   "files": [
+    "dist/",
     "src/",
     "lib/",
     "es/",
-    "index.d.ts",
     "typings"
   ],
   "repository": {

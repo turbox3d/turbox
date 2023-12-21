@@ -4,7 +4,7 @@
   "description": "Large-scale design application engine library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "framework",
     "front-end",
@@ -44,10 +44,10 @@
     "url-loader": "^4.1.1"
   },
   "files": [
+    "dist/",
     "src/",
     "lib/",
     "es/",
-    "index.d.ts",
     "typings"
   ],
   "repository": {

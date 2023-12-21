@@ -4,7 +4,7 @@
   "description": "Large-scale reactive state management library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "framework",
     "react",
@@ -39,10 +39,10 @@
     "typescript": "4.6.4"
   },
   "files": [
+    "dist/",
     "src/",
     "lib/",
     "es/",
-    "index.d.ts",
     "typings"
   ],
   "repository": {
