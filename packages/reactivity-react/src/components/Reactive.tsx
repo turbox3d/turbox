@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { fail } from '@turbox3d/shared';
 import { store, depCollector, REACTIVE_COMPONENT_NAME, UNSUBSCRIBE_HANDLER } from '@turbox3d/reactivity';
 import * as React from 'react';

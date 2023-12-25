@@ -613,8 +613,7 @@ class Vector3 {
     }
 
     const multiLen = len1 * len2;
-    // eslint-disable-next-line no-restricted-properties
-    return this.cross(vec).lengthSq >= Math.pow(multiLen - cosTol * multiLen, 2);
+    return this.cross(vec).lengthSq >= (multiLen - cosTol * multiLen) ** 2;
   }
 
   isParallel(vec: Vector3, tol?: Tolerance, checkZeroVec = true) {

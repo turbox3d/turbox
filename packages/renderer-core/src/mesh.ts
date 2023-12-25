@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-class-component-methods */
 import { reactive, Reaction } from '@turbox3d/reactivity';
 import { InteractiveConfig, SceneEvent, ViewEntity, EventType } from '@turbox3d/event-manager';
 import { CommandManager, SceneTool } from '@turbox3d/command-manager';
@@ -438,7 +439,7 @@ export abstract class BaseMesh<
           parent.addChildView(this.view);
         }
       } else {
-        console.warn('Cannot retrieve parent Mesh or Scene.');
+        warn('Cannot retrieve parent Mesh or Scene.');
       }
     }
   }

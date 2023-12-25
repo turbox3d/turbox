@@ -54,15 +54,15 @@ export class TimeTravel {
 
   static undo = () => {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.undo();
-  }
+  };
 
   static redo = () => {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.redo();
-  }
+  };
 
   static clear = () => {
     TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.clear();
-  }
+  };
 
   static get undoable() {
     return TimeTravel.currentTimeTravel && TimeTravel.currentTimeTravel.undoable;

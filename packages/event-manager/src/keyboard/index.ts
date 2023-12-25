@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+import { warn } from '@turbox3d/shared';
 import { HotKeyListener } from './listener';
 import { Handler, HotKeyConfig, HotKeyData, Key } from './type';
 
@@ -30,7 +30,7 @@ class HotKeyController {
       this.listener.register(hotkey);
       if (this.keyMap[hotkey]) {
         const oldConfig = this.keyMap[hotkey];
-        console.warn('conflicted hot key detected，please check again：');
+        warn('conflicted hot key detected，please check again：');
         console.table({ hotkey, name: oldConfig.name || '', info: oldConfig.info || '' });
       } else {
         this.keyMap[hotkey] = config;
@@ -94,7 +94,7 @@ class HotKeyController {
       const handler = this.keyMap[hotkey].handler;
       handler();
     }
-  }
+  };
 }
 
 const HotKey = new HotKeyController();

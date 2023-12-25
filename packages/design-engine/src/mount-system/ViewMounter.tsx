@@ -1,10 +1,8 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/default-props-match-prop-types */
 import * as React from 'react';
 import { Reactive } from '@turbox3d/reactivity-react';
 import EnvSystem from '../env-system/index';
 
-interface IProps {
+interface IProps extends React.PropsWithChildren {
   /** 挂载点 */
   mountPointId?: string;
   /** 容器节点样式 */
@@ -21,7 +19,6 @@ interface IProps {
 export class EnvViewMounter extends React.Component<IProps> {
   static defaultProps = {
     className: '',
-    renderOrder: 'auto',
     mountPointId: '',
     environments: [],
     style: {},

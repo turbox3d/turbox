@@ -1,5 +1,5 @@
 import { BaseMesh, ComponentProps } from '@turbox3d/renderer-core';
-import { Vec2 } from '@turbox3d/shared';
+import { Vec2, warn } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 
 export abstract class Mesh2D<Props extends object = {}> extends BaseMesh<Props, PIXI.Application, HTMLCanvasElement, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite, Vec2> {
@@ -36,12 +36,12 @@ export abstract class Mesh2D<Props extends object = {}> extends BaseMesh<Props, 
       }
     } catch (e) {
       // 如果异常，也是该节点已经被卸载了，无需理会
-      console.log('destroy error');
+      warn('destroy error');
     }
   }
 
   setViewInteractive(interactive: boolean) {
-    this.view.interactive = interactive;
+    this.view.eventMode = interactive ? 'static' : 'auto';
   }
 
   addViewToScene() {

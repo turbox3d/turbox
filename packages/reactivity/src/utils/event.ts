@@ -1,3 +1,4 @@
+import { fail } from '@turbox3d/shared';
 import { ctx } from '../const/config';
 import { ECollectType } from '../const/enums';
 import { KeyPathType } from '../core/domain';
@@ -76,7 +77,7 @@ class Emitter {
       try {
         callback.apply(this, [args]);
       } catch (e) {
-        console.error(e);
+        fail(e);
       }
     });
   }

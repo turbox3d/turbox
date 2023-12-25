@@ -1,6 +1,4 @@
-/* eslint-disable no-multi-spaces */
-/* eslint-disable no-tabs */
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable function-call-argument-newline */
 import { MathUtils } from '../MathUtils';
 import { Euler } from './Euler';
 import { Matrix3 } from './Matrix3';
@@ -665,7 +663,7 @@ class Matrix4 {
 
     const x = quaternion._x; const y = quaternion._y; const z = quaternion._z; const
       w = quaternion._w;
-    const x2 = x + x; const	y2 = y + y; const
+    const x2 = x + x; const y2 = y + y; const
       z2 = z + z;
     const xx = x * x2; const xy = x * y2; const
       xz = x * z2;
@@ -757,10 +755,10 @@ class Matrix4 {
     const c = -(far + near) / (far - near);
     const d = -2 * far * near / (far - near);
 
-    te[0] = x;  te[4] = 0;	te[8] = a;	te[12] = 0;
-    te[1] = 0;	te[5] = y;	te[9] = b;	te[13] = 0;
-    te[2] = 0;	te[6] = 0;	te[10] = c;	te[14] = d;
-    te[3] = 0;	te[7] = 0;	te[11] = -1;	te[15] = 0;
+    te[0] = x; te[4] = 0; te[8] = a; te[12] = 0;
+    te[1] = 0; te[5] = y; te[9] = b; te[13] = 0;
+    te[2] = 0; te[6] = 0; te[10] = c; te[14] = d;
+    te[3] = 0; te[7] = 0; te[11] = -1; te[15] = 0;
 
     return this;
   }
@@ -775,10 +773,10 @@ class Matrix4 {
     const y = (top + bottom) * h;
     const z = (far + near) * p;
 
-    te[0] = 2 * w;	te[4] = 0;	te[8] = 0;	te[12] = -x;
-    te[1] = 0;	te[5] = 2 * h;	te[9] = 0;	te[13] = -y;
-    te[2] = 0;	te[6] = 0;	te[10] = -2 * p;	te[14] = -z;
-    te[3] = 0;	te[7] = 0;	te[11] = 0;	te[15] = 1;
+    te[0] = 2 * w; te[4] = 0; te[8] = 0; te[12] = -x;
+    te[1] = 0; te[5] = 2 * h; te[9] = 0; te[13] = -y;
+    te[2] = 0; te[6] = 0; te[10] = -2 * p; te[14] = -z;
+    te[3] = 0; te[7] = 0; te[11] = 0; te[15] = 1;
 
     return this;
   }

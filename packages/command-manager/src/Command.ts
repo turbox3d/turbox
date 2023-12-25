@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
 import { ViewEntity, SceneEvent, EventType } from '@turbox3d/event-manager';
 import { CommandManager } from './CommandManager';
 import { Interaction } from './Interaction';

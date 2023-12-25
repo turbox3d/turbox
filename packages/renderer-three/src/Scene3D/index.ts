@@ -183,21 +183,21 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, cameraPosition, preserveDrawingBuffer = false } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, backgroundAlpha = BaseScene.BACKGROUND_ALPHA, cameraPosition, preserveDrawingBuffer = false } = this.props;
     // 初始化应用
     this.scene = new THREE.Scene();
     // 默认提供一个相机，可在检测到相机组件后替换掉
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 1, 30000);
     const app = new THREE.WebGLRenderer({
-      alpha: transparent,
+      alpha: backgroundAlpha < 1,
       antialias: true,
       preserveDrawingBuffer,
     });
     app.setPixelRatio(this.resolution);
     app.setSize(this.width, this.height);
-    app.setClearColor(backgroundColor, transparent ? 0 : 1);
-    if (this.props.outputEncoding) {
-      app.outputEncoding = this.props.outputEncoding;
+    app.setClearColor(backgroundColor, backgroundAlpha);
+    if (this.props.outputColorSpace) {
+      app.outputColorSpace = this.props.outputColorSpace;
     }
     this.updateCameraPosition(cameraPosition as Vec3);
     const animate = () => {
@@ -260,7 +260,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
       }
       mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
       mouse.y = -(point.y / app.domElement.clientHeight) * 2 + 1;
-      this.raycaster.setFromCamera(mouse, this.camera!);
+      this.raycaster.setFromCamera(new THREE.Vector2(mouse.x, mouse.y), this.camera!);
       const objects = this.raycaster.intersectObjects(this.scene!.children, true);
       let i = 0;
       if (!objects[0]) {

@@ -5,7 +5,7 @@ import Container2d from '../container2d';
 
 interface IProps {
   text: string;
-  style?: PIXI.TextStyle;
+  style?: PIXI.TextStyle | Partial<PIXI.TextStyle>;
   position?: Vec2;
   zIndex?: number;
   /** top,right,bottom,left */
@@ -31,7 +31,10 @@ export default class Text2d extends Mesh2D<IProps> {
       style,
     } = this.props;
     this.view.text = text;
-    this.view.style = style;
+    this.view.style = style || new PIXI.TextStyle({
+      fontSize: 16,
+      fontFamily: 'Arial',
+    });
   }
 
   updateMaterial() {

@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { IGraphicOption, parseGraphicOption } from './option';
 
 interface ILineParam {

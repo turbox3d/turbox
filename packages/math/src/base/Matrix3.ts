@@ -1,3 +1,4 @@
+/* eslint-disable function-call-argument-newline */
 import { MathUtils } from '../MathUtils';
 import { Matrix4 } from './Matrix4';
 import { Vector2 } from './Vector2';

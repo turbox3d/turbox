@@ -4,7 +4,9 @@ class Task {
   }
 
   // eslint-disable-next-line no-useless-constructor
-  constructor(public fn: Function, public priority: number) { }
+  constructor(public fn: Function, public priority: number) {
+    //
+  }
 }
 
 export { Task };

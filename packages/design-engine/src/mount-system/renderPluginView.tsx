@@ -1,4 +1,5 @@
-import * as ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
+import * as ReactDOMLegacy from 'react-dom';
 import * as React from 'react';
 
 /** 渲染插件应用视图 */
@@ -13,5 +14,10 @@ export function renderPluginView(Target: React.ComponentType, pluginId: string) 
     containerNode.className = `turbox-plugin-${pluginId}-class`;
     document.body.appendChild(containerNode);
   }
-  ReactDOM.render(React.createElement(Target), containerNode);
+  if (React.version.startsWith('18')) {
+    const root = ReactDOM.createRoot(containerNode);
+    root.render(React.createElement(Target));
+  } else {
+    ReactDOMLegacy.render(React.createElement(Target), containerNode);
+  }
 }

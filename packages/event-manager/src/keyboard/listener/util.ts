@@ -42,20 +42,15 @@ export function createKeyByHotKey(hotkey: string) {
   let modifiers = Node.code;
 
   for (let i = 0; i < length; i++) {
-    // eslint-disable-next-line default-case
-    switch (keys[i]) {
-    case Shift.key:
+    const key = keys[i];
+    if (key === Shift.key) {
       modifiers |= Shift.code;
-      break;
-    case Ctrl.key:
+    } else if (key === Ctrl.key) {
       modifiers |= Ctrl.code;
-      break;
-    case Alt.key:
+    } else if (key === Alt.key) {
       modifiers |= Alt.code;
-      break;
-    case Meta.key:
+    } else if (key === Meta.key) {
       modifiers |= Meta.code;
-      break;
     }
   }
 

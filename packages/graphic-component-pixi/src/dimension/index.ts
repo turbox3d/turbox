@@ -1,22 +1,30 @@
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import * as PIXI from 'pixi.js';
-import { drawText, generateDimData } from '../_utils/utils';
+import { drawText } from '../_utils/utils';
+
+interface IXY {
+  x: number;
+  y: number;
+}
+
+interface IDimensionData {
+  bbox: IXY[]; // 包围盒
+  innerVX: number[]; // 竖直构件端点
+  innerHY: number[]; // 水平构件端点
+}
 
 interface IProps {
   data: IDimensionData[];
   editableTextPs?: IXY[]; // 需要隐藏文字的位置
   clickCallback?: Function;
 }
-interface IDimensionData {
-  bbox: IXY[]; // 包围盒
-  innerVX: number[]; // 竖直构件端点
-  innerHY: number[]; // 水平构件端点
-}
+
 interface ILineData {
   p0: IXY;
   p1: IXY;
 }
+
 interface IText {
   roundLength: number;
   params: {
@@ -26,15 +34,52 @@ interface IText {
   };
   endPoints: ILineData;
 }
-interface IXY {
-  x: number;
-  y: number;
-}
 
 const DIM_OFFSET = 80;
 const DIM_INTERNAL = 80;
 const textH = 40;
 const textOffsetK = 1;// 标注垂直于文字方向偏移系数,分母为文字尺寸
+
+/**
+ * 根据两个端点生成尺寸线数据
+ */
+export function generateDimData(x0: number, y0: number, x1: number, y1: number) {
+  // for (let i = 0; i < 100; i++) {
+  const endLineL = 25;
+  const endLine2L = 35;
+
+  // compute line data
+  const v = { x: x1 - x0, y: y1 - y0 };
+  const vL = Math.sqrt(v.x * v.x + v.y * v.y);
+  v.x /= vL;
+  v.y /= vL;
+
+  // anticlockwise 90 vector
+  const v1 = { x: -v.y, y: v.x };
+  // anticlockwise 45 vector
+  const v2 = { x: 0.707 * v.x - 0.707 * v.y, y: 0.707 * v.x + 0.707 * v.y };
+
+  const data = [
+    // main body
+    { x: x0, y: y0 }, { x: x1, y: y1 },
+
+    // end line
+    { x: x0 + endLineL * v1.x, y: y0 + endLineL * v1.y }, { x: x0 - endLineL * v1.x, y: y0 - endLineL * v1.y },
+    { x: x1 + endLineL * v1.x, y: y1 + endLineL * v1.y }, { x: x1 - endLineL * v1.x, y: y1 - endLineL * v1.y },
+
+    // 45° end line
+    // { x: x0 + endLine2L * v2.x, y: y0 + endLine2L * v2.y },
+    // { x: x0 - endLine2L * v2.x, y: y0 - endLine2L * v2.y },
+    // { x: x1 + endLine2L * v2.x, y: y1 + endLine2L * v2.y },
+    // { x: x1 - endLine2L * v2.x, y: y1 - endLine2L * v2.y },
+  ];
+
+  const length = vL;
+
+  const angle = Math.atan2(v.y, v.x);
+
+  return { data, length, angle };
+}
 
 export default class Dimension extends Mesh2D<IProps> {
   protected view = new PIXI.Container();
@@ -123,7 +168,7 @@ export default class Dimension extends Mesh2D<IProps> {
       if (this._distance2(c.position, e.getScenePosition()) < this._distance2(targetG.position, e.getScenePosition())) targetG = c;
     });
     this.props.clickCallback?.(this.graphic2endPsMap.get(targetG as PIXI.Graphics));
-  }
+  };
 
   private _distance2(p0: PIXI.IPointData, p1: PIXI.IPointData) {
     return (p0.x - p1.x) ** 2 + (p0.y - p1.y) ** 2;

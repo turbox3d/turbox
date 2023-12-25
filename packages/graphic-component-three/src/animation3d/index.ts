@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import { Mesh3D } from '@turbox3d/renderer-three';
-import { IDictionary } from '@turbox3d/shared';
+import { IDictionary, fail } from '@turbox3d/shared';
 
 // 确定需要哪些变更属性
 interface IAnimationProps {
@@ -139,7 +139,7 @@ export default class Animation3d extends Mesh3D<IAnimationProps> {
     }
 
     const gltf = await loadGltf(modelUrl).catch(err => {
-      console.error(err);
+      fail(err);
     });
 
     if (!gltf) {

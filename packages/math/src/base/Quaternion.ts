@@ -528,7 +528,7 @@ class Quaternion {
 
   _onChangeCallback: Function = () => {
     //
-  }
+  };
 }
 
 export { Quaternion };

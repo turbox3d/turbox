@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { drawLine } from './drawLine';
 import { IGraphicOption, parseGraphicOption } from './option';
 

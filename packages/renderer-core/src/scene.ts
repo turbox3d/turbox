@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable react/no-deprecated */
+/* eslint-disable react/no-unused-class-component-methods */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/require-default-props */
 import { CoordinateController, CoordinateType, InteractiveConfig, InteractiveController, InteractiveType, SceneEvent, EventType, ViewEntity } from '@turbox3d/event-manager';
@@ -9,7 +8,6 @@ import { Component, ComponentProps } from './component';
 
 declare global {
   interface Window {
-    // eslint-disable-next-line camelcase
     $$turbox_hot: boolean;
   }
 }
@@ -70,9 +68,9 @@ export interface BaseSceneProps {
    */
   skyBoxImages?: string[];
   /**
-   * 是否画布透明。默认：false
+   * 画布背景透明度。默认：1
    */
-  transparent?: boolean;
+  backgroundAlpha?: number;
   /**
    * 画布是否可缩放。默认：true
    */
@@ -107,8 +105,8 @@ export interface BaseSceneProps {
   preserveDrawingBuffer?: boolean;
   /** resizeFramebuffer */
   resizeFramebuffer?: boolean;
-  /** 颜色输出模式 renderer.outputEncoding */
-  outputEncoding?: number;
+  /** 颜色输出模式 renderer.outputColorSpace */
+  outputColorSpace?: string;
   /** 最大帧率限制 */
   maxFPS?: number;
   /** 禁用 resize */
@@ -140,12 +138,12 @@ export abstract class BaseScene<
   Raycaster,
   Container,
   DisplayObject,
-  Viewport,
+  Viewport
 > extends Component<BaseSceneProps> {
   /** 默认背景色 */
   static BACKGROUND_COLOR = 0xffffff;
-  /** 默认是否透明 */
-  static TRANSPARENT = false;
+  /** 默认背景透明度 */
+  static BACKGROUND_ALPHA = 1;
   /** 默认画布宽度 */
   static DEFAULT_WIDTH = 600;
   /** 默认画布高度 */
@@ -769,12 +767,7 @@ export abstract class BaseScene<
     }
     const ctrl = this.getCurrentInteractiveController();
     if (commandMgr && ctrl) {
-      commandMgr.distributeEvent(
-        EventType.onWheel,
-        this.getViewEntity(),
-        event,
-        this.getSceneTools()
-      );
+      commandMgr.distributeEvent(EventType.onWheel, this.getViewEntity(), event, this.getSceneTools());
     }
   };
 

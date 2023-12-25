@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /**
  * An enum that includes all non-printable string values one can expect from $event.key.
  * For example, this enum includes values like "CapsLock", "Backspace", and "AudioVolumeMute",

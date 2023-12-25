@@ -7,7 +7,7 @@ export class Tolerance {
   static COS_TOL = 1e-6;
   static DIST_TOL = 1e-6;
   static NUM_TOL = 1e-6;
-  static global: Tolerance = new Tolerance();
+  static global = new Tolerance();
   static setGlobal(cosTol: number, distTol: number, numTol: number) {
     Tolerance.global = new Tolerance(cosTol, distTol, numTol);
   }

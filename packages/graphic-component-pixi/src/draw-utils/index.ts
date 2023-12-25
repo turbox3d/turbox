@@ -4,11 +4,13 @@ import { drawPath } from './drawPath';
 import { drawPolygon } from './drawPolygon';
 import { drawRect } from './drawRect';
 
-export default class DrawUtils {
-  static drawCircle = drawCircle;
-  static drawLine = drawLine;
-  static drawLines = drawLines;
-  static drawPath = drawPath;
-  static drawPolygon = drawPolygon;
-  static drawRect = drawRect;
-}
+const DrawUtils = {
+  drawCircle,
+  drawLine,
+  drawLines,
+  drawPath,
+  drawPolygon,
+  drawRect,
+};
+
+export default DrawUtils;

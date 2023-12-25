@@ -18,7 +18,7 @@ function compose<M extends IDeclaredMap<CommandType> = IDeclaredMap<CommandType>
         this.$children[key] = command as Command;
       });
     }
-  } as any as ComposedCommand<Command, CommandType, M>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  } as any as ComposedCommand<Command, CommandType, M>;
 }
 
 export { compose };

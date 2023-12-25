@@ -2,16 +2,17 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import { drawText } from '../_utils/utils';
 
+interface IXY {
+  x: number;
+  y: number;
+}
+
 interface IProps {
   center: IXY;
   radius: number;
   startAngle: number;
   endAngle: number;
   anticlockwise: boolean;
-}
-interface IXY {
-  x: number;
-  y: number;
 }
 
 /**

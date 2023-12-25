@@ -3,7 +3,8 @@ import { BaseScene, BaseSceneProps, ComponentProps, SceneType } from '@turbox3d/
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 
-const interactiveMgr = new PIXI.InteractionManager({} as any);
+const boundary = new PIXI.EventBoundary();
+
 export const Scene2DSymbol = Symbol('scene2d');
 
 class CoordinateControllerPixi extends CoordinateController {
@@ -57,7 +58,7 @@ class CoordinateControllerPixi extends CoordinateController {
   }
 }
 
-export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
+export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
 
   sceneType = SceneType.Scene2D;
@@ -170,8 +171,12 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
       }
       app.ticker.add(() => {
         if (this.viewport?.visible && this.renderFlag) {
-          app.renderer.render(this.view, this.rt);
-          app.renderer.framebuffer.blit();
+          app.renderer.render(this.view, {
+            renderTexture: this.rt,
+          });
+          if (this.isWebGL(app) && (app.renderer as PIXI.Renderer).framebuffer) {
+            (app.renderer as PIXI.Renderer).framebuffer.blit();
+          }
         }
       });
     } else {
@@ -215,22 +220,24 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, transparent = BaseScene.TRANSPARENT, preserveDrawingBuffer = true, resizeFramebuffer } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, backgroundAlpha = BaseScene.BACKGROUND_ALPHA, preserveDrawingBuffer = true, resizeFramebuffer } = this.props;
     // 初始化应用
     const app = new PIXI.Application({
       width: this.width,
       height: this.height,
       backgroundColor,
-      transparent,
+      backgroundAlpha,
       antialias: true,
       autoDensity: true,
       resolution: this.resolution,
       preserveDrawingBuffer,
     });
     app.ticker.deltaMS = 1000 / this.maxFPS;
-    // 暂存原始 resizeFramebuffer 函数
-    this.originalResizeFramebufferFunction = (app.renderer.framebuffer as any).resizeFramebuffer;
-    // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+    if (this.isWebGL(app)) {
+      // 暂存原始 resizeFramebuffer 函数
+      this.originalResizeFramebufferFunction = (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer;
+      // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+    }
     if (this.renderFlag) {
       app.start();
     } else {
@@ -255,25 +262,23 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
     if (resizeFramebuffer) {
-      (app.renderer.framebuffer as any).resizeFramebuffer = function (framebuffer: any) {
+      (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer = function (framebuffer) {
         _this.originalResizeFramebufferFunction.call(this, framebuffer);
         this.updateFramebuffer(framebuffer);
       };
     } else {
-      (app.renderer.framebuffer as any).resizeFramebuffer = function (framebuffer: any) {
+      (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer = function (framebuffer) {
         _this.originalResizeFramebufferFunction.call(this, framebuffer);
       };
     }
   }
 
-  /**
-   * 停止内置的 InteractionManager
-   * @param PixiWorld 的 renderer
-   */
+  private isWebGL(app: PIXI.Application) {
+    return app.renderer.type === PIXI.RENDERER_TYPE.WEBGL;
+  }
+
   destroyRendererInteraction(app: PIXI.Application) {
-    if (app.renderer.plugins && app.renderer.plugins.interaction && app.renderer.plugins.interaction.destroy) {
-      app.renderer.plugins.interaction.destroy();
-    }
+    app.renderer.events.destroy();
   }
 
   addChildView(view: PIXI.DisplayObject) {
@@ -304,7 +309,8 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
       configMap: Map<PIXI.DisplayObject, InteractiveConfig>,
       interactiveType: InteractiveType,
     ) => {
-      const originalTarget = interactiveMgr.hitTest(new PIXI.Point(point.x, point.y), container);
+      boundary.rootTarget = container;
+      const originalTarget = boundary.hitTest(point.x, point.y);
       let hitTarget: PIXI.DisplayObject | undefined;
 
       for (let target = originalTarget; target && target !== container; target = target.parent) {
@@ -319,11 +325,15 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
   }
 
   updateCursor = (app: PIXI.Application, cursor: string) => {
-    this.getCanvasView(app).renderer.style.cursor = cursor;
+    const canvas = this.getCanvasView(app).renderer;
+    if (canvas.style) {
+      canvas.style.cursor = cursor;
+    }
   };
 
   createCoordinateController(app: PIXI.Application) {
-    return new CoordinateControllerPixi(this.getCanvasView(app).renderer, this);
+    const renderer = this.getCanvasView(app).renderer as HTMLCanvasElement;
+    return new CoordinateControllerPixi(renderer, this);
   }
 
   resizeStage = (app: PIXI.Application) => {
@@ -360,7 +370,9 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
 
   resizeViewport(app: PIXI.Application) {
     const { viewport, resizeFramebuffer } = this.props;
-    // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+    if (this.isWebGL(app)) {
+      // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+    }
     if (this.brt && viewport) {
       this.brt.resize(viewport.width, viewport.height);
     }
@@ -381,7 +393,7 @@ export class Scene2D extends BaseScene<PIXI.Application, HTMLCanvasElement, neve
     if (!app) {
       return '';
     }
-    const oldCanvas = app.view;
+    const oldCanvas = app.view as HTMLCanvasElement;
     const newCanvas = document.createElement('canvas');
     const width = w || oldCanvas.width;
     const height = h || oldCanvas.height;

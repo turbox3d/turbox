@@ -255,7 +255,7 @@ class Euler {
 
   _onChangeCallback: Function = () => {
     //
-  }
+  };
 }
 
 export { Euler };

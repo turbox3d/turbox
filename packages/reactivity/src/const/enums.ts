@@ -10,7 +10,7 @@ export enum ESpecialReservedKey {
   COMPUTED = 'computed',
 }
 
-export const enum ECollectType {
+export enum ECollectType {
   SET = 'set',
   MAP_SET = 'map-set',
   ADD = 'add',

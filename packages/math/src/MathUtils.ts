@@ -104,12 +104,10 @@ const MathUtils = {
     return (value & (value - 1)) === 0 && value !== 0;
   },
   ceilPowerOfTwo(value: number) {
-    // eslint-disable-next-line no-restricted-properties
-    return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
+    return 2 ** Math.ceil(Math.log(value) / Math.LN2);
   },
   floorPowerOfTwo(value: number) {
-    // eslint-disable-next-line no-restricted-properties
-    return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
+    return 2 ** Math.floor(Math.log(value) / Math.LN2);
   },
   setQuaternionFromProperEuler(q: Quaternion, a: number, b: number, c: number, order: string) {
     // Intrinsic Proper Euler Angles - see https://en.wikipedia.org/wiki/Euler_angles

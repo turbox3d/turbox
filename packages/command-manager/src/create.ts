@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
 import { IConstructorOf } from '@turbox3d/shared';
 import { Command } from './Command';
 
@@ -38,7 +37,6 @@ export type CommandType = Omit<Command, 'active' | 'apply'>;
  * 范型类型为激活时的函数参数
  */
 function create<P extends {} = string>() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return Command as any as IConstructorOf<LifeCircleClass<P> & CommandType>;
 }
 

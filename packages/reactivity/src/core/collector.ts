@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { nextTick } from '@turbox3d/shared';
+import { fail, nextTick } from '@turbox3d/shared';
 import { ctx } from '../const/config';
 import { Reaction } from './reactive';
 import { HistoryCollectorPayload, TimeTravel, History } from './time-travel';
@@ -173,7 +172,7 @@ class TriggerCollector {
         emitter.emit(EEventName.setProperty, event);
         console.log(event);
       } catch (e) {
-        console.error(e);
+        fail(e);
       }
     }
     const enhanceKey = type === ECollectType.ADD ? ESpecialReservedKey.ITERATE : key;

@@ -108,11 +108,11 @@ export class SelectionCommand extends Command {
 
   onSelectHandler = (models: EntityObject[]) => {
     //
-  }
+  };
 
   onUnselectHandler = (models: EntityObject[]) => {
     //
-  }
+  };
 
   active(params?: ISelectCommandParams) {
     if (params) {

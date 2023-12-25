@@ -12,7 +12,7 @@ function install<M extends IDeclaredMap<CommandType> = IDeclaredMap<CommandType>
       });
       this.installed();
     }
-  } as any as ComposedCommand<CommandManager, CommandType, M>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  } as any as ComposedCommand<CommandManager, CommandType, M>;
 }
 
 export { install };

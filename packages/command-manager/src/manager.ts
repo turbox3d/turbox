@@ -15,7 +15,7 @@ function manager<M extends IDeclaredMap<CommandType> = IDeclaredMap<CommandType>
         this[key] = command;
       });
     }
-  } as any as ComposedCommand<CommandManager, CommandType, M>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  } as any as ComposedCommand<CommandManager, CommandType, M>;
 }
 
 export { manager };
