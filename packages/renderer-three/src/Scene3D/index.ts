@@ -197,7 +197,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
     app.setSize(this.width, this.height);
     app.setClearColor(backgroundColor, backgroundAlpha);
     if (this.props.outputColorSpace) {
-      app.outputColorSpace = this.props.outputColorSpace;
+      app.outputColorSpace = this.props.outputColorSpace as THREE.ColorSpace;
     }
     this.updateCameraPosition(cameraPosition as Vec3);
     const animate = () => {
