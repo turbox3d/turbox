@@ -60,10 +60,8 @@
     "react": "~18.2.0",
     "react-dom": "~18.2.0",
     "sass-loader": "^13.3.2",
-    "style-loader": "^3.3.3",
     "three": "^0.159.0",
-    "typescript": "^5.3.3",
-    "url-loader": "^4.1.1"
+    "typescript": "^5.3.3"
   },
   "files": [
     "dist/",
