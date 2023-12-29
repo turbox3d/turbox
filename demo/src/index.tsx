@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import * as THREE from 'three';
 
@@ -24,7 +24,8 @@ const LiteDesign = lazy(() => import('./lite-design'));
 const ImageBuilder = lazy(() => import('./image-builder'));
 const DataFlow = lazy(() => import('./data-flow'));
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('app')!);
+root.render(
   <BrowserRouter>
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
@@ -33,6 +34,5 @@ ReactDOM.render(
         <Route path="/lite-design" element={<LiteDesign />} />
       </Routes>
     </Suspense>
-  </BrowserRouter>,
-  document.getElementById('app')
+  </BrowserRouter>
 );

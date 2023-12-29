@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import * as PIXI from 'pixi.js';
 

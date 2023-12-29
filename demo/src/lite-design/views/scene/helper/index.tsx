@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as THREE from 'three';
-import { Shape, ShapeBufferGeometry } from 'three';
+import { Shape, ShapeGeometry } from 'three';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
@@ -206,7 +206,7 @@ export class ClipMask extends Mesh3D<IClipMaskProps> {
     hole.lineTo(points[3].position.x, points[3].position.y);
     shape.holes.push(hole);
 
-    const geometry = new ShapeBufferGeometry(shape);
+    const geometry = new ShapeGeometry(shape);
     this.view.geometry = geometry;
     this.view.material = ClipMask.material;
     this.view.material.depthTest = false;

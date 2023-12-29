@@ -117,7 +117,7 @@ export class MoveCommand extends Command {
         }
         mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
         mouse.y = -(point.y / app.domElement.clientHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
+        raycaster.setFromCamera(new THREE.Vector2(mouse.x, mouse.y), camera);
         const intersection = new THREE.Vector3();
         if (raycaster.ray.intersectPlane(this.plane.clone(), intersection)) {
           const position = intersection.clone().sub(this.offset).applyMatrix4(this.matrixWorld!.clone().invert());

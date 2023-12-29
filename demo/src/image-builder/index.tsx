@@ -4,7 +4,6 @@ import { depCollector, render, g, Scene2D, SceneTool } from '@turbox3d/turbox';
 import { FPSMonitorComponent } from '@turbox3d/turbox-dev-tool';
 
 import './common/styles/base.less';
-import 'antd/dist/antd.css';
 import './index.less';
 import { appCommandManager } from './commands/index';
 import { imageBuilderStore } from './models/index';

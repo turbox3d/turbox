@@ -58,7 +58,7 @@ export function useMaterialDragAndReplace<CustomBizData>(
         x: e.clientX,
         y: e.clientY,
       },
-      (imageBuilderStore.scene.getSceneTools().getApp() as PIXI.Application).view
+      (imageBuilderStore.scene.getSceneTools().getApp() as PIXI.Application).view as HTMLCanvasElement
     );
     if (point) {
       const viewEntity = imageBuilderStore.scene.getSceneTools().hitTarget(point);
