@@ -8,8 +8,8 @@
     "build": "NODE_ENV=production webpack --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
     "typedoc": "rm -rf typedocs && cross-env GEN_ENV=typedoc npx ./gen.js",
-    "changelog": "rm -rf ./docs/CHANGELOG.md && cross-env GEN_ENV=changelog npx ./gen.js",
     "build:all": "pnpm run -r build:all && pnpm run typedoc",
+    "changelog": "rm -rf ./docs/CHANGELOG.md && cross-env GEN_ENV=changelog npx ./gen.js",
     "git:cl": "git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
     "publish": "pnpm run build:all && pnpm changeset && pnpm changeset version && pnpm run changelog && pnpm run git:cl && pnpm changeset tag && pnpm -r publish",
     "publish:pre": "pnpm run build:all && pnpm -r publish --dry-run --report-summary --no-git-checks --force"
