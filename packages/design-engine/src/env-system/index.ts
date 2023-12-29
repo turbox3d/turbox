@@ -20,7 +20,9 @@ class AppEnvironmentManager extends Domain {
 }
 
 /** 应用环境管理器 */
-export default class EnvSystem {
-  static EAppEnv = EAppEnv;
-  static AppEnvMgr = new AppEnvironmentManager();
-}
+const EnvSystem = {
+  EAppEnv,
+  AppEnvMgr: new AppEnvironmentManager(),
+};
+
+export default EnvSystem;
