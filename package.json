@@ -78,9 +78,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.23.6",
-    "@turbox3d/reactivity-react": "^1.1.15",
-    "@turbox3d/turbox": "^1.1.28",
-    "@turbox3d/turbox-dev-tool": "^1.0.13",
+    "@turbox3d/reactivity-react": "^1.1.16",
+    "@turbox3d/turbox": "^1.1.29",
+    "@turbox3d/turbox-dev-tool": "^1.0.14",
     "antd": "^5.12.4",
     "lodash": "^4.17.21",
     "mobx": "^6.12.0",
