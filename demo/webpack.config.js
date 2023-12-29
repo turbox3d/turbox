@@ -53,9 +53,6 @@ module.exports = {
   },
   module: {
     rules: [{
-      // include: [
-      //   path.resolve(__dirname, 'es')
-      // ],
       test: /\.less$/,
       use: [{
         loader: 'style-loader',
@@ -108,7 +105,7 @@ module.exports = {
       use: {
         loader: 'babel-loader',
         options: {
-          presets: ['@babel/env', '@babel/react']
+          configFile: path.resolve(__dirname, './.babelrc.js'),
         }
       }
     }, {
@@ -117,7 +114,7 @@ module.exports = {
       use: [{
         loader: 'babel-loader',
         options: {
-          presets: ['@babel/env', '@babel/react']
+          configFile: path.resolve(__dirname, './.babelrc.js'),
         }
       }, {
         loader: 'ts-loader',
