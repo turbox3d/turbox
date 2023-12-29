@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.26
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.16
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.25
 
 ### Patch Changes

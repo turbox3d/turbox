@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.14
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+
 ## 1.0.13
 
 ### Patch Changes

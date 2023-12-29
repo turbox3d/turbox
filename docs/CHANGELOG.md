@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.26
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/design-engine@1.1.23
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/graphic-component-three@1.1.26
+  - @turbox3d/math@1.1.9
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/reactivity-react@1.1.16
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/renderer-three@1.0.16
+
 ## 1.1.25
 
 ### Patch Changes
@@ -98,6 +114,22 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.20
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/design-engine@1.1.23
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/graphic-component-pixi@1.1.29
+  - @turbox3d/math@1.1.9
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/reactivity-react@1.1.16
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/renderer-pixi@1.0.17
+
 ## 1.0.19
 
 ### Patch Changes
@@ -195,6 +227,24 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.29
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/design-engine@1.1.23
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/graphic-component-pixi@1.1.29
+  - @turbox3d/graphic-component-three@1.1.26
+  - @turbox3d/math@1.1.9
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/reactivity-react@1.1.16
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/renderer-pixi@1.0.17
+  - @turbox3d/renderer-three@1.0.16
 
 ## 1.1.28
 
@@ -306,6 +356,12 @@
 
 # @turbox3d/shared
 
+## 1.1.12
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+
 ## 1.1.11
 
 ### Patch Changes
@@ -343,6 +399,16 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.16
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/shared@1.1.12
 
 ## 1.0.15
 
@@ -406,6 +472,16 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.17
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/shared@1.1.12
+
 ## 1.0.16
 
 ### Patch Changes
@@ -467,6 +543,17 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.16
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/shared@1.1.12
 
 ## 1.0.15
 
@@ -536,6 +623,15 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.16
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.15
 
 ### Patch Changes
@@ -592,6 +688,14 @@
 
 # @turbox3d/reactivity
 
+## 2.1.16
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/shared@1.1.12
+
 ## 2.1.15
 
 ### Patch Changes
@@ -642,6 +746,12 @@
 
 # @turbox3d/math
 
+## 1.1.9
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+
 ## 1.1.8
 
 ### Patch Changes
@@ -679,6 +789,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.26
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.16
+  - @turbox3d/shared@1.1.12
 
 ## 1.1.25
 
@@ -735,6 +854,16 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.29
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/renderer-pixi@1.0.17
+  - @turbox3d/shared@1.1.12
 
 ## 1.1.28
 
@@ -798,6 +927,15 @@
 
 # @turbox3d/event-manager
 
+## 1.1.18
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/math@1.1.9
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.17
 
 ### Patch Changes
@@ -853,6 +991,19 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.23
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/math@1.1.9
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/reactivity-react@1.1.16
+  - @turbox3d/shared@1.1.12
 
 ## 1.1.22
 
@@ -934,6 +1085,15 @@
 
 # @turbox3d/command-manager
 
+## 1.1.20
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.19
 
 ### Patch Changes
@@ -990,6 +1150,14 @@
 
 # @turbox3d/turbox-hot-loader
 
+## 1.0.17
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.16
+
 ## 1.0.16
 
 ### Patch Changes
@@ -1039,6 +1207,12 @@
   - @turbox3d/reactivity@2.1.10
 
 # @turbox3d/turbox-dev-tool
+
+## 1.0.14
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
 
 ## 1.0.13
 

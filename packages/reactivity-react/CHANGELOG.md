@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.16
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.15
 
 ### Patch Changes

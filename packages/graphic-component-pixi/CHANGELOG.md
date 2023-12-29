@@ -1,5 +1,15 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.29
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/renderer-pixi@1.0.17
+  - @turbox3d/shared@1.1.12
+
 ## 1.1.28
 
 ### Patch Changes

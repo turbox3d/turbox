@@ -1,5 +1,23 @@
 # @turbox3d/turbox
 
+## 1.1.29
+
+### Patch Changes
+
+- Upgrade deps: pixi.js->v7,three->v0.159,react->v18,react-dom->v18,typescript->v5
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.20
+  - @turbox3d/design-engine@1.1.23
+  - @turbox3d/event-manager@1.1.18
+  - @turbox3d/graphic-component-pixi@1.1.29
+  - @turbox3d/graphic-component-three@1.1.26
+  - @turbox3d/math@1.1.9
+  - @turbox3d/reactivity@2.1.16
+  - @turbox3d/reactivity-react@1.1.16
+  - @turbox3d/renderer-core@1.0.16
+  - @turbox3d/renderer-pixi@1.0.17
+  - @turbox3d/renderer-three@1.0.16
+
 ## 1.1.28
 
 ### Patch Changes
