@@ -6,10 +6,10 @@ import { IFitStyle } from '../draw-utils/drawRect';
 import Container2d from '../container2d';
 
 interface IProps {
-  x?: number;
-  y?: number;
   width: number;
   height: number;
+  x?: number;
+  y?: number;
   position?: Vec2;
   /**
    * 传入的位置坐标是否是矩形中心点
