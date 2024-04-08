@@ -1,5 +1,11 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.31
+
+### Patch Changes
+
+- Fix code style
+
 ## 1.1.30
 
 ### Patch Changes
