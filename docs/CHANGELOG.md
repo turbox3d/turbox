@@ -855,6 +855,12 @@
 
 # @turbox3d/graphic-component-pixi
 
+## 1.1.30
+
+### Patch Changes
+
+- Fix text2d&image2d bug
+
 ## 1.1.29
 
 ### Patch Changes
