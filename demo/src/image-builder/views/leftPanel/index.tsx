@@ -70,8 +70,7 @@ export function LeftPanel() {
       appCommandManager.actionsCommand.addFrameEntity({
         size: { x: width, y: height },
         target,
-        // texture: new Blob([buffer], { type: info.file.type }),
-        texture: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/bg_rotate.jpeg',
+        texture: new Blob([buffer], { type: info.file.type }),
       });
     }
   };

@@ -8,6 +8,8 @@ interface IProps {
   style?: PIXI.TextStyle | Partial<PIXI.TextStyle>;
   position?: Vec2;
   zIndex?: number;
+  height?: number;
+  width?: number;
   /** top,right,bottom,left */
   // padding?: string;
   /** top,right,bottom,left */
@@ -29,12 +31,20 @@ export default class Text2d extends Mesh2D<IProps> {
     const {
       text,
       style,
+      width,
+      height,
     } = this.props;
     this.view.text = text;
     this.view.style = style || new PIXI.TextStyle({
       fontSize: 16,
       fontFamily: 'Arial',
     });
+    if (width) {
+      this.view.width = width;
+    }
+    if (height) {
+      this.view.height = height;
+    }
   }
 
   updateMaterial() {
@@ -43,7 +53,7 @@ export default class Text2d extends Mesh2D<IProps> {
   }
 
   updatePosition() {
-    const { position, margin, height } = this.props;
+    const { position, margin } = this.props;
     if (position) {
       this.view.position.x = position.x || 0;
       this.view.position.y = position.y || 0;
@@ -58,7 +68,7 @@ export default class Text2d extends Mesh2D<IProps> {
         if (this._vNode.sibling) {
           const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
           if (this._vNode.sibling?.instance instanceof Mesh2D) {
-            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + height + bottom + siblingMargin[0];
+            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
           }
         }
       }

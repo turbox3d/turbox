@@ -165,7 +165,7 @@ export default class Image2d extends Mesh2D<IProps> {
   }
 
   updatePosition() {
-    const { position, margin, height } = this.props;
+    const { position, margin } = this.props;
     if (position) {
       this.view.position.x = position.x || 0;
       this.view.position.y = position.y || 0;
@@ -180,7 +180,7 @@ export default class Image2d extends Mesh2D<IProps> {
         if (this._vNode.sibling) {
           const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
           if (this._vNode.sibling?.instance instanceof Mesh2D) {
-            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + height + bottom + siblingMargin[0];
+            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
           }
         }
       }

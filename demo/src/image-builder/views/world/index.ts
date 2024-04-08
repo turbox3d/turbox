@@ -20,14 +20,6 @@ export class World extends Component {
         cellSize: 50,
         lineColor: 0xdddddd,
       }),
-      // g(Text2d, {
-      //   text: 'hello world',
-      //   style: new PIXI.TextStyle({
-      //     fontSize: 16,
-      //     fontFamily: 'Arial',
-      //   }),
-      //   position: { x: 200, y: 200 },
-      // }),
       g(Container2d, {
         position: { x: 100, y: 100 },
         width: 600,
@@ -38,19 +30,29 @@ export class World extends Component {
         fillColor: 0xff00ff,
         backgroundImage: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/bg_rotate.jpeg',
         children: [
+          g(Text2d, {
+            text: 'hello world',
+            key: 1,
+            style: new PIXI.TextStyle({
+              fontSize: 20,
+              fontFamily: 'cursive',
+            }),
+            margin: '50,0,0,10',
+          }),
+          g(Text2d, {
+            text: 'hello world2',
+            key: 2,
+            style: new PIXI.TextStyle({
+              fontSize: 30,
+              fontFamily: 'Arial',
+            }),
+            margin: '50,0,0,10',
+          }),
           g(Image2d, {
-            margin: '10,0,0,20',
             width: 200,
             height: 200,
             backgroundImage: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/bg_rotate.jpeg',
-          }),
-          g(Text2d, {
-            text: 'hello world',
-            style: new PIXI.TextStyle({
-              fontSize: 16,
-              fontFamily: 'Arial',
-            }),
-            margin: '10,0,0,30',
+            margin: '10,0,0,20',
           }),
         ],
       }),
