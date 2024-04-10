@@ -45,8 +45,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@turbox3d/reactivity": "^2.1.16",
-    "@turbox3d/shared": "^1.1.12"
+    "@turbox3d/reactivity": "~2.1.16",
+    "@turbox3d/shared": "~1.1.12"
   },
   "files": [
     "dist/",

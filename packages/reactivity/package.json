@@ -64,6 +64,6 @@
     "url": "https://github.com/turbox3d/turbox/issues"
   },
   "dependencies": {
-    "@turbox3d/shared": "^1.1.12"
+    "@turbox3d/shared": "~1.1.12"
   }
 }
