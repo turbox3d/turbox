@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.27
+
+### Patch Changes
+
+- Fix changeset issue
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.17
+  - @turbox3d/shared@1.1.13
+
 ## 1.1.26
 
 ### Patch Changes

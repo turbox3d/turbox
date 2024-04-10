@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.13
+
+### Patch Changes
+
+- Fix changeset issue
+
 ## 1.1.12
 
 ### Patch Changes

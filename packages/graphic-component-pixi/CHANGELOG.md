@@ -1,5 +1,15 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.33
+
+### Patch Changes
+
+- Fix changeset issue
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.19
+  - @turbox3d/renderer-pixi@1.0.18
+  - @turbox3d/shared@1.1.13
+
 ## 1.1.32
 
 ### Patch Changes
