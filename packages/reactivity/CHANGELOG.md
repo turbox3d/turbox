@@ -1,5 +1,21 @@
 # @turbox3d/reactivity
 
+## 2.1.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/shared@1.1.15
+
+## 2.1.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/shared@1.1.14
+
 ## 2.1.17
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @turbox3d/math
 
+## 1.1.12
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.1.11
+
+### Patch Changes
+
+- Sync code
+
 ## 1.1.10
 
 ### Patch Changes

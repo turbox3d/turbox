@@ -1,5 +1,25 @@
 # @turbox3d/renderer-three
 
+## 1.0.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/shared@1.1.15
+
+## 1.0.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/shared@1.1.14
+
 ## 1.0.17
 
 ### Patch Changes

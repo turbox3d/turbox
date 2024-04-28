@@ -1,5 +1,17 @@
 # @turbox3d/shared
 
+## 1.1.15
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.1.14
+
+### Patch Changes
+
+- Sync code
+
 ## 1.1.13
 
 ### Patch Changes

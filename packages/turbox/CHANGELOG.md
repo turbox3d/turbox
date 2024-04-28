@@ -1,5 +1,41 @@
 # @turbox3d/turbox
 
+## 1.1.32
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/graphic-component-three@1.1.29
+  - @turbox3d/graphic-component-pixi@1.1.35
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/renderer-three@1.0.19
+  - @turbox3d/design-engine@1.1.26
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/renderer-pixi@1.0.20
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/math@1.1.12
+
+## 1.1.31
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/graphic-component-three@1.1.28
+  - @turbox3d/graphic-component-pixi@1.1.34
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/renderer-three@1.0.18
+  - @turbox3d/design-engine@1.1.25
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/renderer-pixi@1.0.19
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/math@1.1.11
+
 ## 1.1.30
 
 ### Patch Changes

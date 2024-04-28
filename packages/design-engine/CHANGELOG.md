@@ -1,5 +1,31 @@
 # @turbox3d/design-engine
 
+## 1.1.26
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/shared@1.1.15
+  - @turbox3d/math@1.1.12
+
+## 1.1.25
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/shared@1.1.14
+  - @turbox3d/math@1.1.11
+
 ## 1.1.24
 
 ### Patch Changes

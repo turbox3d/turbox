@@ -1,5 +1,17 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.16
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.0.15
+
+### Patch Changes
+
+- Sync code
+
 ## 1.0.14
 
 ### Patch Changes

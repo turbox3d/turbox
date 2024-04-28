@@ -1,5 +1,23 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.29
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/renderer-three@1.0.19
+  - @turbox3d/shared@1.1.15
+
+## 1.1.28
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.18
+  - @turbox3d/shared@1.1.14
+
 ## 1.1.27
 
 ### Patch Changes

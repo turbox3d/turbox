@@ -1,5 +1,37 @@
 # @turbox3d/turbox3d
 
+## 1.1.29
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/graphic-component-three@1.1.29
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/renderer-three@1.0.19
+  - @turbox3d/design-engine@1.1.26
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/math@1.1.12
+
+## 1.1.28
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/graphic-component-three@1.1.28
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/renderer-three@1.0.18
+  - @turbox3d/design-engine@1.1.25
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/math@1.1.11
+
 ## 1.1.27
 
 ### Patch Changes
@@ -130,6 +162,38 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.23
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/graphic-component-pixi@1.1.35
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/design-engine@1.1.26
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/renderer-pixi@1.0.20
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/math@1.1.12
+
+## 1.0.22
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/graphic-component-pixi@1.1.34
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/design-engine@1.1.25
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/renderer-pixi@1.0.19
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/math@1.1.11
+
 ## 1.0.21
 
 ### Patch Changes
@@ -259,6 +323,42 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.32
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/graphic-component-three@1.1.29
+  - @turbox3d/graphic-component-pixi@1.1.35
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/renderer-three@1.0.19
+  - @turbox3d/design-engine@1.1.26
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/renderer-pixi@1.0.20
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/math@1.1.12
+
+## 1.1.31
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/graphic-component-three@1.1.28
+  - @turbox3d/graphic-component-pixi@1.1.34
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/renderer-three@1.0.18
+  - @turbox3d/design-engine@1.1.25
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/renderer-pixi@1.0.19
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/math@1.1.11
 
 ## 1.1.30
 
@@ -406,6 +506,18 @@
 
 # @turbox3d/shared
 
+## 1.1.15
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.1.14
+
+### Patch Changes
+
+- Sync code
+
 ## 1.1.13
 
 ### Patch Changes
@@ -455,6 +567,26 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/shared@1.1.15
+
+## 1.0.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/shared@1.1.14
 
 ## 1.0.17
 
@@ -538,6 +670,26 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.20
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-core@1.0.19
+  - @turbox3d/shared@1.1.15
+
+## 1.0.19
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-core@1.0.18
+  - @turbox3d/shared@1.1.14
+
 ## 1.0.18
 
 ### Patch Changes
@@ -619,6 +771,28 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/shared@1.1.15
+
+## 1.0.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/shared@1.1.14
 
 ## 1.0.17
 
@@ -710,6 +884,24 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/shared@1.1.15
+
+## 1.1.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/shared@1.1.14
+
 ## 1.1.17
 
 ### Patch Changes
@@ -784,6 +976,22 @@
 
 # @turbox3d/reactivity
 
+## 2.1.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/shared@1.1.15
+
+## 2.1.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/shared@1.1.14
+
 ## 2.1.17
 
 ### Patch Changes
@@ -850,6 +1058,18 @@
 
 # @turbox3d/math
 
+## 1.1.12
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.1.11
+
+### Patch Changes
+
+- Sync code
+
 ## 1.1.10
 
 ### Patch Changes
@@ -899,6 +1119,24 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.29
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/renderer-three@1.0.19
+  - @turbox3d/shared@1.1.15
+
+## 1.1.28
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.18
+  - @turbox3d/shared@1.1.14
 
 ## 1.1.27
 
@@ -973,6 +1211,26 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.35
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/renderer-pixi@1.0.20
+  - @turbox3d/shared@1.1.15
+
+## 1.1.34
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/renderer-pixi@1.0.19
+  - @turbox3d/shared@1.1.14
 
 ## 1.1.33
 
@@ -1074,6 +1332,24 @@
 
 # @turbox3d/event-manager
 
+## 1.1.21
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/shared@1.1.15
+  - @turbox3d/math@1.1.12
+
+## 1.1.20
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/shared@1.1.14
+  - @turbox3d/math@1.1.11
+
 ## 1.1.19
 
 ### Patch Changes
@@ -1147,6 +1423,32 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.26
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/reactivity-react@1.1.19
+  - @turbox3d/command-manager@1.1.23
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/reactivity@2.1.19
+  - @turbox3d/shared@1.1.15
+  - @turbox3d/math@1.1.12
+
+## 1.1.25
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/reactivity-react@1.1.18
+  - @turbox3d/command-manager@1.1.22
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/reactivity@2.1.18
+  - @turbox3d/shared@1.1.14
+  - @turbox3d/math@1.1.11
 
 ## 1.1.24
 
@@ -1254,6 +1556,24 @@
 
 # @turbox3d/command-manager
 
+## 1.1.23
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/event-manager@1.1.21
+  - @turbox3d/shared@1.1.15
+
+## 1.1.22
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.20
+  - @turbox3d/shared@1.1.14
+
 ## 1.1.21
 
 ### Patch Changes
@@ -1328,6 +1648,22 @@
 
 # @turbox3d/turbox-hot-loader
 
+## 1.0.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/reactivity@2.1.19
+
+## 1.0.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.18
+
 ## 1.0.17
 
 ### Patch Changes
@@ -1385,6 +1721,18 @@
   - @turbox3d/reactivity@2.1.10
 
 # @turbox3d/turbox-dev-tool
+
+## 1.0.16
+
+### Patch Changes
+
+- f188584: Fix build script
+
+## 1.0.15
+
+### Patch Changes
+
+- Sync code
 
 ## 1.0.14
 

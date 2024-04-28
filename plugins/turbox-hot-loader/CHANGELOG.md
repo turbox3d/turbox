@@ -1,5 +1,21 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.19
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/reactivity@2.1.19
+
+## 1.0.18
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.18
+
 ## 1.0.17
 
 ### Patch Changes

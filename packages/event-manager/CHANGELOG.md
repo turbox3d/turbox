@@ -1,5 +1,23 @@
 # @turbox3d/event-manager
 
+## 1.1.21
+
+### Patch Changes
+
+- f188584: Fix build script
+- Updated dependencies [f188584]
+  - @turbox3d/shared@1.1.15
+  - @turbox3d/math@1.1.12
+
+## 1.1.20
+
+### Patch Changes
+
+- Sync code
+- Updated dependencies
+  - @turbox3d/shared@1.1.14
+  - @turbox3d/math@1.1.11
+
 ## 1.1.19
 
 ### Patch Changes
