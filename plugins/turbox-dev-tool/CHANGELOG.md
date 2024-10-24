@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.18
+
+### Patch Changes
+
+- fix: fix build issue
+
 ## 1.0.17
 
 ### Patch Changes

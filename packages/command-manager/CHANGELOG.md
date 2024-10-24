@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.25
+
+### Patch Changes
+
+- fix: fix build issue
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.23
+  - @turbox3d/shared@1.1.17
+
 ## 1.1.24
 
 ### Patch Changes

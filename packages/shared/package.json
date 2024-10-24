@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/shared",
-  "version": "1.1.16",
+  "version": "1.1.17",
   "description": "turbox shared internal utility",
   "main": "./lib/index.js",
   "module": "./es/index.js",

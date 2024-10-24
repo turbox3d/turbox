@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.14
+
+### Patch Changes
+
+- fix: fix build issue
+
 ## 1.1.13
 
 ### Patch Changes

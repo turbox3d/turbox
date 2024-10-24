@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.21
+
+### Patch Changes
+
+- fix: fix build issue
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.21
+  - @turbox3d/shared@1.1.17
+
 ## 1.1.20
 
 ### Patch Changes

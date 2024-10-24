@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.17
+
+### Patch Changes
+
+- fix: fix build issue
+
 ## 1.0.16
 
 ### Patch Changes

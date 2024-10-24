@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.17
+
+### Patch Changes
+
+- fix: fix build issue
+
 ## 1.1.16
 
 ### Patch Changes
