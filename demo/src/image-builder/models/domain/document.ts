@@ -38,7 +38,7 @@ export class DocumentDomain extends DocumentSystem {
     f(model);
   }
 
-  /** 根据已有的 renderOrder 来初始化 sortProducts 的排序 */
+  /** 根据已有的 renderOrder 来初始化 sortedModels 的排序 */
   @mutation
   sortModels(models: EntityObject[]) {
     models.forEach(m => {

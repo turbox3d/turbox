@@ -123,6 +123,7 @@ export class AdjustCommand extends Command {
 
   private initSize?: Vec2;
   private initLength?: number;
+  private initFontSize?: number;
 
   private onScaleStartHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
     if (!this.target) {
@@ -136,6 +137,7 @@ export class AdjustCommand extends Command {
       x: this.target.size.x,
       y: this.target.size.y,
     };
+    this.initFontSize = this.target.fontSize;
   }
 
   private onScaleMoveHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
@@ -146,7 +148,7 @@ export class AdjustCommand extends Command {
     const mp = event.getScenePosition() as Vec2;
     const type = EntityObject.EPerspectiveType.FRONT;
     const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3(type).inverted());
-    if (!this.initLength || !this.initSize) {
+    if (!this.initLength || !this.initSize || !this.initFontSize) {
       return;
     }
     this.adjustAction.execute(
@@ -155,6 +157,9 @@ export class AdjustCommand extends Command {
         itemEntity.setSize({
           x: this.initSize!.x * scale,
           y: this.initSize!.y * scale,
+        });
+        itemEntity.$update({
+          fontSize: this.initFontSize! * scale,
         });
       },
       undefined,
@@ -174,5 +179,6 @@ export class AdjustCommand extends Command {
     this.target = undefined;
     this.initLength = undefined;
     this.initSize = undefined;
+    this.initFontSize = undefined;
   }
 }

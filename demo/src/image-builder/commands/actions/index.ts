@@ -48,6 +48,39 @@ class ActionsCommand extends CommandManager.compose({
   };
 
   @mutation
+  addTextItemEntity = async <CustomBizData>(
+    text: string,
+    extraInfo?: CustomBizData,
+    addToDocument = true,
+    sort = true,
+    specificId?: string
+  ) => {
+    const entity = new ItemEntity(specificId);
+    entity.$update({
+      text,
+    });
+    if (extraInfo) {
+      entity.$update({
+        extraInfo,
+      });
+    }
+    // const ratio = 10;
+    // const bgSize = imageBuilderStore.scene.sceneSize;
+    entity.setSize({
+      x: 152,
+      y: 35,
+    });
+    entity.setPosition({
+      x: imageBuilderStore.scene.sceneSize.width / 2,
+      y: imageBuilderStore.scene.sceneSize.height / 2,
+    });
+    if (addToDocument) {
+      imageBuilderStore.document.addModel(entity, sort);
+    }
+    return entity;
+  };
+
+  @mutation
   addFrameEntity = async ({
     size,
     color,

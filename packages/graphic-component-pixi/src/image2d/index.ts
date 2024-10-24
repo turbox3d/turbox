@@ -31,6 +31,8 @@ interface IProps {
   /** top,right,bottom,left */
   margin?: string;
   zIndex?: number;
+  /** 使用类似 css 的流式布局定位，开启后 position 将会失效 */
+  useFlowLayout?: boolean;
 }
 
 /** UI组件-图片 */
@@ -165,11 +167,9 @@ export default class Image2d extends Mesh2D<IProps> {
   }
 
   updatePosition() {
-    const { position, margin } = this.props;
-    if (position) {
-      this.view.position.x = position.x || 0;
-      this.view.position.y = position.y || 0;
-    } else {
+    const { position = { x: 0, y: 0 }, margin, central = false, useFlowLayout = false } = this.props;
+    const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
+    if (useFlowLayout) {
       const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
       const parentNode = this._vNode.parent;
       if (parentNode && parentNode.instance instanceof Container2d) {
@@ -184,6 +184,9 @@ export default class Image2d extends Mesh2D<IProps> {
           }
         }
       }
+    } else {
+      this.view.position.x = posX;
+      this.view.position.y = posY;
     }
   }
 

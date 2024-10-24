@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { Mesh2D, MathUtils, g, Reactive, Rect2d } from '@turbox3d/turbox';
+import { Mesh2D, MathUtils, g, Reactive, Rect2d, Text2d } from '@turbox3d/turbox';
 
 import { appCommandManager } from '../../../commands/index';
 import { PRIMARY_COLOR } from '../../../common/consts/color';
@@ -49,15 +49,30 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
     this.view.position.set(model.position.x, model.position.y);
     this.view.rotation = model.rotation.z * MathUtils.DEG2RAD;
     this.view.scale.set(model.scale.x, model.scale.y);
-    return [
-      g(ItemMesh2D, {
-        model,
-        id: model.id,
-        type: ItemSymbol,
-        clickable: true,
-        draggable: true,
-        hoverable: true,
+
+    const item = model.text ? g(Text2d, {
+      text: model.text,
+      style: new PIXI.TextStyle({
+        fontSize: model.fontSize,
+        fontFamily: 'Arial',
       }),
+      zIndex: model.renderOrder,
+      id: model.id,
+      type: ItemSymbol,
+      central: true,
+      clickable: true,
+      draggable: true,
+      hoverable: true,
+    }) : g(ItemMesh2D, {
+      model,
+      id: model.id,
+      type: ItemSymbol,
+      clickable: true,
+      draggable: true,
+      hoverable: true,
+    });
+    return [
+      item,
       isHinted &&
         g(Rect2d, {
           key: 'wireframe',
