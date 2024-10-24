@@ -1,5 +1,14 @@
 # @turbox3d/event-manager
 
+## 1.1.22
+
+### Patch Changes
+
+- fix: update version
+- Updated dependencies
+  - @turbox3d/math@1.1.13
+  - @turbox3d/shared@1.1.16
+
 ## 1.1.21
 
 ### Patch Changes
