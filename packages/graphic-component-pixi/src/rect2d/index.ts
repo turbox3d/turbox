@@ -8,6 +8,7 @@ interface IProps {
   y?: number;
   width: number;
   height: number;
+  rotation?: number;
   /**
    * 传入的位置坐标是否是矩形中心点
    */
@@ -40,8 +41,6 @@ export default class Rect2d extends Mesh2D<IProps> {
   updateGeometry() {
     this.view.clear();
     const {
-      x = 0,
-      y = 0,
       width,
       height,
       central,
@@ -58,8 +57,8 @@ export default class Rect2d extends Mesh2D<IProps> {
       native,
     } = this.props;
     DrawUtils.drawRect(this.view, {
-      x,
-      y,
+      x: 0,
+      y: 0,
       width,
       height,
       central,
@@ -83,11 +82,13 @@ export default class Rect2d extends Mesh2D<IProps> {
   }
 
   updatePosition() {
-    //
+    const { x = 0, y = 0 } = this.props;
+    this.view.position.set(x, y);
   }
 
   updateRotation() {
-    //
+    const { rotation = 0 } = this.props;
+    this.view.rotation = rotation;
   }
 
   updateScale() {
