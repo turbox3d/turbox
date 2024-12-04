@@ -7,6 +7,7 @@ interface IProps {
   y?: number;
   width: number;
   height: number;
+  rotation?: number;
   central?: boolean;
   zIndex?: number;
   deleteHandler?: () => void;
@@ -20,9 +21,12 @@ interface IProps {
 
 export class Gizmo2d extends Mesh2D<IProps> {
   render() {
-    const { x = 0, y = 0, width, height, central = true, zIndex = 1000, deleteHandler, adjustHandler } = this.props;
-    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
+    const { x = 0, y = 0, width, height, rotation = 0, central = true, zIndex = 1000, deleteHandler, adjustHandler } = this.props;
+    const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
+    this.view.position.set(x, y);
+    this.view.rotation = rotation;
+
     return [
       g(Rect2d, {
         key: 'wireframe',
@@ -39,8 +43,8 @@ export class Gizmo2d extends Mesh2D<IProps> {
       g(Container2d, {
         key: 'delete',
         clickable: true,
-        x: central ? x - width / 2 : x,
-        y: central ? y - height / 2 : y,
+        x: posX,
+        y: posY,
         central: true,
         width: 20,
         height: 20,
@@ -57,8 +61,8 @@ export class Gizmo2d extends Mesh2D<IProps> {
       g(Container2d, {
         key: 'adjust',
         draggable: true,
-        x: central ? x + width / 2 : x + width,
-        y: central ? y + height / 2 : y + height,
+        x: central ? width / 2 : width,
+        y: central ? height / 2 : height,
         central: true,
         width: 20,
         height: 20,

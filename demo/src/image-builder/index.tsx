@@ -10,7 +10,7 @@ import { imageBuilderStore } from './models/index';
 import { LeftPanel } from './views/leftPanel/index';
 import { World } from './views/world';
 
-window.$$EDM_DEBUG = {
+window.$$DEBUG = {
   depCollector,
   appCommandManager,
   imageBuilderStore,

@@ -1,6 +1,7 @@
 import { Mesh2D } from '@turbox3d/turbox';
 
 import { GridHelper } from '../common/utils/grid-helper';
+import { RenderOrder } from '../common/consts/scene';
 
 interface IProps {
   gridWidth: number;
@@ -20,5 +21,6 @@ export class Grid extends Mesh2D<IProps> {
     this.view.drawBoundaries = drawBoundaries;
     this.view.drawGrid();
     this.view.position.set(-gridWidth / 2 + window.innerWidth / 2, -gridWidth / 2 + window.innerHeight / 2);
+    this.view.zIndex = RenderOrder.GRID;
   }
 }

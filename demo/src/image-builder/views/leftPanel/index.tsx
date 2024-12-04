@@ -9,6 +9,7 @@ import { appCommandManager } from '../../commands/index';
 import { useMaterialDragAndReplace } from '../../hooks/index';
 import { FrameEntity } from '../../models/entity/frame';
 import { imageBuilderStore } from '../../models/index';
+import { Z_INDEX_ACTION } from '../../common/consts/action';
 
 const images = [
   {
@@ -44,9 +45,9 @@ export function LeftPanel() {
   const { dragControl } = useMaterialDragAndReplace();
   const [width, setWidth] = React.useState(375);
   const [height, setHeight] = React.useState(667);
-  const pointerDownHandler = (url: string, itemId: number | string) => (e: React.PointerEvent) => {
+  const pointerDownHandler = (url: string, name: number | string) => (e: React.PointerEvent) => {
     e.persist();
-    dragControl.current.onMouseDown(url)(e.nativeEvent);
+    dragControl.current.onMouseDown(url, { name })(e.nativeEvent);
   };
   const colorChange: React.ChangeEventHandler<HTMLInputElement> | undefined = debounce(
     (e: React.BaseSyntheticEvent) => {
@@ -121,6 +122,9 @@ export function LeftPanel() {
   const load = () => {
 
   };
+  const updateZ = (type: Z_INDEX_ACTION) => () => {
+    appCommandManager.actionsCommand.updateRenderOrder(type);
+  };
 
   return (
     <div className="left-panel">
@@ -131,6 +135,19 @@ export function LeftPanel() {
         <br/>
         <Button size="small" onClick={dump}>保存</Button>
         <Button size="small" onClick={load}>加载</Button>
+        <br/>
+        <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.TOP)}>
+          置顶
+        </Button>
+        <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.INCREASE)}>
+          上移
+        </Button>
+        <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.DECREASE)}>
+          下移
+        </Button>
+        <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.BOTTOM)}>
+          置底
+        </Button>
       </div>
       <div className="background-wp">
         <h4>背景框</h4>

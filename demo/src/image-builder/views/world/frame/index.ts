@@ -15,6 +15,7 @@ export class FrameViewEntity extends Mesh2D<IFrameViewEntityProps> {
   updateGeometry() {
     const { model } = this.props;
     this.view.clear();
+    this.view.zIndex = model.renderOrder;
     DrawUtils.drawRect(this.view, {
       x: model.position.x,
       y: model.position.y,

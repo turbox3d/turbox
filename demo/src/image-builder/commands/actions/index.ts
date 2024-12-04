@@ -7,6 +7,8 @@ import { ItemEntity } from '../../models/entity/item';
 import { imageBuilderStore } from '../../models/index';
 
 import { AdjustCommand } from './adjust/index';
+import { Z_INDEX_ACTION } from '../../common/consts/action';
+import { RenderOrder } from '../../common/consts/scene';
 
 class ActionsCommand extends CommandManager.compose({
   adjust: AdjustCommand,
@@ -34,6 +36,7 @@ class ActionsCommand extends CommandManager.compose({
       entity.$update({
         extraInfo,
       });
+      entity.setName((extraInfo as any).name);
     }
     const ratio = map.width / map.height;
     const bgSize = imageBuilderStore.scene.sceneSize;
@@ -63,6 +66,7 @@ class ActionsCommand extends CommandManager.compose({
       entity.$update({
         extraInfo,
       });
+      entity.setName((extraInfo as any).name);
     }
     // const ratio = 10;
     // const bgSize = imageBuilderStore.scene.sceneSize;
@@ -93,6 +97,7 @@ class ActionsCommand extends CommandManager.compose({
     target?: FrameEntity;
   }) => {
     const entity = target || new FrameEntity();
+    entity.setRenderOrder(RenderOrder.BACKGROUND);
     entity.setSize(size);
     if (color || !target) {
       entity.$update({
@@ -187,7 +192,17 @@ class ActionsCommand extends CommandManager.compose({
       selected.$update({
         extraInfo,
       });
+      selected.setName((extraInfo as any).name);
     }
+  };
+
+  @mutation
+  updateRenderOrder = (type: Z_INDEX_ACTION) => {
+    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    if (!(selected instanceof ItemEntity)) {
+      return;
+    }
+    imageBuilderStore.document.updateRenderOrderByType(selected, type);
   };
 }
 
