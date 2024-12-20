@@ -7,6 +7,11 @@ enum Key {
   Meta = 'Meta',
 }
 
+export enum HotKeyEventType {
+  KeyDown = 'key-down',
+  KeyUp = 'key-up',
+}
+
 export const Modifiers = {
   Node: {
     key: 'none',
@@ -85,14 +90,14 @@ export function createKeyByEvent(event: KeyboardEvent) {
 }
 
 export function isValidEvent(event: KeyboardEvent) {
-  const key = event.key;
+  // const key = event.key;
   // 忽略 'shift' 'alt' 'ctrl' 'meta' 等辅助按键
-  if (key === Key.Shift ||
-    key === Key.Alt ||
-    key === Key.Control ||
-    key === Key.Meta) {
-    return false;
-  }
+  // if (key === Key.Shift ||
+  //   key === Key.Alt ||
+  //   key === Key.Control ||
+  //   key === Key.Meta) {
+  //   return false;
+  // }
 
   const target = event.target;
   // 忽略要改变输入的表单元素

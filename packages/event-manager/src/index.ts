@@ -25,3 +25,4 @@ export {
   CoordinateType,
   ViewEntity,
 } from './interactive/type';
+export { HotKeyEventType } from './keyboard/listener/util';

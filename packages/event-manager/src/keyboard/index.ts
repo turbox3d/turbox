@@ -1,6 +1,7 @@
 import { warn } from '@turbox3d/shared';
 import { HotKeyListener } from './listener';
 import { Handler, HotKeyConfig, HotKeyData, Key } from './type';
+import { HotKeyEventType } from './listener/util';
 
 interface IKeyMap {
   [key: string]: HotKeyConfig;
@@ -16,7 +17,7 @@ class HotKeyController {
   private keyMap: IKeyMap = {};
 
   constructor() {
-    this.listener = new HotKeyListener(document, this.onPress);
+    this.listener = new HotKeyListener(document, this.handler);
   }
 
   /**
@@ -89,10 +90,10 @@ class HotKeyController {
   /**
    * 触发快捷键回调
    */
-  private onPress = (hotkey: string) => {
+  private handler = (hotkey: string, keyEventType: HotKeyEventType) => {
     if (this.keyMap[hotkey]) {
       const handler = this.keyMap[hotkey].handler;
-      handler();
+      handler(keyEventType);
     }
   };
 }

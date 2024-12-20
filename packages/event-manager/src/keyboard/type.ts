@@ -1,6 +1,8 @@
+import { HotKeyEventType } from './listener/util';
+
 export type Key = string | string[];
 
-export type Handler = () => void;
+export type Handler = (keyEventType: HotKeyEventType) => void;
 export type Condition = () => boolean;
 
 export interface HotKeyConfig {

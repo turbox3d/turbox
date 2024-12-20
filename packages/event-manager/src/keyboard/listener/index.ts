@@ -1,7 +1,7 @@
-import { createKeyByEvent, createKeyByHotKey, isValidEvent } from './util';
+import { createKeyByEvent, createKeyByHotKey, isValidEvent, HotKeyEventType } from './util';
 
 interface Listener {
-  (hotkey: string): void;
+  (hotkey: string, keyEventType: HotKeyEventType): void;
 }
 
 /**
@@ -50,16 +50,16 @@ class HotKeyListener {
     // todo 考虑 keydown keypress keyup 的补充场景
     dom.addEventListener('keydown', this.onKeyDown);
     // dom.addEventListener('keypress', this.onKeyPress);
-    // dom.addEventListener('keyup', this.onKeyUp);
+    dom.addEventListener('keyup', this.onKeyUp);
   }
 
   private removeListener(dom: Document) {
     dom.removeEventListener('keydown', this.onKeyDown);
     // dom.removeEventListener('keypress', this.onKeyPress);
-    //   dom.removeEventListener('keyup', this.onKeyUp);
+    dom.removeEventListener('keyup', this.onKeyUp);
   }
 
-  private onKeyDown = (event: KeyboardEvent) => {
+  private triggerHandler(event: KeyboardEvent, keyEventType: HotKeyEventType) {
     if (!isValidEvent(event)) {
       // eslint-disable-next-line no-useless-return
       return;
@@ -70,8 +70,12 @@ class HotKeyListener {
     if (typeof this.keyMap[key] === 'string') {
       const listener = this.listener;
       // 触发快捷键
-      listener(this.keyMap[key]);
+      listener(this.keyMap[key], keyEventType);
     }
+  }
+
+  private onKeyDown = (event: KeyboardEvent) => {
+    this.triggerHandler(event, HotKeyEventType.KeyDown);
   };
 
   private onKeyPress = (event: KeyboardEvent) => {
@@ -79,7 +83,7 @@ class HotKeyListener {
   };
 
   private onKeyUp = (event: KeyboardEvent) => {
-    //
+    this.triggerHandler(event, HotKeyEventType.KeyUp);
   };
 }
 
