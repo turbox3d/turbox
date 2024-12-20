@@ -1,5 +1,23 @@
 # @turbox3d/turbox
 
+## 1.1.35
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.26
+  - @turbox3d/design-engine@1.1.29
+  - @turbox3d/event-manager@1.1.24
+  - @turbox3d/graphic-component-pixi@1.1.39
+  - @turbox3d/graphic-component-three@1.1.32
+  - @turbox3d/math@1.1.15
+  - @turbox3d/reactivity@2.1.22
+  - @turbox3d/reactivity-react@1.1.22
+  - @turbox3d/renderer-core@1.0.22
+  - @turbox3d/renderer-pixi@1.0.23
+  - @turbox3d/renderer-three@1.0.22
+
 ## 1.1.34
 
 ### Patch Changes

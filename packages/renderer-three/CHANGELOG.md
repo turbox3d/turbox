@@ -1,5 +1,15 @@
 # @turbox3d/renderer-three
 
+## 1.0.22
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.24
+  - @turbox3d/renderer-core@1.0.22
+  - @turbox3d/shared@1.1.18
+
 ## 1.0.21
 
 ### Patch Changes

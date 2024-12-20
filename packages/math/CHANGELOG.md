@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.15
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+
 ## 1.1.14
 
 ### Patch Changes

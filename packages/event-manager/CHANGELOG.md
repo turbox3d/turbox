@@ -1,5 +1,14 @@
 # @turbox3d/event-manager
 
+## 1.1.24
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/math@1.1.15
+  - @turbox3d/shared@1.1.18
+
 ## 1.1.23
 
 ### Patch Changes

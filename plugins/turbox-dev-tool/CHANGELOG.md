@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.19
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+
 ## 1.0.18
 
 ### Patch Changes

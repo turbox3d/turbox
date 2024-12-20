@@ -1,5 +1,16 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.39
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.24
+  - @turbox3d/math@1.1.15
+  - @turbox3d/renderer-pixi@1.0.23
+  - @turbox3d/shared@1.1.18
+
 ## 1.1.38
 
 ### Patch Changes

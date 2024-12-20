@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.32
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.22
+  - @turbox3d/shared@1.1.18
+
 ## 1.1.31
 
 ### Patch Changes

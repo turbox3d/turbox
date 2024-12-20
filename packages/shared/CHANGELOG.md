@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.18
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+
 ## 1.1.17
 
 ### Patch Changes

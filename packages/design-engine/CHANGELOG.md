@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.29
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.26
+  - @turbox3d/event-manager@1.1.24
+  - @turbox3d/math@1.1.15
+  - @turbox3d/reactivity@2.1.22
+  - @turbox3d/reactivity-react@1.1.22
+  - @turbox3d/shared@1.1.18
+
 ## 1.1.28
 
 ### Patch Changes

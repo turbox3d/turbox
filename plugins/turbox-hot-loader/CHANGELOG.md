@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.22
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.22
+
 ## 1.0.21
 
 ### Patch Changes

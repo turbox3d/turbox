@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.22
+
+### Patch Changes
+
+- feat: add inference engine&fix rect2d&add line2d&add keyup hot key feature
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.22
+  - @turbox3d/shared@1.1.18
+
 ## 1.1.21
 
 ### Patch Changes
