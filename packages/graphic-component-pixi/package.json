@@ -70,6 +70,7 @@
   },
   "dependencies": {
     "@turbox3d/event-manager": "~1.1.23",
+    "@turbox3d/math": "~1.1.14",
     "@turbox3d/renderer-pixi": "~1.0.22",
     "@turbox3d/shared": "~1.1.17"
   }

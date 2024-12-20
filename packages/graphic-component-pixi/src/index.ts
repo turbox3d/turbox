@@ -27,3 +27,4 @@ export { default as Arrow2d } from './arrow2d/index';
 export { default as Gizmo2d } from './gizmo2d/index';
 export { default as Text2d } from './text2d/index';
 export { default as Image2d } from './image2d/index';
+export { default as Line2d } from './line2d/index';
