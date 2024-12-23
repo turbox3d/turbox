@@ -7,7 +7,7 @@ interface Vec2 {
   y: number;
 }
 
-interface IProps {
+interface IPolygonProps {
   path: Vec2[];
   position?: Vec2;
   rotation?: number;
@@ -24,8 +24,8 @@ interface IProps {
 }
 
 /** 多边形 */
-export default class Polygon extends Mesh2D<IProps> {
-  static defaultProps: Partial<IProps> = {
+export default class Polygon extends Mesh2D<IPolygonProps> {
+  static defaultProps: Partial<IPolygonProps> = {
     position: { x: 0, y: 0 },
     rotation: 0,
     scale: { x: 0, y: 0 },

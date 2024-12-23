@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 import { Vec2 } from '@turbox3d/shared';
 import { drawText } from '../_utils/utils';
 
-interface IProps {
+interface IRadiusDimensionProps {
   center: Vec2;
   angle: number; // 角度
   radius: string; // 半径
@@ -18,7 +18,7 @@ interface IProps {
 /**
  * @description: 半径尺寸线
  */
-export default class RadiusDimension extends Mesh2D<IProps> {
+export default class RadiusDimension extends Mesh2D<IRadiusDimensionProps> {
   protected view = new PIXI.Graphics();
 
   public draw() {

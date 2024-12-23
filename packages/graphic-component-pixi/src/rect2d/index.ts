@@ -3,7 +3,7 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
 
-interface IProps {
+export interface IRect2dProps {
   x?: number;
   y?: number;
   width: number;
@@ -28,7 +28,7 @@ interface IProps {
 }
 
 /** 正方形 */
-export default class Rect2d extends Mesh2D<IProps> {
+export default class Rect2d extends Mesh2D<IRect2dProps> {
   protected view = new PIXI.Graphics();
   protected reactivePipeLine = [
     this.updateGeometry,

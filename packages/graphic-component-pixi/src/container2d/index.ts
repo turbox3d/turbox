@@ -4,7 +4,7 @@ import { fail, Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
 
-interface IProps {
+export interface IContainer2dProps {
   x?: number;
   y?: number;
   position?: Vec2;
@@ -33,7 +33,7 @@ interface IProps {
 }
 
 /** UI组件-容器 */
-export default class Container2d extends Mesh2D<IProps> {
+export default class Container2d extends Mesh2D<IContainer2dProps> {
   protected view: PIXI.Container;
   protected reactivePipeLine = [
     this.updateGeometry,

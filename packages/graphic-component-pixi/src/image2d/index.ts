@@ -5,7 +5,7 @@ import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
 import Container2d from '../container2d';
 
-interface IProps {
+interface IImage2dProps {
   width: number;
   height: number;
   x?: number;
@@ -36,7 +36,7 @@ interface IProps {
 }
 
 /** UI组件-图片 */
-export default class Image2d extends Mesh2D<IProps> {
+export default class Image2d extends Mesh2D<IImage2dProps> {
   protected view: PIXI.Container;
   protected reactivePipeLine = [
     this.updateGeometry,

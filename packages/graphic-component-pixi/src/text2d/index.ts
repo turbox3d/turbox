@@ -3,7 +3,7 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { Vec2 } from '@turbox3d/shared';
 import Container2d from '../container2d';
 
-interface IProps {
+interface IText2dProps {
   text: string;
   style?: PIXI.TextStyle | Partial<PIXI.TextStyle>;
   position?: Vec2;
@@ -20,7 +20,7 @@ interface IProps {
 }
 
 /** UI组件-文字 */
-export default class Text2d extends Mesh2D<IProps> {
+export default class Text2d extends Mesh2D<IText2dProps> {
   protected view = new PIXI.Text('');
   protected reactivePipeLine = [
     this.updateGeometry,

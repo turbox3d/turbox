@@ -3,7 +3,7 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import DrawUtils from '../draw-utils';
 
-interface IProps {
+interface ILine2dProps {
   lineWidth?: number;
   lineColor?: number;
   alignment?: number;
@@ -12,7 +12,7 @@ interface IProps {
   zIndex?: number;
 }
 
-export default class Line2d extends Mesh2D<IProps> {
+export default class Line2d extends Mesh2D<ILine2dProps> {
   protected view = new PIXI.Graphics();
 
   draw() {

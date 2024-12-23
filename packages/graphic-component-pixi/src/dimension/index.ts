@@ -14,7 +14,7 @@ interface IDimensionData {
   innerHY: number[]; // 水平构件端点
 }
 
-interface IProps {
+interface IDimensionProps {
   data: IDimensionData[];
   editableTextPs?: IXY[]; // 需要隐藏文字的位置
   clickCallback?: Function;
@@ -81,7 +81,7 @@ export function generateDimData(x0: number, y0: number, x1: number, y1: number) 
   return { data, length, angle };
 }
 
-export default class Dimension extends Mesh2D<IProps> {
+export default class Dimension extends Mesh2D<IDimensionProps> {
   protected view = new PIXI.Container();
   private _interactContainer = new PIXI.Container();
   // public componentWillReceiveProps(para1,para2){

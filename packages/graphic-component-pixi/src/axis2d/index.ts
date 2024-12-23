@@ -2,12 +2,12 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import DrawUtils from '../draw-utils/index';
 
-interface IProps {
+interface IAxis2dProps {
   type?: 'front' | 'top' | 'left';
 }
 
 /** 坐标轴 2d 控件 */
-export default class Axis2d extends Mesh2D<IProps> {
+export default class Axis2d extends Mesh2D<IAxis2dProps> {
   protected view = new PIXI.Graphics();
 
   draw() {

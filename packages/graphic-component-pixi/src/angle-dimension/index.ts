@@ -7,7 +7,7 @@ interface IXY {
   y: number;
 }
 
-interface IProps {
+interface IAngleDimensionProps {
   center: IXY;
   radius: number;
   startAngle: number;
@@ -18,7 +18,7 @@ interface IProps {
 /**
  * @description: 半径尺寸线
  */
-export default class AngleDimension extends Mesh2D<IProps> {
+export default class AngleDimension extends Mesh2D<IAngleDimensionProps> {
   protected view = new PIXI.Graphics();
 
   public draw() {
