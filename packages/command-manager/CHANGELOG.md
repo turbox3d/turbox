@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.27
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.26
 
 ### Patch Changes

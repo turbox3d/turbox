@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.22
 
 ### Patch Changes

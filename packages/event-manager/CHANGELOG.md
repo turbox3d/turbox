@@ -1,5 +1,14 @@
 # @turbox3d/event-manager
 
+## 1.1.25
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/math@1.1.16
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.24
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @turbox3d/turbox
 
+## 1.1.36
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/design-engine@1.1.30
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/graphic-component-pixi@1.1.40
+  - @turbox3d/graphic-component-three@1.1.33
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/renderer-pixi@1.0.24
+  - @turbox3d/renderer-three@1.0.23
+
 ## 1.1.35
 
 ### Patch Changes

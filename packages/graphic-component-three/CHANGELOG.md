@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.33
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.32
 
 ### Patch Changes

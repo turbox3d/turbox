@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.19
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+
 ## 1.1.18
 
 ### Patch Changes

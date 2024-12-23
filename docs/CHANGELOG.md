@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.33
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/design-engine@1.1.30
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/graphic-component-three@1.1.33
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/renderer-three@1.0.23
+
 ## 1.1.32
 
 ### Patch Changes
@@ -210,6 +226,22 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.27
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/design-engine@1.1.30
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/graphic-component-pixi@1.1.40
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/renderer-pixi@1.0.24
+
 ## 1.0.26
 
 ### Patch Changes
@@ -419,6 +451,24 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.36
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/design-engine@1.1.30
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/graphic-component-pixi@1.1.40
+  - @turbox3d/graphic-component-three@1.1.33
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/renderer-pixi@1.0.24
+  - @turbox3d/renderer-three@1.0.23
 
 ## 1.1.35
 
@@ -656,6 +706,12 @@
 
 # @turbox3d/shared
 
+## 1.1.19
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+
 ## 1.1.18
 
 ### Patch Changes
@@ -735,6 +791,16 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/shared@1.1.19
 
 ## 1.0.22
 
@@ -868,6 +934,16 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.24
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/renderer-core@1.0.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.0.23
 
 ### Patch Changes
@@ -999,6 +1075,17 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/shared@1.1.19
 
 ## 1.0.22
 
@@ -1145,6 +1232,15 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.22
 
 ### Patch Changes
@@ -1264,6 +1360,14 @@
 
 # @turbox3d/reactivity
 
+## 2.1.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/shared@1.1.19
+
 ## 2.1.22
 
 ### Patch Changes
@@ -1370,6 +1474,12 @@
 
 # @turbox3d/math
 
+## 1.1.16
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+
 ## 1.1.15
 
 ### Patch Changes
@@ -1449,6 +1559,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.33
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.23
+  - @turbox3d/shared@1.1.19
 
 ## 1.1.32
 
@@ -1568,6 +1687,18 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.40
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/math@1.1.16
+  - @turbox3d/renderer-pixi@1.0.24
+  - @turbox3d/shared@1.1.19
 
 ## 1.1.39
 
@@ -1726,6 +1857,15 @@
 
 # @turbox3d/event-manager
 
+## 1.1.25
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/math@1.1.16
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.24
 
 ### Patch Changes
@@ -1844,6 +1984,19 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.30
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/shared@1.1.19
 
 ## 1.1.29
 
@@ -2015,6 +2168,15 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/command-manager
+
+## 1.1.27
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/shared@1.1.19
 
 ## 1.1.26
 

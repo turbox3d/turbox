@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.30
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/math@1.1.16
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/reactivity-react@1.1.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.1.29
 
 ### Patch Changes

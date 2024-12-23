@@ -1,5 +1,16 @@
 # @turbox3d/renderer-core
 
+## 1.0.23
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.27
+  - @turbox3d/event-manager@1.1.25
+  - @turbox3d/reactivity@2.1.23
+  - @turbox3d/shared@1.1.19
+
 ## 1.0.22
 
 ### Patch Changes

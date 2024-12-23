@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.16
+
+### Patch Changes
+
+- feat: add grid2d&gizmo2d component
+
 ## 1.1.15
 
 ### Patch Changes
