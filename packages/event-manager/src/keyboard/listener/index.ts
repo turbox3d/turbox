@@ -1,4 +1,4 @@
-import { createKeyByEvent, createKeyByHotKey, isValidEvent, HotKeyEventType } from './util';
+import { createKeyByEvent, createKeyByHotKey, isValidEvent, HotKeyEventType, createKeyByUpEvent } from './util';
 
 interface Listener {
   (hotkey: string, keyEventType: HotKeyEventType): void;
@@ -9,7 +9,7 @@ interface Listener {
  */
 class HotKeyListener {
   private dom: Document;
-
+  private isTriggering = false;
   private listener: Listener;
 
   /**
@@ -65,12 +65,23 @@ class HotKeyListener {
       return;
     }
 
-    const key = createKeyByEvent(event);
+    if (this.isTriggering && keyEventType === HotKeyEventType.KeyUp) {
+      const key = createKeyByUpEvent(event);
+      if (typeof this.keyMap[key] === 'string') {
+        const listener = this.listener;
+        // 触发快捷键
+        listener(this.keyMap[key], keyEventType);
+        this.isTriggering = false;
+      }
+      return;
+    }
 
+    const key = createKeyByEvent(event);
     if (typeof this.keyMap[key] === 'string') {
       const listener = this.listener;
       // 触发快捷键
       listener(this.keyMap[key], keyEventType);
+      this.isTriggering = true;
     }
   }
 

@@ -1,11 +1,4 @@
-// import { Key } from '../keyboard/keyCode';
-
-enum Key {
-  Shift = 'Shift',
-  Alt = 'Alt',
-  Control = 'Control',
-  Meta = 'Meta',
-}
+import { Key } from '../keyCode';
 
 export enum HotKeyEventType {
   KeyDown = 'key-down',
@@ -25,6 +18,10 @@ export const Modifiers = {
     key: 'ctrl',
     code: 0b0010,
   },
+  Control: {
+    key: 'control',
+    code: 0b0010,
+  },
   Alt: {
     key: 'alt',
     code: 0b0100,
@@ -35,7 +32,7 @@ export const Modifiers = {
   },
 };
 
-const { Node, Shift, Ctrl, Alt, Meta } = Modifiers;
+const { Node, Shift, Ctrl, Control, Alt, Meta } = Modifiers;
 
 /**
  * 根据快捷键构建 标示key
@@ -52,6 +49,8 @@ export function createKeyByHotKey(hotkey: string) {
       modifiers |= Shift.code;
     } else if (key === Ctrl.key) {
       modifiers |= Ctrl.code;
+    } else if (key === Control.key) {
+      modifiers |= Control.code;
     } else if (key === Alt.key) {
       modifiers |= Alt.code;
     } else if (key === Meta.key) {
@@ -59,7 +58,12 @@ export function createKeyByHotKey(hotkey: string) {
     }
   }
 
-  return `${keys[length - 1]}@${modifiers}`;
+  const currentKey = keys[length - 1];
+  if (currentKey === Key.Ctrl.toLowerCase()) {
+    return `${Key.Control.toLowerCase()}@${modifiers}`;
+  }
+
+  return `${currentKey}@${modifiers}`;
 }
 
 /**
@@ -85,6 +89,41 @@ export function createKeyByEvent(event: KeyboardEvent) {
   }
 
   const key = event.key.toLowerCase();
+
+  return `${key}@${modifiers}`;
+}
+
+export function createKeyByUpEvent(event: KeyboardEvent) {
+  const key = event.key.toLowerCase();
+  let modifiers = Node.code;
+
+  if (event.shiftKey) {
+    modifiers |= Shift.code;
+  } else if (key === Key.Shift.toLowerCase()) {
+    modifiers |= Shift.code;
+    return `${Key.Shift.toLowerCase()}@${modifiers}`;
+  }
+
+  if (event.altKey) {
+    modifiers |= Alt.code;
+  } else if (key === Key.Alt.toLowerCase()) {
+    modifiers |= Alt.code;
+    return `${Key.Alt.toLowerCase()}@${modifiers}`;
+  }
+
+  if (event.ctrlKey) {
+    modifiers |= Ctrl.code;
+  } else if (key === Key.Control.toLowerCase()) {
+    modifiers |= Ctrl.code;
+    return `${Key.Control.toLowerCase()}@${modifiers}`;
+  }
+
+  if (event.metaKey) {
+    modifiers |= Meta.code;
+  } else if (key === Key.Meta.toLowerCase()) {
+    modifiers |= Meta.code;
+    return `${Key.Meta.toLowerCase()}@${modifiers}`;
+  }
 
   return `${key}@${modifiers}`;
 }
