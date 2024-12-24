@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.20
+
+### Patch Changes
+
+- fix: fix
+
 ## 1.1.19
 
 ### Patch Changes
