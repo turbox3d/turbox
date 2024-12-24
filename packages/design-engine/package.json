@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/design-engine",
-  "version": "1.1.30",
+  "version": "1.1.31",
   "description": "Large-scale design application engine library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@turbox3d/command-manager": "~1.1.27",
-    "@turbox3d/event-manager": "~1.1.25",
+    "@turbox3d/event-manager": "~1.1.26",
     "@turbox3d/math": "~1.1.16",
     "@turbox3d/reactivity": "~2.1.23",
     "@turbox3d/reactivity-react": "~1.1.23",

@@ -1,5 +1,11 @@
 # @turbox3d/event-manager
 
+## 1.1.26
+
+### Patch Changes
+
+- bfff099: fix: fix key event&infer engine issue
+
 ## 1.1.25
 
 ### Patch Changes

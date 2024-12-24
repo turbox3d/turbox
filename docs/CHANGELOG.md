@@ -1857,6 +1857,12 @@
 
 # @turbox3d/event-manager
 
+## 1.1.26
+
+### Patch Changes
+
+- bfff099: fix: fix key event&infer engine issue
+
 ## 1.1.25
 
 ### Patch Changes
@@ -1984,6 +1990,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.31
+
+### Patch Changes
+
+- bfff099: fix: fix key event&infer engine issue
+- Updated dependencies [bfff099]
+  - @turbox3d/event-manager@1.1.26
 
 ## 1.1.30
 
