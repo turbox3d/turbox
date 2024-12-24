@@ -159,7 +159,7 @@ export function LeftPanel() {
   };
   const pointerMoveHandler = () => {
     if (!isPressed) {
-      window.clearTimeout(timer);
+      // window.clearTimeout(timer);
     }
   };
 

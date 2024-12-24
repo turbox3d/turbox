@@ -8,7 +8,7 @@ import { imageBuilderStore } from '../../models/index';
 
 import { AdjustCommand } from './adjust/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
-import { RenderOrder } from '../../common/consts/scene';
+import { ItemType, RenderOrder } from '../../common/consts/scene';
 
 class ActionsCommand extends CommandManager.compose({
   adjust: AdjustCommand,
@@ -60,6 +60,7 @@ class ActionsCommand extends CommandManager.compose({
   ) => {
     const entity = new ItemEntity(specificId);
     entity.$update({
+      itemType: ItemType.TEXT,
       text,
     });
     if (extraInfo) {

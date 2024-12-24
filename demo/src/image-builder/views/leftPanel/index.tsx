@@ -51,7 +51,7 @@ export function LeftPanel() {
   };
   const colorChange: React.ChangeEventHandler<HTMLInputElement> | undefined = debounce(
     (e: React.BaseSyntheticEvent) => {
-      const target = Array.from(imageBuilderStore.document.models.values()).filter(m => m instanceof FrameEntity)[0] as
+      const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
       appCommandManager.actionsCommand.addFrameEntity({
@@ -64,7 +64,7 @@ export function LeftPanel() {
   );
   const uploadImgChange = async (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'done') {
-      const target = Array.from(imageBuilderStore.document.models.values()).filter(m => m instanceof FrameEntity)[0] as
+      const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
       const buffer = await info.file.originFileObj?.arrayBuffer();
@@ -81,7 +81,7 @@ export function LeftPanel() {
   const widthChange = debounce(
     (value: number) => {
       setWidth(value);
-      const target = Array.from(imageBuilderStore.document.models.values()).filter(m => m instanceof FrameEntity)[0] as
+      const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
       appCommandManager.actionsCommand.addFrameEntity({
@@ -94,7 +94,7 @@ export function LeftPanel() {
   const heightChange = debounce(
     (value: number) => {
       setHeight(value);
-      const target = Array.from(imageBuilderStore.document.models.values()).filter(m => m instanceof FrameEntity)[0] as
+      const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
       appCommandManager.actionsCommand.addFrameEntity({
@@ -107,35 +107,15 @@ export function LeftPanel() {
   const pointerDownTextHandler = (e: React.PointerEvent) => {
     appCommandManager.actionsCommand.addTextItemEntity('hello world!');
   };
-  const undo = () => {
-    imageBuilderStore.document.undo();
-  };
-  const redo = () => {
-    imageBuilderStore.document.redo();
-  };
-  const clear = () => {
-    imageBuilderStore.document.clear();
-  };
-  const dump = () => {
-
-  };
-  const load = () => {
-
-  };
   const updateZ = (type: Z_INDEX_ACTION) => () => {
     appCommandManager.actionsCommand.updateRenderOrder(type);
+  };
+  const pointerDownButtonHandler = (e: React.PointerEvent) => {
   };
 
   return (
     <div className="left-panel">
       <div>
-        <Button size="small" onClick={undo}>撤销</Button>
-        <Button size="small" onClick={redo}>恢复</Button>
-        <Button size="small" onClick={clear}>清空</Button>
-        <br/>
-        <Button size="small" onClick={dump}>保存</Button>
-        <Button size="small" onClick={load}>加载</Button>
-        <br/>
         <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.TOP)}>
           置顶
         </Button>
@@ -170,7 +150,7 @@ export function LeftPanel() {
         </div> */}
       </div>
       <div className="material-wp">
-        <h4>图片素材</h4>
+        <h4>图片</h4>
         <div className="material">
           {images.map(item => (
             <div key={item.name} className="img-list" onPointerDown={pointerDownHandler(item.url, item.name)}>
@@ -181,23 +161,15 @@ export function LeftPanel() {
         </div>
       </div>
       <div className="text-wp">
-        <h4>文本素材</h4>
+        <h4>文本</h4>
         <div className="img-list" onPointerDown={pointerDownTextHandler}>
           <img draggable alt="text" src={textUrl} width={30} height={30} />
         </div>
       </div>
-      <div className="hero-wp">
-        <h4>图文混合素材</h4>
-        <div className="img-list" onPointerDown={pointerDownTextHandler}>
-          <span>图文混合素材1</span>
-          <span>图文混合素材2</span>
-        </div>
-      </div>
-      <div className="layout-wp">
-        <h4>模版方案</h4>
-        <div className="img-list" onPointerDown={pointerDownTextHandler}>
-          <span>模版1</span>
-          <span>模版2</span>
+      <div className="button-wp">
+        <h4>按钮</h4>
+        <div className="img-list" onPointerDown={pointerDownButtonHandler}>
+          <div className="material-btn">Button Text</div>
         </div>
       </div>
     </div>

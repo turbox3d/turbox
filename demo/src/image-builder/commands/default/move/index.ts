@@ -1,7 +1,8 @@
-import { Command, ViewEntity, SceneEvent, SceneTool, Action, Vec2, Vector2 } from '@turbox3d/turbox';
+import { Command, ViewEntity, SceneEvent, SceneTool, Action, Vec2, Vector2, InferenceEngine } from '@turbox3d/turbox';
 
 import { ItemEntity } from '../../../models/entity/item';
 import { appCommandManager } from '../../index';
+import { imageBuilderStore } from '../../../models';
 
 const ACTION_NAME = 'moveEntity';
 
@@ -10,6 +11,7 @@ export class MoveCommand extends Command {
   private initPosition?: Vector2;
   private initModelPosition?: Vector2;
   private target?: ItemEntity;
+  private inferenceEngine = new InferenceEngine();
 
   protected onDragStart(viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {
     const hinted = appCommandManager.defaultCommand.hint.getHintedEntity() as ItemEntity | undefined;
@@ -30,6 +32,10 @@ export class MoveCommand extends Command {
     if (!initPosition || !target || !initModelPosition) {
       return;
     }
+    imageBuilderStore.scene.clearSnapLines();
+    const { vertical, horizontal } = this.inferenceEngine.entitySnap(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
+    vertical && imageBuilderStore.scene.addSnapLines([vertical]);
+    horizontal && imageBuilderStore.scene.addSnapLines([horizontal]);
     this.action.execute(() => {
       const sp = event.getScenePosition() as Vec2;
       const offset = new Vector2(sp.x, sp.y).subtracted(initPosition);
@@ -38,11 +44,18 @@ export class MoveCommand extends Command {
   }
 
   protected onDragEnd() {
-    if (!this.target || !this.initPosition || !this.initModelPosition) {
+    const { initPosition, initModelPosition, target } = this;
+    if (!target || !initPosition || !initModelPosition) {
       this.action.abort();
     } else {
+      const { vertical, horizontal, verticalDiff = 0, horizontalDiff = 0 } = this.inferenceEngine.entitySnap(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
+      this.action.execute(() => {
+        vertical && target.setPosition({ x: target.position.x + verticalDiff });
+        horizontal && target.setPosition({ y: target.position.y + horizontalDiff });
+      });
       this.action.complete();
     }
+    imageBuilderStore.scene.clearSnapLines();
     this.target = undefined;
     this.initModelPosition = undefined;
     this.initPosition = undefined;

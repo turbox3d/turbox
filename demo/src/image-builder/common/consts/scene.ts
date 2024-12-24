@@ -12,5 +12,16 @@ export enum Z_INDEX_ACTION {
 export enum RenderOrder {
   GRID = -9999,
   BACKGROUND = -1,
+  SNAP_LINE = 9000,
   GIZMO = 9999,
+}
+
+
+export enum ItemType {
+  /** 图片 */
+  IMAGE = 'image',
+  /** 文本 */
+  TEXT = 'text',
+  /** 按钮 */
+  BUTTON = 'button',
 }
