@@ -110,6 +110,14 @@ export default class InferenceEngine {
    * 实体吸附
    */
   entitySnap(targetEntity: EntityObject, snappedEntities: EntityObject[], tolerance = 10) {
+    if (!snappedEntities.length) {
+      return {
+        vertical: undefined,
+        verticalDiff: undefined,
+        horizontal: undefined,
+        horizontalDiff: undefined,
+      };
+    }
     const f = (entity: EntityObject) => {
       const [p0, p1, p2, p3] = this.getEntityBox2AABBWCS(entity);
       const midX = (p0.x + p1.x) / 2;
