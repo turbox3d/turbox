@@ -1,5 +1,13 @@
 # @turbox3d/design-engine
 
+## 1.1.33
+
+### Patch Changes
+
+- refactor: enhance code
+- Updated dependencies
+  - @turbox3d/math@1.1.18
+
 ## 1.1.32
 
 ### Patch Changes

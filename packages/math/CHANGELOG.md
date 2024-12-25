@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.18
+
+### Patch Changes
+
+- refactor: enhance code
+
 ## 1.1.17
 
 ### Patch Changes
