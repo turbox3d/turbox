@@ -1,13 +1,9 @@
 import * as PIXI from 'pixi.js';
 
-import { Mesh2D, MathUtils, g, Reactive, Rect2d, Text2d } from '@turbox3d/turbox';
+import { Mesh2D, MathUtils, g, Reactive, Text2d } from '@turbox3d/turbox';
 
-import { appCommandManager } from '../../../commands/index';
-import { PRIMARY_COLOR } from '../../../common/consts/color';
 import { ItemSymbol } from '../../../common/consts/view-entity';
-import { Gizmo2d } from '../../../components/Gizmo2d';
 import { ItemEntity } from '../../../models/entity/item';
-import { RenderOrder } from '../../../common/consts/scene';
 
 export interface IItemMesh2DProps {
   model: ItemEntity;

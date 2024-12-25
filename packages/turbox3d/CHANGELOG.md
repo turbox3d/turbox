@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.34
+
+### Patch Changes
+
+- fix: fix
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.28
+  - @turbox3d/design-engine@1.1.32
+  - @turbox3d/event-manager@1.1.27
+  - @turbox3d/graphic-component-three@1.1.34
+  - @turbox3d/math@1.1.17
+  - @turbox3d/reactivity@2.1.24
+  - @turbox3d/reactivity-react@1.1.24
+  - @turbox3d/renderer-core@1.0.24
+  - @turbox3d/renderer-three@1.0.24
+
 ## 1.1.33
 
 ### Patch Changes

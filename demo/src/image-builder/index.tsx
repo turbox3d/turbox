@@ -9,6 +9,7 @@ import { appCommandManager } from './commands/index';
 import { imageBuilderStore } from './models/index';
 import { LeftPanel } from './views/leftPanel/index';
 import { World } from './views/world';
+import { TopBar } from './views/topBar';
 
 window.$$DEBUG = {
   depCollector,
@@ -59,13 +60,14 @@ const ImageBuilder = () => {
         id="scene2d"
         style={{
           position: 'absolute',
-          top: 0,
+          top: 45,
           right: 0,
           bottom: 0,
-          left: 360,
+          left: 260,
         }}
       />
       <LeftPanel />
+      <TopBar />
       <FPSMonitorComponent className="fps-monitor" />
     </>
   );

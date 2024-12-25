@@ -1,13 +1,16 @@
 .left-panel {
-  width: 360px;
+  position: absolute;
+  left: 0;
+  top: 45px;
+  bottom: 0;
+  width: 260px;
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 0;
-  bottom: 0;
   background: #e9ebf0;
   padding: 20px;
   z-index: 10;
+  overflow: scroll;
 }
 
 .material-wp {
@@ -33,4 +36,18 @@
 .background {
   display: flex;
   flex-wrap: wrap;
+}
+
+.material-btn {
+  width: 200px;
+  height: 30px;
+  background: #FE2C55;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
 }

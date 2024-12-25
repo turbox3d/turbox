@@ -1,6 +1,8 @@
 import { DocumentSystem, mutation, reactor, EntityObject } from '@turbox3d/turbox';
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
+import { FrameEntity } from '../entity/frame';
+import { ItemEntity } from '../entity/item';
 
 export class DocumentDomain extends DocumentSystem {
   @reactor sortedModels: EntityObject[] = [];
@@ -56,7 +58,7 @@ export class DocumentDomain extends DocumentSystem {
   }
 
   @mutation
-  updateRenderOrderByType = (selected: EntityObject, type: Z_INDEX_ACTION) => {
+  updateRenderOrderByType(selected: EntityObject, type: Z_INDEX_ACTION) {
     const items = this.sortedModels;
     const index = items.findIndex(p => p === selected);
     if (type === Z_INDEX_ACTION.BOTTOM) {
@@ -73,5 +75,20 @@ export class DocumentDomain extends DocumentSystem {
       items[index - 1] = selected;
     }
     this.updateRenderOrder();
-  };
+  }
+
+  @mutation
+  getEntities() {
+    return [...this.models.values()];
+  }
+
+  @mutation
+  getFrameEntities() {
+    return [...this.models.values()].filter(m => m instanceof FrameEntity);
+  }
+
+  @mutation
+  getItemEntities() {
+    return [...this.models.values()].filter(m => m instanceof ItemEntity);
+  }
 }

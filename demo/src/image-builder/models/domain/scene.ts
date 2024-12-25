@@ -1,4 +1,4 @@
-import { Domain, reactor, mutation, SceneTool } from '@turbox3d/turbox';
+import { Domain, reactor, mutation, SceneTool, Vector2 } from '@turbox3d/turbox';
 
 export class SceneDomain extends Domain {
   /** 画布区域的缩放 */
@@ -9,6 +9,8 @@ export class SceneDomain extends Domain {
   @reactor sceneSize = { width: 0, height: 0 };
   @reactor resolution = window.devicePixelRatio;
   @reactor renderFlag2d = true;
+  @reactor snapLines: Vector2[][] = [];
+
   private sceneTools: SceneTool;
 
   @mutation
@@ -19,6 +21,16 @@ export class SceneDomain extends Domain {
   @mutation('', true)
   setRenderFlag2d(flag: boolean) {
     this.renderFlag2d = flag;
+  }
+
+  @mutation
+  addSnapLines(lines: Vector2[][]) {
+    this.snapLines.push(...lines);
+  }
+
+  @mutation
+  clearSnapLines() {
+    this.snapLines = [];
   }
 
   setSceneTools(sceneTools: SceneTool) {

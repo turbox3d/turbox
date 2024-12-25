@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
 
-import { Reactive, Component, g, Axis2d, Text2d, Container2d, Image2d, Rect2d, MathUtils } from '@turbox3d/turbox';
+import { Reactive, Component, g, Axis2d, Text2d, Container2d, Image2d, Rect2d, MathUtils, Line2d, Grid2d, Gizmo2d } from '@turbox3d/turbox';
 
-import { Grid } from '../../components/Grid';
 import { FrameEntity } from '../../models/entity/frame';
 import { ItemEntity } from '../../models/entity/item';
 
@@ -12,7 +11,6 @@ import { imageBuilderStore } from '../../models/index';
 import { appCommandManager } from '../../commands';
 import { RenderOrder } from '../../common/consts/scene';
 import { PRIMARY_COLOR } from '../../common/consts/color';
-import { Gizmo2d } from '../../components/Gizmo2d';
 
 @Reactive
 export class World extends Component {
@@ -22,7 +20,7 @@ export class World extends Component {
 
     return [
       g(Axis2d),
-      g(Grid, {
+      g(Grid2d, {
         gridWidth: 250000,
         cellSize: 50,
         lineColor: 0xdddddd,
@@ -63,16 +61,14 @@ export class World extends Component {
       //     }),
       //   ],
       // }),
-      ...[...imageBuilderStore.document.models.values()]
-        .filter(m => m instanceof FrameEntity)
+      ...imageBuilderStore.document.getFrameEntities()
         .map(m =>
           g(FrameViewEntity, {
             key: m.id,
             model: m as FrameEntity,
           })
         ),
-      ...[...imageBuilderStore.document.models.values()]
-        .filter(m => m instanceof ItemEntity)
+      ...imageBuilderStore.document.getItemEntities()
         .map(m =>
           g(ItemViewEntity, {
             key: m.id,
@@ -103,6 +99,9 @@ export class World extends Component {
           y: selected.position.y,
           rotation: selected.rotation.z * MathUtils.DEG2RAD,
           zIndex: RenderOrder.GIZMO,
+          color: PRIMARY_COLOR,
+          deleteIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/delete.svg',
+          adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
           deleteHandler: () => {
             appCommandManager.actionsCommand.deleteEntity([selected]);
           },
@@ -116,6 +115,13 @@ export class World extends Component {
             }
           },
         }),
+      ...imageBuilderStore.scene.snapLines.map((sl, index) => g(Line2d, {
+        key: `snapLine-${index}`,
+        start: sl[0],
+        end: sl[1],
+        lineWidth: 1,
+        lineColor: 0xFE2C55,
+      }))
     ];
   }
 }
