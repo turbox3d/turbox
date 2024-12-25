@@ -221,7 +221,7 @@ export class DocumentDomain extends DocumentSystem {
     const trp = skewPoints.find(sp => sp.key === 'rightTop');
     const brp = skewPoints.find(sp => sp.key === 'rightBottom');
     const blp = skewPoints.find(sp => sp.key === 'leftBottom');
-    const matrix3 = m.getMatrix3(EntityObject.EPerspectiveType.FRONT);
+    const matrix3 = m.getMatrix3From3d(EntityObject.EPerspectiveType.FRONT);
     return {
       bounds: `{{0, 0}, {${m.size.x}, ${m.size.y}}}`, // 图片宽高
       skew: {

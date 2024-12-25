@@ -33,7 +33,7 @@ export class MoveCommand extends Command {
       return;
     }
     imageBuilderStore.scene.clearSnapLines();
-    const { vertical, horizontal } = this.inferenceEngine.entitySnap(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
+    const { vertical, horizontal } = this.inferenceEngine.entitySnap2d(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
     vertical && imageBuilderStore.scene.addSnapLines([vertical]);
     horizontal && imageBuilderStore.scene.addSnapLines([horizontal]);
     this.action.execute(() => {
@@ -48,7 +48,7 @@ export class MoveCommand extends Command {
     if (!target || !initPosition || !initModelPosition) {
       this.action.abort();
     } else {
-      const { vertical, horizontal, verticalDiff = 0, horizontalDiff = 0 } = this.inferenceEngine.entitySnap(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
+      const { vertical, horizontal, verticalDiff = 0, horizontalDiff = 0 } = this.inferenceEngine.entitySnap2d(target, imageBuilderStore.document.getEntities().filter(e => e !== target), 10);
       this.action.execute(() => {
         vertical && target.setPosition({ x: target.position.x + verticalDiff });
         horizontal && target.setPosition({ y: target.position.y + horizontalDiff });

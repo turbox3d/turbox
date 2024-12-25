@@ -241,7 +241,7 @@ export class ActionsDomain extends Domain {
     }
     const position = new Vector2();
     const size = new Vector2();
-    const points = selected.map(e => e.getBox2(EntityObject.EPerspectiveType.FRONT, true)).flat();
+    const points = selected.map(e => e.getBox2From3d(EntityObject.EPerspectiveType.FRONT, true)).flat();
     const box2 = new Box2().setFromPoints(points);
     box2.getCenter(position);
     box2.getSize(size);
@@ -733,13 +733,13 @@ export class ActionsDomain extends Domain {
     const selected = appCommandManager.defaultCommand.select.getSelectedEntities();
     // 多选才能对齐
     if (selected.length > 1) {
-      const points = selected.map(e => e.getBox2(EntityObject.EPerspectiveType.FRONT, true)).flat();
+      const points = selected.map(e => e.getBox2From3d(EntityObject.EPerspectiveType.FRONT, true)).flat();
       const box2 = new Box2().setFromPoints(points);
       const topY = box2.max.y;
       const bottomY = box2.min.y;
       const middleY = (topY + bottomY) / 2;
       selected.forEach(e => {
-        const boxAABB = e.getBox2AABB(EntityObject.EPerspectiveType.FRONT, true);
+        const boxAABB = e.getBox2AABBFrom3d(EntityObject.EPerspectiveType.FRONT, true);
         let offsetY = 0;
         if (type === 'top') {
           offsetY = topY - boxAABB[2].y;

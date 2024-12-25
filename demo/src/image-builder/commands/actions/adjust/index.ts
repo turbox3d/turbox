@@ -76,8 +76,7 @@ export class AdjustCommand extends Command {
       return;
     }
     const ip = event.getScenePosition() as Vec2;
-    const type = EntityObject.EPerspectiveType.FRONT;
-    this.initPosition = new Vector2(ip.x, ip.y).applyMatrix3(this.target.getConcatenatedMatrix3(type).inverted());
+    this.initPosition = new Vector2(ip.x, ip.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
   }
 
   private onRotateMoveHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
@@ -85,11 +84,10 @@ export class AdjustCommand extends Command {
       return;
     }
     const mp = event.getScenePosition() as Vec2;
-    const type = EntityObject.EPerspectiveType.FRONT;
-    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3(type).inverted());
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
     const degree = this.initPosition.clone().angleTo(localPoint) * MathUtils.RAD2DEG;
     this.degree = degree;
-    const { snapped } = this.inferenceEngine.rotateSnap(this.target.rotation.z + degree);
+    const { snapped } = this.inferenceEngine.rotateSnap2d(this.target.rotation.z + degree);
     this.adjustAction.execute(
       () => {
         this.target?.setRotation({
@@ -110,7 +108,7 @@ export class AdjustCommand extends Command {
       this.adjustAction.abort();
       this.adjustAction = Action.create(ACTION_NAME);
     } else {
-      const { snappedDegree } = this.inferenceEngine.rotateSnap(this.target.rotation.z + this.degree);
+      const { snappedDegree } = this.inferenceEngine.rotateSnap2d(this.target.rotation.z + this.degree);
       this.adjustAction.execute(
         () => {
           this.target?.setRotation({
@@ -142,8 +140,7 @@ export class AdjustCommand extends Command {
       return;
     }
     const mp = event.getScenePosition() as Vec2;
-    const type = EntityObject.EPerspectiveType.FRONT;
-    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3(type).inverted());
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
     this.initLength = localPoint.length;
     this.initSize = {
       x: this.target.size.x,
@@ -162,8 +159,7 @@ export class AdjustCommand extends Command {
       return;
     }
     const mp = event.getScenePosition() as Vec2;
-    const type = EntityObject.EPerspectiveType.FRONT;
-    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3(type).inverted());
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
     if (!this.initLength || !this.initSize || !this.initFontSize || !this.initItemPosition) {
       return;
     }
