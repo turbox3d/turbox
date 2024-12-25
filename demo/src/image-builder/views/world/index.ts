@@ -24,6 +24,7 @@ export class World extends Component {
         gridWidth: 250000,
         cellSize: 50,
         lineColor: 0xdddddd,
+        zIndex: RenderOrder.GRID,
       }),
       // g(Container2d, {
       //   position: { x: 100, y: 100 },
