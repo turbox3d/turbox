@@ -1,14 +1,14 @@
-import { Box2, MathUtils, Matrix3, Vector2 } from '@turbox3d/math';
+import { Vector2 } from '@turbox3d/math';
 import EntityObject from '../entity-object';
 
 export default class InferenceEngine {
   /**
-   * 旋转吸附
+   * 旋转吸附2d
    * @param targetDegree 目标角度
    * @param baseLine 吸附基准线（默认每90度为一个吸附线）
    * @param tolerance 吸附的误差范围（默认15度）
    */
-  rotateSnap(targetDegree: number, baseLine = 90, tolerance = 10) {
+  rotateSnap2d(targetDegree: number, baseLine = 90, tolerance = 10) {
     let snappedDegree = targetDegree % 360;
     let snapped = false;
     if (Math.abs(snappedDegree % baseLine) <= tolerance) {
@@ -69,47 +69,10 @@ export default class InferenceEngine {
     return f(closestNumber, targetNumber, useLeft ? leftOtherNumber : rightOtherNumber);
   }
 
-  private getEntityMatrix3(entity: EntityObject) {
-    const matrix3 = new Matrix3();
-    return matrix3.compose(
-      new Vector2(entity.position.x, entity.position.y),
-      entity.rotation.z * MathUtils.DEG2RAD,
-      new Vector2(entity.scale.x, entity.scale.y)
-    );
-  }
-
-  private getEntityConcatenatedMatrix3(entity: EntityObject) {
-    const result = this.getEntityMatrix3(entity).clone();
-    let root: EntityObject = entity;
-    while (root.parent) {
-      root = root.parent;
-      result.premultiply(this.getEntityMatrix3(root));
-    }
-    return result;
-  }
-
-  private getEntityBox2AABBWCS(entity: EntityObject) {
-    const matrix3 = this.getEntityConcatenatedMatrix3(entity);
-    const originalPoints = [
-      new Vector2(-entity.size.x / 2, entity.size.y / 2),
-      new Vector2(entity.size.x / 2, entity.size.y / 2),
-      new Vector2(entity.size.x / 2, -entity.size.y / 2),
-      new Vector2(-entity.size.x / 2, -entity.size.y / 2),
-    ];
-    const points = originalPoints.map(p => p.clone().applyMatrix3(matrix3));
-    const box2 = new Box2().setFromPoints(points);
-    return [
-      new Vector2(box2.min.x, box2.max.y),
-      new Vector2(box2.max.x, box2.max.y),
-      new Vector2(box2.max.x, box2.min.y),
-      new Vector2(box2.min.x, box2.min.y),
-    ];
-  }
-
   /**
-   * 实体吸附
+   * 实体吸附2d
    */
-  entitySnap(targetEntity: EntityObject, snappedEntities: EntityObject[], tolerance = 10) {
+  entitySnap2d(targetEntity: EntityObject, snappedEntities: EntityObject[], tolerance = 10) {
     if (!snappedEntities.length) {
       return {
         vertical: undefined,
@@ -119,7 +82,7 @@ export default class InferenceEngine {
       };
     }
     const f = (entity: EntityObject) => {
-      const [p0, p1, p2, p3] = this.getEntityBox2AABBWCS(entity);
+      const [p0, p1, p2, p3] = entity.getBox2AABB(undefined, true);
       const midX = (p0.x + p1.x) / 2;
       const midY = (p0.y + p3.y) / 2;
       return {

@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { Quaternion } from './base/Quaternion';
 import { Tolerance } from './base/Tolerance';
+import { Vector2 } from './base/Vector2';
 import { Vector3 } from './base/Vector3';
 
 const _lut: string[] = [];
@@ -319,6 +320,26 @@ const MathUtils = {
       normals,
       uvs,
     };
+  },
+  /** 把无序的点排序成顺逆时针的邻接点，只支持凸多边形 */
+  clockwisePoints(points: Vector2[], clockwise = false) {
+    const newPoints: Vector2[] = [points[0]];
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = newPoints[newPoints.length - 1];
+      const waitComparePoints = points.filter(wp => wp !== p1);
+      for (let index = 0; index < waitComparePoints.length; index++) {
+        const p2 = waitComparePoints[index];
+        const v = new Vector2(p2.x - p1.x, p2.y - p1.y);
+        const otherPoints = points.filter(p => p !== p1 && p !== p2);
+        const otherVs = otherPoints.map(p => new Vector2(p.x - p1.x, p.y - p1.y));
+        const isAllMatched = otherVs.every(ov => (clockwise ? v.cross(ov) < 0 : v.cross(ov) > 0));
+        if (isAllMatched) {
+          newPoints.push(p2);
+          break;
+        }
+      }
+    }
+    return newPoints;
   },
 };
 

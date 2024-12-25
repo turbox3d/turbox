@@ -123,13 +123,13 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2Top() {
-    return this.getBox2(EPerspectiveType.TOP);
+    return this.getBox2From3d(EPerspectiveType.TOP);
   }
 
   /** 基于世界坐标系的顶视的紧贴包围盒点集合，忽略 x、z 轴旋转 */
   @computed({ lazy: false })
   get box2TopWCS() {
-    return this.getBox2(EPerspectiveType.TOP, true);
+    return this.getBox2From3d(EPerspectiveType.TOP, true);
   }
 
   /**
@@ -137,7 +137,7 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2TopAABBWCS() {
-    return this.getBox2AABB(EPerspectiveType.TOP, true);
+    return this.getBox2AABBFrom3d(EPerspectiveType.TOP, true);
   }
 
   /**     top
@@ -151,13 +151,13 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2Front() {
-    return this.getBox2(EPerspectiveType.FRONT);
+    return this.getBox2From3d(EPerspectiveType.FRONT);
   }
 
   /** 基于世界坐标系的正视/立面的紧贴包围盒点集合，忽略 x、y 轴旋转 */
   @computed({ lazy: false })
   get box2FrontWCS() {
-    return this.getBox2(EPerspectiveType.FRONT, true);
+    return this.getBox2From3d(EPerspectiveType.FRONT, true);
   }
 
   /**
@@ -165,7 +165,7 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2FrontAABBWCS() {
-    return this.getBox2AABB(EPerspectiveType.FRONT, true);
+    return this.getBox2AABBFrom3d(EPerspectiveType.FRONT, true);
   }
 
   /**     top
@@ -179,13 +179,13 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2Left() {
-    return this.getBox2(EPerspectiveType.LEFT);
+    return this.getBox2From3d(EPerspectiveType.LEFT);
   }
 
   /** 基于世界坐标系的左视的紧贴包围盒点集合，忽略 y、z 轴旋转 */
   @computed({ lazy: false })
   get box2LeftWCS() {
-    return this.getBox2(EPerspectiveType.LEFT, true);
+    return this.getBox2From3d(EPerspectiveType.LEFT, true);
   }
 
   /**
@@ -193,7 +193,7 @@ export default class EntityObject extends Domain {
    */
   @computed({ lazy: false })
   get box2LeftAABBWCS() {
-    return this.getBox2AABB(EPerspectiveType.LEFT, true);
+    return this.getBox2AABBFrom3d(EPerspectiveType.LEFT, true);
   }
 
   /**
@@ -245,19 +245,19 @@ export default class EntityObject extends Domain {
   /** 3x3 entity 顶视矩阵 */
   @computed({ lazy: false })
   get matrix3Top() {
-    return this.getMatrix3(EPerspectiveType.TOP);
+    return this.getMatrix3From3d(EPerspectiveType.TOP);
   }
 
   /** 3x3 entity 正视/立面矩阵 */
   @computed({ lazy: false })
   get matrix3Front() {
-    return this.getMatrix3(EPerspectiveType.FRONT);
+    return this.getMatrix3From3d(EPerspectiveType.FRONT);
   }
 
   /** 3x3 entity 左视矩阵 */
   @computed({ lazy: false })
   get matrix3Left() {
-    return this.getMatrix3(EPerspectiveType.LEFT);
+    return this.getMatrix3From3d(EPerspectiveType.LEFT);
   }
 
   /** 4x4 entity 矩阵 */
@@ -474,6 +474,12 @@ export default class EntityObject extends Domain {
     return result;
   }
 
+  getScaledSize() {
+    const { x, y, z } = this.size;
+    const { x: x1, y: y1, z: z1 } = this.scale;
+    return new Vector3(x * x1, y * y1, z * z1);
+  }
+
   @mutation
   setPosition(position: { x?: number; y?: number; z?: number }) {
     const { x, y, z } = position;
@@ -516,6 +522,44 @@ export default class EntityObject extends Domain {
     return this;
   }
 
+  getMatrix4(order = 'ZYX') {
+    const quaternion = new Quaternion().setFromEuler(
+      new Euler(
+        this.rotation.x * MathUtils.DEG2RAD,
+        this.rotation.y * MathUtils.DEG2RAD,
+        this.rotation.z * MathUtils.DEG2RAD,
+        order
+      )
+    );
+    const position = new Vector3(this.position.x, this.position.y, this.position.z);
+    const scale = new Vector3(this.scale.x, this.scale.y, this.scale.z);
+    return new Matrix4().compose(position, quaternion, scale);
+  }
+
+  getMatrix3From3d(type = EPerspectiveType.FRONT) {
+    const matrix3 = new Matrix3();
+    if (type === EPerspectiveType.FRONT) {
+      matrix3.compose(
+        new Vector2(this.position.x, this.position.y),
+        this.rotation.z * MathUtils.DEG2RAD,
+        new Vector2(this.scale.x, this.scale.y)
+      );
+    } else if (type === EPerspectiveType.TOP) {
+      matrix3.compose(
+        new Vector2(this.position.x, this.position.z),
+        this.rotation.y * MathUtils.DEG2RAD,
+        new Vector2(this.scale.x, this.scale.z)
+      );
+    } else if (type === EPerspectiveType.LEFT) {
+      matrix3.compose(
+        new Vector2(this.position.z, this.position.y),
+        this.rotation.x * MathUtils.DEG2RAD,
+        new Vector2(this.scale.z, this.scale.y)
+      );
+    }
+    return matrix3;
+  }
+
   getConcatenatedMatrix() {
     const result: Matrix4 = this.getMatrix4().clone();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -525,141 +569,6 @@ export default class EntityObject extends Domain {
       result.premultiply(root.getMatrix4());
     }
     return result;
-  }
-
-  getConcatenatedMatrix3(type: EPerspectiveType) {
-    const result: Matrix3 = this.getMatrix3(type).clone();
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let root: EntityObject = this;
-    while (root.parent) {
-      root = root.parent;
-      result.premultiply(root.getMatrix3(type));
-    }
-    return result;
-  }
-
-  getBox2AABB(type: EPerspectiveType, useWCS = false) {
-    const points = this.getBox2(type, useWCS);
-    const box2 = new Box2().setFromPoints(points);
-    return [
-      new Vector2(box2.min.x, box2.min.y),
-      new Vector2(box2.max.x, box2.min.y),
-      new Vector2(box2.max.x, box2.max.y),
-      new Vector2(box2.min.x, box2.max.y),
-    ];
-  }
-
-  /** 把无序的点排序成顺逆时针，只支持凸多边形 */
-  clockwisePoints(points: Vector2[], clockwise = false) {
-    const newPoints: Vector2[] = [points[0]];
-    for (let i = 0; i < points.length - 1; i++) {
-      const p1 = newPoints[newPoints.length - 1];
-      const waitComparePoints = points.filter(wp => wp !== p1);
-      for (let index = 0; index < waitComparePoints.length; index++) {
-        const p2 = waitComparePoints[index];
-        const v = new Vector2(p2.x - p1.x, p2.y - p1.y);
-        const otherPoints = points.filter(p => p !== p1 && p !== p2);
-        const otherVs = otherPoints.map(p => new Vector2(p.x - p1.x, p.y - p1.y));
-        const isAllMatched = otherVs.every(ov => (clockwise ? v.cross(ov) < 0 : v.cross(ov) > 0));
-        if (isAllMatched) {
-          newPoints.push(p2);
-          break;
-        }
-      }
-    }
-    return newPoints;
-  }
-
-  getBox2(type: EPerspectiveType, useWCS = false) {
-    const matrix = useWCS ? this.getConcatenatedMatrix() : this.getMatrix4();
-    const points = this.getBox3(matrix, useWCS);
-    const len = points.length / 2;
-    const position = new Vector3();
-    const rotation = new Quaternion();
-    const scale = new Vector3();
-    matrix.decompose(position, rotation, scale);
-    const euler = new Euler().setFromQuaternion(rotation);
-    const [x, y, z] = euler
-      .toArray()
-      .slice(0, 3)
-      .map(rad => rad % (Math.PI / 2) === 0);
-    if (type === EPerspectiveType.TOP) {
-      // 顶视图情况下，x 轴、z 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
-      if (!x || !z) {
-        const box3 = new Box3().setFromPoints(points);
-        return [
-          new Vector2(box3.min.x, box3.min.z),
-          new Vector2(box3.min.x, box3.max.z),
-          new Vector2(box3.max.x, box3.max.z),
-          new Vector2(box3.max.x, box3.min.z),
-        ];
-      }
-      const newPoints = points
-        .sort((a, b) => b.y - a.y)
-        .slice(0, len)
-        .map(p => new Vector2(p.x, p.z));
-      return this.clockwisePoints(newPoints);
-    } else if (type === EPerspectiveType.FRONT) {
-      // 正视图情况下，x 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
-      if (!x || !y) {
-        const box3 = new Box3().setFromPoints(points);
-        return [
-          new Vector2(box3.min.x, box3.min.y),
-          new Vector2(box3.max.x, box3.min.y),
-          new Vector2(box3.max.x, box3.max.y),
-          new Vector2(box3.min.x, box3.max.y),
-        ];
-      }
-      const newPoints = points
-        .sort((a, b) => b.z - a.z)
-        .slice(0, len)
-        .map(p => new Vector2(p.x, p.y));
-      return this.clockwisePoints(newPoints);
-    } else if (type === EPerspectiveType.LEFT) {
-      // 左视图情况下，z 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
-      if (!z || !y) {
-        const box3 = new Box3().setFromPoints(points);
-        return [
-          new Vector2(box3.min.z, box3.min.y),
-          new Vector2(box3.max.z, box3.min.y),
-          new Vector2(box3.max.z, box3.max.y),
-          new Vector2(box3.min.z, box3.max.y),
-        ];
-      }
-      const newPoints = points
-        .sort((a, b) => a.x - b.x)
-        .slice(0, len)
-        .map(p => new Vector2(p.z, p.y));
-      return this.clockwisePoints(newPoints);
-    }
-    return [];
-  }
-
-  getRawBox2(type: EPerspectiveType) {
-    const box3 = this.getRawBox3();
-    if (type === EPerspectiveType.TOP) {
-      return [
-        new Vector2(box3.min.x, box3.min.z),
-        new Vector2(box3.min.x, box3.max.z),
-        new Vector2(box3.max.x, box3.max.z),
-        new Vector2(box3.max.x, box3.min.z),
-      ];
-    } else if (type === EPerspectiveType.FRONT) {
-      return [
-        new Vector2(box3.min.x, box3.min.y),
-        new Vector2(box3.max.x, box3.min.y),
-        new Vector2(box3.max.x, box3.max.y),
-        new Vector2(box3.min.x, box3.max.y),
-      ];
-    } else if (type === EPerspectiveType.LEFT) {
-      return [
-        new Vector2(box3.min.z, box3.min.y),
-        new Vector2(box3.max.z, box3.min.y),
-        new Vector2(box3.max.z, box3.max.y),
-        new Vector2(box3.min.z, box3.max.y),
-      ];
-    }
-    return [];
   }
 
   /**
@@ -689,6 +598,7 @@ export default class EntityObject extends Domain {
     return points;
   }
 
+  /** 获取 AABB 包围盒 */
   getBox3AABB(matrix4?: Matrix4, useWCS = false) {
     const points = this.getBox3(matrix4, useWCS);
     const box3 = new Box3().setFromPoints(points);
@@ -704,53 +614,191 @@ export default class EntityObject extends Domain {
     ];
   }
 
+  /** 获取紧贴包围盒 */
   getBox3(matrix4?: Matrix4, useWCS = false) {
     const matrix = matrix4 || (useWCS ? this.getConcatenatedMatrix() : this.getMatrix4());
     const points = this.getRawBox3Points();
     return points.map(point => point.clone().applyMatrix4(matrix));
   }
 
-  getMatrix4(order = 'ZYX') {
-    const quaternion = new Quaternion().setFromEuler(
-      new Euler(
-        this.rotation.x * MathUtils.DEG2RAD,
-        this.rotation.y * MathUtils.DEG2RAD,
-        this.rotation.z * MathUtils.DEG2RAD,
-        order
-      )
-    );
-    const position = new Vector3(this.position.x, this.position.y, this.position.z);
-    const scale = new Vector3(this.scale.x, this.scale.y, this.scale.z);
-    return new Matrix4().compose(position, quaternion, scale);
-  }
-
-  getScaledSize() {
-    const { x, y, z } = this.size;
-    const { x: x1, y: y1, z: z1 } = this.scale;
-    return new Vector3(x * x1, y * y1, z * z1);
-  }
-
-  getMatrix3(type: EPerspectiveType) {
-    const matrix3 = new Matrix3();
-    if (type === EPerspectiveType.FRONT) {
-      matrix3.compose(
-        new Vector2(this.position.x, this.position.y),
-        this.rotation.z * MathUtils.DEG2RAD,
-        new Vector2(this.scale.x, this.scale.y)
-      );
-    } else if (type === EPerspectiveType.TOP) {
-      matrix3.compose(
-        new Vector2(this.position.x, this.position.z),
-        this.rotation.y * MathUtils.DEG2RAD,
-        new Vector2(this.scale.x, this.scale.z)
-      );
+  getRawBox2PointsFrom3d(type = EPerspectiveType.FRONT) {
+    const box3 = this.getRawBox3();
+    if (type === EPerspectiveType.TOP) {
+      return [
+        new Vector2(box3.min.x, box3.min.z),
+        new Vector2(box3.min.x, box3.max.z),
+        new Vector2(box3.max.x, box3.max.z),
+        new Vector2(box3.max.x, box3.min.z),
+      ];
+    } else if (type === EPerspectiveType.FRONT) {
+      return [
+        new Vector2(box3.min.x, box3.min.y),
+        new Vector2(box3.max.x, box3.min.y),
+        new Vector2(box3.max.x, box3.max.y),
+        new Vector2(box3.min.x, box3.max.y),
+      ];
     } else if (type === EPerspectiveType.LEFT) {
-      matrix3.compose(
-        new Vector2(this.position.z, this.position.y),
-        this.rotation.x * MathUtils.DEG2RAD,
-        new Vector2(this.scale.z, this.scale.y)
-      );
+      return [
+        new Vector2(box3.min.z, box3.min.y),
+        new Vector2(box3.max.z, box3.min.y),
+        new Vector2(box3.max.z, box3.max.y),
+        new Vector2(box3.min.z, box3.max.y),
+      ];
     }
-    return matrix3;
+    return [];
+  }
+
+  /** 从 3d 下不同视角获取 2d AABB 包围盒 */
+  getBox2AABBFrom3d(type = EPerspectiveType.FRONT, useWCS = false) {
+    const points = this.getBox2From3d(type, useWCS);
+    const box2 = new Box2().setFromPoints(points);
+    return [
+      new Vector2(box2.min.x, box2.min.y),
+      new Vector2(box2.max.x, box2.min.y),
+      new Vector2(box2.max.x, box2.max.y),
+      new Vector2(box2.min.x, box2.max.y),
+    ];
+  }
+
+  /** 从 3d 下不同视角获取 2d 紧贴包围盒 */
+  getBox2From3d(type = EPerspectiveType.FRONT, useWCS = false) {
+    const matrix = useWCS ? this.getConcatenatedMatrix() : this.getMatrix4();
+    const points = this.getBox3(matrix, useWCS);
+    const len = points.length / 2;
+    const position = new Vector3();
+    const rotation = new Quaternion();
+    const scale = new Vector3();
+    matrix.decompose(position, rotation, scale);
+    const euler = new Euler().setFromQuaternion(rotation);
+    const [x, y, z] = euler
+      .toArray()
+      .slice(0, 3)
+      .map(rad => rad % (Math.PI / 2) === 0);
+    if (type === EPerspectiveType.TOP) {
+      // 顶视图情况下，x 轴、z 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
+      if (!x || !z) {
+        const box3 = new Box3().setFromPoints(points);
+        return [
+          new Vector2(box3.min.x, box3.min.z),
+          new Vector2(box3.min.x, box3.max.z),
+          new Vector2(box3.max.x, box3.max.z),
+          new Vector2(box3.max.x, box3.min.z),
+        ];
+      }
+      const newPoints = points
+        .sort((a, b) => b.y - a.y)
+        .slice(0, len)
+        .map(p => new Vector2(p.x, p.z));
+      return MathUtils.clockwisePoints(newPoints);
+    } else if (type === EPerspectiveType.FRONT) {
+      // 正视图情况下，x 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
+      if (!x || !y) {
+        const box3 = new Box3().setFromPoints(points);
+        return [
+          new Vector2(box3.min.x, box3.min.y),
+          new Vector2(box3.max.x, box3.min.y),
+          new Vector2(box3.max.x, box3.max.y),
+          new Vector2(box3.min.x, box3.max.y),
+        ];
+      }
+      const newPoints = points
+        .sort((a, b) => b.z - a.z)
+        .slice(0, len)
+        .map(p => new Vector2(p.x, p.y));
+      return MathUtils.clockwisePoints(newPoints);
+    } else if (type === EPerspectiveType.LEFT) {
+      // 左视图情况下，z 轴、y 轴只要有非 90 度倍数旋转，就得取投影包围盒，否则取真实紧贴包围盒
+      if (!z || !y) {
+        const box3 = new Box3().setFromPoints(points);
+        return [
+          new Vector2(box3.min.z, box3.min.y),
+          new Vector2(box3.max.z, box3.min.y),
+          new Vector2(box3.max.z, box3.max.y),
+          new Vector2(box3.min.z, box3.max.y),
+        ];
+      }
+      const newPoints = points
+        .sort((a, b) => a.x - b.x)
+        .slice(0, len)
+        .map(p => new Vector2(p.z, p.y));
+      return MathUtils.clockwisePoints(newPoints);
+    }
+    return [];
+  }
+
+  /**
+   * ------------------------------------------------ 以下是纯 2d 坐标系下的方法 ------------------------------------------------
+   *                  x
+   *       |— — — — — —
+   *       |
+   *       |
+   *       |
+   *     y |
+   * 2d 坐标系
+   */
+  getRawBox2() {
+    const size = new Vector2(this.size.x, this.size.y);
+    // const original = new Vector2(0.5, 0.5);
+    const original = new Vector2(0, 0);
+    const center = size.clone().multiply(original);
+    return new Box2().setFromCenterAndSize(center, size);
+  }
+
+  /**     top
+   *  3---------2
+   *  |         |
+   *  |left     |right
+   *  |         |
+   *  0---------1
+   *     bottom
+   * 获取原始包围盒的 4 个点
+   */
+  getRawBox2Points() {
+    const box2 = this.getRawBox2();
+    return [
+      new Vector2(box2.min.x, box2.max.y),
+      new Vector2(box2.max.x, box2.max.y),
+      new Vector2(box2.max.x, box2.min.y),
+      new Vector2(box2.min.x, box2.min.y),
+    ];
+  }
+
+  getMatrix3() {
+    const matrix3 = new Matrix3();
+    return matrix3.compose(
+      new Vector2(this.position.x, this.position.y),
+      this.rotation.z * MathUtils.DEG2RAD,
+      new Vector2(this.scale.x, this.scale.y)
+    );
+  }
+
+  getConcatenatedMatrix3() {
+    const result: Matrix3 = this.getMatrix3().clone();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let root: EntityObject = this;
+    while (root.parent) {
+      root = root.parent;
+      result.premultiply(root.getMatrix3());
+    }
+    return result;
+  }
+
+  /** 获取 AABB 包围盒 */
+  getBox2AABB(matrix3?: Matrix3, useWCS = false) {
+    const points = this.getBox2(matrix3, useWCS);
+    const box2 = new Box2().setFromPoints(points);
+    return [
+      new Vector2(box2.min.x, box2.max.y),
+      new Vector2(box2.max.x, box2.max.y),
+      new Vector2(box2.max.x, box2.min.y),
+      new Vector2(box2.min.x, box2.min.y),
+    ];
+  }
+
+  /** 获取紧贴包围盒 */
+  getBox2(matrix3?: Matrix3, useWCS = false) {
+    const matrix = matrix3 || (useWCS ? this.getConcatenatedMatrix3() : this.getMatrix3());
+    const points = this.getRawBox2Points();
+    return points.map(point => point.clone().applyMatrix3(matrix));
   }
 }
