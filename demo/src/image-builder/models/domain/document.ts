@@ -75,7 +75,7 @@ export class DocumentDomain extends DocumentSystem {
       items[index - 1] = selected;
     }
     this.updateRenderOrder();
-  };
+  }
 
   @mutation
   getEntities() {
