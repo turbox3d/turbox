@@ -16,7 +16,6 @@ export enum RenderOrder {
   GIZMO = 9999,
 }
 
-
 export enum ItemType {
   /** 图片 */
   IMAGE = 'image',
