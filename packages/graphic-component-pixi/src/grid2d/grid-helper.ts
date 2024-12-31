@@ -143,7 +143,7 @@ export class GridHelper extends PIXI.Graphics {
     this.lineStyle(lConfig.width, lConfig.color, lConfig.alpha, lConfig.alignment, lConfig.native);
 
     // handle mouse move
-    this.interactive = true;
+    this.eventMode = 'static';
     this.on('mousemove', evt => {
       const mouseCoords = evt.data.global;
       // check if the mouse is within the bounds of this grid. If not, do nothing.
