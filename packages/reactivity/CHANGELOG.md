@@ -1,5 +1,13 @@
 # @turbox3d/reactivity
 
+## 2.1.26
+
+### Patch Changes
+
+- fix: fix issue
+- Updated dependencies
+  - @turbox3d/shared@1.1.22
+
 ## 2.1.25
 
 ### Patch Changes

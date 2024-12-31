@@ -1,5 +1,15 @@
 # @turbox3d/renderer-pixi
 
+## 1.0.27
+
+### Patch Changes
+
+- fix: fix issue
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.29
+  - @turbox3d/renderer-core@1.0.26
+  - @turbox3d/shared@1.1.22
+
 ## 1.0.26
 
 ### Patch Changes

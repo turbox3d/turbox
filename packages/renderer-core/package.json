@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/renderer-core",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Large-scale declarative graphic ui core renderer",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -53,9 +53,9 @@
     "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "~1.1.29",
-    "@turbox3d/event-manager": "~1.1.28",
-    "@turbox3d/reactivity": "~2.1.25",
-    "@turbox3d/shared": "~1.1.21"
+    "@turbox3d/command-manager": "~1.1.30",
+    "@turbox3d/event-manager": "~1.1.29",
+    "@turbox3d/reactivity": "~2.1.26",
+    "@turbox3d/shared": "~1.1.22"
   }
 }

@@ -1,5 +1,18 @@
 # @turbox3d/design-engine
 
+## 1.1.35
+
+### Patch Changes
+
+- fix: fix issue
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.30
+  - @turbox3d/event-manager@1.1.29
+  - @turbox3d/math@1.1.20
+  - @turbox3d/reactivity@2.1.26
+  - @turbox3d/reactivity-react@1.1.26
+  - @turbox3d/shared@1.1.22
+
 ## 1.1.34
 
 ### Patch Changes
