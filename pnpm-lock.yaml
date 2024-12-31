@@ -130,13 +130,13 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -153,12 +153,12 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/reactivity-react': ~1.1.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/reactivity-react': ~1.1.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/react-dom': ~18.2.18
@@ -169,12 +169,12 @@ importers:
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -198,13 +198,13 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -221,11 +221,11 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/renderer-pixi': ~1.0.26
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/renderer-pixi': ~1.0.27
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/three': ~0.159.0
       autoprefixer: ^10.4.16
@@ -241,11 +241,11 @@ importers:
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -274,8 +274,8 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/renderer-three': ~1.0.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/renderer-three': ~1.0.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/three': ~0.159.0
       autoprefixer: ^10.4.16
@@ -290,8 +290,8 @@ importers:
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/renderer-three': 1.0.25_three@0.159.0
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/renderer-three': 1.0.26_three@0.159.0
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -341,13 +341,13 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       react: ~18.2.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -366,8 +366,8 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/react-dom': ~18.2.18
@@ -376,8 +376,8 @@ importers:
       react-dom: ~18.2.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -399,17 +399,17 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -426,16 +426,16 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/renderer-core': ~1.0.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/renderer-core': ~1.0.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       pixi.js: ~7.3.2
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -453,17 +453,17 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/renderer-core': ~1.0.25
-      '@turbox3d/shared': ~1.1.21
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/renderer-core': ~1.0.26
+      '@turbox3d/shared': ~1.1.22
       '@types/node': ~20.10.5
       '@types/three': ~0.159.0
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/shared': 1.1.22
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -500,17 +500,17 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/design-engine': ~1.1.34
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/graphic-component-pixi': ~1.1.42
-      '@turbox3d/graphic-component-three': ~1.1.35
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/reactivity-react': ~1.1.25
-      '@turbox3d/renderer-core': ~1.0.25
-      '@turbox3d/renderer-pixi': ~1.0.26
-      '@turbox3d/renderer-three': ~1.0.25
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/design-engine': ~1.1.35
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/graphic-component-pixi': ~1.1.43
+      '@turbox3d/graphic-component-three': ~1.1.36
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/reactivity-react': ~1.1.26
+      '@turbox3d/renderer-core': ~1.0.26
+      '@turbox3d/renderer-pixi': ~1.0.27
+      '@turbox3d/renderer-three': ~1.0.26
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/react-dom': ~18.2.18
@@ -530,17 +530,17 @@ importers:
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/design-engine': 1.1.34_q74htjk4ezsk5why5gqgrn5uxu
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/graphic-component-pixi': 1.1.42_ljbpklbxxadxc45m5dwcurre2y
-      '@turbox3d/graphic-component-three': 1.1.35_three@0.159.0
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
-      '@turbox3d/renderer-three': 1.0.25_three@0.159.0
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/design-engine': 1.1.35_q74htjk4ezsk5why5gqgrn5uxu
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/graphic-component-pixi': 1.1.43_ljbpklbxxadxc45m5dwcurre2y
+      '@turbox3d/graphic-component-three': 1.1.36_three@0.159.0
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
+      '@turbox3d/renderer-three': 1.0.26_three@0.159.0
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -573,15 +573,15 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/design-engine': ~1.1.34
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/graphic-component-pixi': ~1.1.42
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/reactivity-react': ~1.1.25
-      '@turbox3d/renderer-core': ~1.0.25
-      '@turbox3d/renderer-pixi': ~1.0.26
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/design-engine': ~1.1.35
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/graphic-component-pixi': ~1.1.43
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/reactivity-react': ~1.1.26
+      '@turbox3d/renderer-core': ~1.0.26
+      '@turbox3d/renderer-pixi': ~1.0.27
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/react-dom': ~18.2.18
@@ -599,15 +599,15 @@ importers:
       sass-loader: ^13.3.2
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/design-engine': 1.1.34_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/graphic-component-pixi': 1.1.42_pixi.js@7.3.3
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/design-engine': 1.1.35_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/graphic-component-pixi': 1.1.43_pixi.js@7.3.3
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -638,15 +638,15 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/command-manager': ~1.1.29
-      '@turbox3d/design-engine': ~1.1.34
-      '@turbox3d/event-manager': ~1.1.28
-      '@turbox3d/graphic-component-three': ~1.1.35
-      '@turbox3d/math': ~1.1.19
-      '@turbox3d/reactivity': ~2.1.25
-      '@turbox3d/reactivity-react': ~1.1.25
-      '@turbox3d/renderer-core': ~1.0.25
-      '@turbox3d/renderer-three': ~1.0.25
+      '@turbox3d/command-manager': ~1.1.30
+      '@turbox3d/design-engine': ~1.1.35
+      '@turbox3d/event-manager': ~1.1.29
+      '@turbox3d/graphic-component-three': ~1.1.36
+      '@turbox3d/math': ~1.1.20
+      '@turbox3d/reactivity': ~2.1.26
+      '@turbox3d/reactivity-react': ~1.1.26
+      '@turbox3d/renderer-core': ~1.0.26
+      '@turbox3d/renderer-three': ~1.0.26
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/react-dom': ~18.2.18
@@ -665,15 +665,15 @@ importers:
       three: ~0.159.0
       typescript: ~5.3.3
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/design-engine': 1.1.34_q74htjk4ezsk5why5gqgrn5uxu
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/graphic-component-three': 1.1.35_three@0.159.0
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/renderer-three': 1.0.25_three@0.159.0
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/design-engine': 1.1.35_q74htjk4ezsk5why5gqgrn5uxu
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/graphic-component-three': 1.1.36_three@0.159.0
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/renderer-three': 1.0.26_three@0.159.0
     devDependencies:
       '@babel/cli': 7.25.9_@babel+core@7.25.9
       '@babel/core': 7.25.9
@@ -727,7 +727,7 @@ importers:
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
       '@babel/plugin-transform-runtime': ^7.23.6
       '@babel/preset-env': ^7.23.6
-      '@turbox3d/reactivity': ^2.1.25
+      '@turbox3d/reactivity': ^2.1.26
       '@types/node': ~20.10.5
       '@types/react': ~18.2.45
       '@types/webpack-env': ^1.18.4
@@ -739,7 +739,7 @@ importers:
       '@babel/plugin-transform-modules-commonjs': 7.25.9_@babel+core@7.25.9
       '@babel/plugin-transform-runtime': 7.25.9_@babel+core@7.25.9
       '@babel/preset-env': 7.25.9_@babel+core@7.25.9
-      '@turbox3d/reactivity': 2.1.25
+      '@turbox3d/reactivity': 2.1.26
       '@types/node': 20.10.8
       '@types/react': 18.2.79
       '@types/webpack-env': 1.18.5
@@ -4319,96 +4319,96 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: true
 
-  /@turbox3d/command-manager/1.1.29:
-    resolution: {integrity: sha512-9Yys6SW15yMZyixM52EfKsycrZ54vJEaZIyBGwUODEM1wwEhlEasHv5opcdXCl14Aq0gEnA2IwpgF0cx1Lu2Fg==}
+  /@turbox3d/command-manager/1.1.30:
+    resolution: {integrity: sha512-OI+6kxg/RjWkoMmkv23KfFVwRtY0zwpLmW6ktlzot2d9xNFhd2vdqkRR3YDap+FV5/qqXN3+hnxmeMeOLh7XnA==}
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/shared': 1.1.22
     dev: false
 
-  /@turbox3d/design-engine/1.1.34_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-hS4x0Lco6wSAK5u1A40Sm95RbcKeHgGJn/evQ4oI7yLeiWtdsSKFZcnpuZrZv93JayON0uHg/81HYvMVdvtiJA==}
+  /@turbox3d/design-engine/1.1.35_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-X9+YC88OK3eFzGn2RtTJmQGVdiFHsi9oERqYSfWpcE+aUUYg57MHGTR9pleVMg1Vs9+OrXYIDnXS4NQfK8g5+Q==}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
       three: 0.x
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/shared': 1.1.22
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@turbox3d/design-engine/1.1.34_q74htjk4ezsk5why5gqgrn5uxu:
-    resolution: {integrity: sha512-hS4x0Lco6wSAK5u1A40Sm95RbcKeHgGJn/evQ4oI7yLeiWtdsSKFZcnpuZrZv93JayON0uHg/81HYvMVdvtiJA==}
+  /@turbox3d/design-engine/1.1.35_q74htjk4ezsk5why5gqgrn5uxu:
+    resolution: {integrity: sha512-X9+YC88OK3eFzGn2RtTJmQGVdiFHsi9oERqYSfWpcE+aUUYg57MHGTR9pleVMg1Vs9+OrXYIDnXS4NQfK8g5+Q==}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
       three: 0.x
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/shared': 1.1.22
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       three: 0.159.0
     dev: false
 
-  /@turbox3d/event-manager/1.1.28:
-    resolution: {integrity: sha512-rRQWPbmsNrmqeeElM8+UKOGVSAg96IGpZnjlNX3SPdynygB8RwOy6NBySfg4aBYBy12WnOBmZXrPPdzz6Z0CVQ==}
+  /@turbox3d/event-manager/1.1.29:
+    resolution: {integrity: sha512-xD5NsSba9f7H3rfZv2gZpUq8YbvW+y/hD1I6VwyrLiqkPpofdr222jBCBVtm7q6IH0Vf/ZtoSvqHbZKgjUqBHw==}
     dependencies:
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/shared': 1.1.22
     dev: false
 
-  /@turbox3d/graphic-component-pixi/1.1.42_ljbpklbxxadxc45m5dwcurre2y:
-    resolution: {integrity: sha512-j1PH4quZUmNcWldHTm7825pRYzmMug3J/RaB9vo+bnvEuhA5Nsu0MIMrzXBJGsVD+qSarmuX2wiIsgm/pL6f2w==}
+  /@turbox3d/graphic-component-pixi/1.1.43_ljbpklbxxadxc45m5dwcurre2y:
+    resolution: {integrity: sha512-Ev/tDeGkuk5NqPu550qvliNNzKzWcXxiNv4RgL0ZaXMBP8tSPh/55wAL+WSQvxN+WocOpZM3Fy6T/GQ5dUM2fw==}
     peerDependencies:
       pixi.js: 7.x
       three: 0.x
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
+      '@turbox3d/shared': 1.1.22
       pixi.js: 7.3.3
       three: 0.159.0
     dev: false
 
-  /@turbox3d/graphic-component-pixi/1.1.42_pixi.js@7.3.3:
-    resolution: {integrity: sha512-j1PH4quZUmNcWldHTm7825pRYzmMug3J/RaB9vo+bnvEuhA5Nsu0MIMrzXBJGsVD+qSarmuX2wiIsgm/pL6f2w==}
+  /@turbox3d/graphic-component-pixi/1.1.43_pixi.js@7.3.3:
+    resolution: {integrity: sha512-Ev/tDeGkuk5NqPu550qvliNNzKzWcXxiNv4RgL0ZaXMBP8tSPh/55wAL+WSQvxN+WocOpZM3Fy6T/GQ5dUM2fw==}
     peerDependencies:
       pixi.js: 7.x
       three: 0.x
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
+      '@turbox3d/shared': 1.1.22
       pixi.js: 7.3.3
     dev: false
 
-  /@turbox3d/graphic-component-three/1.1.35_three@0.159.0:
-    resolution: {integrity: sha512-OMrberGuXKRtJ5KbV2x4BhC48RzACaJ3NTKDaldSmUxzablXudDuW53V+kFtzbwK2n4metd8G55QNYhxe0qGkA==}
+  /@turbox3d/graphic-component-three/1.1.36_three@0.159.0:
+    resolution: {integrity: sha512-gLtO69QDUuiZoH487q0AKQOqnb/i+R1kmDrzGmMic47h3+Nt2rbWlYG4tr9xdHMa/pKcK3MkxG1yZsKzWIv6JA==}
     peerDependencies:
       three: 0.x
     dependencies:
-      '@turbox3d/renderer-three': 1.0.25_three@0.159.0
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/renderer-three': 1.0.26_three@0.159.0
+      '@turbox3d/shared': 1.1.22
       three: 0.159.0
     dev: false
 
-  /@turbox3d/math/1.1.19:
-    resolution: {integrity: sha512-Wu7bUTB4SQ0IlU/AgflcGp7N+km3bNPXMGUF6cxN0irCM06mspHaFe1XNNRhVY9dUAEEtejBOKwHJDVWZ/574g==}
+  /@turbox3d/math/1.1.20:
+    resolution: {integrity: sha512-MmbWhjN8SZZjjFuD08YiOibHOOMO8EJQAq4Yf4q8UdlFQNMTLEvKo2r8z9vTR+WwlSDrhqGrpwh4uGWdwuX+/g==}
     dev: false
 
   /@turbox3d/reactivity-react/1.1.25_biqbaboplfbrettd7655fr4n2y:
@@ -4417,50 +4417,62 @@ packages:
       react: '>=16'
       react-dom: '>=16'
     dependencies:
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/shared': 1.1.22
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@turbox3d/reactivity/2.1.25:
-    resolution: {integrity: sha512-/k1kYa6+LnbUVIJRvC+5QYvhSZk/LPdr+zZ3q8lGnZQAXTSf1K+JSvmjgdpJdIpCP7b7XB/R/1C25Cs+BN60fA==}
+  /@turbox3d/reactivity-react/1.1.26_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-kFOobzFWrN/08EIwNez8zXyNkC2Yff9Y8VSzqIKBbugXgzE+8iGbiUJkPzCE0boG84UhdYaI1SCvhYA1otkhlA==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
     dependencies:
-      '@turbox3d/shared': 1.1.21
-
-  /@turbox3d/renderer-core/1.0.25:
-    resolution: {integrity: sha512-HVxFfQvAn4IIpVF5gIFQhbWsBKwckv40kb7VeRQMEpUhCXWtisCCF7CsNKNEv2sik46CfvHyU5xlRNZ0e+lckA==}
-    dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/shared': 1.1.22
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@turbox3d/renderer-pixi/1.0.26_pixi.js@7.3.3:
-    resolution: {integrity: sha512-jg+24rX3EeIQoWRRqqLOlAmnDRbsQZksqPWl4k+aDJw2GkjCwvwu+j7pxP8dGVh4KyFMX4l6i9XLwSVkhoorwg==}
+  /@turbox3d/reactivity/2.1.26:
+    resolution: {integrity: sha512-7reKwnCIrfXmUgTNwN3J4KP8p2MnsaotHN/kAxB3fzeksx2hMtpzN7UgnkgOs+upQxUUS0cLIJiYgZFhgfC0fg==}
+    dependencies:
+      '@turbox3d/shared': 1.1.22
+
+  /@turbox3d/renderer-core/1.0.26:
+    resolution: {integrity: sha512-r1lwpoUOfJ/VHDRkHH42ko3AqsTPWTkknTCSi63PMD0+EEwPYTAfSwnxYbfMVFHlEQZX5v+yu6jrbBA/gLG5XA==}
+    dependencies:
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/shared': 1.1.22
+    dev: false
+
+  /@turbox3d/renderer-pixi/1.0.27_pixi.js@7.3.3:
+    resolution: {integrity: sha512-J4e6wXOQf8mDNQT9FydlSC9/OPy2SIw+NwAnwGWPVittL6wvhAue59isk12YFCMEoq8WHI0fqOY+HssrBmuzgg==}
     peerDependencies:
       pixi.js: 7.x
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/shared': 1.1.22
       pixi.js: 7.3.3
     dev: false
 
-  /@turbox3d/renderer-three/1.0.25_three@0.159.0:
-    resolution: {integrity: sha512-HufZZ4sMDjuG2YFFxlxdcf7tDr2mGS6Q55c9b+q7+3ymIi1e9FPhNopiUVxCmZE16uzAMq0OcbxTP8VE75pTGA==}
+  /@turbox3d/renderer-three/1.0.26_three@0.159.0:
+    resolution: {integrity: sha512-RJB13Hy6MxFn8AVYtKbr1f5lrx9V5bc6OSTMWsW6oj49sYSZmr6wd0zqzAZulw0QfwS8rm2XrALZO71JqHoAig==}
     peerDependencies:
       three: 0.x
     dependencies:
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/shared': 1.1.21
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/shared': 1.1.22
       three: 0.159.0
     dev: false
 
-  /@turbox3d/shared/1.1.21:
-    resolution: {integrity: sha512-DsP5xjc1fV3jsrZm1VASGhGhfdAJO6IuEnH+mNyk+63etVA+m+UXFwSayZNf2oUpGQha5DPfpGdhEMKWf5Y/9g==}
+  /@turbox3d/shared/1.1.22:
+    resolution: {integrity: sha512-07j28rtBsS4l6hjHGvQw1WqEgqMjMHMz4u97S2wfUjJ2O09Z4aQfWQM9Yc8+vHmpTnKrJFXA/QgZehfNbZmvig==}
 
   /@turbox3d/turbox-dev-tool/1.0.20_react@18.2.0:
     resolution: {integrity: sha512-D6LXYjsvpVhJjcXud35/v7RCdRaRTK2sxCt0bpSzWE5YfSWUDE51EIk/BUgpXkwM+mnRXol46/hJBZSX7eDo+w==}
@@ -4478,17 +4490,17 @@ packages:
       react-dom: '>=16'
       three: 0.x
     dependencies:
-      '@turbox3d/command-manager': 1.1.29
-      '@turbox3d/design-engine': 1.1.34_q74htjk4ezsk5why5gqgrn5uxu
-      '@turbox3d/event-manager': 1.1.28
-      '@turbox3d/graphic-component-pixi': 1.1.42_ljbpklbxxadxc45m5dwcurre2y
-      '@turbox3d/graphic-component-three': 1.1.35_three@0.159.0
-      '@turbox3d/math': 1.1.19
-      '@turbox3d/reactivity': 2.1.25
-      '@turbox3d/reactivity-react': 1.1.25_biqbaboplfbrettd7655fr4n2y
-      '@turbox3d/renderer-core': 1.0.25
-      '@turbox3d/renderer-pixi': 1.0.26_pixi.js@7.3.3
-      '@turbox3d/renderer-three': 1.0.25_three@0.159.0
+      '@turbox3d/command-manager': 1.1.30
+      '@turbox3d/design-engine': 1.1.35_q74htjk4ezsk5why5gqgrn5uxu
+      '@turbox3d/event-manager': 1.1.29
+      '@turbox3d/graphic-component-pixi': 1.1.43_ljbpklbxxadxc45m5dwcurre2y
+      '@turbox3d/graphic-component-three': 1.1.36_three@0.159.0
+      '@turbox3d/math': 1.1.20
+      '@turbox3d/reactivity': 2.1.26
+      '@turbox3d/reactivity-react': 1.1.26_biqbaboplfbrettd7655fr4n2y
+      '@turbox3d/renderer-core': 1.0.26
+      '@turbox3d/renderer-pixi': 1.0.27_pixi.js@7.3.3
+      '@turbox3d/renderer-three': 1.0.26_three@0.159.0
       pixi.js: 7.3.3
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
