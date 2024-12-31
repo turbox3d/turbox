@@ -31,9 +31,9 @@
     "@babel/plugin-transform-runtime": "^7.23.6",
     "@babel/preset-env": "^7.23.6",
     "@types/node": "~20.10.5",
-    "@types/three": "^0.159.0",
-    "three": "^0.159.0",
-    "typescript": "^5.3.3"
+    "@types/three": "~0.159.0",
+    "three": "~0.159.0",
+    "typescript": "~5.3.3"
   },
   "files": [
     "dist/",

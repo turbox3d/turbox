@@ -42,7 +42,7 @@
     "@types/webpack-env": "^1.18.4",
     "react": "~18.2.0",
     "react-dom": "~18.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "~5.3.3"
   },
   "dependencies": {
     "@turbox3d/reactivity": "~2.1.24",

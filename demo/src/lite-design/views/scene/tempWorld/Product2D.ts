@@ -1,4 +1,4 @@
-import * as PIXIProjection from 'pixi-projection';
+// import * as PIXIProjection from 'pixi-projection';
 import * as PIXI from 'pixi.js';
 
 import { Mesh2D, MathUtils, Reactive, Rect2d, Polygon, g } from '@turbox3d/turbox';
@@ -52,7 +52,8 @@ class ProductMesh2D extends Mesh2D<IProduct2DProps> {
 
   private assignTexture(map: PIXI.Texture) {
     this.texture = map;
-    this.view = new PIXIProjection.Sprite2d(this.texture);
+    this.view = new PIXI.Sprite(this.texture);
+    // this.view = new PIXIProjection.Sprite2d(this.texture);
     // this.view.width = model.size.x;
     // this.view.height = model.size.y;
     this.view.anchor.set(0.5);

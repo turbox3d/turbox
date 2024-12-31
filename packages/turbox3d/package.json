@@ -44,7 +44,7 @@
     "@types/node": "~20.10.5",
     "@types/react": "~18.2.45",
     "@types/react-dom": "~18.2.18",
-    "@types/three": "^0.159.0",
+    "@types/three": "~0.159.0",
     "autoprefixer": "^10.4.16",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
@@ -56,8 +56,8 @@
     "react": "~18.2.0",
     "react-dom": "~18.2.0",
     "sass-loader": "^13.3.2",
-    "three": "^0.159.0",
-    "typescript": "^5.3.3"
+    "three": "~0.159.0",
+    "typescript": "~5.3.3"
   },
   "files": [
     "dist/",
