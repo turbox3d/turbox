@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production webpack --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
     "typedoc": "rm -rf typedocs && cross-env GEN_ENV=typedoc npx ./gen.js",
-    "build:all": "pnpm install --link-workspace-packages true && pnpm run -r build:all && pnpm run typedoc",
+    "build:all": "pnpm install --link-workspace-packages true && pnpm run -r build:all && pnpm run typedoc && git restore ./pnpm-lock.yaml",
     "build:all-changelog": "pnpm run build:all && pnpm changeset && git push --all",
     "changelog": "rm -rf ./docs/CHANGELOG.md && cross-env GEN_ENV=changelog npx ./gen.js && git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
     "release": "pnpm run build:all && pnpm changeset version && pnpm run changelog && pnpm changeset tag && pnpm -r publish",
