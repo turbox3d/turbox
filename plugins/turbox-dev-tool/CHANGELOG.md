@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.20
+
+### Patch Changes
+
+- fix: fix dep version
+
 ## 1.0.19
 
 ### Patch Changes

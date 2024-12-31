@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.21
+
+### Patch Changes
+
+- fix: fix dep version
+
 ## 1.1.20
 
 ### Patch Changes

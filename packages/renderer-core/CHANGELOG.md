@@ -1,5 +1,16 @@
 # @turbox3d/renderer-core
 
+## 1.0.25
+
+### Patch Changes
+
+- fix: fix dep version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.29
+  - @turbox3d/event-manager@1.1.28
+  - @turbox3d/reactivity@2.1.25
+  - @turbox3d/shared@1.1.21
+
 ## 1.0.24
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @turbox3d/turbox
 
+## 1.1.38
+
+### Patch Changes
+
+- fix: fix dep version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.29
+  - @turbox3d/design-engine@1.1.34
+  - @turbox3d/event-manager@1.1.28
+  - @turbox3d/graphic-component-pixi@1.1.42
+  - @turbox3d/graphic-component-three@1.1.35
+  - @turbox3d/math@1.1.19
+  - @turbox3d/reactivity@2.1.25
+  - @turbox3d/reactivity-react@1.1.25
+  - @turbox3d/renderer-core@1.0.25
+  - @turbox3d/renderer-pixi@1.0.26
+  - @turbox3d/renderer-three@1.0.25
+
 ## 1.1.37
 
 ### Patch Changes

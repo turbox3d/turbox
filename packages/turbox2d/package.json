@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox2d",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "Large-scale productivity application front-end framework",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -25,15 +25,15 @@
     "react-dom": ">=16"
   },
   "dependencies": {
-    "@turbox3d/command-manager": "~1.1.28",
-    "@turbox3d/design-engine": "~1.1.32",
-    "@turbox3d/event-manager": "~1.1.27",
-    "@turbox3d/graphic-component-pixi": "~1.1.41",
-    "@turbox3d/math": "~1.1.17",
-    "@turbox3d/reactivity": "~2.1.24",
-    "@turbox3d/reactivity-react": "~1.1.24",
-    "@turbox3d/renderer-core": "~1.0.24",
-    "@turbox3d/renderer-pixi": "~1.0.25"
+    "@turbox3d/command-manager": "~1.1.29",
+    "@turbox3d/design-engine": "~1.1.34",
+    "@turbox3d/event-manager": "~1.1.28",
+    "@turbox3d/graphic-component-pixi": "~1.1.42",
+    "@turbox3d/math": "~1.1.19",
+    "@turbox3d/reactivity": "~2.1.25",
+    "@turbox3d/reactivity-react": "~1.1.25",
+    "@turbox3d/renderer-core": "~1.0.25",
+    "@turbox3d/renderer-pixi": "~1.0.26"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",

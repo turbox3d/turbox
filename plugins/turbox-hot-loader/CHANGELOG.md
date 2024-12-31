@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.24
+
+### Patch Changes
+
+- fix: fix dep version
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.25
+
 ## 1.0.23
 
 ### Patch Changes

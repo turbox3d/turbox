@@ -1,5 +1,17 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.42
+
+### Patch Changes
+
+- fix: fix dep version
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.29
+  - @turbox3d/event-manager@1.1.28
+  - @turbox3d/math@1.1.19
+  - @turbox3d/renderer-pixi@1.0.26
+  - @turbox3d/shared@1.1.21
+
 ## 1.1.41
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.19
+
+### Patch Changes
+
+- fix: fix dep version
+
 ## 1.1.18
 
 ### Patch Changes
