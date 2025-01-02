@@ -4,6 +4,7 @@ import { ReactiveReact } from '@turbox3d/turbox';
 import './index.less';
 import { imageBuilderStore } from '../../models';
 import { appCommandManager } from '../../commands';
+import { ItemType } from '../../common/consts/scene';
 
 export const TopBar = ReactiveReact(() => {
   const undo = () => {
@@ -16,10 +17,33 @@ export const TopBar = ReactiveReact(() => {
     imageBuilderStore.document.clear();
   };
   const dump = () => {
-
+    const json = imageBuilderStore.document.dumpData();
+    console.log(json);
   };
   const load = () => {
-
+    const json = {
+      container: {
+        width: 375,
+        height: 375,
+      },
+      items: [{
+        type: ItemType.IMAGE,
+        top: 0,
+        left: 0,
+        width: 180.5,
+        height: 57.51896813353566,
+        zIndex: 3,
+        data: {
+          content: '',
+          src: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
+          href: '',
+          attribute: {
+            fontSize: 20,
+          },
+        }
+      }],
+    };
+    imageBuilderStore.document.loadData(json);
   };
   const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
 

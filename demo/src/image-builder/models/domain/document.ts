@@ -123,6 +123,7 @@ export class DocumentDomain extends DocumentSystem {
     const { container, items } = json;
     const frameEntity = await appCommandManager.actionsCommand.addFrameEntity({
       size: { x: container.width, y: container.height },
+      color: 0xeeeeee,
     });
     await Promise.all(
       items.map(async i => {
@@ -136,8 +137,8 @@ export class DocumentDomain extends DocumentSystem {
             y: i.height,
           });
           itemEntity.setPosition({
-            x: frameEntity.position.x - container.width / 2 + i.left,
-            y: frameEntity.position.y - container.height / 2 + i.top,
+            x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
+            y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
           });
           itemEntity.$update({
             href: i.data.href,
