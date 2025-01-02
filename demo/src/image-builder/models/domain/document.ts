@@ -1,8 +1,34 @@
-import { DocumentSystem, mutation, reactor, EntityObject } from '@turbox3d/turbox';
+import { DocumentSystem, mutation, reactor, EntityObject, Vector2 } from '@turbox3d/turbox';
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { FrameEntity } from '../entity/frame';
 import { ItemEntity } from '../entity/item';
+import { appCommandManager } from '../../commands';
+import { ItemType } from '../../common/consts/scene';
+
+export interface IDocumentData {
+  container: {
+    width: number;
+    height: number;
+  };
+  items: Array<{
+    type: ItemType;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    zIndex: number;
+    data: {
+      content: string;
+      src: string;
+      href: string;
+      attribute: {
+        fontSize: number;
+        [key: string]: any;
+      };
+    };
+  }>;
+}
 
 export class DocumentDomain extends DocumentSystem {
   @reactor sortedModels: EntityObject[] = [];
@@ -89,6 +115,93 @@ export class DocumentDomain extends DocumentSystem {
 
   @mutation
   getItemEntities() {
-    return [...this.models.values()].filter(m => m instanceof ItemEntity);
+    return [...this.models.values()].filter(m => m instanceof ItemEntity) as ItemEntity[];
+  }
+
+  async loadData(json: IDocumentData) {
+    this.pauseRecord();
+    const { container, items } = json;
+    const frameEntity = await appCommandManager.actionsCommand.addFrameEntity({
+      size: { x: container.width, y: container.height },
+    });
+    await Promise.all(
+      items.map(async i => {
+        if (i.type === 'image') {
+          const itemEntity = await appCommandManager.actionsCommand.addItemEntity(i.data.src);
+          if (!itemEntity) {
+            return;
+          }
+          itemEntity.setSize({
+            x: i.width,
+            y: i.height,
+          });
+          itemEntity.setPosition({
+            x: frameEntity.position.x - container.width / 2 + i.left,
+            y: frameEntity.position.y - container.height / 2 + i.top,
+          });
+          itemEntity.$update({
+            href: i.data.href,
+            attribute: i.data.attribute,
+          });
+          itemEntity.setRenderOrder(i.zIndex);
+        } else if (i.type === 'text') {
+          const textEntity = await appCommandManager.actionsCommand.addTextItemEntity(i.data.content);
+          textEntity.setSize({
+            x: i.width,
+            y: i.height,
+          });
+          textEntity.setPosition({
+            x: frameEntity.position.x - container.width / 2 + i.left,
+            y: frameEntity.position.y - container.height / 2 + i.top,
+          });
+          textEntity.$update({
+            href: i.data.href,
+            fontSize: i.data.attribute.fontSize,
+            attribute: i.data.attribute,
+          });
+          textEntity.setRenderOrder(i.zIndex);
+        }
+      })
+    );
+    this.resumeRecord();
+  }
+
+  dumpData(): IDocumentData | undefined {
+    const container = this.getFrameEntities()[0];
+    if (!container) {
+      return;
+    }
+    const cp = new Vector2(container.position.x, container.position.y).subtracted(
+      new Vector2(container.size.x / 2, container.size.y / 2)
+    );
+    const items = this.getItemEntities();
+    return {
+      container: {
+        width: container.size.x,
+        height: container.size.y,
+      },
+      items: items.map(i => {
+        const pos = new Vector2(i.position.x, i.position.y)
+          .subtracted(new Vector2(i.size.x / 2, i.size.y / 2))
+          .subtracted(cp);
+        return {
+          type: i.itemType,
+          top: pos.y,
+          left: pos.x,
+          width: i.size.x,
+          height: i.size.y,
+          zIndex: i.renderOrder,
+          data: {
+            content: i.text,
+            src: i.resourceUrl,
+            href: i.href,
+            attribute: {
+              ...i.attribute,
+              fontSize: i.fontSize,
+            },
+          },
+        };
+      }),
+    };
   }
 }

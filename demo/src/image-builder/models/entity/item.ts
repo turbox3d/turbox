@@ -9,6 +9,8 @@ export class ItemEntity extends EntityObject {
   @reactor itemType = ItemType.IMAGE;
   @reactor text = '';
   @reactor fontSize = 30;
+  @reactor href = '';
+  @reactor attribute: any = {};
 
   @mutation
   setMaterialDirection(v: Vector2) {
