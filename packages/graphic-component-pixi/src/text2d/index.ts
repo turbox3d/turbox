@@ -17,6 +17,7 @@ interface IText2dProps {
   central?: boolean;
   /** 使用类似 css 的流式布局定位，开启后 position 将会失效 */
   useFlowLayout?: boolean;
+  getBounds?: (bounds: Vec2) => void;
 }
 
 /** UI组件-文字 */
@@ -85,5 +86,24 @@ export default class Text2d extends Mesh2D<IText2dProps> {
 
   updateScale() {
     //
+  }
+
+  private getBounds() {
+    const { getBounds } = this.props;
+    if (getBounds) {
+      const { width, height } = this.view.getLocalBounds();
+      getBounds({
+        x: width,
+        y: height,
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.getBounds();
+  }
+
+  componentDidUpdate() {
+    this.getBounds();
   }
 }

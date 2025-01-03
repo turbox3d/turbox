@@ -14,7 +14,21 @@ interface IGizmo2dProps {
   zIndex?: number;
   color?: number;
   deleteIcon?: string;
+  deleteIconSize?: number;
   adjustIcon?: string;
+  adjustIconSize?: number;
+  xLeftHandler?: (
+    op: 'start' | 'move' | 'end',
+    viewEntity: Partial<ViewEntity>,
+    event: SceneEvent<any>,
+    tools: SceneTool
+  ) => void;
+  xRightHandler?: (
+    op: 'start' | 'move' | 'end',
+    viewEntity: Partial<ViewEntity>,
+    event: SceneEvent<any>,
+    tools: SceneTool
+  ) => void;
   deleteHandler?: () => void;
   adjustHandler?: (
     op: 'start' | 'move' | 'end',
@@ -26,7 +40,7 @@ interface IGizmo2dProps {
 
 export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
   render() {
-    const { x = 0, y = 0, width, height, rotation = 0, central = true, zIndex = 1000, deleteHandler, adjustHandler, color = 0xffffff, deleteIcon = '', adjustIcon = '' } = this.props;
+    const { x = 0, y = 0, width, height, rotation = 0, central = true, zIndex = 1000, xLeftHandler, xRightHandler, deleteHandler, adjustHandler, color = 0xffffff, deleteIcon = '', adjustIcon = '', deleteIconSize = 10, adjustIconSize = 10 } = this.props;
     const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
     this.view.position.set(x, y);
@@ -45,15 +59,61 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 0,
         alignment: 1,
       }),
+      g(Rect2d, {
+        key: 'x-left',
+        draggable: true,
+        x: posX,
+        y: posY + height / 2,
+        width: 10,
+        height: 10,
+        central: true,
+        lineWidth: 1,
+        lineColor: color,
+        fillColor: 0xffffff,
+        fillAlpha: 0.01,
+        alignment: 1,
+        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xLeftHandler && xLeftHandler('start', viewEntity, event, tools);
+        },
+        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xLeftHandler && xLeftHandler('move', viewEntity, event, tools);
+        },
+        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xLeftHandler && xLeftHandler('end', viewEntity, event, tools);
+        },
+      }),
+      g(Rect2d, {
+        key: 'x-right',
+        draggable: true,
+        x: posX + width,
+        y: posY + height / 2,
+        width: 10,
+        height: 10,
+        central: true,
+        lineWidth: 1,
+        lineColor: color,
+        fillColor: 0xffffff,
+        fillAlpha: 0.01,
+        alignment: 1,
+        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xRightHandler && xRightHandler('start', viewEntity, event, tools);
+        },
+        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xRightHandler && xRightHandler('move', viewEntity, event, tools);
+        },
+        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          xRightHandler && xRightHandler('end', viewEntity, event, tools);
+        },
+      }),
       g(Container2d, {
         key: 'delete',
         clickable: true,
         x: posX,
         y: posY,
         central: true,
-        width: 20,
-        height: 20,
-        radius: 10,
+        width: deleteIconSize,
+        height: deleteIconSize,
+        radius: deleteIconSize / 2,
         lineWidth: 2,
         lineColor: color,
         fillColor: color,
@@ -69,9 +129,9 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         x: central ? width / 2 : width,
         y: central ? height / 2 : height,
         central: true,
-        width: 20,
-        height: 20,
-        radius: 10,
+        width: adjustIconSize,
+        height: adjustIconSize,
+        radius: adjustIconSize / 2,
         lineWidth: 2,
         lineColor: color,
         fillColor: color,
