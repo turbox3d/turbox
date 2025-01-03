@@ -71,10 +71,6 @@ class ActionsCommand extends CommandManager.compose({
     }
     // const ratio = 10;
     // const bgSize = imageBuilderStore.scene.sceneSize;
-    entity.setSize({
-      x: 152,
-      y: 35,
-    });
     entity.setPosition({
       x: imageBuilderStore.scene.sceneSize.width / 2,
       y: imageBuilderStore.scene.sceneSize.height / 2,
@@ -84,6 +80,20 @@ class ActionsCommand extends CommandManager.compose({
     }
     return entity;
   };
+
+  @mutation
+  updateText = (text: string) => {
+    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    if (!(selected instanceof ItemEntity)) {
+      return;
+    }
+    if (selected.itemType !== ItemType.TEXT) {
+      return;
+    }
+    selected.$update({
+      text,
+    });
+  }
 
   @mutation
   addFrameEntity = async ({

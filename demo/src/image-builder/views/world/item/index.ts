@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js';
 
-import { Mesh2D, MathUtils, g, Reactive, Text2d } from '@turbox3d/turbox';
+import { Mesh2D, MathUtils, g, Reactive, Text2d, Vec2 } from '@turbox3d/turbox';
 
 import { ItemSymbol } from '../../../common/consts/view-entity';
 import { ItemEntity } from '../../../models/entity/item';
+import { imageBuilderStore } from '../../../models';
 
 export interface IItemMesh2DProps {
   model: ItemEntity;
@@ -34,6 +35,16 @@ export interface IItemViewEntityProps {
 
 @Reactive
 export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
+  private getBounds = (bounds: Vec2) => {
+    const { model } = this.props;
+    imageBuilderStore.document.pauseRecord();
+    model.setSize({
+      x: bounds.x,
+      y: bounds.y,
+    });
+    imageBuilderStore.document.resumeRecord();
+  }
+
   render() {
     const { model } = this.props;
     this.view.position.set(model.position.x, model.position.y);
@@ -44,12 +55,19 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
     const item = model.text ? g(Text2d, {
       text: model.text,
       style: new PIXI.TextStyle({
-        fontSize: model.fontSize,
-        fontFamily: 'Arial',
+        fontSize: model.attribute.fontSize,
+        lineHeight: model.attribute.lineHeight,
+        fontFamily: model.attribute.fontFamily,
+        fill: model.attribute.color,
+        fontWeight: model.attribute.fontWeight,
+        align: model.attribute.align,
+        wordWrap: model.attribute.wordWrap,
+        wordWrapWidth: model.attribute.wordWrapWidth,
       }),
       zIndex: model.renderOrder,
       id: model.id,
       type: ItemSymbol,
+      getBounds: this.getBounds,
       central: true,
       clickable: true,
       draggable: true,

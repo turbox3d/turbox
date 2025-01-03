@@ -1,5 +1,16 @@
-import { EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
+import { computed, EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
+
+export interface ITextStyles {
+  fontSize: number;
+  lineHeight: number;
+  fontFamily: string;
+  color: number;
+  fontWeight: 'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900';
+  align: 'left'|'center'|'right'|'justify';
+  wordWrap: boolean;
+  wordWrapWidth: number;
+}
 
 export class ItemEntity extends EntityObject {
   @reactor imageData?: HTMLImageElement;
@@ -8,9 +19,22 @@ export class ItemEntity extends EntityObject {
   @reactor snapped = false;
   @reactor itemType = ItemType.IMAGE;
   @reactor text = '';
-  @reactor fontSize = 30;
   @reactor href = '';
-  @reactor attribute: any = {};
+  @reactor attribute: ITextStyles & Record<string, any> = {
+    fontSize: 30,
+    lineHeight: 30,
+    fontFamily: 'Arial',
+    color: 0x000000,
+    fontWeight: 'normal',
+    align: 'left',
+    wordWrap: true,
+    wordWrapWidth: this.wordWrapWidth,
+  };
+
+  @computed({ lazy: false })
+  get wordWrapWidth() {
+    return 375;
+  }
 
   @mutation
   setMaterialDirection(v: Vector2) {

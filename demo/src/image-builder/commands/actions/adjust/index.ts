@@ -7,22 +7,23 @@ import {
   Action,
   Vec2,
   Vector2,
-  EntityObject,
   MathUtils,
   CommandManager,
   HotKey,
   Key,
   HotKeyEventType,
-  InferenceEngine
+  InferenceEngine,
 } from '@turbox3d/turbox';
 
 import { ItemEntity } from '../../../models/entity/item';
 import { appCommandManager } from '../../index';
 
-const ACTION_NAME = 'adjustEntity';
+const ADJUST_ACTION_NAME = 'adjustEntity';
+const STRETCH_ACTION_NAME = 'stretchEntity';
 
 export class AdjustCommand extends Command {
-  private adjustAction = Action.create(ACTION_NAME);
+  private adjustAction = Action.create(ADJUST_ACTION_NAME);
+  private stretchAction = Action.create(STRETCH_ACTION_NAME);
   private target?: ItemEntity;
   private inferenceEngine = new InferenceEngine();
   private fixedScale = false;
@@ -68,6 +69,73 @@ export class AdjustCommand extends Command {
     this.onScaleEndHandler(v, e, t);
   }
 
+  onXLeftStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchStartHandler(v, e, t);
+  }
+
+  onXLeftMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchMoveHandler(v, e, t);
+  }
+
+  onXLeftEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchEndHandler(v, e, t);
+  }
+
+  onXRightStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchStartHandler(v, e, t);
+  }
+
+  onXRightMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchMoveHandler(v, e, t);
+  }
+
+  onXRightEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    this.xStretchEndHandler(v, e, t);
+  }
+
+  private xStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    if (selected instanceof ItemEntity && !selected.locked) {
+      this.target = selected;
+    }
+  }
+
+  private xStretchMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const itemEntity = this.target;
+    if (!itemEntity) {
+      return;
+    }
+    const mp = e.getScenePosition() as Vec2;
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
+    this.stretchAction.execute(
+      () => {
+        const width = Math.abs(localPoint.x) + itemEntity.size.x / 2;
+        if (width > 10) {
+          const p = localPoint.x > 0 ? new Vector2(width / 2 - itemEntity.size.x / 2, 0) : new Vector2(-width / 2 + itemEntity.size.x / 2, 0);
+          const p1 = p.applyMatrix3(itemEntity.getConcatenatedMatrix3());
+          itemEntity.setSize({
+            x: width,
+          });
+          itemEntity.setPosition(p1);
+        }
+      },
+      undefined,
+      true,
+      { immediately: true }
+    );
+  }
+
+  private xStretchEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    if (!this.target) {
+      this.stretchAction.abort();
+      this.stretchAction = Action.create(STRETCH_ACTION_NAME);
+    } else {
+      this.stretchAction.complete();
+      this.stretchAction = Action.create(STRETCH_ACTION_NAME);
+    }
+    this.target = undefined;
+  }
+
   private initPosition?: Vector2;
   private degree = 0;
 
@@ -106,7 +174,7 @@ export class AdjustCommand extends Command {
   private onRotateEndHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
     if (!this.target || !this.initPosition) {
       this.adjustAction.abort();
-      this.adjustAction = Action.create(ACTION_NAME);
+      this.adjustAction = Action.create(ADJUST_ACTION_NAME);
     } else {
       const { snappedDegree } = this.inferenceEngine.rotateSnap2d(this.target.rotation.z + this.degree);
       this.adjustAction.execute(
@@ -123,7 +191,7 @@ export class AdjustCommand extends Command {
         { immediately: true }
       );
       this.adjustAction.complete();
-      this.adjustAction = Action.create(ACTION_NAME);
+      this.adjustAction = Action.create(ADJUST_ACTION_NAME);
     }
     this.target = undefined;
     this.initPosition = undefined;
@@ -146,7 +214,7 @@ export class AdjustCommand extends Command {
       x: this.target.size.x,
       y: this.target.size.y,
     };
-    this.initFontSize = this.target.fontSize;
+    this.initFontSize = this.target.attribute.fontSize;
     this.initItemPosition = {
       x: this.target.position.x,
       y: this.target.position.y,
@@ -178,7 +246,10 @@ export class AdjustCommand extends Command {
               y: this.initSize!.y / 2 * scale + this.initSize!.y / 2,
             });
             itemEntity.$update({
-              fontSize: this.initFontSize! / 2 * scale + this.initFontSize! / 2,
+              attribute: {
+                ...itemEntity.attribute,
+                fontSize: this.initFontSize! / 2 * scale + this.initFontSize! / 2,
+              },
             });
           }
         } else {
@@ -188,7 +259,10 @@ export class AdjustCommand extends Command {
             y: this.initSize!.y * scale,
           });
           itemEntity.$update({
-            fontSize: this.initFontSize! * scale,
+            attribute: {
+              ...itemEntity.attribute,
+              fontSize: this.initFontSize! * scale,
+            },
           });
         }
       },
@@ -201,10 +275,10 @@ export class AdjustCommand extends Command {
   private onScaleEndHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
     if (!this.target) {
       this.adjustAction.abort();
-      this.adjustAction = Action.create(ACTION_NAME);
+      this.adjustAction = Action.create(ADJUST_ACTION_NAME);
     } else {
       this.adjustAction.complete();
-      this.adjustAction = Action.create(ACTION_NAME);
+      this.adjustAction = Action.create(ADJUST_ACTION_NAME);
     }
     this.target = undefined;
     this.initLength = undefined;

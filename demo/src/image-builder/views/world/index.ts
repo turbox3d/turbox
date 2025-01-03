@@ -102,7 +102,9 @@ export class World extends Component {
           zIndex: RenderOrder.GIZMO,
           color: PRIMARY_COLOR,
           deleteIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/delete.svg',
+          deleteIconSize: 18,
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
+          adjustIconSize: 18,
           deleteHandler: () => {
             appCommandManager.actionsCommand.deleteEntity([selected]);
           },
@@ -115,6 +117,24 @@ export class World extends Component {
               appCommandManager.actionsCommand.adjust.onAdjustEndHandler(v, e, t);
             }
           },
+          xLeftHandler: (op, v, e, t) => {
+            if (op ==='start') {
+              appCommandManager.actionsCommand.adjust.onXLeftStartHandler(v, e, t);
+            } else if (op ==='move') {
+              appCommandManager.actionsCommand.adjust.onXLeftMoveHandler(v, e, t);
+            } else {
+              appCommandManager.actionsCommand.adjust.onXLeftEndHandler(v, e, t);
+            }
+          },
+          xRightHandler: (op, v, e, t) => {
+            if (op ==='start') {
+              appCommandManager.actionsCommand.adjust.onXRightStartHandler(v, e, t);
+            } else if (op ==='move') {
+              appCommandManager.actionsCommand.adjust.onXRightMoveHandler(v, e, t);
+            } else {
+              appCommandManager.actionsCommand.adjust.onXRightEndHandler(v, e, t);
+            }
+          }
         }),
       ...imageBuilderStore.scene.snapLines.map((sl, index) => g(Line2d, {
         key: `snapLine-${index}`,

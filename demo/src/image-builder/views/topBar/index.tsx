@@ -38,12 +38,19 @@ export const TopBar = ReactiveReact(() => {
           src: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
           href: '',
           attribute: {
-            fontSize: 20,
+            fontSize: 30,
+            lineHeight: 30,
+            fontFamily: 'Arial',
+            color: 0x000000,
+            fontWeight: 'normal',
+            align: 'left',
+            wordWrap: true,
+            wordWrapWidth: 400,
           },
         }
       }],
     };
-    imageBuilderStore.document.loadData(json);
+    imageBuilderStore.document.loadData(json as any);
   };
   const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
 

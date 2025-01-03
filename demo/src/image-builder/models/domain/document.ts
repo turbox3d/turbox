@@ -2,7 +2,7 @@ import { DocumentSystem, mutation, reactor, EntityObject, Vector2 } from '@turbo
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { FrameEntity } from '../entity/frame';
-import { ItemEntity } from '../entity/item';
+import { ITextStyles, ItemEntity } from '../entity/item';
 import { appCommandManager } from '../../commands';
 import { ItemType } from '../../common/consts/scene';
 
@@ -22,8 +22,7 @@ export interface IDocumentData {
       content: string;
       src: string;
       href: string;
-      attribute: {
-        fontSize: number;
+      attribute: ITextStyles & {
         [key: string]: any;
       };
     };
@@ -157,7 +156,6 @@ export class DocumentDomain extends DocumentSystem {
           });
           textEntity.$update({
             href: i.data.href,
-            fontSize: i.data.attribute.fontSize,
             attribute: i.data.attribute,
           });
           textEntity.setRenderOrder(i.zIndex);
@@ -197,8 +195,7 @@ export class DocumentDomain extends DocumentSystem {
             src: i.resourceUrl,
             href: i.href,
             attribute: {
-              ...i.attribute,
-              fontSize: i.fontSize,
+             ...i.attribute,
             },
           },
         };

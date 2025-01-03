@@ -10,6 +10,9 @@ import { useMaterialDragAndReplace } from '../../hooks/index';
 import { FrameEntity } from '../../models/entity/frame';
 import { imageBuilderStore } from '../../models/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
+import { ItemEntity } from '../../models/entity/item';
+import { ItemType } from '../../common/consts/scene';
+import TextArea from 'antd/es/input/TextArea';
 
 const images = [
   {
@@ -112,6 +115,9 @@ export function LeftPanel() {
   };
   const pointerDownButtonHandler = (e: React.PointerEvent) => {
   };
+  const onInputHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    appCommandManager.actionsCommand.updateText(e.target.value);
+  };
 
   return (
     <div className="left-panel">
@@ -164,6 +170,12 @@ export function LeftPanel() {
         <h4>文本</h4>
         <div className="img-list" onPointerDown={pointerDownTextHandler}>
           <img draggable alt="text" src={textUrl} width={30} height={30} />
+        </div>
+        <div className="img-list">
+          <Input.TextArea
+            onChange={onInputHandler}
+            autoSize={{ minRows: 3, maxRows: 5 }}
+          />
         </div>
       </div>
       <div className="button-wp">
