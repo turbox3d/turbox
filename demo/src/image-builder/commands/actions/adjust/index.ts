@@ -15,8 +15,10 @@ import {
   InferenceEngine,
 } from '@turbox3d/turbox';
 
-import { ItemEntity } from '../../../models/entity/item';
+import { ITextStyles, ItemEntity } from '../../../models/entity/item';
 import { appCommandManager } from '../../index';
+import { imageBuilderStore } from '../../../models';
+import { ItemType } from '../../../common/consts/scene';
 
 const ADJUST_ACTION_NAME = 'adjustEntity';
 const STRETCH_ACTION_NAME = 'stretchEntity';
@@ -94,6 +96,7 @@ export class AdjustCommand extends Command {
   }
 
   private xStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    imageBuilderStore.scene.setTextStretching(true);
     const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
     if (selected instanceof ItemEntity && !selected.locked) {
       this.target = selected;
@@ -113,10 +116,19 @@ export class AdjustCommand extends Command {
         if (width > 10) {
           const p = localPoint.x > 0 ? new Vector2(width / 2 - itemEntity.size.x / 2, 0) : new Vector2(-width / 2 + itemEntity.size.x / 2, 0);
           const p1 = p.applyMatrix3(itemEntity.getConcatenatedMatrix3());
+          if (itemEntity.itemType === ItemType.TEXT && width <= imageBuilderStore.scene.currentTextMinWidth) {
+            return;
+          }
           itemEntity.setSize({
             x: width,
           });
           itemEntity.setPosition(p1);
+          itemEntity.$update({
+            attribute: {
+              ...itemEntity.attribute,
+              wordWrapWidth: width,
+            },
+          });
         }
       },
       undefined,
@@ -134,6 +146,7 @@ export class AdjustCommand extends Command {
       this.stretchAction = Action.create(STRETCH_ACTION_NAME);
     }
     this.target = undefined;
+    imageBuilderStore.scene.setTextStretching(false);
   }
 
   private initPosition?: Vector2;
@@ -200,7 +213,7 @@ export class AdjustCommand extends Command {
 
   private initSize?: Vec2;
   private initLength?: number;
-  private initFontSize?: number;
+  private initAttribute?: ITextStyles & Record<string, any>;
   private initItemPosition?: Vec2;
 
   private onScaleStartHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
@@ -214,7 +227,7 @@ export class AdjustCommand extends Command {
       x: this.target.size.x,
       y: this.target.size.y,
     };
-    this.initFontSize = this.target.attribute.fontSize;
+    this.initAttribute = this.target.attribute;
     this.initItemPosition = {
       x: this.target.position.x,
       y: this.target.position.y,
@@ -228,7 +241,7 @@ export class AdjustCommand extends Command {
     }
     const mp = event.getScenePosition() as Vec2;
     const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
-    if (!this.initLength || !this.initSize || !this.initFontSize || !this.initItemPosition) {
+    if (!this.initLength || !this.initSize || !this.initAttribute || !this.initItemPosition) {
       return;
     }
     this.adjustAction.execute(
@@ -248,7 +261,8 @@ export class AdjustCommand extends Command {
             itemEntity.$update({
               attribute: {
                 ...itemEntity.attribute,
-                fontSize: this.initFontSize! / 2 * scale + this.initFontSize! / 2,
+                fontSize: this.initAttribute?.fontSize! / 2 * scale + this.initAttribute?.fontSize! / 2,
+                lineHeight: this.initAttribute?.fontSize! / 2 * scale + this.initAttribute?.fontSize! / 2,
               },
             });
           }
@@ -261,7 +275,8 @@ export class AdjustCommand extends Command {
           itemEntity.$update({
             attribute: {
               ...itemEntity.attribute,
-              fontSize: this.initFontSize! * scale,
+              fontSize: this.initAttribute?.fontSize! * scale,
+              lineHeight: this.initAttribute?.fontSize! * scale,
             },
           });
         }
@@ -283,7 +298,7 @@ export class AdjustCommand extends Command {
     this.target = undefined;
     this.initLength = undefined;
     this.initSize = undefined;
-    this.initFontSize = undefined;
+    this.initAttribute = undefined;
     this.initItemPosition = undefined;
   }
 }

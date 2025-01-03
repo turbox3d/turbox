@@ -5,6 +5,7 @@ import { Mesh2D, MathUtils, g, Reactive, Text2d, Vec2 } from '@turbox3d/turbox';
 import { ItemSymbol } from '../../../common/consts/view-entity';
 import { ItemEntity } from '../../../models/entity/item';
 import { imageBuilderStore } from '../../../models';
+import { appCommandManager } from '../../../commands';
 
 export interface IItemMesh2DProps {
   model: ItemEntity;
@@ -35,12 +36,48 @@ export interface IItemViewEntityProps {
 
 @Reactive
 export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
-  private getBounds = (bounds: Vec2) => {
+  private getMaxWidthWord = () => {
     const { model } = this.props;
+    const style = new PIXI.TextStyle({
+      fontSize: model.attribute.fontSize,
+      lineHeight: model.attribute.lineHeight,
+      fontFamily: model.attribute.fontFamily,
+      fill: model.attribute.color,
+      fontWeight: model.attribute.fontWeight,
+      align: model.attribute.align,
+    });
+    const words = model.text.trim().split(/\s+/);
+    const maxWidthWord = words.reduce((prev, cur) => {
+      const prevWidth = new PIXI.Text(prev, style).width;
+      const curWidth = new PIXI.Text(cur, style).width;
+      if (prevWidth > curWidth) {
+        return prev;
+      }
+      return cur;
+    });
+    const width = new PIXI.Text(maxWidthWord, style).width;
+    return width;
+  }
+
+  private getBounds = (bounds: Vec2) => {
     imageBuilderStore.document.pauseRecord();
-    model.setSize({
-      x: bounds.x,
-      y: bounds.y,
+    const { model } = this.props;
+    const isTextStretching = imageBuilderStore.scene.isTextStretching;
+    if (isTextStretching) {
+      model.setSize({
+        y: bounds.y,
+      });
+      const width = this.getMaxWidthWord();
+      imageBuilderStore.scene.setCurrentTextMinWidth(width);
+    } else {
+      model.setSize({
+        x: bounds.x,
+        y: bounds.y,
+      });
+    }
+    imageBuilderStore.scene.setTextBounds({
+      width: bounds.x,
+      height: bounds.y,
     });
     imageBuilderStore.document.resumeRecord();
   }
@@ -64,6 +101,10 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
         wordWrap: model.attribute.wordWrap,
         wordWrapWidth: model.attribute.wordWrapWidth,
       }),
+      position: {
+        x: -(model.size.x / 2 - imageBuilderStore.scene.textBounds.width / 2),
+        y: 0,
+      },
       zIndex: model.renderOrder,
       id: model.id,
       type: ItemSymbol,

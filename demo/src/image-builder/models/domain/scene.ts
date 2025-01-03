@@ -10,8 +10,27 @@ export class SceneDomain extends Domain {
   @reactor resolution = window.devicePixelRatio;
   @reactor renderFlag2d = true;
   @reactor snapLines: Vector2[][] = [];
+  @reactor isTextStretching = false;
+  @reactor currentTextMinWidth = -1;
+  @reactor textBounds = { width: 0, height: 0 };
 
   private sceneTools: SceneTool;
+
+  @mutation
+  setTextStretching(flag: boolean) {
+    this.isTextStretching = flag;
+  }
+
+  @mutation
+  setCurrentTextMinWidth(width: number) {
+    this.currentTextMinWidth = width;
+  }
+
+  @mutation
+  setTextBounds(bounds: Partial<{ width: number; height: number }>) {
+    bounds.width && (this.textBounds.width = bounds.width);
+    bounds.height && (this.textBounds.height = bounds.height);
+  }
 
   @mutation
   setResolution(res = window.devicePixelRatio) {
