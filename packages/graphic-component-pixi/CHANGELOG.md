@@ -1,5 +1,17 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.44
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/math@1.1.21
+  - @turbox3d/renderer-pixi@1.0.28
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.43
 
 ### Patch Changes

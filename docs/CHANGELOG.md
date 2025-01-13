@@ -1,5 +1,21 @@
 # @turbox3d/turbox3d
 
+## 1.1.37
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/design-engine@1.1.36
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/graphic-component-three@1.1.37
+  - @turbox3d/math@1.1.21
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/reactivity-react@1.1.27
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/renderer-three@1.0.27
+
 ## 1.1.36
 
 ### Patch Changes
@@ -274,6 +290,22 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.31
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/design-engine@1.1.36
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/graphic-component-pixi@1.1.44
+  - @turbox3d/math@1.1.21
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/reactivity-react@1.1.27
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/renderer-pixi@1.0.28
+
 ## 1.0.30
 
 ### Patch Changes
@@ -547,6 +579,24 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.40
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/design-engine@1.1.36
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/graphic-component-pixi@1.1.44
+  - @turbox3d/graphic-component-three@1.1.37
+  - @turbox3d/math@1.1.21
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/reactivity-react@1.1.27
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/renderer-pixi@1.0.28
+  - @turbox3d/renderer-three@1.0.27
 
 ## 1.1.39
 
@@ -856,6 +906,12 @@
 
 # @turbox3d/shared
 
+## 1.1.23
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+
 ## 1.1.22
 
 ### Patch Changes
@@ -959,6 +1015,16 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/shared@1.1.23
 
 ## 1.0.26
 
@@ -1132,6 +1198,16 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.28
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/shared@1.1.23
+
 ## 1.0.27
 
 ### Patch Changes
@@ -1303,6 +1379,17 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/shared@1.1.23
 
 ## 1.0.26
 
@@ -1493,6 +1580,15 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.26
 
 ### Patch Changes
@@ -1648,6 +1744,14 @@
 
 # @turbox3d/reactivity
 
+## 2.1.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/shared@1.1.23
+
 ## 2.1.26
 
 ### Patch Changes
@@ -1786,6 +1890,12 @@
 
 # @turbox3d/math
 
+## 1.1.21
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+
 ## 1.1.20
 
 ### Patch Changes
@@ -1895,6 +2005,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/graphic-component-three
+
+## 1.1.37
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.27
+  - @turbox3d/shared@1.1.23
 
 ## 1.1.36
 
@@ -2050,6 +2169,18 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.44
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/math@1.1.21
+  - @turbox3d/renderer-pixi@1.0.28
+  - @turbox3d/shared@1.1.23
 
 ## 1.1.43
 
@@ -2256,6 +2387,15 @@
 
 # @turbox3d/event-manager
 
+## 1.1.30
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/math@1.1.21
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.29
 
 ### Patch Changes
@@ -2416,6 +2556,19 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.36
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/math@1.1.21
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/reactivity-react@1.1.27
+  - @turbox3d/shared@1.1.23
 
 ## 1.1.35
 
@@ -2656,6 +2809,15 @@
 
 # @turbox3d/command-manager
 
+## 1.1.31
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.30
 
 ### Patch Changes
@@ -2811,6 +2973,14 @@
 
 # @turbox3d/turbox-hot-loader
 
+## 1.0.26
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.27
+
 ## 1.0.25
 
 ### Patch Changes
@@ -2932,6 +3102,12 @@
   - @turbox3d/reactivity@2.1.10
 
 # @turbox3d/turbox-dev-tool
+
+## 1.0.22
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
 
 ## 1.0.21
 

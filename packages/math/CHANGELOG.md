@@ -1,5 +1,11 @@
 # @turbox3d/math
 
+## 1.1.21
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+
 ## 1.1.20
 
 ### Patch Changes

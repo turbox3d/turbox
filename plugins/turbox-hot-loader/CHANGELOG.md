@@ -1,5 +1,13 @@
 # @turbox3d/turbox-hot-loader
 
+## 1.0.26
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.27
+
 ## 1.0.25
 
 ### Patch Changes

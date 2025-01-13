@@ -1,5 +1,14 @@
 # @turbox3d/command-manager
 
+## 1.1.31
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.30
 
 ### Patch Changes

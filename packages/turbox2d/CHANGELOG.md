@@ -1,5 +1,21 @@
 # @turbox3d/turbox2d
 
+## 1.0.31
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/command-manager@1.1.31
+  - @turbox3d/design-engine@1.1.36
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/graphic-component-pixi@1.1.44
+  - @turbox3d/math@1.1.21
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/reactivity-react@1.1.27
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/renderer-pixi@1.0.28
+
 ## 1.0.30
 
 ### Patch Changes

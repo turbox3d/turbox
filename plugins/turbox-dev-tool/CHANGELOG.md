@@ -1,5 +1,11 @@
 # @turbox3d/turbox-dev-tool
 
+## 1.0.22
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+
 ## 1.0.21
 
 ### Patch Changes

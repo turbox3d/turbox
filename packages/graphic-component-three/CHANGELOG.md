@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.37
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/renderer-three@1.0.27
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.36
 
 ### Patch Changes

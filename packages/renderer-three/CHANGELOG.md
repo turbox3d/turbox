@@ -1,5 +1,15 @@
 # @turbox3d/renderer-three
 
+## 1.0.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/event-manager@1.1.30
+  - @turbox3d/renderer-core@1.0.27
+  - @turbox3d/shared@1.1.23
+
 ## 1.0.26
 
 ### Patch Changes

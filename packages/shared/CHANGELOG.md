@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.23
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+
 ## 1.1.22
 
 ### Patch Changes

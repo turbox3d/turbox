@@ -1,5 +1,14 @@
 # @turbox3d/reactivity-react
 
+## 1.1.27
+
+### Patch Changes
+
+- fix: enhance gizmo2d&text2d
+- Updated dependencies
+  - @turbox3d/reactivity@2.1.27
+  - @turbox3d/shared@1.1.23
+
 ## 1.1.26
 
 ### Patch Changes
