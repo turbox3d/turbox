@@ -9,6 +9,7 @@ import { imageBuilderStore } from '../../models/index';
 import { AdjustCommand } from './adjust/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { ItemType, RenderOrder } from '../../common/consts/scene';
+import { WHITE } from '../../common/consts/color';
 
 class ActionsCommand extends CommandManager.compose({
   adjust: AdjustCommand,
@@ -112,7 +113,7 @@ class ActionsCommand extends CommandManager.compose({
     entity.setSize(size);
     if (color || !target) {
       entity.$update({
-        bgColor: color || 0xffffff,
+        bgColor: color || WHITE,
       });
     }
     entity.setPosition({

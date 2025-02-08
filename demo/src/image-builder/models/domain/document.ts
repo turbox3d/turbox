@@ -5,6 +5,7 @@ import { FrameEntity } from '../entity/frame';
 import { ITextStyles, ItemEntity } from '../entity/item';
 import { appCommandManager } from '../../commands';
 import { ItemType } from '../../common/consts/scene';
+import { GRAY } from '../../common/consts/color';
 
 export interface IDocumentData {
   container: {
@@ -122,7 +123,7 @@ export class DocumentDomain extends DocumentSystem {
     const { container, items } = json;
     const frameEntity = await appCommandManager.actionsCommand.addFrameEntity({
       size: { x: container.width, y: container.height },
-      color: 0xeeeeee,
+      color: GRAY,
     });
     await Promise.all(
       items.map(async i => {

@@ -1,5 +1,6 @@
 import { computed, EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
+import { BLACK } from '../../common/consts/color';
 
 export interface ITextStyles {
   fontSize: number;
@@ -24,7 +25,7 @@ export class ItemEntity extends EntityObject {
     fontSize: 30,
     lineHeight: 30,
     fontFamily: 'Arial',
-    color: 0x000000,
+    color: BLACK,
     fontWeight: 'normal',
     align: 'left',
     wordWrap: true,

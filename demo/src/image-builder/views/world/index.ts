@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { Reactive, Component, g, Axis2d, Text2d, Container2d, Image2d, Rect2d, MathUtils, Line2d, Grid2d, Gizmo2d } from '@turbox3d/turbox';
+import { Reactive, Component, g, Axis2d, Text2d, Container2d, Image2d, Rect2d, MathUtils, Line2d, Grid2d, Gizmo2d, Box2 } from '@turbox3d/turbox';
 
 import { FrameEntity } from '../../models/entity/frame';
 import { ItemEntity } from '../../models/entity/item';
@@ -10,20 +10,23 @@ import { ItemViewEntity } from './item/index';
 import { imageBuilderStore } from '../../models/index';
 import { appCommandManager } from '../../commands';
 import { RenderOrder } from '../../common/consts/scene';
-import { PRIMARY_COLOR } from '../../common/consts/color';
+import { GRAY, PRIMARY_COLOR, RED } from '../../common/consts/color';
 
 @Reactive
 export class World extends Component {
   render() {
     const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
     const hinted = appCommandManager.defaultCommand.hint.getHintedEntity();
+    const frames = imageBuilderStore.document.getFrameEntities();
+    const items = imageBuilderStore.document.getItemEntities();
+    const showInvalidRangeFrame = imageBuilderStore.scene.isShowInvalidRangeFrame();
 
     return [
       g(Axis2d),
       g(Grid2d, {
         gridWidth: 250000,
         cellSize: 50,
-        lineColor: 0xdddddd,
+        lineColor: GRAY,
         zIndex: RenderOrder.GRID,
       }),
       // g(Container2d, {
@@ -62,20 +65,18 @@ export class World extends Component {
       //     }),
       //   ],
       // }),
-      ...imageBuilderStore.document.getFrameEntities()
-        .map(m =>
-          g(FrameViewEntity, {
-            key: m.id,
-            model: m as FrameEntity,
-          })
-        ),
-      ...imageBuilderStore.document.getItemEntities()
-        .map(m =>
-          g(ItemViewEntity, {
-            key: m.id,
-            model: m as ItemEntity,
-          })
-        ),
+      ...frames.map(m =>
+        g(FrameViewEntity, {
+          key: m.id,
+          model: m as FrameEntity,
+        })
+      ),
+      ...items.map(m =>
+        g(ItemViewEntity, {
+          key: m.id,
+          model: m as ItemEntity,
+        })
+      ),
       hinted &&
         g(Rect2d, {
           key: 'wireframe',
@@ -141,8 +142,23 @@ export class World extends Component {
         start: sl[0],
         end: sl[1],
         lineWidth: 1,
-        lineColor: 0xFE2C55,
-      }))
+        lineColor: RED,
+      })),
+      showInvalidRangeFrame &&
+        g(Rect2d, {
+          key: 'range-wireframe',
+          width: frames[0].size.x,
+          height: frames[0].size.y,
+          x: frames[0].position.x,
+          y: frames[0].position.y,
+          rotation: frames[0].rotation.z * MathUtils.DEG2RAD,
+          zIndex: RenderOrder.GIZMO,
+          central: true,
+          lineWidth: 1,
+          lineColor: RED,
+          fillAlpha: 0,
+          alignment: 1,
+        }),
     ];
   }
 }

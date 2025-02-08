@@ -5,6 +5,7 @@ import './index.less';
 import { imageBuilderStore } from '../../models';
 import { appCommandManager } from '../../commands';
 import { ItemType } from '../../common/consts/scene';
+import { BLACK } from '../../common/consts/color';
 
 export const TopBar = ReactiveReact(() => {
   const undo = () => {
@@ -41,7 +42,7 @@ export const TopBar = ReactiveReact(() => {
             fontSize: 30,
             lineHeight: 30,
             fontFamily: 'Arial',
-            color: 0x000000,
+            color: BLACK,
             fontWeight: 'normal',
             align: 'left',
             wordWrap: true,
@@ -53,6 +54,7 @@ export const TopBar = ReactiveReact(() => {
     imageBuilderStore.document.loadData(json as any);
   };
   const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+  const showInvalidRangeFrame = imageBuilderStore.scene.isShowInvalidRangeFrame();
 
   return (
     <div className="top-bar">
@@ -69,6 +71,11 @@ export const TopBar = ReactiveReact(() => {
       {selected && (
         <div className="global-msg">
           <Alert message="按住 Ctrl 可固定左上角进行拉伸" type="info" />
+        </div>
+      )}
+      {showInvalidRangeFrame && (
+        <div className="global-msg">
+          <Alert message="素材超出画布范围" type="error" />
         </div>
       )}
     </div>

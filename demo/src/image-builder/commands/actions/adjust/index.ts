@@ -13,6 +13,7 @@ import {
   Key,
   HotKeyEventType,
   InferenceEngine,
+  InteractiveListener,
 } from '@turbox3d/turbox';
 
 import { ITextStyles, ItemEntity } from '../../../models/entity/item';
@@ -22,6 +23,8 @@ import { ItemType } from '../../../common/consts/scene';
 
 const ADJUST_ACTION_NAME = 'adjustEntity';
 const STRETCH_ACTION_NAME = 'stretchEntity';
+
+InteractiveListener.moveTolerance = 0.1;
 
 export class AdjustCommand extends Command {
   private adjustAction = Action.create(ADJUST_ACTION_NAME);

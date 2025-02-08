@@ -1,4 +1,5 @@
-import { Domain, reactor, mutation, SceneTool, Vector2 } from '@turbox3d/turbox';
+import { Domain, reactor, mutation, SceneTool, Vector2, Box2 } from '@turbox3d/turbox';
+import { imageBuilderStore } from '..';
 
 export class SceneDomain extends Domain {
   /** 画布区域的缩放 */
@@ -58,5 +59,12 @@ export class SceneDomain extends Domain {
 
   getSceneTools() {
     return this.sceneTools;
+  }
+
+  isShowInvalidRangeFrame() {
+    const frames = imageBuilderStore.document.getFrameEntities();
+    const items = imageBuilderStore.document.getItemEntities();
+    const showInvalidRangeFrame = frames[0] && !items.map(i => new Box2().setFromPoints(i.getBox2AABB(undefined, true))).every(b => new Box2().setFromPoints(frames[0].getBox2AABB(undefined, true)).containsBox(b));
+    return showInvalidRangeFrame;
   }
 }
