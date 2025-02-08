@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.24
+
+### Patch Changes
+
+- 58394f7: fix: fix max fps issue
+
 ## 1.1.23
 
 ### Patch Changes

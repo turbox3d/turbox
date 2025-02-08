@@ -906,6 +906,12 @@
 
 # @turbox3d/shared
 
+## 1.1.24
+
+### Patch Changes
+
+- 58394f7: fix: fix max fps issue
+
 ## 1.1.23
 
 ### Patch Changes
@@ -2386,6 +2392,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/event-manager
+
+## 1.1.31
+
+### Patch Changes
+
+- 58394f7: fix: fix max fps issue
+- Updated dependencies [58394f7]
+  - @turbox3d/shared@1.1.24
 
 ## 1.1.30
 
