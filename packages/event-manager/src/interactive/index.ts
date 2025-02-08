@@ -113,17 +113,17 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
       .addEventListener(DBClick, this.onDBClick)
       .addEventListener(RightClick, this.onRightClick)
       .addEventListener(DragStart, this.onDragStart)
-      .addEventListener(DragMove, this.onDragMove)
+      .addEventListener(DragMove, throttleInAFrame(this.onDragMove, TaskPriority.UserAction, this.maxFPS))
       .addEventListener(DragEnd, this.onDragEnd)
-      .addEventListener(Hover, this.onHover)
-      .addEventListener(CarriageMove, this.onCarriageMove)
+      .addEventListener(Hover, throttleInAFrame(this.onHover, TaskPriority.UserAction, this.maxFPS))
+      .addEventListener(CarriageMove, throttleInAFrame(this.onCarriageMove, TaskPriority.UserAction, this.maxFPS))
       .addEventListener(CarriageEnd, this.onCarriageEnd)
-      .addEventListener(Wheel, this.onWheel)
+      .addEventListener(Wheel, throttleInAFrame(this.onWheel, TaskPriority.UserAction, this.maxFPS))
       .addEventListener(PinchStart, this.onPinchStart)
-      .addEventListener(Pinch, this.onPinch)
+      .addEventListener(Pinch, throttleInAFrame(this.onPinch, TaskPriority.UserAction, this.maxFPS))
       .addEventListener(PinchEnd, this.onPinchEnd)
       .addEventListener(RotateStart, this.onRotateStart)
-      .addEventListener(Rotate, this.onRotate)
+      .addEventListener(Rotate, throttleInAFrame(this.onRotate, TaskPriority.UserAction, this.maxFPS))
       .addEventListener(RotateEnd, this.onRotateEnd)
       .addEventListener(Press, this.onPress)
       .addEventListener(PressUp, this.onPressUp);
@@ -265,7 +265,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
     this.canvasHandlers.onDragStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onDragMove = throttleInAFrame((event: PointerEvent | Touch) => {
+  private onDragMove = (event: PointerEvent | Touch) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isDraggable && config.onDragMove) {
@@ -274,7 +274,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
       return;
     }
     this.canvasHandlers.onDragMove(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 
   private onDragEnd = (event: PointerEvent | Touch) => {
     if (this.dragTarget) {
@@ -301,7 +301,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
     this.canvasHandlers.onPinchStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onPinch = throttleInAFrame((event: PointerEvent | Touch, extra?: GesturesExtra) => {
+  private onPinch = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isPinchable && config.onPinch) {
@@ -310,7 +310,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
       return;
     }
     this.canvasHandlers.onPinch(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 
   private onPinchEnd = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
@@ -337,7 +337,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
     this.canvasHandlers.onRotateStart(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
   };
 
-  private onRotate = throttleInAFrame((event: PointerEvent | Touch, extra?: GesturesExtra) => {
+  private onRotate = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
       const config = this.interactiveConfig.get(this.dragTarget);
       if (config && config.isRotatable && config.onRotate) {
@@ -346,7 +346,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
       return;
     }
     this.canvasHandlers.onRotate(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint, extra));
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 
   private onRotateEnd = (event: PointerEvent | Touch, extra?: GesturesExtra) => {
     if (this.dragTarget) {
@@ -388,15 +388,15 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
     this.canvasHandlers.onPressUp(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onCarriageMove = throttleInAFrame((event: PointerEvent) => {
+  private onCarriageMove = (event: PointerEvent) => {
     this.canvasHandlers.onPointerMove(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 
   private onCarriageEnd = (event: PointerEvent) => {
     this.canvasHandlers.onPointerUp(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
   };
 
-  private onHover = throttleInAFrame((event: PointerEvent) => {
+  private onHover = (event: PointerEvent) => {
     const { target } = this.hitTargetHandler(event, 'isHoverable');
     if (target) {
       // 如果 hover 目标产生了变更
@@ -414,7 +414,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
       this.onHoverOut(this.hoverTarget, event);
       this.hoverTarget = undefined;
     }
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 
   private onHoverIn(target: DisplayObject, event: PointerEvent) {
     const config = this.interactiveConfig.get(target);
@@ -431,7 +431,7 @@ export class InteractiveController<Container, DisplayObject, Renderer> {
     }
   }
 
-  private onWheel = throttleInAFrame((event: WheelEvent) => {
+  private onWheel = (event: WheelEvent) => {
     this.canvasHandlers.onWheel(SceneEvent.create(event, this.getCoordinateCtrl, this.hitTargetOriginalByPoint));
-  }, TaskPriority.UserAction, this.maxFPS);
+  };
 }

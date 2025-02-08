@@ -1,5 +1,5 @@
 import { Task } from './task';
-import { sortBy } from './common';
+import { sortBy, nextTick } from './common';
 
 /**
  * 任务优先级。数据越小，优先级越高
@@ -38,40 +38,37 @@ let tasks: Task[] = [];
 let readyToExecute = false;
 
 /**
- * 执行任务队列
+ * 节流函数
  */
-function executeTask() {
-  if (readyToExecute) {
-    // 得到排序后的当前任务队列
-    const currentTasks = sortBy(tasks, task => task.priority);
-    // 清空存储的数据
-    tasks = [];
+function throttleByFrames(func: Function, maxFPS: number) {
+  const frameInterval = 1000 / maxFPS; // 计算每帧的时间间隔（毫秒）
+  let lastTime = 0;
 
-    // 按顺序执行当前任务队列
-    currentTasks.forEach((task) => {
-      const { fn } = task;
-      fn();
-    });
-
-    readyToExecute = false;
-  }
+  return function (...args: any[]) {
+    const now = Date.now();
+    if (now - lastTime >= frameInterval) {
+      func.apply(this, args);
+      lastTime = now;
+    }
+  };
 }
 
 /**
- * 将任务添加到队列中
- * @param fn 任务的执行函数
- * @param priority 任务优先级
+ * 执行任务队列
  */
-function pushTask(fn: Function, priority: number, maxFPS: number) {
-  tasks.push(Task.createTask(fn, priority));
-  if (!readyToExecute) {
-    readyToExecute = true;
-    if (maxFPS === 60) {
-      requestAnimationFrame(executeTask);
-    } else {
-      window.setTimeout(executeTask, 1000 / maxFPS);
-    }
-  }
+function executeTask() {
+  // 得到排序后的当前任务队列
+  const currentTasks = sortBy(tasks, task => task.priority);
+  // 清空存储的数据
+  tasks = [];
+
+  // 按顺序执行当前任务队列
+  currentTasks.forEach((task) => {
+    const { fn } = task;
+    fn();
+  });
+
+  readyToExecute = false;
 }
 
 /**
@@ -88,12 +85,17 @@ export function throttleInAFrame<T extends(...args: any[]) => void>(func: T, pri
     func(...cacheArgs);
   }
 
-  return function (...args: any[]) {
+  const f = throttleByFrames((...args: any[]) => {
     cacheArgs = args;
-
     if (!isPending) {
       isPending = true;
-      pushTask(execute, priority, maxFPS);
+      tasks.push(Task.createTask(execute, priority));
+      if (!readyToExecute) {
+        readyToExecute = true;
+        nextTick(executeTask);
+      }
     }
-  } as T;
+  }, maxFPS);
+
+  return f as T;
 }

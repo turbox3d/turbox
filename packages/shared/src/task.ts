@@ -3,9 +3,12 @@ class Task {
     return new Task(fn, priority);
   }
 
-  // eslint-disable-next-line no-useless-constructor
-  constructor(public fn: Function, public priority: number) {
-    //
+  fn: Function;
+  priority: number;
+
+  constructor(fn: Function, priority: number) {
+    this.fn = fn;
+    this.priority = priority;
   }
 }
 
