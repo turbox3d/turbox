@@ -4,6 +4,7 @@ importers:
 
   .:
     specifiers:
+      '@ant-design/icons': ^5.6.1
       '@babel/cli': ^7.23.4
       '@babel/core': ^7.23.6
       '@babel/plugin-transform-modules-commonjs': ^7.23.3
@@ -63,6 +64,7 @@ importers:
       webpack-cli: ^5.1.4
       webpack-dev-server: ^4.15.1
     dependencies:
+      '@ant-design/icons': 5.6.1_biqbaboplfbrettd7655fr4n2y
       '@babel/runtime': 7.26.7
       '@turbox3d/reactivity-react': 1.1.27_biqbaboplfbrettd7655fr4n2y
       '@turbox3d/turbox': 1.1.40_n2awojqhxykcu4c6gn6rsuy56q
