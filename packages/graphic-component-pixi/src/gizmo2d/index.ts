@@ -40,7 +40,7 @@ interface IGizmo2dProps {
 
 export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
   render() {
-    const { x = 0, y = 0, width, height, rotation = 0, central = true, zIndex = 1000, xLeftHandler, xRightHandler, deleteHandler, adjustHandler, color = 0xffffff, deleteIcon = '', adjustIcon = '', deleteIconSize = 10, adjustIconSize = 10 } = this.props;
+    const { x = 0, y = 0, width, height, rotation = 0, central = false, zIndex = 1000, xLeftHandler, xRightHandler, deleteHandler, adjustHandler, color = 0xffffff, deleteIcon = '', adjustIcon = '', deleteIconSize = 10, adjustIconSize = 10 } = this.props;
     const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
     this.view.position.set(x, y);

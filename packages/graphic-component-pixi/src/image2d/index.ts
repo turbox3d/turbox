@@ -3,7 +3,7 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { fail, Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
-import Container2d from '../container2d';
+import { computeFlowLayoutPosition } from '../_utils/utils';
 
 interface IImage2dProps {
   width: number;
@@ -24,7 +24,8 @@ interface IImage2dProps {
   fillColor?: number;
   fillAlpha?: number;
   alpha?: number;
-  backgroundImage?: string;
+  backgroundImage?: string | HTMLImageElement;
+  materialDirection?: Vec2;
   fit?: IFitStyle;
   /** top,right,bottom,left */
   // padding?: string;
@@ -75,7 +76,7 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       alignment = 0,
       native,
       fillColor = 0x0,
-      fillAlpha = 1,
+      fillAlpha = 0,
       alpha = 1,
       backgroundImage = '',
       fit = 'none',
@@ -119,9 +120,15 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     if (!backgroundImage) {
       return;
     }
-    const t = await PIXI.Texture.fromURL(backgroundImage).catch(() => {
-      fail('Load Image2d backgroundImage texture failed.');
-    });
+    let t: PIXI.Texture | undefined;
+    if (backgroundImage instanceof HTMLImageElement) {
+      t = PIXI.Texture.from(backgroundImage);
+      t.baseTexture.setSize(rw, rh);
+    } else {
+      t = await PIXI.Texture.fromURL(backgroundImage).catch(() => {
+        fail('Load Image2d backgroundImage texture failed.');
+      });
+    }
     if (!t) {
       return;
     }
@@ -162,32 +169,21 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
   }
 
   updateMaterial() {
-    const { zIndex = 0 } = this.props;
+    const { zIndex = 0, materialDirection = { x: 1, y: 1 } } = this.props;
     this.view.zIndex = zIndex;
+    // this.s.anchor.set(0.5, 0.5);
+    this.s.scale.set(materialDirection.x, materialDirection.y);
   }
 
   updatePosition() {
     const { position = { x: 0, y: 0 }, margin, central = false, useFlowLayout = false } = this.props;
-    const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
-    if (useFlowLayout) {
-      const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-      const parentNode = this._vNode.parent;
-      if (parentNode && parentNode.instance instanceof Container2d) {
-        this.view.position.x += left;
-        if (parentNode.child === this._vNode) {
-          this.view.position.y += top;
-        }
-        if (this._vNode.sibling) {
-          const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-          if (this._vNode.sibling?.instance instanceof Mesh2D) {
-            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
-          }
-        }
-      }
-    } else {
+    if (!useFlowLayout) {
+      const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
       this.view.position.x = posX;
       this.view.position.y = posY;
+      return;
     }
+    computeFlowLayoutPosition.call(this, central, margin);
   }
 
   updateRotation() {

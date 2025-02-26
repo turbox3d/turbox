@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { Vec2 } from '@turbox3d/shared';
-import Container2d from '../container2d';
+import { computeFlowLayoutPosition } from '../_utils/utils';
 
 interface IText2dProps {
   text: string;
@@ -58,26 +58,13 @@ export default class Text2d extends Mesh2D<IText2dProps> {
 
   updatePosition() {
     const { position = { x: 0, y: 0 }, margin, central = false, useFlowLayout = false } = this.props;
-    const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
-    if (useFlowLayout) {
-      const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-      const parentNode = this._vNode.parent;
-      if (parentNode && parentNode.instance instanceof Container2d) {
-        this.view.position.x += left;
-        if (parentNode.child === this._vNode) {
-          this.view.position.y += top;
-        }
-        if (this._vNode.sibling) {
-          const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-          if (this._vNode.sibling?.instance instanceof Mesh2D) {
-            ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
-          }
-        }
-      }
-    } else {
+    if (!useFlowLayout) {
+      const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
       this.view.position.x = posX;
       this.view.position.y = posY;
+      return;
     }
+    computeFlowLayoutPosition.call(this, central, margin);
   }
 
   updateRotation() {
