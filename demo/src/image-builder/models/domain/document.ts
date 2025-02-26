@@ -1,4 +1,4 @@
-import { DocumentSystem, mutation, reactor, EntityObject, Vector2 } from '@turbox3d/turbox';
+import { DocumentSystem, EntityObject, Vector2, mutation } from '@turbox3d/turbox';
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { FrameEntity } from '../entity/frame';
@@ -31,7 +31,22 @@ export interface IDocumentData {
 }
 
 export class DocumentDomain extends DocumentSystem {
-  @reactor sortedModels: EntityObject[] = [];
+  private sortedModels: EntityObject[] = [];
+
+  /** 根据排好的顺序重置 renderOrder */
+  private updateRenderOrder() {
+    this.sortedModels.forEach((p, index) => {
+      p.setRenderOrder(index);
+    });
+  }
+
+  /** 根据已有的 renderOrder 来初始化 sortedModels 的排序 */
+  private sortModels(models: EntityObject[]) {
+    models.forEach(m => {
+      this.sortedModels.push(m);
+    });
+    this.sortedModels.sort((a, b) => a.renderOrder - b.renderOrder);
+  }
 
   @mutation
   addModel(model: EntityObject | EntityObject[], sort = true) {
@@ -66,23 +81,6 @@ export class DocumentDomain extends DocumentSystem {
     f(model);
   }
 
-  /** 根据已有的 renderOrder 来初始化 sortedModels 的排序 */
-  @mutation
-  sortModels(models: EntityObject[]) {
-    models.forEach(m => {
-      this.sortedModels.push(m);
-    });
-    this.sortedModels.sort((a, b) => a.renderOrder - b.renderOrder);
-  }
-
-  /** 根据排好的顺序重置 renderOrder */
-  @mutation
-  updateRenderOrder() {
-    this.sortedModels.forEach((p, index) => {
-      p.setRenderOrder(index);
-    });
-  }
-
   @mutation
   updateRenderOrderByType(selected: EntityObject, type: Z_INDEX_ACTION) {
     const items = this.sortedModels;
@@ -103,17 +101,14 @@ export class DocumentDomain extends DocumentSystem {
     this.updateRenderOrder();
   }
 
-  @mutation
   getEntities() {
     return [...this.models.values()];
   }
 
-  @mutation
   getFrameEntities() {
     return [...this.models.values()].filter(m => m instanceof FrameEntity);
   }
 
-  @mutation
   getItemEntities() {
     return [...this.models.values()].filter(m => m instanceof ItemEntity) as ItemEntity[];
   }
@@ -121,14 +116,14 @@ export class DocumentDomain extends DocumentSystem {
   async loadData(json: IDocumentData) {
     this.pauseRecord();
     const { container, items } = json;
-    const frameEntity = await appCommandManager.actionsCommand.addFrameEntity({
+    const frameEntity = await appCommandManager._shared.addFrameEntity({
       size: { x: container.width, y: container.height },
       color: GRAY,
     });
     await Promise.all(
       items.map(async i => {
         if (i.type === 'image') {
-          const itemEntity = await appCommandManager.actionsCommand.addItemEntity(i.data.src);
+          const itemEntity = await appCommandManager._shared.addItemEntity(i.data.src, undefined, true, false);
           if (!itemEntity) {
             return;
           }
@@ -145,8 +140,9 @@ export class DocumentDomain extends DocumentSystem {
             attribute: i.data.attribute,
           });
           itemEntity.setRenderOrder(i.zIndex);
+          this.sortModels([itemEntity]);
         } else if (i.type === 'text') {
-          const textEntity = await appCommandManager.actionsCommand.addTextItemEntity(i.data.content);
+          const textEntity = await appCommandManager._shared.addTextItemEntity(i.data.content, undefined, true, false);
           textEntity.setSize({
             x: i.width,
             y: i.height,
@@ -160,9 +156,11 @@ export class DocumentDomain extends DocumentSystem {
             attribute: i.data.attribute,
           });
           textEntity.setRenderOrder(i.zIndex);
+          this.sortModels([textEntity]);
         }
       })
     );
+    this.updateRenderOrder();
     this.resumeRecord();
   }
 

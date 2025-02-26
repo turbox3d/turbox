@@ -78,6 +78,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@babel/runtime": "^7.23.6",
     "@turbox3d/reactivity-react": "^1.1.27",
     "@turbox3d/turbox": "^1.1.40",

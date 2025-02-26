@@ -11,7 +11,10 @@ import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { ItemType, RenderOrder } from '../../common/consts/scene';
 import { WHITE } from '../../common/consts/color';
 
-class ActionsCommand extends CommandManager.compose({
+/**
+ * 画布中共享的公共指令集方法
+ */
+export class SharedCommand extends CommandManager.compose({
   adjust: AdjustCommand,
 }) {
   @mutation
@@ -84,7 +87,7 @@ class ActionsCommand extends CommandManager.compose({
 
   @mutation
   updateText = (text: string) => {
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
     if (!(selected instanceof ItemEntity)) {
       return;
     }
@@ -144,12 +147,12 @@ class ActionsCommand extends CommandManager.compose({
         imageBuilderStore.document.removeModel(e, sort);
       });
     } else {
-      const selected = appCommandManager.defaultCommand.select.getSelectedEntities();
+      const selected = appCommandManager.default.select.getSelectedEntities();
       selected.forEach(e => {
         imageBuilderStore.document.removeModel(e, sort);
       });
     }
-    appCommandManager.defaultCommand.select.clearAllSelected();
+    appCommandManager.default.select.clearAllSelected();
   };
 
   /**
@@ -166,7 +169,7 @@ class ActionsCommand extends CommandManager.compose({
     extraInfo?: CustomBizData,
     isSelf = false
   ) => {
-    const selected = target || appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    const selected = target || appCommandManager.default.select.getSelectedEntities()[0];
     if (!(selected instanceof ItemEntity)) {
       return;
     }
@@ -210,12 +213,10 @@ class ActionsCommand extends CommandManager.compose({
 
   @mutation
   updateRenderOrder = (type: Z_INDEX_ACTION) => {
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
     if (!(selected instanceof ItemEntity)) {
       return;
     }
     imageBuilderStore.document.updateRenderOrderByType(selected, type);
   };
 }
-
-export { ActionsCommand };

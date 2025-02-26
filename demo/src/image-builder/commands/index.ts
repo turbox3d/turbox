@@ -1,20 +1,23 @@
 import { CommandManager } from '@turbox3d/turbox';
 
-import { ActionsCommand } from './actions';
+import { SharedCommand } from './shared';
 import { DefaultCommand } from './default';
 
+/**
+ * 除公共指令集，其他顶层全局事件指令集之间是互斥的，即一次只能激活一组指令集，非当前指令集会被自动禁用
+ */
 class AppCommandManager extends CommandManager.install({
-  defaultCommand: DefaultCommand,
-  actionsCommand: ActionsCommand,
+  default: DefaultCommand,
+  _shared: SharedCommand,
 }) {
   installed() {
-    this.defaultCommand.apply();
+    this.default.apply(); // 激活默认指令集
   }
 
   disposeAll() {
-    this.defaultCommand.select.clearAllSelected();
-    this.defaultCommand.dispose();
-    this.actionsCommand.dispose();
+    this.default.select.clearAllSelected();
+    this.default.dispose();
+    this._shared.dispose();
   }
 }
 

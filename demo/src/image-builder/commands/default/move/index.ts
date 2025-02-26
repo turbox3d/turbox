@@ -14,8 +14,8 @@ export class MoveCommand extends Command {
   private inferenceEngine = new InferenceEngine();
 
   protected onDragStart(viewEntity: ViewEntity, event: SceneEvent, tools: SceneTool) {
-    const hinted = appCommandManager.defaultCommand.hint.getHintedEntity() as ItemEntity | undefined;
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0] as ItemEntity | undefined;
+    const hinted = appCommandManager.default.hint.getHintedEntity() as ItemEntity | undefined;
+    const selected = appCommandManager.default.select.getSelectedEntities()[0] as ItemEntity | undefined;
     const isMove =
       (hinted instanceof ItemEntity && !hinted.locked) || (selected instanceof ItemEntity && !selected.locked);
     if (isMove) {

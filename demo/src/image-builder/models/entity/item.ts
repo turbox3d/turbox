@@ -23,13 +23,14 @@ export class ItemEntity extends EntityObject {
   @reactor href = '';
   @reactor attribute: ITextStyles & Record<string, any> = {
     fontSize: 30,
-    lineHeight: 30,
+    lineHeight: 1.5,
     fontFamily: 'Arial',
     color: BLACK,
     fontWeight: 'normal',
     align: 'left',
     wordWrap: true,
     wordWrapWidth: this.wordWrapWidth,
+    fontStyle: 'normal',
   };
 
   @computed({ lazy: false })

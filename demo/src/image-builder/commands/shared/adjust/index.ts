@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import {
   Command,
   ViewEntity,
@@ -38,7 +37,7 @@ export class AdjustCommand extends Command {
     HotKey.on({
       key: Key.Ctrl,
       handler: (keyEventType: HotKeyEventType) => {
-        const selected = appCommandManager.defaultCommand.select.getSelectedEntities();
+        const selected = appCommandManager.default.select.getSelectedEntities();
         if (selected.length > 0) {
           this.fixedScale = true;
         }
@@ -49,58 +48,9 @@ export class AdjustCommand extends Command {
     })
   }
 
-  onAdjustStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
-    if (selected instanceof ItemEntity && !selected.locked) {
-      this.target = selected;
-      if (!this.fixedScale) {
-        this.onRotateStartHandler(v, e, t);
-      }
-      this.onScaleStartHandler(v, e, t);
-    }
-  }
-
-  onAdjustMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    if (!this.fixedScale) {
-      this.onRotateMoveHandler(v, e, t);
-    }
-    this.onScaleMoveHandler(v, e, t);
-  }
-
-  onAdjustEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    if (!this.fixedScale) {
-      this.onRotateEndHandler(v, e, t);
-    }
-    this.onScaleEndHandler(v, e, t);
-  }
-
-  onXLeftStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchStartHandler(v, e, t);
-  }
-
-  onXLeftMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchMoveHandler(v, e, t);
-  }
-
-  onXLeftEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchEndHandler(v, e, t);
-  }
-
-  onXRightStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchStartHandler(v, e, t);
-  }
-
-  onXRightMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchMoveHandler(v, e, t);
-  }
-
-  onXRightEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    this.xStretchEndHandler(v, e, t);
-  }
-
   private xStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
     imageBuilderStore.scene.setTextStretching(true);
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
     if (selected instanceof ItemEntity && !selected.locked) {
       this.target = selected;
     }
@@ -261,11 +211,11 @@ export class AdjustCommand extends Command {
               x: this.initSize!.x / 2 * scale + this.initSize!.x / 2,
               y: this.initSize!.y / 2 * scale + this.initSize!.y / 2,
             });
+            const fontSize = this.initAttribute?.fontSize! / 2 * scale + this.initAttribute?.fontSize! / 2;
             itemEntity.$update({
               attribute: {
                 ...itemEntity.attribute,
-                fontSize: this.initAttribute?.fontSize! / 2 * scale + this.initAttribute?.fontSize! / 2,
-                lineHeight: this.initAttribute?.fontSize! / 2 * scale + this.initAttribute?.fontSize! / 2,
+                fontSize,
               },
             });
           }
@@ -275,11 +225,11 @@ export class AdjustCommand extends Command {
             x: this.initSize!.x * scale,
             y: this.initSize!.y * scale,
           });
+          const fontSize = this.initAttribute?.fontSize! * scale;
           itemEntity.$update({
             attribute: {
               ...itemEntity.attribute,
-              fontSize: this.initAttribute?.fontSize! * scale,
-              lineHeight: this.initAttribute?.fontSize! * scale,
+              fontSize,
             },
           });
         }
@@ -303,5 +253,48 @@ export class AdjustCommand extends Command {
     this.initSize = undefined;
     this.initAttribute = undefined;
     this.initItemPosition = undefined;
+  }
+
+  adjustHandler(op: 'start' | 'move' | 'end', v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const actionsMap = {
+      start: () => {
+        const selected = appCommandManager.default.select.getSelectedEntities()[0];
+        if (selected instanceof ItemEntity && !selected.locked) {
+          this.target = selected;
+          if (!this.fixedScale) {
+            this.onRotateStartHandler(v, e, t);
+          }
+          this.onScaleStartHandler(v, e, t);
+        }
+      },
+      move: () => {
+        if (!this.fixedScale) {
+          this.onRotateMoveHandler(v, e, t);
+        }
+        this.onScaleMoveHandler(v, e, t);
+      },
+      end: () => {
+        if (!this.fixedScale) {
+          this.onRotateEndHandler(v, e, t);
+        }
+        this.onScaleEndHandler(v, e, t);
+      },
+    };
+    actionsMap[op]();
+  }
+
+  xStretchHandler(op:'start' |'move' | 'end', v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const actionsMap = {
+      start: () => {
+        this.xStretchStartHandler(v, e, t);
+      },
+      move: () => {
+        this.xStretchMoveHandler(v, e, t);
+      },
+      end: () => {
+        this.xStretchEndHandler(v, e, t);
+      },
+    };
+    actionsMap[op]();
   }
 }

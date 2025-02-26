@@ -15,8 +15,8 @@ import { GRAY, PRIMARY_COLOR, RED } from '../../common/consts/color';
 @Reactive
 export class World extends Component {
   render() {
-    const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
-    const hinted = appCommandManager.defaultCommand.hint.getHintedEntity();
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    const hinted = appCommandManager.default.hint.getHintedEntity();
     const frames = imageBuilderStore.document.getFrameEntities();
     const items = imageBuilderStore.document.getItemEntities();
     const showInvalidRangeFrame = imageBuilderStore.scene.isShowInvalidRangeFrame();
@@ -46,7 +46,12 @@ export class World extends Component {
       //         fontSize: 20,
       //         fontFamily: 'cursive',
       //       }),
-      //       margin: '50,0,0,10',
+      //       position: {
+      //         x: 0,
+      //         y: 0,
+      //       },
+      //       margin: '0,0,0,10',
+      //       useFlowLayout: true,
       //     }),
       //     g(Text2d, {
       //       text: 'hello world2',
@@ -55,13 +60,19 @@ export class World extends Component {
       //         fontSize: 30,
       //         fontFamily: 'Arial',
       //       }),
+      //       position: {
+      //         x: 0,
+      //         y: 0,
+      //       },
       //       margin: '50,0,0,10',
+      //       useFlowLayout: true,
       //     }),
       //     g(Image2d, {
       //       width: 200,
       //       height: 200,
       //       backgroundImage: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/bg_rotate.jpeg',
-      //       margin: '10,0,0,20',
+      //       margin: '0,0,0,20',
+      //       useFlowLayout: true,
       //     }),
       //   ],
       // }),
@@ -99,6 +110,7 @@ export class World extends Component {
           height: selected.size.y,
           x: selected.position.x,
           y: selected.position.y,
+          central: true,
           rotation: selected.rotation.z * MathUtils.DEG2RAD,
           zIndex: RenderOrder.GIZMO,
           color: PRIMARY_COLOR,
@@ -107,35 +119,11 @@ export class World extends Component {
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
           adjustIconSize: 18,
           deleteHandler: () => {
-            appCommandManager.actionsCommand.deleteEntity([selected]);
+            appCommandManager._shared.deleteEntity([selected]);
           },
-          adjustHandler: (op, v, e, t) => {
-            if (op === 'start') {
-              appCommandManager.actionsCommand.adjust.onAdjustStartHandler(v, e, t);
-            } else if (op === 'move') {
-              appCommandManager.actionsCommand.adjust.onAdjustMoveHandler(v, e, t);
-            } else {
-              appCommandManager.actionsCommand.adjust.onAdjustEndHandler(v, e, t);
-            }
-          },
-          xLeftHandler: (op, v, e, t) => {
-            if (op ==='start') {
-              appCommandManager.actionsCommand.adjust.onXLeftStartHandler(v, e, t);
-            } else if (op ==='move') {
-              appCommandManager.actionsCommand.adjust.onXLeftMoveHandler(v, e, t);
-            } else {
-              appCommandManager.actionsCommand.adjust.onXLeftEndHandler(v, e, t);
-            }
-          },
-          xRightHandler: (op, v, e, t) => {
-            if (op ==='start') {
-              appCommandManager.actionsCommand.adjust.onXRightStartHandler(v, e, t);
-            } else if (op ==='move') {
-              appCommandManager.actionsCommand.adjust.onXRightMoveHandler(v, e, t);
-            } else {
-              appCommandManager.actionsCommand.adjust.onXRightEndHandler(v, e, t);
-            }
-          }
+          adjustHandler: (...args) => appCommandManager._shared.adjust.adjustHandler(...args),
+          xLeftHandler: (...args) => appCommandManager._shared.adjust.xStretchHandler(...args),
+          xRightHandler: (...args) => appCommandManager._shared.adjust.xStretchHandler(...args),
         }),
       ...imageBuilderStore.scene.snapLines.map((sl, index) => g(Line2d, {
         key: `snapLine-${index}`,

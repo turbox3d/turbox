@@ -27,7 +27,7 @@ export function useMaterialDragAndReplace<CustomBizData>(
   onComplete?: (params: IParams<CustomBizData>, entity?: ItemEntity) => Promise<void>,
   enableReplace = false,
   loadingImg = 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/loading.svg',
-  maxFPS = 60
+  maxFPS = 120
 ) {
   let action: React.MutableRefObject<Action | undefined>,
     dragControl: React.MutableRefObject<MaterialDragSystem>,
@@ -107,10 +107,10 @@ export function useMaterialDragAndReplace<CustomBizData>(
         () => {
           imgEl.style.top = `${pe.clientY - imgEl.clientHeight / 2}px`;
           imgEl.style.left = `${pe.clientX - imgEl.clientWidth / 2}px`;
-          appCommandManager.defaultCommand.select.clearAllSelected();
+          appCommandManager.default.select.clearAllSelected();
           const product = getPickedProduct(pe);
           if (product) {
-            appCommandManager.defaultCommand.select.select([product]);
+            appCommandManager.default.select.select([product]);
           }
         },
         undefined,
@@ -137,13 +137,13 @@ export function useMaterialDragAndReplace<CustomBizData>(
               await handleImageInfo(params);
             }
             if (product) {
-              await appCommandManager.actionsCommand.replaceItemEntity<CustomBizData>(
+              await appCommandManager._shared.replaceItemEntity<CustomBizData>(
                 params.current.url,
                 undefined,
                 params.current.extraInfo
               );
             } else {
-              product = await appCommandManager.actionsCommand.addItemEntity<CustomBizData>(
+              product = await appCommandManager._shared.addItemEntity<CustomBizData>(
                 params.current.url,
                 params.current.extraInfo,
                 false

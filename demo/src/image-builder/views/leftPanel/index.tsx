@@ -3,6 +3,7 @@ import { Button, Input, InputNumber, Upload } from 'antd';
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
+import { PictureOutlined } from '@ant-design/icons';
 
 import './index.less';
 import { appCommandManager } from '../../commands/index';
@@ -10,9 +11,6 @@ import { useMaterialDragAndReplace } from '../../hooks/index';
 import { FrameEntity } from '../../models/entity/frame';
 import { imageBuilderStore } from '../../models/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
-import { ItemEntity } from '../../models/entity/item';
-import { ItemType } from '../../common/consts/scene';
-import TextArea from 'antd/es/input/TextArea';
 
 const images = [
   {
@@ -48,7 +46,7 @@ export function LeftPanel() {
   const { dragControl } = useMaterialDragAndReplace();
   const [width, setWidth] = React.useState(375);
   const [height, setHeight] = React.useState(667);
-  const pointerDownHandler = (url: string, name: number | string) => (e: React.PointerEvent) => {
+  const pointerDownHandler = (url: string, name?: number | string) => (e: React.PointerEvent) => {
     e.persist();
     dragControl.current.onMouseDown(url, { name })(e.nativeEvent);
   };
@@ -57,7 +55,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager.actionsCommand.addFrameEntity({
+      appCommandManager._shared.addFrameEntity({
         size: { x: width, y: height },
         target,
         color: parseInt(e.target.value.replace('#', '0x'), 16),
@@ -74,7 +72,7 @@ export function LeftPanel() {
       if (!buffer) {
         return;
       }
-      appCommandManager.actionsCommand.addFrameEntity({
+      appCommandManager._shared.addFrameEntity({
         size: { x: width, y: height },
         target,
         texture: new Blob([buffer], { type: info.file.type }),
@@ -87,7 +85,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager.actionsCommand.addFrameEntity({
+      appCommandManager._shared.addFrameEntity({
         size: { x: value, y: height },
         target,
       });
@@ -100,7 +98,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager.actionsCommand.addFrameEntity({
+      appCommandManager._shared.addFrameEntity({
         size: { x: width, y: value },
         target,
       });
@@ -108,15 +106,12 @@ export function LeftPanel() {
     300
   );
   const pointerDownTextHandler = (e: React.PointerEvent) => {
-    appCommandManager.actionsCommand.addTextItemEntity('hello world!');
+    appCommandManager._shared.addTextItemEntity('hello world!');
   };
   const updateZ = (type: Z_INDEX_ACTION) => () => {
-    appCommandManager.actionsCommand.updateRenderOrder(type);
+    appCommandManager._shared.updateRenderOrder(type);
   };
   const pointerDownButtonHandler = (e: React.PointerEvent) => {
-  };
-  const onInputHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    appCommandManager.actionsCommand.updateText(e.target.value);
   };
 
   return (
@@ -158,24 +153,21 @@ export function LeftPanel() {
       <div className="material-wp">
         <h4>图片</h4>
         <div className="material">
-          {images.map(item => (
+          {/* {images.map(item => (
             <div key={item.name} className="img-list" onPointerDown={pointerDownHandler(item.url, item.name)}>
               <span>{item.name}</span>
               <img draggable={false} alt={item.name} title={item.name} src={item.url} width={60} height={60} />
             </div>
-          ))}
+          ))} */}
+          <div className="img-list" onPointerDown={pointerDownHandler('https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png')}>
+            <PictureOutlined style={{ fontSize: 32 }} />
+          </div>
         </div>
       </div>
       <div className="text-wp">
         <h4>文本</h4>
         <div className="img-list" onPointerDown={pointerDownTextHandler}>
-          <img draggable alt="text" src={textUrl} width={30} height={30} />
-        </div>
-        <div className="img-list">
-          <Input.TextArea
-            onChange={onInputHandler}
-            autoSize={{ minRows: 3, maxRows: 5 }}
-          />
+          <img alt="text" src={textUrl} width={30} height={30} />
         </div>
       </div>
       <div className="button-wp">

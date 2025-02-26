@@ -21,7 +21,7 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
     onSave(json);
   };
 
-  const selected = appCommandManager.defaultCommand.select.getSelectedEntities()[0];
+  const selected = appCommandManager.default.select.getSelectedEntities()[0];
   const showInvalidRangeFrame = imageBuilderStore.scene.isShowInvalidRangeFrame();
 
   return (
@@ -39,7 +39,7 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
         </Button>
       </div>
       <div>
-        <Button size="small" onClick={dump}>
+        <Button size="small" onClick={dump} disabled={showInvalidRangeFrame}>
           保存
         </Button>
       </div>

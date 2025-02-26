@@ -11,6 +11,7 @@ import { LeftPanel } from './views/leftPanel/index';
 import { World } from './views/world';
 import { TopBar } from './views/topBar';
 import { IDocumentData } from './models/domain/document';
+import { RightPanel } from './views/rightPanel';
 
 window.$$DEBUG = {
   depCollector,
@@ -28,13 +29,12 @@ const updateSceneSize = () => {
   });
 };
 
-function ImageBuilder({
-  handleSave,
-  data,
-}: {
+interface IImageBuilderProps {
   handleSave: (json?: IDocumentData) => void;
   data: IDocumentData | null;
-}) {
+}
+
+const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
   React.useEffect(() => {
     updateSceneSize();
     window.addEventListener('resize', () => {
@@ -81,10 +81,11 @@ function ImageBuilder({
         }}
       />
       <LeftPanel />
+      <RightPanel />
       <TopBar onSave={handleSave} />
       {process.env.NODE_ENV === 'development' && <FPSMonitorComponent className="fps-monitor" />}
     </>
   );
-}
+};
 
 export default ImageBuilder;
