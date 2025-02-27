@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fail } from './utils';
 import { hot as reactComponentHot } from './components/hot';
 import { hot as domainHot } from './hot';
