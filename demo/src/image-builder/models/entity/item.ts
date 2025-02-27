@@ -1,6 +1,6 @@
-import { computed, EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
+import { EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
-import { BLACK } from '../../common/consts/color';
+import { BLACK, GRAY, WHITE } from '../../common/consts/color';
 
 export interface ITextStyles {
   fontSize: number;
@@ -13,6 +13,13 @@ export interface ITextStyles {
   wordWrapWidth: number;
 }
 
+export interface IImageStyles {
+  borderRadius: number;
+  borderWidth: number;
+  borderColor: number;
+  backgroundColor: number;
+}
+
 export class ItemEntity extends EntityObject {
   @reactor imageData?: HTMLImageElement;
   @reactor resourceUrl = '';
@@ -21,7 +28,7 @@ export class ItemEntity extends EntityObject {
   @reactor itemType = ItemType.IMAGE;
   @reactor text = '';
   @reactor href = '';
-  @reactor attribute: ITextStyles & Record<string, any> = {
+  @reactor attribute: ITextStyles & IImageStyles & Record<string, any> = {
     fontSize: 30,
     lineHeight: 1.5,
     fontFamily: 'Arial',
@@ -29,14 +36,13 @@ export class ItemEntity extends EntityObject {
     fontWeight: 'normal',
     align: 'left',
     wordWrap: true,
-    wordWrapWidth: this.wordWrapWidth,
+    wordWrapWidth: 375,
     fontStyle: 'normal',
+    borderWidth: 0,
+    borderColor: GRAY,
+    backgroundColor: WHITE,
+    borderRadius: 0,
   };
-
-  @computed({ lazy: false })
-  get wordWrapWidth() {
-    return 375;
-  }
 
   @mutation
   setMaterialDirection(v: Vector2) {

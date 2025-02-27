@@ -93,6 +93,10 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
       backgroundImage: model.imageData,
       width: model.size.x,
       height: model.size.y,
+      lineWidth: model.attribute.borderWidth,
+      lineColor: model.attribute.borderColor,
+      fillColor: model.attribute.backgroundColor,
+      radius: model.attribute.borderRadius,
       position: {
         x: -(model.size.x / 2),
         y: -(model.size.y / 2),
