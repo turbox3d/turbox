@@ -1,5 +1,11 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.45
+
+### Patch Changes
+
+- 0373dfb: fix: fix image2d&text2d issue
+
 ## 1.1.44
 
 ### Patch Changes

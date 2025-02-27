@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/turbox-hot-loader",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Turbox hot loader",
   "main": "./lib/index.js",
   "module": "./es/index.js",

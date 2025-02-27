@@ -2176,6 +2176,12 @@
 
 # @turbox3d/graphic-component-pixi
 
+## 1.1.45
+
+### Patch Changes
+
+- 0373dfb: fix: fix image2d&text2d issue
+
 ## 1.1.44
 
 ### Patch Changes
@@ -2986,6 +2992,12 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/turbox-hot-loader
+
+## 1.0.27
+
+### Patch Changes
+
+- 0373dfb: fix: fix image2d&text2d issue
 
 ## 1.0.26
 
