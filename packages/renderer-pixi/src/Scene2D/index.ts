@@ -7,57 +7,6 @@ const boundary = new PIXI.EventBoundary();
 
 export const Scene2DSymbol = Symbol('scene2d');
 
-class CoordinateControllerPixi extends CoordinateController {
-  scene2d: Scene2D;
-  canvas: HTMLCanvasElement;
-
-  constructor(canvas: HTMLCanvasElement, scene: Scene2D) {
-    super();
-    this.canvas = canvas;
-    this.scene2d = scene;
-  }
-
-  getCanvasRectImpl() {
-    return this.canvas.getBoundingClientRect();
-  }
-
-  canvasToSceneImpl(point: Vec2) {
-    const { x, y } = this.scene2d.view.position;
-    let scale = this.scene2d.view.scale.x;
-    if (this.scene2d.props.coordinateType && (this.scene2d.props.coordinateType === 'front' || this.scene2d.props.coordinateType === 'left')) {
-      scale = -scale;
-    }
-    let newX = (point.x - x) / this.scene2d.view.scale.x;
-    let newY = (point.y - y) / scale;
-    if (this.scene2d.props.viewport) {
-      newX = (point.x - this.scene2d.props.viewport.x - x) / this.scene2d.view.scale.x;
-      newY = (point.y - this.scene2d.props.viewport.y - y) / scale;
-    }
-    return {
-      x: newX,
-      y: newY,
-    };
-  }
-
-  sceneToCanvasImpl(point: Vec2) {
-    const { x, y } = this.scene2d.view.position;
-    let scale = this.scene2d.view.scale.x;
-    if (this.scene2d.props.coordinateType && (this.scene2d.props.coordinateType === 'front' || this.scene2d.props.coordinateType === 'left')) {
-      scale = -scale;
-    }
-    let newX = point.x * this.scene2d.view.scale.x + x;
-    let newY = point.y * scale + y;
-    if (this.scene2d.props.viewport) {
-      newX = point.x * this.scene2d.view.scale.x + x + this.scene2d.props.viewport.x;
-      newY = point.y * scale + y + this.scene2d.props.viewport.y;
-    }
-    return {
-      x: newX,
-      y: newY,
-    };
-  }
-}
-
 export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
 
@@ -333,7 +282,43 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
 
   createCoordinateController(app: PIXI.Application) {
     const renderer = this.getCanvasView(app).renderer as HTMLCanvasElement;
-    return new CoordinateControllerPixi(renderer, this);
+    return new CoordinateController({
+      getCanvasRectImpl: () => renderer.getBoundingClientRect(),
+      canvasToSceneImpl: (point: Vec2) => {
+        const { x, y } = this.view.position;
+        let scale = this.view.scale.x;
+        if (this.props.coordinateType && (this.props.coordinateType === 'front' || this.props.coordinateType === 'left')) {
+          scale = -scale;
+        }
+        let newX = (point.x - x) / this.view.scale.x;
+        let newY = (point.y - y) / scale;
+        if (this.props.viewport) {
+          newX = (point.x - this.props.viewport.x - x) / this.view.scale.x;
+          newY = (point.y - this.props.viewport.y - y) / scale;
+        }
+        return {
+          x: newX,
+          y: newY,
+        };
+      },
+      sceneToCanvasImpl: (point: Vec2) => {
+        const { x, y } = this.view.position;
+        let scale = this.view.scale.x;
+        if (this.props.coordinateType && (this.props.coordinateType === 'front' || this.props.coordinateType === 'left')) {
+          scale = -scale;
+        }
+        let newX = point.x * this.view.scale.x + x;
+        let newY = point.y * scale + y;
+        if (this.props.viewport) {
+          newX = point.x * this.view.scale.x + x + this.props.viewport.x;
+          newY = point.y * scale + y + this.props.viewport.y;
+        }
+        return {
+          x: newX,
+          y: newY,
+        };
+      },
+    });
   }
 
   resizeStage = (app: PIXI.Application) => {

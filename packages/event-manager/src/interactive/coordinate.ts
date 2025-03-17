@@ -12,7 +12,28 @@ interface ICanvasRect {
   bottom?: number;
 }
 
-export abstract class CoordinateController {
+export class CoordinateController {
+  /** 获取画布矩形包围盒的实现 */
+  private getCanvasRectImpl: () => ICanvasRect;
+  /** 画布屏幕坐标转场景世界坐标的实现 */
+  private canvasToSceneImpl: (point: Vec2, z?: number) => Vec2 | Vec3;
+  /** 场景世界坐标转画布屏幕坐标的实现 */
+  private sceneToCanvasImpl: (point: Vec2 | Vec3) => Vec2;
+
+  constructor({
+    getCanvasRectImpl,
+    canvasToSceneImpl,
+    sceneToCanvasImpl,
+  }: {
+    getCanvasRectImpl: () => ICanvasRect,
+    canvasToSceneImpl: (point: Vec2, z?: number) => Vec2 | Vec3,
+    sceneToCanvasImpl: (point: Vec2 | Vec3) => Vec2,
+  }) {
+    this.getCanvasRectImpl = getCanvasRectImpl;
+    this.canvasToSceneImpl = canvasToSceneImpl;
+    this.sceneToCanvasImpl = sceneToCanvasImpl;
+  }
+
   /**
    * 将坐标进行转化
    */
@@ -58,15 +79,6 @@ export abstract class CoordinateController {
   private sceneToCanvas(point: Vec2 | Vec3) {
     return this.sceneToCanvasImpl(point);
   }
-
-  /** 获取画布矩形包围盒的实现 */
-  abstract getCanvasRectImpl(): ICanvasRect;
-
-  /** 画布屏幕坐标转场景世界坐标的实现 */
-  abstract canvasToSceneImpl(point: Vec2, z?: number): Vec2 | Vec3;
-
-  /** 场景世界坐标转画布屏幕坐标的实现 */
-  abstract sceneToCanvasImpl(point: Vec2 | Vec3): Vec2;
 
   private screenToScene(point: Vec2, z?: number) {
     return this.canvasToScene(this.screenToCanvas(point), z);
