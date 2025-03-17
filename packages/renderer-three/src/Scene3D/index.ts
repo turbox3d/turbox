@@ -5,81 +5,6 @@ import { Vec2, Vec3 } from '@turbox3d/shared';
 
 export const Scene3DSymbol = Symbol('scene3d');
 
-class CoordinateControllerThree extends CoordinateController {
-  scene3d: Scene3D;
-  canvas: HTMLCanvasElement;
-
-  constructor(canvas: HTMLCanvasElement, scene: Scene3D) {
-    super();
-    this.canvas = canvas;
-    this.scene3d = scene;
-  }
-
-  getCanvasRectImpl() {
-    return this.canvas.getBoundingClientRect();
-  }
-
-  canvasToSceneImpl(point: Vec2, z?: number) {
-    const app = this.scene3d.getCurrentApp();
-    const ctrl = this.scene3d.getCurrentInteractiveController();
-    if (!app || !ctrl) {
-      return {
-        x: 0,
-        y: 0,
-        z: 0,
-      };
-    }
-    if (z !== void 0) {
-      const camera = this.scene3d.camera!;
-      const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
-      const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
-      const v = new THREE.Vector3(pX, pY, 0.5);
-      const pos = new THREE.Vector3();
-      v.unproject(camera);
-      if (camera instanceof THREE.OrthographicCamera) {
-        v.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
-        pos.copy(v);
-      } else if (camera instanceof THREE.PerspectiveCamera) {
-        v.sub(camera.position).normalize();
-        const distance = (z - camera.position.z) / v.z;
-        pos.copy(camera.position).add(v.multiplyScalar(distance));
-        pos.applyMatrix4(this.scene3d.view.matrixWorld.clone().invert());
-      }
-      return {
-        x: pos.x,
-        y: pos.y,
-        z,
-      };
-    }
-    // 射线穿中的就用穿中的目标点，如果没有就需要指定一个 z，因为升维无法确定 z 的值
-    const p = ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3 | undefined;
-    return p || {
-      x: 0,
-      y: 0,
-      z: 0,
-    };
-  }
-
-  sceneToCanvasImpl(point: Vec3) {
-    const v = new THREE.Vector3(point.x, point.y, point.z);
-    v.applyMatrix4(this.scene3d.view.matrixWorld);
-    v.project(this.scene3d.camera!);
-    const app = this.scene3d.getCurrentApp();
-    if (!app) {
-      return {
-        x: 0,
-        y: 0,
-      };
-    }
-    const halfWidth = app.domElement.clientWidth / 2;
-    const halfHeight = app.domElement.clientHeight / 2;
-    return {
-      x: Math.round(v.x * halfWidth + halfWidth),
-      y: Math.round(-v.y * halfHeight + halfHeight),
-    };
-  }
-}
-
 export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
@@ -321,7 +246,60 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
   };
 
   createCoordinateController(app: THREE.WebGLRenderer) {
-    return new CoordinateControllerThree(this.getCanvasView(app).renderer, this);
+    const renderer = this.getCanvasView(app).renderer as HTMLCanvasElement;
+    return new CoordinateController({
+      getCanvasRectImpl: () => renderer.getBoundingClientRect(),
+      canvasToSceneImpl: (point: Vec2, z?: number) => {
+        const ctrl = this.getCurrentInteractiveController();
+        if (!ctrl) {
+          return {
+            x: 0,
+            y: 0,
+            z: 0,
+          };
+        }
+        if (z !== void 0) {
+          const camera = this.camera!;
+          const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
+          const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
+          const v = new THREE.Vector3(pX, pY, 0.5);
+          const pos = new THREE.Vector3();
+          v.unproject(camera);
+          if (camera instanceof THREE.OrthographicCamera) {
+            v.applyMatrix4(this.view.matrixWorld.clone().invert());
+            pos.copy(v);
+          } else if (camera instanceof THREE.PerspectiveCamera) {
+            v.sub(camera.position).normalize();
+            const distance = (z - camera.position.z) / v.z;
+            pos.copy(camera.position).add(v.multiplyScalar(distance));
+            pos.applyMatrix4(this.view.matrixWorld.clone().invert());
+          }
+          return {
+            x: pos.x,
+            y: pos.y,
+            z,
+          };
+        }
+        // 射线穿中的就用穿中的目标点，如果没有就需要指定一个 z，因为升维无法确定 z 的值
+        const p = ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3 | undefined;
+        return p || {
+          x: 0,
+          y: 0,
+          z: 0,
+        };
+      },
+      sceneToCanvasImpl: (point: Vec3) => {
+        const v = new THREE.Vector3(point.x, point.y, point.z);
+        v.applyMatrix4(this.view.matrixWorld);
+        v.project(this.camera!);
+        const halfWidth = app.domElement.clientWidth / 2;
+        const halfHeight = app.domElement.clientHeight / 2;
+        return {
+          x: Math.round(v.x * halfWidth + halfWidth),
+          y: Math.round(-v.y * halfHeight + halfHeight),
+        };
+      },
+    });
   }
 
   resizeStage = (app: THREE.WebGLRenderer) => {
