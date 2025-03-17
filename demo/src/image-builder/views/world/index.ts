@@ -119,7 +119,7 @@ export class World extends Component {
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
           adjustIconSize: 18,
           deleteHandler: () => {
-            appCommandManager._shared.deleteEntity([selected]);
+            appCommandManager._shared.entity.deleteEntity([selected]);
           },
           adjustHandler: (...args) => appCommandManager._shared.adjust.adjustHandler(...args),
           xLeftHandler: (...args) => appCommandManager._shared.adjust.xStretchHandler(...args),

@@ -31,7 +31,7 @@ export const RightPanel = ReactiveReact(() => {
   };
 
   const onTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    appCommandManager._shared.updateText(e.target.value);
+    appCommandManager._shared.entity.updateText(e.target.value);
   };
   const onItemEntityHandler = (key: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
     selected.$update({

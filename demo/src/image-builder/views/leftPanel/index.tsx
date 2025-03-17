@@ -55,7 +55,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager._shared.addFrameEntity({
+      appCommandManager._shared.entity.addFrameEntity({
         size: { x: width, y: height },
         target,
         color: parseInt(e.target.value.replace('#', '0x'), 16),
@@ -72,7 +72,7 @@ export function LeftPanel() {
       if (!buffer) {
         return;
       }
-      appCommandManager._shared.addFrameEntity({
+      appCommandManager._shared.entity.addFrameEntity({
         size: { x: width, y: height },
         target,
         texture: new Blob([buffer], { type: info.file.type }),
@@ -85,7 +85,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager._shared.addFrameEntity({
+      appCommandManager._shared.entity.addFrameEntity({
         size: { x: value, y: height },
         target,
       });
@@ -98,7 +98,7 @@ export function LeftPanel() {
       const target = imageBuilderStore.document.getFrameEntities[0] as
         | FrameEntity
         | undefined;
-      appCommandManager._shared.addFrameEntity({
+      appCommandManager._shared.entity.addFrameEntity({
         size: { x: width, y: value },
         target,
       });
@@ -106,10 +106,10 @@ export function LeftPanel() {
     300
   );
   const pointerDownTextHandler = (e: React.PointerEvent) => {
-    appCommandManager._shared.addTextItemEntity('hello world!');
+    appCommandManager._shared.entity.addTextItemEntity('hello world!');
   };
   const updateZ = (type: Z_INDEX_ACTION) => () => {
-    appCommandManager._shared.updateRenderOrder(type);
+    appCommandManager._shared.entity.updateRenderOrder(type);
   };
   const pointerDownButtonHandler = (e: React.PointerEvent) => {
   };

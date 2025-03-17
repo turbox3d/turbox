@@ -10,15 +10,16 @@
 **turbox**（涡轮）的定位是 web 图形互动应用的前端开发框架。场景主要来源于互动游戏、2D/混合3D素材设计工具、3D建模编辑器等业务。
 
 turbox 框架包含几个子框架/库：
-* command-manager -> 指令管理库，处理全局复杂交互、交互逻辑复用的库
-* design-engine -> 设计引擎库，设计工具、3D建模类应用的通用引擎库
-* event-manager -> 事件管理库，处理图形对象基础事件与交互的库
-* graphic-component-pixi/graphic-component-three -> 基础图形组件库，2d for pixi、3d for three 常用的图形控件库
+
+* command-manager -> 图形交互指令管理库，管理全局复杂交互逻辑、交互逻辑组合复用、集中处理事务逻辑的库
+* design-engine -> 设计引擎库，设计工具、搭建工具、3D 建模类应用的通用引擎库
+* event-manager -> 图形交互事件管理库，处理图形对象&场景交互拾取与事件触发机制的框架内核库
+* graphic-component-pixi/graphic-component-three -> 基础图形组件库，2d 组件基于 pixi、3d 组件基于 three
 * math -> 数学库，主要是一些常用几何算法和容差的支持
-* reactivity/reactivity-react -> 响应式数据流事务框架（有框架无关的版本及 for react 的版本）
-* renderer-core/renderer-pixi/renderer-three -> 视图渲染库，处理视图层声明式、组件化渲染对象的库（有引擎无关的核心部分及基于核心实现基础常用能力的 2d for pixi、3d for three 的版本）
-* shared -> 共享工具库，仅仅给框架开发内部使用
-* turbox/turbox2d/turbox3d -> 整合的主包，turbox是2D/3D混合应用场景的主包，turbox2d是2D应用场景的主包，turbox3d是3D应用场景的主包
+* reactivity/reactivity-react -> 响应式数据流事务框架（内核版本/链接 react 的版本）
+* renderer-core/renderer-pixi/renderer-three -> 视图渲染库，处理视图层声明式、组件化渲染对象的库（引擎无关内核版本/基于 pixi 链接/基于 three 链接）
+* shared -> 共享工具库，仅仅给框架开发者内部使用的公共方法库
+* turbox/turbox2d/turbox3d -> 整合主包，turbox 是 2D/3D 混合应用场景的主包，turbox2d 是纯 2D 应用场景的主包，turbox3d 是纯 3D 应用场景的主包
 
 ## API 手册
 [API 手册](https://turbox3d.github.io/turbox-type-doc/)
@@ -270,15 +271,12 @@ reactive(() => {
 });
 ```
 
-> reactor 装饰器可以加括号传参，也可以不加括号不传参，框架都支持，其他装饰器比如 mutation、action、Reactive 同理
+> reactor 支持基本数据类型、数组、对象、自定义 class 的实例、domain 的实例、Map、Set、WeakMap、WeakSet 等数据结构。reactor 装饰器可以加括号传参，也可以不加括号不传参，框架都做了兼容与支持，其他装饰器比如 mutation、action、Reactive 同理。
 
-> reactor 装饰器有三个参数，第一个参数是 deepProxy，用来表示是否需要深度代理，默认开启，这样可以支持深层 mutable 的写法，默认也会对数据结构做性能优化，如果关闭，则需要通过拷贝赋值的方式来触发更新，或者其他 immutable 的方式，否则不会触发更新。
-
-> 第二个参数是 isNeedRecord，表示该属性是否需要被记录到时间旅行器中，该属性可以覆盖掉 domain context 里的配置（全局 config 中的 isNeedRecord 配置）。
-
-> 第三个参数是个 callback 回调，当该属性被使用（get）时，该函数会被触发，该回调有两个参数，第一个参数是 target 对象，第二个参数是被使用时的属性 key，如果访问的是深层次节点则 target 指代的是当前深层次的访问对象，property 则为深层次使用时的属性 key，应该尽量避免使用该回调，可能会造成死循环，只在一些极特殊场景使用。
-
-> 支持基本数据类型、数组、对象、自定义 class 的实例、domain 的实例、Map、Set、WeakMap、WeakSet
+> reactor 装饰器有三个参数：
+> * deepProxy：用来表示是否需要深度代理，默认开启，这样可以支持深层 mutable 的写法，默认也会对数据结构做性能优化，如果关闭，则需要通过拷贝赋值的方式来触发更新，或者其他 immutable 的方式，否则不会触发更新。
+> * isNeedRecord：表示该属性是否需要被记录到时间旅行器中，该属性可以覆盖掉 domain context 里的配置（全局 config 中的 isNeedRecord 配置）。
+> * callback：回调函数，当该属性被使用（get）时，该函数会被触发，该回调有两个参数，第一个参数是 target 对象，第二个参数是被使用时的属性 key，如果访问的是深层次节点则 target 指代的是当前深层次的访问对象，property 则为深层次使用时的属性 key，应该尽量避免使用该回调，可能会造成死循环，只在一些极特殊场景使用。
 
 **turbox** 在开发之初就坚持使用 Proxy 来做数据代理了，那时候主流的响应式状态框架还都是采用 hack 的方式，因为当时我们的业务只需要支持 chrome，而 web 页面通常需要考虑很多兼容性问题。用 Proxy 可以让代码变得更简单，也支持更多数据结构和方法的截持。
 
@@ -594,6 +592,8 @@ class MyDomain extends Domain {
 
 > mutation 每次触发更新，对应就会保存一次事务记录到撤销恢复栈（如果更新的数据中有被设置成可记录的属性），遵守这个规则，就可以无需额外代码实现撤销恢复，这是 turbox 中的被动事务机制（后面会提到主动事务机制）
 
+> 要在 mutation 中更新数组状态，可以直接使用数组原生 API，也可以直接操作数组下标或直接赋值，都能触发 Reactive 包裹组件的重新渲染，这是因为 turbox 使用了 Proxy 的能力
+
 如果有多个异步的 mutation 需要计算，并且中间结果不想被立即响应，可以在外层再包裹一个 mutation 函数，不然的话，出了异步 mutation 作用域以后就会立即响应一次：
 
 ```js
@@ -648,11 +648,13 @@ const f = mutation('customName', async () => {
 await f();
 ```
 
-> 注意下 mutation 装饰器的参数，第一个参数 displayName 可以自定义 mutation 的名称，如未指定则默认使用函数名；第二个参数 immediately 代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的事务记录到时间旅行器中；第三个参数 forceSaveHistory 用来强制把当前操作保存为一个历史记录，默认情况框架会根据一定策略来优化是否需要保存历史记录（如会影响 Reactive/reactive 依赖数据变化的操作，但是 immediatelyReactive 和 keepAliveComputed 的影响会被忽略直到下一次有影响的操作到来），极少数情况我们希望即使是纯数据无视图响应或 keepAlive 的部分也要存成一个历史记录，这时候就可以设置为 true；第四个参数 isNeedRecord 表示该次操作的变更是否需要记录到撤销恢复栈中，默认为 true，跟 reactor 装饰器的参数功能是一样的，只不过一个针对函数中的所有变更，一个针对单个属性，函数的 isNeedRecord 为 false 时，不会记录该操作产生的任何数据变更，而为 true 时，则遵守属性的 isNeedRecord 配置
+> mutation 函数里面可以调用其他 mutation，这可以让我们很方便地组合各种 mutation 逻辑，简化我们的代码组织方式。mutation 是用来做变更的，从最佳实践来说它不应该有返回值，也没有必要有返回值，但是框架并不会限制这个行为，这属于规范层面的问题。
 
-> mutation 里面可以嵌套 mutation，但不可以嵌套 action（后面会提）
-
-> mutation 是用来做变更的，符合规范的情况是它不应该有返回值，也没有必要有返回值，但如果有场景一定要返回值，也是可以接收到的
+> 注意下 mutation 装饰器的参数：
+> * immediately：代表这个 mutation 是否需要被当做一次独立的事务，默认是 false，所有的同步 mutation 会被合并成一个 history record 后再触发重新渲染，否则，每一次 mutation 执行完都会立刻触发一次重新渲染，并会被作为一次独立的事务记录到时间旅行器中
+> * displayName：可以自定义 mutation 的名称，如未指定则默认使用函数名
+> * forceSaveHistory：默认为 false（大部分情况都应该保持 false），框架会遵循 mutation 的事务设计原则和各项参数配置来自动决定当前情况是否应该保存历史记录。一个很特殊的 corner case：一些属性的修改触发了 immediately reactive 和 keepAliveComputed 的立即执行，这两个操作通常用来计算一些中间数据，并不会直接影响到渲染侧的表现（渲染侧会使用 Reactive/ReactiveReact），框架默认情况不会记录这些数据的变更（撤销恢复操作一般来说必须要有视图层反馈），但你可以通过将该属性设置为 true 来强制记录中间数据的变更，这可能在一些无视图渲染的场景下会发生
+> * isNeedRecord：表示该次操作的变更是否需要记录到撤销恢复栈中，默认为 true，跟 reactor 装饰器的参数功能是一样的，只不过一个针对函数中的所有变更，一个针对单个属性，此处 mutation 函数的 isNeedRecord 为 false 时，不会保存该操作产生的任何数据变更记录（忽略 reactor 属性上的对应参数设置），而为 true 时，则仍旧遵守 reactor 属性上的 isNeedRecord 配置
 
 ##### $update
 上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是建议抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
@@ -669,19 +671,47 @@ class MyDomain extends Domain {
   }
 }
 ```
-> 和 redux 一样，更新 domain 中的 reactor state 是一个同步的过程，触发 mutation 操作（默认多次会被合并），如果状态改变了，都会触发一次依赖到此操作状态的组件的 forceUpdate() 方法来执行 reRender
 
-> 要在 mutation 中更新数组状态，可以直接使用数组原生 API，也可以直接操作数组下标或直接赋值，都能触发重新渲染，这是因为 turbox 使用了 Proxy 的能力
+允许使用构造函数对 reactor 修饰的属性赋值，这是因为在实例构造时，属性一定还没有被视图层使用和观察，且实例也需要被初始化，在这之前，你可以对这个实例的属性做任何修改，一旦响应式视图层使用属性并渲染完毕（依赖收集完毕），就只能通过 mutation 或 $update 来对属性做修改：
+```js
+class Line extends Domain {
+  @reactor start?: Point;
+  @reactor end?: Point;
 
-> 可以使用构造函数对 reactor 修饰的属性赋值，这是因为在构造时，属性一定还没有被视图层观察，在这之前，你可以对这个实例的属性做任何修改，但一旦渲染完毕后，就只能通过 mutation 或 $update 来做修改
+  @mutation
+  updateLine(start: Point, end?: Point) {
+    this.start = start;
+    this.end = end;
+  }
 
-> 在属性已经被视图层观察（使用）后，你只能在 mutation 调用范围内对该属性赋值或使用 $update 来更新数据，在其他普通函数中直接对 reactor 修饰过的属性赋值会得到一个错误，You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})，这是为了防止非法操作导致状态和视图不同步的情况出现
+  constructor(start: Point, end: Point) {
+    this.start = start;
+    this.end = end;
+  }
+}
 
-> 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor state，不关心其他 domain 的 reactor state，如果有关联多使用组合而非继承或图状关系，但数据模型稍微复杂一些的业务，仅仅使用组合难以满足需求，现实情况可能就是存在父子或兄弟关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 直接赋值也不会抛错
+const $line = new Line(p1, p2);
 
-上面提到的更新方式可能会让一些童鞋有疑问，为什么不在 mutation 或 $update 作用域内更新属性会报错，这就得先说一下背景。在框架层面，其实是不允许在 mutation 或 $update 以外的范围直接对数据做更改的，为什么要做这个限制呢？因为我们并不希望所有的数据更新零散在代码的各个角落，而是有个地方能明确收敛所有的数据更新操作，这样才会有利于组织我们的代码，也不会和非响应式的属性更新混在一起，也才能做一些撤销恢复事务的机制。
+@ReactiveReact()
+export default class extends React.Component {
+  handler = () => {
+    $line.updateLine(p3, p4);
+  }
 
-基于上面的前提条件，我们是不希望用户在 mutation 以外的范围做更新的，所以我们得提供一个报错机制来约束用户，没有这个机制的话数据和视图就不同步了。
+  render() {
+    return (
+      <div>
+        <span>{$line.start.position.x}{$line.start.position.y}</span>
+        <button onClick={this.handler}>modify</button>
+      </div>
+    );
+  }
+}
+```
+
+> 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor 属性，不关心其他 domain 的 reactor 属性，如果有关联，多使用组合而非继承或图状关系。但数据模型稍微复杂一些的业务，比如 Point 类和 Line 类之间存在依赖关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 做赋值操作也是被允许的。
+
+但是在普通函数中（非 mutation 或 $update 函数）直接对 reactor 修饰过的属性赋值会得到一个错误，You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})。因为用普通函数修改 reactor 属性并不能正确触发响应函数，如果不给到用户明确的错误提示，可能会引起状态和视图不同步的情况出现，这对应用的维护和调试都会带来一定的困难。同时我们并不希望所有的数据更新零散在代码的各个角落，而是有个地方能明确收敛所有的数据更新操作，这样才会有利于组织我们的代码，也不会和非响应式的属性更新混在一起，更方便做一些撤销恢复事务的机制。
 
 所以在每一次 set 的时候，我们都会做一个检测，判断这个属性是否在指定合法范围内调用，当然这个其实只在开发时检测就够了，生产环境可以关闭以提高一丢丢性能：
 ```ts
@@ -2146,6 +2176,17 @@ export class MullionMesh2D extends Mesh2D<IMeshProps> {
 │   │   ├── images
 │   │   └── styles
 |   ├── commands // 指令层，全局业务指令或可复用指令
+│   │   ├── skew // 互斥指令，存在全局事件，显示调用激活
+│   │   ├── clip // 互斥指令，存在全局事件，显示调用激活
+│   │   ├── default // 互斥指令，存在全局事件，默认激活
+│   │   │   ├── move
+│   │   │   ├── rotate
+│   │   │   ├── index.ts
+│   │   ├── shared // 公共函数指令，可随时调用，不存在全局事件（一般用来收敛与事务有关的交互行为逻辑）
+│   │   │   ├── entity
+│   │   │   ├── adjust
+│   │   │   ├── index.ts
+│   │   ├── index.ts
 │   ├── components // 插件内部的公共组件
 │   │   ├── 2D
 │   │   ├── 3D
@@ -2170,10 +2211,10 @@ export class MullionMesh2D extends Mesh2D<IMeshProps> {
 │   ├── utils // 工具函数，纯函数，可写单测的
 │   │   └── __tests__
 │   └── views // 视图层
-│   │   ├── FunctionPanel
-│   │   ├── Scene
-│   │   └── TopBar
-│   └── plugin.ts // 插件入口文件
+│   │   ├── functionPanel
+│   │   ├── sceneWorld
+│   │   └── topBar
+│   └── index.ts // 插件入口文件
 ```
 web 业务：
 ```

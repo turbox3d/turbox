@@ -4,7 +4,7 @@ import { SharedCommand } from './shared';
 import { DefaultCommand } from './default';
 
 /**
- * 除公共指令集，其他顶层全局事件指令集之间是互斥的，即一次只能激活一组指令集，非当前指令集会被自动禁用
+ * 除公共函数指令集，其他顶层全局事件指令集之间是互斥的，即一次只能激活一组指令集，非当前指令集的事件会被自动禁用
  */
 class AppCommandManager extends CommandManager.install({
   default: DefaultCommand,

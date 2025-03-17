@@ -137,13 +137,13 @@ export function useMaterialDragAndReplace<CustomBizData>(
               await handleImageInfo(params);
             }
             if (product) {
-              await appCommandManager._shared.replaceItemEntity<CustomBizData>(
+              await appCommandManager._shared.entity.replaceItemEntity<CustomBizData>(
                 params.current.url,
                 undefined,
                 params.current.extraInfo
               );
             } else {
-              product = await appCommandManager._shared.addItemEntity<CustomBizData>(
+              product = await appCommandManager._shared.entity.addItemEntity<CustomBizData>(
                 params.current.url,
                 params.current.extraInfo,
                 false

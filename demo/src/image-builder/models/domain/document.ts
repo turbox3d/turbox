@@ -116,14 +116,14 @@ export class DocumentDomain extends DocumentSystem {
   async loadData(json: IDocumentData) {
     this.pauseRecord();
     const { container, items } = json;
-    const frameEntity = await appCommandManager._shared.addFrameEntity({
+    const frameEntity = await appCommandManager._shared.entity.addFrameEntity({
       size: { x: container.width, y: container.height },
       color: GRAY,
     });
     await Promise.all(
       items.map(async i => {
         if (i.type === 'image') {
-          const itemEntity = await appCommandManager._shared.addItemEntity(i.data.src, undefined, true, false);
+          const itemEntity = await appCommandManager._shared.entity.addItemEntity(i.data.src, undefined, true, false);
           if (!itemEntity) {
             return;
           }
@@ -142,7 +142,7 @@ export class DocumentDomain extends DocumentSystem {
           itemEntity.setRenderOrder(i.zIndex);
           this.sortModels([itemEntity]);
         } else if (i.type === 'text') {
-          const textEntity = await appCommandManager._shared.addTextItemEntity(i.data.content, undefined, true, false);
+          const textEntity = await appCommandManager._shared.entity.addTextItemEntity(i.data.content, undefined, true, false);
           textEntity.setSize({
             x: i.width,
             y: i.height,
