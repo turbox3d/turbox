@@ -1022,6 +1022,14 @@
 
 # @turbox3d/renderer-three
 
+## 1.0.28
+
+### Patch Changes
+
+- 0763c0f: refactor: enhance coordinate controller
+- Updated dependencies [0763c0f]
+  - @turbox3d/event-manager@1.1.32
+
 ## 1.0.27
 
 ### Patch Changes
@@ -1203,6 +1211,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-pixi
+
+## 1.0.29
+
+### Patch Changes
+
+- 0763c0f: refactor: enhance coordinate controller
+- Updated dependencies [0763c0f]
+  - @turbox3d/event-manager@1.1.32
 
 ## 1.0.28
 
@@ -2398,6 +2414,12 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/event-manager
+
+## 1.1.32
+
+### Patch Changes
+
+- 0763c0f: refactor: enhance coordinate controller
 
 ## 1.1.31
 

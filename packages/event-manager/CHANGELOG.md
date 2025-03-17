@@ -1,5 +1,11 @@
 # @turbox3d/event-manager
 
+## 1.1.32
+
+### Patch Changes
+
+- 0763c0f: refactor: enhance coordinate controller
+
 ## 1.1.31
 
 ### Patch Changes

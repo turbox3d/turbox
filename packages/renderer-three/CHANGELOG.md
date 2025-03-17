@@ -1,5 +1,13 @@
 # @turbox3d/renderer-three
 
+## 1.0.28
+
+### Patch Changes
+
+- 0763c0f: refactor: enhance coordinate controller
+- Updated dependencies [0763c0f]
+  - @turbox3d/event-manager@1.1.32
+
 ## 1.0.27
 
 ### Patch Changes
