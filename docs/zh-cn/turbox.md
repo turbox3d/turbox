@@ -7,7 +7,7 @@
 [![install size](https://img.shields.io/bundlephobia/minzip/@turbox3d/turbox?style=flat-square)](https://www.npmjs.com/package/@turbox3d/turbox)
 
 ## 介绍
-**turbox**（涡轮）的定位是 web 图形互动应用的前端开发框架。场景主要来源于互动游戏、2D/混合3D素材设计工具、3D建模编辑器等业务。
+**turbox**（涡轮）的定位是 web 图形互动应用的前端开发框架。场景主要来源于互动游戏、搭建工具、2D/混合3D素材设计工具、3D建模编辑器等业务。
 
 turbox 框架包含几个子框架/库：
 
@@ -240,7 +240,1083 @@ export const Container = () => {
 ```
 
 ## 基础原理
-### 响应式数据流事务框架
+### 声明式渲染
+搞图形渲染框架，不同的端往往只是个上层壳子，不能只了解当前端的技术特性，往往需要对整个终端技术体系及其发展有一定理解，实际上图形渲染的发展历史比所谓的现代客户端、前端技术可久远多了，也存在着互相借鉴，比如 DOM API 的设计灵感来源于早期桌面端 GUI 的开发经验，而 SwiftUI、Jetpack Compose 这类现代 UI 框架又深受声明式 MVVM 框架 React 的影响，而 React 又是将早期 Angular 的理念做了创新发挥到了极致。
+
+随着时代的发展，终端技术的架构体系也逐渐趋同，差异化的部分无非是语言特性（AOT/JIT）、端上的特性以及系统能力，整体上都是采用 MVVM 的业务开发框架，跑在不同的 GUI 平台上，而大部分 GUI 平台的系统控件和底层能力都是基于渲染前端来实现，诸如 Skia、Core Graphics 等，让大部分业务开发者可以使用现成的高性能控件，而非人人都需要学习陡峭的图形学及性能优化方法（除了 3D 开发领域比较特殊，一般平台层也只是做桥接）。
+
+现代图形学的技术生态基本上都是基于 C/C++，在需要做高阶优化的时候，大部分 GUI 平台一般也都支持 C++ 扩展（web 端需要通过 wasm 实现），像业界比较知名的图形库前端基本都是基于 C 语言家族实现，大部分图形库前端一般也都支持切换渲染后端，实现诸如利用 CPU 的软件渲染做简单矢量图形绘制、或是利用不同操作系统提供的图形渲染引擎做 GPU 硬件渲染。
+
+![arch](https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/2.png)
+
+虽然我们现在有了 Qt Quick、SwiftUI、Jetpack Compose、React 这样的产物，大大提升了我们的业务迭代效率和系统稳定性，但在这些技术诞生之前很长的一段时间，传统桌面端、客户端、Web、图形软件开发时，基本都是使用命令式、面向对象、MVC 等编程范式去组织代码。
+
+#### 代码示例
+
+##### Qt
+```c++
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+    // 设置窗口标题
+    setWindowTitle("Qt 界面开发示例");
+    // 创建一个按钮
+    QPushButton *button = new QPushButton("点击我", this);
+    button->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    // 创建一个标签
+    QLabel *label = new QLabel("Hello, Qt!", this);
+    label->setGeometry(QRect(QPoint(100, 200), QSize(200, 50)));
+    // 连接按钮点击信号到槽函数
+    connect(button, &QPushButton::clicked, this, &MainWindow::on_button_clicked);
+}
+
+MainWindow::~MainWindow() {
+    delete ui;
+}
+
+void MainWindow::on_button_clicked() {
+    QMessageBox::information(this, "提示", "按钮被点击了！");
+}
+```
+
+##### Skia
+```c++
+#include "include/core/SkCanvas.h"
+#include "include/core/SkGraphics.h"
+#include "include/core/SkImageInfo.h"
+#include "include/core/SkSurface.h"
+#include "include/core/SkPaint.h"
+#include "include/core/SkFont.h"
+#include "include/core/SkStream.h"
+
+int main() {
+    // 初始化 Skia
+    SkGraphics::Init();
+    // 创建一个 800x600 的画布
+    SkImageInfo info = SkImageInfo::MakeN32Premul(800, 600);
+    sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+    SkCanvas* canvas = surface->getCanvas();
+    // 清除画布，设置背景颜色为白色
+    canvas->clear(SK_ColorWHITE);
+    // 创建一个画笔
+    SkPaint paint;
+    paint.setColor(SK_ColorBLUE);
+    paint.setStrokeWidth(4);
+    paint.setStyle(SkPaint::kStroke_Style);
+    // 绘制一个矩形
+    SkRect rect = SkRect::MakeXYWH(100, 100, 200, 150);
+    canvas->drawRect(rect, paint);
+    // 创建一个字体
+    SkFont font;
+    font.setSize(24);
+    // 设置画笔颜色为黑色
+    paint.setColor(SK_ColorBLACK);
+    paint.setStyle(SkPaint::kFill_Style);
+    // 绘制文本
+    canvas->drawString("Hello, Skia!", 100, 300, font, paint);
+    // 将画布内容保存为 PNG 文件
+    sk_sp<SkImage> image = surface->makeImageSnapshot();
+    sk_sp<SkData> pngData = image->encodeToData();
+    SkFILEWStream out("output.png");
+    out.write(pngData->data(), pngData->size());
+    return 0;
+}
+```
+
+##### UIKit
+```swift
+import UIKit
+
+class ViewController: UIViewController {
+    let label: UILabel = {
+        let label = UILabel()
+        label.text = "Hello, UIKit!"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 24)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let button: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Click Me", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        view.addSubview(label)
+        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50)
+        ])
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20)
+        ])
+        button.addTarget(self, action: #selector(buttonClicked), for: .touchUpInside)
+    }
+    @objc func buttonClicked() {
+        label.text = "Button Clicked!"
+    }
+}
+```
+
+##### jQuery
+```js
+$(document).ready(function() {
+    $("#button").click(function() {
+        $("#message").text("Button Clicked!");
+        $.ajax({
+            url: "https://jsonplaceholder.typicode.com/posts/1",
+            method: "GET",
+            success: function(data) {
+                $("#message").text("AJAX Request Successful: " + data.title);
+            },
+            error: function() {
+                $("#message").text("AJAX Request Failed");
+            }
+        });
+    });
+});
+```
+
+##### pixi.js
+```js
+const app = new PIXI.Application({
+    width: 800,
+    height: 600,
+    backgroundColor: 0x1099bb,
+});
+document.body.appendChild(app.view);
+PIXI.Loader.shared
+    .add('bunny', 'https://pixijs.io/examples/examples/assets/bunny.png')
+    .load(setup);
+function setup() {
+    const bunny = new PIXI.Sprite(PIXI.Loader.shared.resources.bunny.texture);
+    bunny.anchor.set(0.5);
+    bunny.x = app.renderer.width / 2;
+    bunny.y = app.renderer.height / 2;
+    app.stage.addChild(bunny);
+    app.ticker.add((delta) => {
+        bunny.rotation += 0.01 * delta;
+    });
+}
+```
+
+##### three.js
+```js
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+function animate() {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+animate();
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+```
+
+时至今日，我们在端上的功能场景越来越丰富与复杂，也需要多人共同参与开发与维护，这加快了 MVVM 系列框架的大放异彩，在业务迭代侧，这无疑是一个各种取舍下的最优解（很适合作为上层复杂端侧应用的开发框架，除大型游戏开发领域有待商榷，被各种工作流和引擎捆绑）。
+
+<table>
+  <tr>
+    <td>
+      <pre>
+        <code>
+          /** 命令式 */
+          var count = 0
+          let stack = new VStack
+          let text = new Text("Count: \(count)")
+          stack.add_child(text)
+          let button = new Button("Increment")
+          button.set_onclick(||
+              count += 1
+              text.set_text("Count: \(count)")
+          )
+          stack.add_child(button)
+        </code>
+      </pre>
+    </td>
+    <td>
+      <pre>
+        <code>
+          /** 声明式 */
+          struct AppState {
+              count: i32
+          }
+          //
+          VStack {
+              Text("count: \(state.count)")
+              Button("Increment") {
+                  state.count += 1
+              }
+          }
+        </code>
+      </pre>
+    </td>
+  </tr>
+</table>
+
+很明显声明式的方式更加简洁，且可以减少维护人员的心智负担，但这种模式在 web 2d/3d 软件应用领域实际上并不普及（主要也是因为业界这种形态的规模化业务非常少且垂直），传统桌面端图形软件由于历史架构包袱和极限性能考量，仍旧采用 MVC 居多。
+
+而 Turbox 则是将 MVVM 的思想带入到了大型 web 2d/3d 软件应用开发领域，实现了 2d/3d 视图对象的声明式渲染核心，结合指令事务管理系统、图形场景事件机制、响应式数据流框架等来支撑复杂应用的开发。
+
+#### 渲染核心
+渲染核心采用链表结构来组织视图层，这有助于遍历并提高增删节点的效率。每个视图组件的实例都会关联一个对应的节点来储存相关信息，节点主要分为三种类型（Scene、Component、Mesh）：
+
+<img width="300" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/1.png" />
+
+- Scene 对应的就是场景容器，一般来说在顶层且不唯一（因为实体需要作为子视图添加到场景中，且可能同时存在多个场景，如多视图或 2d、3d 视图共存等场景）
+  - 渲染核心提供了抽象类 BaseScene 将图形场景的通用概念抽象与收敛（如场景的初始化、相机的初始位置、场景缩放、分辨率、挂载元素、画布背景、坐标系、关联交互事件等）
+  - 基于 BaseScene 的抽象接口实现扩展，可与不同的渲染引擎链接，比如框架默认提供了 Scene2D 下的 Pixi 引擎实现，也提供了 Scene3D 下的 Three 引擎实现，用户也可以选择其他的渲染引擎低成本地与框架进行新的绑定实现
+- Mesh 对应的是一个图形或模型对象的最小表达单元，就像 web 场景中的 dom 元素
+  - 通常它是只处理模型的视图显示与交互控制逻辑，比如 ```g(Rect2D, { width: 100, height: 100 })```，其中 Mesh 也有三种 viewType（相机、灯光、模型），默认为模型（3d 中额外有灯光和相机对象）
+  - 渲染核心同样提供了抽象类 BaseMesh（收敛初始化操作、Mesh 与交互事件的控制与关联、视图单元收到增删改指令时的对应实现等）
+  - 基于抽象类的接口与不同引擎链接（比如 addChildView，不同渲染引擎的 API 各不相同，但都是在做同一件事），基于绑定引擎后的 Mesh2D、Mesh3D 实现，我们可以定制自己的视图组件
+- Component 与实际渲染无关，可以将它理解成逻辑层面的空节点
+  - 它提供了视图层所有组件都具备的生命周期、forceUpdate、render 方法接口（实际上 BaseScene 和 BaseMesh 都继承自该类），渲染核心完成计算并提交视图指令后会触发对应的接口，我们也可以基于此类自定义逻辑组件
+  - 在渲染时，框架会自动忽略掉空节点，将该组件的子组件添加到它的父节点下面。如果你的子节点是局部坐标而非世界坐标，需要基于容器节点来定位，这时候应该使用 Mesh 来创建容器组件，而非直接使用 Component（使用 Component 会被忽略，子节点会依赖当前节点的父节点来定位）
+
+> 如何基于不同渲染引擎来进行框架绑定，可以参考子包 renderer-pixi、renderer-three 的实现
+
+基于渲染核心的能力我们可以像如下代码所示来创建我们的画布场景与实体：
+```js
+/** 调用 render 方法来渲染图形视图 */
+render([
+  g(Scene2D, { // 初始化场景
+    id: 'scene2d',
+    draggable: true,
+    scalable: true,
+    container: 'scene2d',
+    transparent: true,
+    commandMgr: appCommandManager,
+    cameraPosition: { x: 0, y: 0 },
+    resizeTo: 'scene2d',
+    maxFPS: 120,
+    disableResize: false,
+    resolution: imageBuilderStore.scene.resolution,
+    renderFlag: imageBuilderStore.scene.renderFlag2d,
+    initialized: (sceneTools: SceneTool) => {
+      imageBuilderStore.scene.setSceneTools(sceneTools);
+    },
+    children: [g(World)], // 子视图
+  }),
+]);
+
+/** 场景世界组件 */
+@Reactive
+export class World extends Component {
+  render() {
+    // do something...
+    return [ // 组织一系列视图
+      g(Axis2d),
+      g(Grid2d, {
+        gridWidth: 250000,
+        cellSize: 50,
+        lineColor: GRAY,
+        zIndex: RenderOrder.GRID,
+      }),
+      ...frames.map(m =>
+        g(FrameViewEntity, { // 自定义组件，可以继续嵌套子视图
+          key: m.id,
+          model: m as FrameEntity,
+        })
+      ),
+      ...items.map(m =>
+        g(ItemViewEntity, { // 自定义组件，可以继续嵌套子视图
+          key: m.id,
+          model: m as ItemEntity,
+        })
+      ),
+      hinted &&
+        g(Rect2d, {
+          key: 'wireframe',
+          width: hinted.size.x,
+          height: hinted.size.y,
+          x: hinted.position.x,
+          y: hinted.position.y,
+          rotation: hinted.rotation.z * MathUtils.DEG2RAD,
+          zIndex: RenderOrder.GIZMO,
+          central: true,
+          lineWidth: 1,
+          lineColor: PRIMARY_COLOR,
+          fillAlpha: 0,
+          alignment: 1,
+        }),
+    ];
+  }
+}
+```
+
+结合响应式数据流框架，当依赖数据发生变更，会精确触发某个组件的重新渲染，这时候会重新执行该组件的 render 函数，此时框架接收到 render 函数返回的视图层 Schema 也可能发生变化，如下 return 的部分可能随逻辑的不同会有不同的返回：
+```js
+@Reactive
+class A extends Component {
+    render() {
+        // do something...
+        return [ // 组织一系列视图的 Schema
+          g(Axis2d),
+          isShow && g(Grid2d, {
+            gridWidth: model.gridWidth,
+            cellSize: 50,
+            lineColor: GRAY,
+            zIndex: RenderOrder.GRID,
+          }),
+        ];
+    }
+}
+```
+
+框架会先对新的 Schema 进行解析（需要更新的子树），与内存中原来的链表结构进行比对，如果发现 props 有更新，则在原节点上作标记，删除和新增也是类似：
+![node-update](https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/3.png)
+
+同类型的组件可能会被使用（实例化）多次，如上图的 C1、C2，在同一层级下，需要通过增加 key 来区分（类似 React 中的概念），否则框架会按照原顺序来比对，可能会导致不必要的删除和重新创建，而实际上只需要移位，节点本身并未发生变化。
+
+整个比对遍历的过程按照 DFS 方法，同层级进行比对，每个节点可能会被标记多次（比如某个操作同时触发子组件和父组件的 update，子组件已经被处理标记过，父组件可能连带影响子组件，导致子组件再次被处理标记，这时候需要能够将节点标记的状态叠加起来，再进行最终处理，以减少不必要的渲染提升效率，如先被标记为 update，再由父组件连带影响被标记为 delete，很显然此时 update 是多余的），配合框架提供的 batchUpdate 方法，我们可以将多次变更合并，否则会出现无意义的闪烁或性能损失。
+
+> Turbox 早在 19 年就已经实现该理念（当时也是强捆绑 React，如今已经重新设计架构），最近市面上出现一些类似 idea 的库（比如 react-three-fiber、pixi-react 等），但基本上都是强绑定了图形引擎和 React 框架，而 React 是为 web 开发而设计的，实际上其中很多机制并不适合使用在图形场景，也会有性能问题。
+> - React 的包体过大，而图形场景只是需要最核心的声明式渲染部分
+> - 内存占用大，完整的 React 维护两个 fiber 树，current fiber 和临时工作 fiber，以保证完整拷贝 patch
+> - 图形场景渲染机制与 web 场景不同，不需要中断、暂停及调度功能，长耗时任务可以手动通过分片机制来拆分计算过程或通过 LOD、暂停后台耗时特效、视椎剔除、离屏渲染等优化手段，响应高优交互，而不是通过切分渲染，图形渲染任务提交到 GPU 本就是异步的，并不会像 web dom 操作一样阻塞主线程造成卡顿，而虚拟 dom 本身的 diff 和 patch 耗时本就不是计算瓶颈，这部分的任务拆分收益甚微且反而可能会造成卡顿，由于图形场景是以渲染 ticker 的机制来设计的
+> - 图形场景的事件、拾取和全局指令机制是很复杂的，需要重写，并不能直接使用 React 的事件池机制
+> - 渲染核心应尽量保证 0 依赖，使用原生语法，这样易于维护升级而非被迫跟随其他框架的机制而升级，且更容易适配其他 VM 环境
+> - 渲染引擎无关的架构设计，可以随时替换渲染引擎的绑定，灵活选用合适引擎，而不用变更和污染上层业务代码及业务框架本身的设计
+
+理解了基本原理之后，我们来看一下它的完整使用方式：
+```js
+@Reactive
+export class FrontView extends Component {
+  render() {
+    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
+    if (!wall) {
+      return null;
+    }
+    const viewport = doorWindowStore.scene.viewStyles.front;
+    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
+    return [
+      g(Scene2D, { // g() 是 graphicscript 的简称，类似 vue 中的 h() 函数，意思是用于生成图形对象的 js 声明式脚本
+        id: 'front-scene-2d'
+        commandMgr: appCommandManager,
+        container: SCENE_2D,
+        viewport,
+        camera2dSize: { x: wall.size.x, y: wall.size.y + 1000 },
+        coordinateType: 'front',
+        cameraPosition: cameraPos,
+        transparent: false,
+        backgroundColor: 0xE6E9EB,
+        resizeTo: SCENE_2D,
+        children: [
+          g(Axis2d, {
+            type: 'front',
+          }),
+          g(DoorWindowView, {
+            model,
+            // 全局 command 可以接收该对象事件的前提是已经定义了 id、type
+            id: model.id,
+            type: DoorWindowEntityType.DoorWindowVirtual,
+            clickable: true, // 声明成可以点击，也可以在组件内部重写 onClickable 方法
+            hoverable: true,
+            draggable: true,
+            pinchable: true,
+            rotatable: true,
+            pressable: true,
+            key: model.id,
+            onClick: (iv, ev, tools) => {}, // 简单交互场景，你也可以不使用全局的 command 系统来捕获事件，直接在组件内部重写 onClick 或者从外部 props 定义 onClick 等事件回调
+          })
+        ],
+        key: 'xxx',
+      }),
+    ];
+  }
+}
+
+// 一个可交互 Mesh2D 组件
+interface IProps {
+  model: DoorWindowPDMEntity;
+  x?: number;
+  y?: number;
+  width: number;
+  height: number;
+  central?: boolean;
+}
+
+@Reactive
+export class DoorWindowView extends Mesh2D<IProps> {
+  // 响应式管线，组件第一次 mount 或重新 render 时会按照顺序执行，管线中的每个任务都被 reactive 函数包裹，拥有响应式的能力，也就是说只有当依赖的属性变化时，才会触发该任务的重新执行，以此达到视图层的精细化更新，提高性能（比如只是材质变了，就重新计算材质相关的任务，只是位置变了就计算位置相关的任务
+  protected reactivePipeLine = [
+    this.updatePosition,
+    this.updateRotation,
+    this.updateScale,
+  ];
+  // 可以重写 getViewEntity 方法，来传递可交互 mesh 的信息，也可以不重写，默认逻辑使用的是 props 上的 id、type 字段，可以从组件外部传入
+  protected getViewEntity() {
+    return {
+      id: this.props.model.id, // 对象的 id
+      type: AdjustPointSymbol, // 对象的类别
+      viewObject: this.view, // 自定义字段
+    };
+  }
+  // 你也可以直接在组件内部重写事件回调逻辑
+  onClick(iv: Partial<ViewEntity>, ev: SceneEvent, tools: SceneTool) {
+    super.onClick(iv, ev, tools); // 默认会调用 props 上的 onClick 回调
+  }
+
+  updatePosition() {
+    const { position } = this.props.model;
+    this.view.position.set(position.x, position.y);
+  }
+
+  updateRotation() {
+    const { rotation } = this.props.model;
+    this.view.rotation = rotation.z * MathUtils.DEG2RAD;
+  }
+
+  updateScale() {
+    const { scale } = this.props.model;
+    this.view.scale.set(scale.x, scale.y);
+  }
+
+  render() {
+    const { x = 0, y = 0, width, height, central = false } = this.props;
+    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
+    return [
+      g(Rect2d, {
+        key: 'wireframe',
+        x: posX,
+        y: posY,
+        width,
+        height,
+        lineWidth: 1,
+        lineColor: 0xf056ff,
+        fillAlpha: 0,
+      }),
+      g(Rect2d, {
+        key: 'delete',
+        x: posX,
+        y: posY,
+        central: true,
+        width: 20,
+        height: 20,
+      }),
+      g(Rect2d, {
+        key: 'adjust',
+        x: posX + width,
+        y: posY + height,
+        central: true,
+        width: 20,
+        height: 20,
+      }),
+    ];
+  }
+}
+
+// 一个纯展示 Mesh2D 图形单元
+// 多边形组件
+export default class Polygon extends Mesh2D<IProps> {
+  static defaultProps: Partial<IProps> = {
+    position: { x: 0, y: 0 },
+    rotation: 0,
+    scale: { x: 0, y: 0 },
+  };
+  protected view = new PIXI.Graphics();
+  // 同样具有响应式管线
+  protected reactivePipeLine = [
+    this.updateGeometry,
+    this.updateMaterial,
+    this.updatePosition,
+    this.updateRotation,
+    this.updateScale,
+  ];
+
+  updateGeometry() {
+    this.view.clear();
+    const {
+      path,
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      fillColor,
+      fillAlpha,
+      zIndex,
+    } = this.props;
+    zIndex && (this.view.zIndex = zIndex);
+    DrawUtils.drawPolygon(this.view, {
+      path: path.map(p => ({ x: p.x, y: p.y })),
+    }, {
+      lineWidth,
+      lineColor,
+      lineAlpha,
+      fillColor,
+      fillAlpha,
+    });
+  }
+
+  updateMaterial() {
+    //
+  }
+
+  updatePosition() {
+    // const { position } = this.props;
+    // this.view.position.set(position!.x, position!.y);
+  }
+
+  updateRotation() {
+    // this.view.rotation = this.props.rotation!;
+  }
+
+  updateScale() {
+    // const { scale } = this.props;
+    // this.view.scale.set(scale!.x, scale!.y);
+  }
+
+  // onClickable() {
+  //   return false;
+  // }
+
+  // onDraggable() {
+  //   return false;
+  // }
+
+  // onHoverable() {
+  //   return false;
+  // }
+}
+
+// 另一种方式，直接重写 draw 接口，每次重新 render 都会驱动 draw 重新执行，但不推荐使用，尤其在复杂图形情况下，尽量采用上面那种响应式精细化更新的写法
+@Reactive
+export class MullionMesh2D extends Mesh2D<IMeshProps> {
+  protected view = new PIXI.Graphics();
+
+  draw() {
+    this.view.clear();
+    drawMullion(this.view, this.props.model);
+  }
+
+  // onClickable() {
+  //   return false;
+  // }
+
+  // onDraggable() {
+  //   return false;
+  // }
+
+  // onHoverable() {
+  //   return false;
+  // }
+}
+```
+
+#### 事件交互
+前面我们提到，可以直接在视图层组件上绑定事件处理回调（当该组件被设置为可交互时，做相应动作则会触发）：
+```js
+onClick: this._on$Click,
+onDBClick: this._on$DBClick,
+onRightClick: this._on$RightClick,
+onDragStart: this._on$DragStart,
+onDragMove: this._on$DragMove,
+onDragEnd: this._on$DragEnd,
+onPinchStart: this._on$PinchStart,
+onPinch: this._on$Pinch,
+onPinchEnd: this._on$PinchEnd,
+onRotateStart: this._on$RotateStart,
+onRotate: this._on$Rotate,
+onRotateEnd: this._on$RotateEnd,
+onPress: this._on$Press,
+onPressUp: this._on$PressUp,
+onHoverIn: this._on$HoverIn,
+onHoverOut: this._on$HoverOut,
+```
+
+由于图形场景的视图层也可以父子嵌套，这必然会出现父组件和子组件都绑定了事件回调的情况，这时候框架默认提供的拾取逻辑是冒泡触发：
+
+<img width="300" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/4.png">
+
+- 即如果选中子组件，则优先触发子组件绑定的回调，否则向父层冒泡，触发父层组件的回调，以此类推直到顶层实体节点
+- 如果选中的叶子组件或中间节点组件不可交互，则会跳过继续向上冒泡
+- 如果选中的是父组件容器，那就直接触发父组件的回调
+
+> 图形场景通常实体模型都有大量的子模型组件和容器节点及其他交互控件，和 dom 的结构非常类似
+
+那么，框架是如何识别图形对象的事件触发呢？熟悉图形开发的同学应该比较清楚，业界主要的方法：
+- 射线检测法（相机与点击位置发出射线，与场景内的对象做相交判断，如果相交则命中该对象的事件触发）
+
+<img width="300" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/5.png">
+
+- 颜色拾取法（给场景中所有对象设置不同且唯一的颜色，将屏幕离屏渲染到帧缓冲区，取到设备坐标对应的像素值，找到匹配该色值的对象）
+
+<img width="300" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/6.png">
+
+框架默认提供的是射线检测法，除此之外还有一些其他方法，框架提供了 getHitTargetOriginal 的抽象接口，图形渲染引擎与框架的绑定层可以自定义实现该方法（因为 2d、3d 场景的引擎拾取方法可能不同，根据不同情况选用的拾取算法也可能不同）。
+
+比如这是框架提供的基于 pixi 的 2d 引擎绑定层的拾取算法（使用了引擎的 API，所以比较简单）：
+```js
+const boundary = new PIXI.EventBoundary();
+getHitTargetOriginal() {
+    return (
+      point: Vec2,
+      container: PIXI.Container,
+      configMap: Map<PIXI.DisplayObject, InteractiveConfig>,
+      interactiveType: InteractiveType,
+    ) => {
+      boundary.rootTarget = container;
+      const originalTarget = boundary.hitTest(point.x, point.y);
+      let hitTarget: PIXI.DisplayObject | undefined;
+
+      for (let target = originalTarget; target && target !== container; target = target.parent) {
+        const config = configMap.get(target);
+        if (config && config[interactiveType]) {
+          hitTarget = target;
+          break;
+        }
+      }
+      return { originalTarget, target: hitTarget };
+    };
+}
+```
+
+3d 场景会复杂一些，除了射线相交，还需要考虑穿过多个对象的距离、renderOrder 及交互配置的问题：
+```js
+getHitTargetOriginal() {
+    return (
+      point: Vec2,
+      container: THREE.Group,
+      configMap: Map<THREE.Object3D, InteractiveConfig>,
+      interactiveType: InteractiveType,
+    ) => {
+      // calculate mouse position in normalized device coordinates
+      // (-1 to +1) for both components
+      const mouse = { x: 0, y: 0 };
+      const app = this.getCurrentApp();
+      if (!app) {
+        return {
+          originalTarget: undefined,
+          target: undefined,
+          originalTargetPoint: undefined,
+        };
+      }
+      mouse.x = (point.x / app.domElement.clientWidth) * 2 - 1;
+      mouse.y = -(point.y / app.domElement.clientHeight) * 2 + 1;
+      this.raycaster.setFromCamera(new THREE.Vector2(mouse.x, mouse.y), this.camera!);
+      const objects = this.raycaster.intersectObjects(this.scene!.children, true);
+      let i = 0;
+      if (!objects[0]) {
+        return {
+          originalTarget: undefined,
+          target: undefined,
+          originalTargetPoint: undefined,
+        };
+      }
+      // 相同距离的需要再根据 renderOrder 排序
+      const sameDisLength = objects.filter(o => o.distance.toFixed(10) === objects[0].distance.toFixed(10)).length;
+      const sameDisObjects = objects.splice(0, sameDisLength);
+      sameDisObjects.sort((a, b) => b.object.renderOrder - a.object.renderOrder);
+      objects.unshift(...sameDisObjects);
+      // 找到最近的一个可交互的对象
+      const originalTarget = objects[i]; // closest first
+      let obj = originalTarget.object;
+      while (!obj.userData.interactive) {
+        // 如果不可交互就找它的父节点，当整条路径都不可交互，则选择下一个被射线穿过的对象
+        while (!obj.userData.interactive && obj.parent) {
+          obj = obj.parent;
+        }
+        if (obj.userData.interactive) {
+          break;
+        }
+        i += 1;
+        const inter = objects[i];
+        if (inter) {
+          obj = inter.object;
+        } else {
+          obj = this.view;
+          break;
+        }
+      }
+      let hitTarget: THREE.Object3D | undefined;
+      // 有可能只是其中一项可交互，如果当前 interactiveType 对应的值为 false，则向其父级节点冒泡
+      for (let target = obj; target && target !== container; target = target.parent!) {
+        const config = configMap.get(target);
+        if (config && config[interactiveType]) {
+          hitTarget = target;
+          break;
+        }
+      }
+      return {
+        originalTarget: obj,
+        target: hitTarget,
+        originalTargetPoint: {
+          x: originalTarget.point.x,
+          y: originalTarget.point.y,
+          z: originalTarget.point.z,
+        },
+      };
+    };
+}
+```
+
+我们可以通过传递 props 来控制组件是否可交互，Mesh 组件默认是不可交互/被拾取的，只用来做图形展示，当你需要让一个图形对象可交互，除了开启相关的交互配置属性，更建议按照 model 层的数据模型实体来设计容器 Mesh 组件，如下是一个门窗实体容器父组件，它的子组件都是纯展示不可交互的组件：
+```js
+g(DoorWindowView, {
+    model,
+    id: model.id,
+    type: EntityType.DoorWindow,
+    clickable: true,
+    hoverable: true,
+    draggable: true,
+    pinchable: true,
+    rotatable: true,
+    pressable: true,
+    key: model.id,
+    // onClick: (iv, ev, tools) => {},
+})
+
+export class DoorWindowView extends Mesh2D<IProps> {
+  // 可以重写 getViewEntity 方法，来传递可交互 mesh 的信息
+  // 也可以不重写，默认逻辑使用的是 props 上的 id、type 字段，可以从组件外部传入
+  protected getViewEntity() {
+    return {
+      id: this.props.model.id, // 对象的 id
+      type: EntityType.DoorWindow, // 对象的类别
+      viewObject: this.view, // 自定义字段
+    };
+  }
+  render() {
+    return [
+      g(Glass, {}), // 不可交互
+      g(Profile, {}), // 不可交互
+    ];
+  }
+}
+```
+
+实际上该容器 DoorWindowView 组件默认创建了一个 container（包裹节点），将子组件（Glass、Profile）添加到它的下级作为一个整体（因为我们在做计算时通常是针对可交互实体，连带影响子组件展现）。
+
+<img width="400" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/7.png" />
+
+我们看到上面的例子中我们给图形组件还传入了 id 和 type（可交互对象如果不传这两个字段会收到 warning），甚至可以在组件内部重写 getViewEntity 方法，为什么需要 ViewEntity 概念？
+- 在代码设计层面，框架推荐一个可交互 ViewEntity 组件去包含 N 个不可交互纯展示 Mesh 的代码组织形式
+> 比如一扇窗是一个逻辑上的交互实体，他们通常会有对应的 model 层数据结构去表达，甚至一般在数据库端都有对应的表结构，但是窗是由玻璃、型材、扇组件、以及一些对应的交互控件如选中框、hint 框等纯展示 Mesh 组件组成的，他们通常都是采用 model 的相对坐标系去实现，所以更适合被内聚到一个整体来进行逻辑处理
+
+- 全局 Command 交互事件拾取时需要使用，用来标识是哪个对象触发了事件
+> 虽然我们可以直接在图形对象上绑定事件，但是在一些稍具复杂交互的情况下，通常会有很多全局的事件逻辑，它们并不依赖某一个图形对象，而是可能直接在场景画布上做操作，跟很多不同的图形对象和实体产生交集，且这些逻辑有可能可以复用，比如模型选中、画笔、剪裁等功能。
+>
+> 这就需要一个 target 信息以供全局事件定位到当前在处理的是哪个对象。类比到 web 场景就像事件绑定到某个元素上和绑定到 document 上批量进行代理委托的概念，当绑定到 document 上时，显然我需要知道选中的 target 是哪个，以及它携带的信息是什么。
+
+如下是一个 Command，当用户操作时，我们可以在 Command 中拦截到全局画布上的行为，其中 ViewEntity 参数就是我们视图层传入的 id、type 及其他的自定义信息（当然也可能不存在，比如做一些图形创建操作）：
+```js
+class ACommand extends Command {
+  action?: Action;
+
+  active(param: IActiveParam) {
+    // 跟响应式框架中的 action 一起配合使用，来方便的管理一个可撤销恢复的步骤
+    this.action = Action.create('doSomething');
+  }
+  /**
+   * ViewEntity 是视图层定义的可交互 mesh 传递过来的标识信息或自定义信息
+   * 在指令系统中可以获取到以标识当前交互对象是谁
+   */
+  onDragStart(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+      console.log(ev.id, ev.type);
+  }
+
+  onDragMove(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+    this.action.execute(() => {
+
+    });
+  }
+
+  onDragEnd(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+    if (!isComplete) {
+        this.action.abort();
+    } else {
+        this.action.complete();
+    }
+  }
+}
+```
+
+对于这类全局事件交互逻辑（实际上是所有会影响撤销恢复的逻辑），我们都建议抽到 Command 中维护，而非直接在视图层做太多复杂的操作，主要有两个原因：
+
+![command-mgr](https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/8.png)
+
+- 一个是方便收敛复杂交互逻辑（图形场景绝大部分都是全局画布事件），隔离事务相关逻辑（影响撤销恢复的操作都需要放进来），暴露接口并支持扩展和组合复用（有些交互集合在不同的操作模式下可能会被复用）
+
+```js
+class ACommand extends Command {}
+class BCommand extends Command {}
+class DCommand extends Command {}
+
+// 组合多个 Command
+class ABCommand extends CommandManager.compose({
+  aCommand: ACommand,
+  bCommand: BCommand,
+}) {
+  // 可以传参来扩展
+  active(name: string, age: number) {
+    this.aCommand.active(name)；
+  }
+
+  dispose() {}
+}
+
+// 组合以后的 Command 依然可以被组合
+class ABDCommand extends CommandManager.compose({
+  abCommand: ABCommand,
+  dCommand: DCommand,
+}) {
+
+}
+```
+
+> 我们可以在 design-engine 子包和 demo 中找到更完整的例子
+
+- 当存在多组交互逻辑的时候，很容易引发冲突，需要指令系统来管理多组事件之间的互斥逻辑与对应的生命周期
+
+```js
+// 创建应用唯一的 Manager
+class DemoCommandManager extends CommandManager.install({
+  // 使用独立的 Command
+  aCommand: ACommand,
+  eCommand: ECommand,
+  // 使用合成的 Command
+  abdCommand: ABDCommand,
+}) {
+  // 声明安装指令集后执行的钩子
+  installed() {
+    // 默认启用一个指令
+    this.aCommand.apply();
+  }
+
+  disposeAll() {
+    this.aCommand.select.clearAllSelected();
+    this.eCommand.dispose();
+    // 可以访问到下层的指令实例
+    this.abdCommand.abCommand.bCommand.dispose();
+  }
+}
+export const demoCommandMgr = new DemoCommandManager();
+
+// 视图层
+render([
+  g(Scene2D, {
+    id: 'scene2d',
+    draggable: true,
+    scalable: true,
+    container: 'scene2d',
+    transparent: true,
+    commandMgr: demoCommandMgr, // 将上面的指令集管理器实例与场景容器绑定
+    cameraPosition: { x: 0, y: 0 },
+    resizeTo: 'scene2d',
+    maxFPS: 120,
+    disableResize: false,
+    resolution: imageBuilderStore.scene.resolution,
+    renderFlag: imageBuilderStore.scene.renderFlag2d,
+    initialized: (sceneTools: SceneTool) => {
+      imageBuilderStore.scene.setSceneTools(sceneTools);
+    },
+    children: [g(World)],
+  }),
+]);
+
+// 默认已经激活 a 指令，现在激活 e 指令（激活 e 指令会自动禁用原来的指令集）
+demoCommandMgr.eCommand.apply();
+// 现在激活 abd 指令会禁用上一步的 e 指令，同时按顺序先激活当前指令的子指令，再激活组合后的指令本身
+demoCommandMgr.abdCommand.apply();
+```
+
+Command 上常用的三个方法是 active、apply、dispose：
+- active 用来激活当前 Command 及其子级，调用此方法会触发指令上的钩子，为即将到来的交互事件做好准备，但不会使交互事件直接生效（还是需要由 apply 决定）
+- dispose 则是用来注销当前 Command 及其子级，同时将停止响应该指令及子级的交互事件（会直接销毁事件）
+- apply 用来应用当前 Command 及其子级，该方法不仅会强制激活当前 Command 及其子级（调用它们的 active 方法），还会使它们的交互事件生效
+
+> 通常我们会用 apply 方法来切换指令集交互事件的生效范围，需要注意的是，同时只能有一个 Command 节点及其子树处于应用状态（这样子就有可能形成兄弟节点的交互事件是互斥的情况，这有助于组织一些交互互斥的业务逻辑，比如在刚进入一个场景时，就默认激活一个 default 指令集，可能组合了不同的子指令，比如提供了选择、hint 等默认能力，此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令集下，不然事件显然会冲突，有了这个设计去满足这种场景，代码组织就会变得很简单）
+
+对于快捷键及组合键事件，框架提供了一套独立的机制，可以与 Command 系统的生命周期钩子配合使用：
+
+```js
+HotKey.on({
+  /**
+   * 快捷键字符
+   *
+   * 单个：'ctrl+a'
+   *
+   * 多个：['ctrl+a', 'ctrl+b', 'meta+a']
+   */
+  key: Key.Escape,
+  handler: () => {},
+});
+
+HotKey.off(Key.Escape, () => {});
+```
+
+在指令系统的事件回调中，我们可以看到 SceneTool 参数，它可以提供一些场景容器上的全局参数：
+```js
+interface SceneTool {
+    updateInteractiveObject: (view: any, config?: InteractiveConfig) => void;
+    // 修改光标样式
+    updateCursor: (cursor?: string) => void;
+    // 可传入点位做拾取计算测试，返回拾取对象
+    hitTarget: (point: {
+        x: number;
+        y: number;
+    }) => Partial<ViewEntity> | undefined;
+    // 坐标系转换系统
+    coordinateTransform: (point: Vec2 | Vec3, type: CoordinateType, z?: number) => Vec2 | Vec3;
+    getCamera: () => any;
+    getRaycaster: () => any;
+    getScene: () => any;
+    getRootView: () => any;
+    getScreenShot: (sx?: number, sy?: number, w?: number, h?: number, fileType?: string, quality?: number, isBase64?: boolean) => Promise<string | Blob>;
+    getApp: () => any;
+    addTicker: (ticker: () => void) => void;
+    removeTicker: (ticker: () => void) => void;
+}
+
+onDragStart(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
+    //
+}
+```
+
+其中比较常用的是坐标系转换系统（比如屏幕坐标转换为场景世界坐标，或是反之）。该方法支持人工传入点位和转换参数，返回新的点位。实际上 SceneEvent 参数上面的 getScenePosition 方法就是调用了这个底层能力，用户触发事件动作后，通过此方法可以直接获得设备坐标在图形场景中的真实坐标。
+
+而这个坐标系转换能力，框架与渲染引擎的绑定已经提供了默认的实现，这个抽象接口同样支持重写和自定义（因为不同的渲染引擎坐标系、转换方法，或是 2d、3d 场景的转换方法可能存在不同）。
+
+比如这是 2d 引擎的坐标系转换实现，相对比较简单：
+```js
+createCoordinateController(app: PIXI.Application) {
+    const renderer = this.getCanvasView(app).renderer as HTMLCanvasElement;
+    return new CoordinateController({
+      getCanvasRectImpl: () => renderer.getBoundingClientRect(),
+      canvasToSceneImpl: (point: Vec2) => {
+        const { x, y } = this.view.position;
+        let scale = this.view.scale.x;
+        if (this.props.coordinateType && (this.props.coordinateType === 'front' || this.props.coordinateType === 'left')) {
+          scale = -scale;
+        }
+        let newX = (point.x - x) / this.view.scale.x;
+        let newY = (point.y - y) / scale;
+        if (this.props.viewport) {
+          newX = (point.x - this.props.viewport.x - x) / this.view.scale.x;
+          newY = (point.y - this.props.viewport.y - y) / scale;
+        }
+        return {
+          x: newX,
+          y: newY,
+        };
+      },
+      sceneToCanvasImpl: (point: Vec2) => {
+        const { x, y } = this.view.position;
+        let scale = this.view.scale.x;
+        if (this.props.coordinateType && (this.props.coordinateType === 'front' || this.props.coordinateType === 'left')) {
+          scale = -scale;
+        }
+        let newX = point.x * this.view.scale.x + x;
+        let newY = point.y * scale + y;
+        if (this.props.viewport) {
+          newX = point.x * this.view.scale.x + x + this.props.viewport.x;
+          newY = point.y * scale + y + this.props.viewport.y;
+        }
+        return {
+          x: newX,
+          y: newY,
+        };
+      },
+    });
+}
+```
+
+3d 场景下的坐标系转换实现：
+```js
+createCoordinateController(app: THREE.WebGLRenderer) {
+    const renderer = this.getCanvasView(app).renderer as HTMLCanvasElement;
+    return new CoordinateController({
+      getCanvasRectImpl: () => renderer.getBoundingClientRect(),
+      canvasToSceneImpl: (point: Vec2, z?: number) => {
+        const ctrl = this.getCurrentInteractiveController();
+        if (!ctrl) {
+          return {
+            x: 0,
+            y: 0,
+            z: 0,
+          };
+        }
+        if (z !== void 0) {
+          const camera = this.camera!;
+          const pX = (point.x / app.domElement.clientWidth) * 2 - 1;
+          const pY = -(point.y / app.domElement.clientHeight) * 2 + 1;
+          const v = new THREE.Vector3(pX, pY, 0.5);
+          const pos = new THREE.Vector3();
+          v.unproject(camera);
+          if (camera instanceof THREE.OrthographicCamera) {
+            v.applyMatrix4(this.view.matrixWorld.clone().invert());
+            pos.copy(v);
+          } else if (camera instanceof THREE.PerspectiveCamera) {
+            v.sub(camera.position).normalize();
+            const distance = (z - camera.position.z) / v.z;
+            pos.copy(camera.position).add(v.multiplyScalar(distance));
+            pos.applyMatrix4(this.view.matrixWorld.clone().invert());
+          }
+          return {
+            x: pos.x,
+            y: pos.y,
+            z,
+          };
+        }
+        // 射线穿中的就用穿中的目标点，如果没有就需要指定一个 z，因为升维无法确定 z 的值
+        const p = ctrl.hitTargetOriginalByPoint(point).originalTargetPoint as Vec3 | undefined;
+        return p || {
+          x: 0,
+          y: 0,
+          z: 0,
+        };
+      },
+      sceneToCanvasImpl: (point: Vec3) => {
+        const v = new THREE.Vector3(point.x, point.y, point.z);
+        v.applyMatrix4(this.view.matrixWorld);
+        v.project(this.camera!);
+        const halfWidth = app.domElement.clientWidth / 2;
+        const halfHeight = app.domElement.clientHeight / 2;
+        return {
+          x: Math.round(v.x * halfWidth + halfWidth),
+          y: Math.round(-v.y * halfHeight + halfHeight),
+        };
+      },
+    });
+}
+```
+
+#### 框架特性
+- 0 依赖，小包体，易于升级维护和适配其他宿主环境
+- 更适配图形场景的高性能精简渲染核心
+- 渲染引擎无关的架构设计，可以随时替换渲染引擎的绑定，而不用变更和污染业务框架本身的设计（默认提供了基于 pixi、three 的常用图形控件与渲染绑定）
+- 父子视图声明式创建、销毁与绑定关系，视图组件具备完整的生命周期和交互开关属性
+- 支持基于离屏渲染的多场景视图及对应交互事件处理与坐标系转换能力
+- 基于同一套业务框架和开发范式，适配 2d、3d、web 同时存在的混合应用场景，无需引入多种不同的技术架构
+- 完善的设计工具引擎（为 2d、3d 设计工具提供了一套常见的解决方案，包括数据模型、文档系统、吸附系统、碰撞检测、选择系统、hint 系统、图片处理、素材拖拽系统、数学库等）
+- 支持图形对象的事件拾取扩展能力，以及完善的父子视图事件冒泡机制，丰富的鼠标、键盘、组合键及手势事件，坐标系转换系统
+- 基于指令系统可以捕获到画布全局事件和对应的实体，通过指令集切换可以快速管理不同交互行为模块之间的事件互斥问题，且可以方便的复用组装交互事件模块，或是通信
+
+### 响应式数据流
 #### reactor
 在 **mobx** 中，会用 @observable 的装饰器来表示这是一个响应式状态属性，而在 **turbox** 中，通过 @reactor 的装饰器来声明，这样框架就能代理掉属性的 getter、setter 等操作，如下代码所示：
 ```js
@@ -281,7 +1357,7 @@ reactive(() => {
 **turbox** 在开发之初就坚持使用 Proxy 来做数据代理了，那时候主流的响应式状态框架还都是采用 hack 的方式，因为当时我们的业务只需要支持 chrome，而 web 页面通常需要考虑很多兼容性问题。用 Proxy 可以让代码变得更简单，也支持更多数据结构和方法的截持。
 
 首先，我们不会对一个 class 的所有属性做代理，肯定只是对装饰器修饰的那些属性做代理，并且不会干扰 class 本身的作用，所以在第一层级依然是通过 Object.defineProperty 来实现属性代理：
-```typescript
+```js
 const newDescriptor = {
   enumerable: true,
   configurable: true,
@@ -305,7 +1381,7 @@ const newDescriptor = {
 ```
 
 如果代理的数据是一个基本数据类型，则把原来的值返回即可，如果代理的值是一个特殊的对象（包括数组、集合类型、plain object、自定义 class 实例）则需要特殊处理，如下所示：
-```ts
+```js
 propertyGet(key: string, config: ReactorConfig) {
   const v = this.properties[key];
   const mergedConfig = Object.assign({}, {
@@ -329,7 +1405,7 @@ propertyGet(key: string, config: ReactorConfig) {
 大家都知道 Proxy 可以截持很多原生 API 的动作，但是实际上要支持各种数据结构和场景，并没有想象的那么容易。
 
 比如 Proxy 也一样只会支持第一级 get key 的代理，如果要支持深层属性的依赖收集和代理，必须得使用递归，当然这个过程是它每次被 get 的时候才会做，并且需要做对应的双缓冲机制，防止重复创建 proxy 实例：
-```ts
+```js
 private proxyReactive(raw: object, rootKey: string) {
   const _this = this;
   rootKeyCache.set(raw, rootKey);
@@ -384,7 +1460,7 @@ private proxyGet(target: any, key: string, receiver: object) {
 因为我们在使用这个属性的时候，不一定是通过 get 的方式，也许是通过 Object.keys 遍历，或者直接使用目标对象的情况，显然这时候的 set 不仅仅会影响到该 key 的改变，还会影响到上述说的这些情况的改变，所以我们在做依赖收集的时候，需要收集这些遍历的情况，触发的时候可以 match 上。
 
 再来看看集合类型，集合类型本身并没有对应的 Proxy API 可以代理到，比如对一个 map 做代理，你只能 get 到对应 map 的方法名，不过那也足够了，我们只要知道对应的方法名，就可以做一个映射，调用它原型上的真实 API，并且做对应的依赖收集和触发收集：
-```ts
+```js
 getCollectionHandlerMap = (target: Collection, proxyKey: string) => {
   return {
     get size() {
@@ -656,7 +1732,7 @@ await f();
 > * forceSaveHistory：默认为 false（大部分情况都应该保持 false），框架会遵循 mutation 的事务设计原则和各项参数配置来自动决定当前情况是否应该保存历史记录。一个很特殊的 corner case：一些属性的修改触发了 immediately reactive 和 keepAliveComputed 的立即执行，这两个操作通常用来计算一些中间数据，并不会直接影响到渲染侧的表现（渲染侧会使用 Reactive/ReactiveReact），框架默认情况不会记录这些数据的变更（撤销恢复操作一般来说必须要有视图层反馈），但你可以通过将该属性设置为 true 来强制记录中间数据的变更，这可能在一些无视图渲染的场景下会发生
 > * isNeedRecord：表示该次操作的变更是否需要记录到撤销恢复栈中，默认为 true，跟 reactor 装饰器的参数功能是一样的，只不过一个针对函数中的所有变更，一个针对单个属性，此处 mutation 函数的 isNeedRecord 为 false 时，不会保存该操作产生的任何数据变更记录（忽略 reactor 属性上的对应参数设置），而为 true 时，则仍旧遵守 reactor 属性上的 isNeedRecord 配置
 
-##### $update
+#### $update
 上面例子的更新计算逻辑比较简单，单独抽一个 mutation 只是为了写几行简单赋值语句有点麻烦，并且没有复用性（实际上大部分数据模型不复杂的 web 前端应用基本都是简单赋值），而直接对属性赋值又回到了非严格模式的 **mobx** 的问题，声明能力差，无法自定义状态回退的事务粒度，也可能会和非 observable 的成员属性混在一起难以区分，所以对于复杂一些的逻辑依然是建议抽成一个 mutation 来写，隐藏复杂实现，内聚并复用，但简单的赋值更新 **turbox** 专门提供了内置的操作符（语法糖）来解决这个问题，并且该操作也可作为一个 record 来回退，使用如下：
 ```js
 class MyDomain extends Domain {
@@ -711,10 +1787,10 @@ export default class extends React.Component {
 
 > 在传统 web 应用中，状态通常是设计成一棵较为扁平化的树，每个 domain 的 mutation 只关心当前 domain 的 reactor 属性，不关心其他 domain 的 reactor 属性，如果有关联，多使用组合而非继承或图状关系。但数据模型稍微复杂一些的业务，比如 Point 类和 Line 类之间存在依赖关系，也必然伴随着一个 mutation 会同时操作当前 domain 和其他关联 domain 的情况，这种情况只要保证在 mutation 调用范围内，即便对其他 domain 的 reactor state 做赋值操作也是被允许的。
 
-但是在普通函数中（非 mutation 或 $update 函数）直接对 reactor 修饰过的属性赋值会得到一个错误，You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})。因为用普通函数修改 reactor 属性并不能正确触发响应函数，如果不给到用户明确的错误提示，可能会引起状态和视图不同步的情况出现，这对应用的维护和调试都会带来一定的困难。同时我们并不希望所有的数据更新零散在代码的各个角落，而是有个地方能明确收敛所有的数据更新操作，这样才会有利于组织我们的代码，也不会和非响应式的属性更新混在一起，更方便做一些撤销恢复事务的机制。
+但是在普通函数中（非 mutation 或 $update 函数）直接对 reactor 修饰过的属性赋值会得到一个错误，```You cannot update value to observed \'@reactor property\' directly. Please use mutation or $update({})```。因为用普通函数修改 reactor 属性并不能正确触发响应函数，如果不给到用户明确的错误提示，可能会引起状态和视图不同步的情况出现，这对应用的维护和调试都会带来一定的困难。同时我们并不希望所有的数据更新零散在代码的各个角落，而是有个地方能明确收敛所有的数据更新操作，这样才会有利于组织我们的代码，也不会和非响应式的属性更新混在一起，更方便做一些撤销恢复事务的机制。
 
 所以在每一次 set 的时候，我们都会做一个检测，判断这个属性是否在指定合法范围内调用，当然这个其实只在开发时检测就够了，生产环境可以关闭以提高一丢丢性能：
-```ts
+```js
 private illegalAssignmentCheck(target: object, stringKey: string) {
   if (depCollector.isObserved(target, stringKey)) {
     const length = materialCallStack.length;
@@ -1077,7 +2153,7 @@ export default class Item extends React.Component {
 ```
 
 #### reactive
-```typescript
+```js
 interface Options {
   name: string;
   /** is computed reactive function */
@@ -1173,7 +2249,7 @@ fullName.get();
 > 计算属性有一个 lazy 的配置参数，该参数决定计算值是否需要实时进行 dirty 检察，默认关闭。如果打开意味着只会在即将触发 reactive 或 Reactive 时才会做一次 dirty 检察，在这之前获取计算值一直是旧的。如果关闭，那么在每次原子操作 (mutation、$update) 之后都会检察计算值是否 dirty，这样会多消耗一些性能，但是可以保证每次更新完得到的计算结果都是最新的，两种方式都有使用场景
 
 计算属性其实就是一种特殊的 reactive，有依赖变化需要重新计算，没有则直接用上一次的值，区别就在于它有返回值，需要缓存计算值，需要做惰性求值，脏值标记和 keepAlive 的功能：
-```ts
+```js
 if (typeof args[0] === 'function') {
   let value: T;
   let dirty = true;
@@ -1228,7 +2304,7 @@ if (typeof args[0] === 'function') {
 当然计算属性本身也是需要被收集的，这样当视图依赖了计算属性，而没有直接依赖更底层的属性时，也能因为底层依赖的变化触发该视图的重新渲染。
 
 #### init
-```typescript
+```js
 type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 ```
 `init` 方法是用来做中间件和 store 的初始化，根据配置决定是否加载内置中间件，然后初始化 store，同时也可以传入一个 function，支持异步，可以在这个函数里做初始化状态数据的操作，使用方式如下所示：
@@ -1252,7 +2328,7 @@ type init = (callback?: () => void | Promise<void>) => Promise<void> | void
 
 #### middleware
 中间件机制，我们想要的其实就是类似 koa 的洋葱模型，实现原理就不用多说了，通过 reduce 和 middleware chain 来做，turbox reactivity 的中间件机制是支持异步的，当然传入的参数也会不太一样，提供了获取行为链、依赖图、dispatch 等能力，同时也内置了一些基本的中间件，部分可通过配置开关。接口如下：
-```typescript
+```js
 type Param = {
   dispatch: (action: DispatchedAction) => any | Promise<any>;
   getActionChain: () => ActionType[]; // 获取行为链路
@@ -1287,7 +2363,7 @@ Turbox.render(<Layout />, '#app');
 > use 函数的参数 middleware 可以是一个数组，一次性加载多个中间件，也可以 use 多次，效果和数组是一样的，中间件名称不能重复，否则会报错，注意载入中间件必须先于 Turbox.render 执行
 
 #### config
-```typescript
+```js
 type Config = {
   middleware: {
     logger?: boolean,
@@ -1385,7 +2461,7 @@ let ctx = {
 #### 数据更新原理
 虽然是响应式数据流，但是并不希望那么灵活，在实际的业务开发中，我们依然还是需要类似 action 或者说指令的概念，之前也有提到为什么需要包在 mutation 里做更新，因为底层我仍然需要有撤销恢复、渲染时机的控制、中间件等机制，所以不管你怎么响应式，我底层就是个 store.dispatch 只不过那肯定是要比 redux 复杂的多，才能实现这些能力，流程图如下：
 
-<img width="700" src="https://pic4.zhimg.com/80/v2-541564db26c835c43c16c323e78d8dc8.png" />
+<img width="700" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/9.png" />
 
 这里简单提一下副作用这个概念，这个概念应该是 redux 提出来的，有这个概念的原因是一次数据的 snapshot 对应一个视图状态，当一次 action 操作产生了两次或多次对应的视图状态，则被认为是副作用，通常发生在异步场景。而在 turbox reactivity 中，所谓的副作用其实用个 async 函数就能体现，await 之前比如是一次数据更新，await 之后是另一次，甚至都不应该叫做副作用。
 
@@ -1393,7 +2469,7 @@ let ctx = {
 
 #### time travelling
 框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、撤销恢复状态变更的钩子函数，动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。对应的接口：
-```typescript
+```js
 export class TimeTravel {
   static create: () => TimeTravel;
   static switch: (instance: TimeTravel) => void;
@@ -1426,7 +2502,7 @@ TimeTravel.switch(mainTimeTravel);
 撤销恢复依赖于前面我们提到的属性修改的代理，每一次修改我们都会记录状态修改的类型和修改之前的值、修改之后的值，将修改记录暂存，当然在一个步骤内的修改是会被合并的。
 
 框架提供的撤销恢复操作其实是一种特殊的 mutation（不记录 actionChain 和 history），根据修改类型执行不同的赋值或还原操作：
-```typescript
+```js
 static undoHandler(history: History) {
   history.forEach((keyToDiffObj, target) => {
     if (!keyToDiffObj) {
@@ -1457,7 +2533,7 @@ static undoHandler(history: History) {
   });
 }
 ```
-要注意的是，撤销恢复一定是有最大步数限制的，毕竟内存是有上限的，即便是只存了 diff 而不是全量的值，所以当达到了步数上限后，将最后的记录加入队列，将最早的操作记录就得相应移出、清除，所以撤销恢复严格来说并不是一个栈，而是一个队列，需要满足先进先出。
+要注意的是，撤销恢复一定是有最大步数限制的，毕竟内存是有上限的，即便是只存了 diff 而不是全量的值，所以当达到了步数上限后，将最后的记录加入队列，就得将最早的操作记录相应移出、清除。
 
 有时候我们会做撤销恢复操作，回退到中间某一步，然后这时候开始做新的操作，这种情况就得考虑到覆盖当前指针以后的记录了，替换为当前操作。
 
@@ -1465,11 +2541,19 @@ static undoHandler(history: History) {
 * 你这种做法，如果数据记录的是引用类型怎么办？直接赋值引用类型难道没有问题吗？
 * 传统软件行业一般都会设计一个文档系统，负责撤销恢复、加载保存文档，你这个和传统的方式有什么区别和优势？
 
-惯性思维让我们认为要做撤销恢复，必须得 normalizr、serialize 转成扁平化的 plain object 数据才可以做。这个思路本身是对的，这是做一个稳定的撤销恢复机制的方案，虽然看上去挺粗暴的，但至少可以保证解决引用值被修改的问题，也肯定比基于手写逆向操作的机制要先进、准确，更可以方便的做磁盘交换来缓解内存压力（依赖实现 serialize、deserialize）。缺点就是如果要拷贝的整个引用类型数据量很大，一方面会牺牲很多数据转来转去过程中的时间性能，另一方面也会占用很多额外内存空间（在 3d 定制业务中除了本身的模型数据，还有约束求解器的大量生产参数数据，这种做法在这种业务场景中是完全不可用的，随便做一二个复杂步骤，就有内存直接崩溃的案例），因为不基于响应式状态管理这套方案，传统的方案你是无法知道哪些属性哪些 model 发生了变更的，为了稳定性你只能全量去存快照，当然你说可以只把有改动的 model 快照存进去，这样就产生了新的问题，你得维护一个 updatedModels 的列表，每个操作完成时，你都得手动去维护告知文档系统要存哪些 model 快照，有很大的心智负担，即使是这样，也只解决了一小部分问题，属性级别的 diff 是不可能通过人工心智去维护的，当然你仍然可以说我不需要属性级别的 diff，model 级别的快照就足够了，毕竟我还可以利用磁盘交换来解决内存占用高的问题，但是利用磁盘的问题是存取时间会被拉长，尤其是大数据量还原的时候，撤销恢复并不像用户预期的那样快，更像是个异步操作的速度，体验就大打折扣了。另外，视图层对 model 的响应在传统做法中也是需要人工维护的，也就是说虽然业务层 model 已经撤销恢复做了变更，但是如何通知视图层做出响应是个问题，传统的方式一般是手工通知或者包在基础层代码里，比如刷新面板或者同步场景世界对应的 view model，让视图层重新根据业务 model 来计算和渲染，但维护视图和数据的同步逻辑或依赖关系就会强耦合业务，或人工声明。
+惯性思维让我们认为要做撤销恢复，必须得 normalizr、serialize 转成扁平化的 plain object 数据才可以做。这个思路本身是对的，这是做一个稳定的撤销恢复机制的方案，虽然看上去挺粗暴的，但至少可以保证解决引用值被修改的问题，也肯定比基于手写逆向操作的机制要先进、准确，更可以方便的做磁盘交换来缓解内存压力（依赖实现 serialize、deserialize）。
+
+缺点就是如果要拷贝的整个引用类型数据量很大，一方面会牺牲很多数据转来转去过程中的时间性能，另一方面也会占用很多额外内存空间（在 3d 定制业务中除了本身的模型数据，还有约束求解器的大量生产参数数据，这种做法在这种业务场景中是完全不可用的，随便做一二个复杂步骤，就有内存直接崩溃的案例）。
+
+因为不基于响应式状态管理这套方案，传统的方案你是无法知道哪些属性哪些 model 发生了变更的，为了稳定性你只能全量去存快照，当然你说可以只把有改动的 model 快照存进去，这样就产生了新的问题，你得维护一个 updatedModels 的列表，每个操作完成时，你都得手动去维护告知文档系统要存哪些 model 快照，有很大的心智负担，即使是这样，也只解决了一小部分问题，属性级别的 diff 是不可能通过人工心智去维护的，当然你仍然可以说我不需要属性级别的 diff，model 级别的快照就足够了，毕竟我还可以利用磁盘交换来解决内存占用高的问题，但是利用磁盘的问题是存取时间会被拉长，尤其是大数据量还原的时候，撤销恢复并不像用户预期的那样快，更像是个异步操作的速度，体验就大打折扣了。
+
+另外，视图层对 model 的响应在传统做法中也是需要人工维护的，也就是说虽然业务层 model 已经撤销恢复，做了变更，但是如何通知视图层做出响应是个问题，传统的方式一般是手工通知或者包在基础层代码里，比如刷新面板或者同步场景世界对应的 view model，让视图层重新根据业务 model 来计算和渲染，但维护视图和数据的同步逻辑或依赖关系就会强耦合业务，或人工声明。
 
 总体来说，传统方案的基础上做一些基础层的框架性代码，并让开发者去遵守开发规范，是可以达到满足绝大部分应用场景的，但是它并不足够易用和高性能，开发者需要调用和关注的点仍然不少，维护的成本不低，以往在客户端上的重型软件如今搬到 web 端来做，其实性能上的挑战会更高，会比在客户端上更吃紧，而我所遇到的场景就相当于在 web 上做一个 PS、做一个 AutoCAD、SolidWorks。
 
-我理想中的方案是开发者只要遵守数据驱动视图的原则，关注哪些变更操作需要作为一个步骤，就完事了，除此以外的其他事情，全部交由框架来完成，不需要调用任何一行额外的代码，让使用者是 0 心智负担和业务无关的，也就是说做完功能后，撤销恢复就自动实现了，不需要额外花精力去调试开发，也不需要去理解什么文档系统，一切都是状态（数据），不要把 3d 世界里的那些 entity、document 的概念强行附加到撤销恢复的方案上去，毕竟有些 web 页面也有回退操作相关的场景。用户只需要定义哪些数据需要撤销恢复，配置最大步骤，关注哪些行为是一个步骤即可。有了这个前提加上响应式的理念，自然就有了基于数据 diff 来做撤销恢复的思路，其实基于数据 diff 来做撤销恢复，是一种变形版的“逆操作”做法，只不过不是傻傻的让用户自己去写逻辑，而是基于记录属性的变化，来做逆操作。
+我理想中的方案是开发者只要遵守数据驱动视图的原则，关注哪些变更操作需要作为一个步骤，就完事了，除此以外的其他事情，全部交由框架来完成，不需要调用任何一行额外的代码，让使用者是 0 心智负担和业务无关的，也就是说做完功能后，撤销恢复就自动实现了，不需要额外花精力去调试开发，也不需要去理解什么文档系统，一切都是状态（数据），不要把 3d 世界里的那些 entity、document 的概念强行附加到撤销恢复的方案上去，毕竟有些 web 页面也有回退操作相关的场景。
+
+用户只需要定义哪些数据需要撤销恢复，配置最大步骤，关注哪些行为是一个步骤即可。有了这个前提加上响应式的理念，自然就有了基于数据 diff 来做撤销恢复的思路，其实基于数据 diff 来做撤销恢复，是一种变形版的“逆操作”做法，只不过不是傻傻的让用户自己去写逻辑，而是基于记录属性的变化，来做逆操作。
 
 原理听上去还是很简单的，但不通过序列化，这种方式是怎么记录引用类型的变化的。实际上我们操作具体状态的变更的时候，大部分情况都是在赋值基本数据类型，因为只有这些数据，才能真实的在需要渲染的场景被读取出来或拿来用，比如一个嵌套对象 ```{ a: { b: { c: 1 } } }``` 我们肯定不会直接去用 a.b 因为它是一个对象，但是我们一定会去读 a.b.c 比如在界面显示一个数量，这是一个具体的值，即使你真的需要使用一个引用类型的属性的时候，也一定是类似这样的场景：
 
@@ -1485,7 +2569,7 @@ static undoHandler(history: History) {
 
 最后附上一张简单的图：
 
-<img width="700" src="https://pic4.zhimg.com/80/v2-cdc19140bdcc1cd3190743ee22aec6e3.png" />
+<img width="700" src="https://lf3-static.bytednsdoc.com/obj/eden-cn/uhmplmeh7uhmplmbn/turbox/10.png" />
 
 #### 注意事项
 避免死循环写法
@@ -1691,29 +2775,39 @@ const tm = new TestMobx();
 ```
 
 ##### 测试结果
-innerDo：
-
-turbox nextTick 模式：
-
-![innerDo](https://img.alicdn.com/tfs/TB1UY6LQkL0gK0jSZFAXXcA9pXa-502-228.png)
-
-turbox immediately 模式：
-
-![innerDo](https://img.alicdn.com/tfs/TB1m0AKgDM11u4jSZPxXXahcXXa-518-256.png)
-
-mobx：
-
-![innerDo](https://img.alicdn.com/tfs/TB10KDCQXY7gK0jSZKzXXaikpXa-506-258.png)
-
 do：
 
-turbox：
+<table>
+  <tr>
+    <td>
+      <div>turbox：</div><br/>
+      <img width="300" src="https://img.alicdn.com/tfs/TB1PCPPQkY2gK0jSZFgXXc5OFXa-462-212.png" />
+    </td>
+    <td>
+      <div>mobx：</div>
+      <img width="300" src="https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png" />
+    </td>
+  </tr>
+</table>
 
-![innerDo](https://img.alicdn.com/tfs/TB1PCPPQkY2gK0jSZFgXXc5OFXa-462-212.png)
+innerDo：
 
-mobx：
-
-![innerDo](https://img.alicdn.com/tfs/TB1C3nMQbr1gK0jSZFDXXb9yVXa-492-256.png)
+<table>
+  <tr>
+    <td>
+      <div>turbox nextTick 模式：</div>
+      <img width="300" src="https://img.alicdn.com/tfs/TB1UY6LQkL0gK0jSZFAXXcA9pXa-502-228.png" />
+    </td>
+    <td>
+      <div>turbox immediately 模式：</div>
+      <img width="300" src="https://img.alicdn.com/tfs/TB1m0AKgDM11u4jSZPxXXahcXXa-518-256.png" />
+    </td>
+    <td>
+      <div>mobx：</div>
+      <img width="300" src="https://img.alicdn.com/tfs/TB10KDCQXY7gK0jSZKzXXaikpXa-506-258.png" />
+    </td>
+  </tr>
+</table>
 
 ##### 结论分析
 性能快和慢一定是有原因的，实现机制、功能上的不一样都会造成差异。
@@ -1784,388 +2878,8 @@ turbox 的机制其实更符合原生体验，灵感来源于 react 和 vue
 
 综上来看，turbox 的机制在性能和功能覆盖度的权衡上会更贴合现有业务场景，实际上 web 场景根本遇不到这么复杂的情况，mobx 也完全可以胜任（不考虑中间件和时间旅行），但在 3d 场景，哪怕是结合 web 技术的时候，差异还是很大的
 
-### 指令管理库
-简单来说，这是一个处理图形 entity 交互逻辑的管理器，不同于 web，图形业务中的交互事件通常会比较复杂，由多个事件组合完成，并且也会处理比较多的临时计算、事务等逻辑，有些临时计算还需要反馈到界面上，该框架主要目的是解决如何更好的内聚、扩展、启用卸载交互模块，以达到复用、组合出不同的交互指令，让业务开发更高效、可维护性更高，不耦合视图层和 model 层。
-
-指令管理主要就两个概念 Command 以及 CommandManager。前者是指令组件的基本单元，要声明一个指令只需要继承 Command 即可，指令还可以通过 CommandManager.compose 方法组合出一个新的指令，组合过的指令还可以继续自由组合，最终可以形成一棵指令节点树。但此时指令并没有生效，只是一个定义，需要通过 CommandManager 来装载指令集合（多棵指令节点树）使他们生效，CommandManager 也有对应的装载完成后的生命周期钩子，装载后就可以在 manager 实例上访问到这些顶层指令集。
-
-> 通常一个应用场景对应一个 CommandManager 实例，如需指令能力就要把实例传入场景组件的对应 props 中
-
-Command 上常用的三个方法是 active、apply、dispose。active 用来激活当前 Command 及其子级，为即将到来的交互事件做好准备，但不会使交互事件直接生效（常规情况下用户不需要主动调用）；apply 用来应用当前 Command 及其子级，该方法不仅会强制激活当前 Command 及其子级（调用它们的 active 方法），还会使它们的交互事件生效，通常我们会用它来切换指令集交互事件的作用范围，需要注意的是，同时只能有一个 Command 节点及其子树处于应用状态（这样子就有可能形成兄弟节点的交互事件是互斥的情况，这有助于组织一些交互互斥的业务逻辑，比如在刚进入一个场景时，就默认激活一个 default 指令，可能组合了不同的子指令，比如提供了选择、hint 等默认能力，此时点击绘制轮廓按钮，我的需求是立即让原来的场景事件失效，进入到绘制指令集下，不然事件显然会冲突，有了这个设计去满足这种场景，代码组织就会变得很简单）；dispose 则是用来注销当前 Command 及其子级，同时将停止响应该指令及子级的交互事件。
-
-> 用户可以重写 active 和 dispose 方法，来实现自定义功能
-
-> 指令可以通过链式访问的方式来访问指令的子指令、孙子指令上面暴露的方法
-
-> active、dispose 方法可以传参，从而实现指令组件的不同实现效果
-
-> 指令对应的事件回调可以参考 ts 提示的接口，这里不再罗列
-
-> 通常指令跟响应式框架中的 action 一起配合使用，来方便的做到一个可撤销恢复的步骤
-
-下面是使用案例：
-```ts
-class ACommand extends Command {
-  action?: Action;
-
-  active(param: IActiveParam) {
-    this.action = Action.create('doSomething');
-  }
-  // ViewEntity 是视图层定义的可交互 mesh 传递过来的标识信息或自定义信息，在指令系统中可以获取到以标识当前交互对象是谁（传递的来源会在后面视图渲染框架这一节来详细说明）
-  onCarriageEnd(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
-  }
-
-  onDragEnd(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
-    this.action.complete();
-  }
-
-  onRightClick() {
-  }
-
-  onCarriageMove(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
-  }
-
-  onDragMove(ev: ViewEntity, event: SceneEvent, tools: SceneTool) {
-    await this.action.execute(async () => {
-      // do something...
-      await this.domain.addProduct();
-    });
-  }
-}
-
-class BCommand extends Command {}
-
-class DCommand extends Command {}
-
-class ECommand extends Command {}
-
-// 组合单个 Command
-class ABCommand extends CommandManager.compose({
-  aCommand: ACommand,
-  bCommand: BCommand,
-}) {
-  active(name: string, age: number) {
-    this.aCommand.active(name)；
-  }
-
-  dispose() {}
-}
-
-// 组合以后的 Command 依然可以被组合
-// 不等同于 CommandManager.compose([ACommand, BCommand, DCommand])
-class ABDCommand extends CommandManager.compose({
-  abCommand: ABCommand,
-  dCommand: DCommand,
-}) {
-
-}
-
-// 创建应用唯一的 Manager
-class DemoCommandManager extends CommandManager.install({
-  // 使用独立的 Command
-  aCommand: ACommand,
-  eCommand: ECommand,
-  // 使用合成的 Command
-  abdCommand: ABDCommand,
-}) {
-  // 声明安装指令集后执行的钩子
-  installed() {
-    // 默认启用一个指令
-    this.aCommand.apply();
-  }
-
-  disposeAll() {
-    this.aCommand.select.clearAllSelected();
-    this.eCommand.dispose();
-    // 可以访问到下层的指令实例
-    this.abdCommand.abCommand.bCommand.dispose();
-  }
-}
-
-const demoCommandMgr = new DemoCommandManager();
-```
-
-### 事件管理库
-主要实现了 2d、3d 场景中的交互系统、快捷键系统、坐标系系统、自定义合成事件的实现及管理
-
-此框架对于用户来说通常只会用到快捷键系统，其他功能一般是和其他子框架配合使用
-
-快捷键的使用方式：
-```ts
-HotKey.on({
-  /**
-   * 快捷键字符
-   *
-   * 单个：'ctrl+a'
-   *
-   * 多个：['ctrl+a', 'ctrl+b', 'meta+a']
-   */
-  key: Key.Escape,
-  handler: () => {},
-});
-
-HotKey.off(Key.Escape, () => {});
-```
-
-### 视图渲染库
-顾名思义，这块主要处理图形视图如何组织与展现以及如何透传事件，目前视图层有无外部依赖的渲染框架，也有基于 react 封装的框架（暂停维护，不推荐使用）。
-
-> 推荐使用无外部依赖的版本，性能更好、内存开销更小，是个纯粹的针对图形场景的渲染器。
-
-它的目的就是利用数据驱动视图、声明式、响应式表达的思路来做图形业务，以达到类似于做 web 页面的开发体感，低成本上手 web 2d/3d 业务，它把上面的几个子框架全部串联了起来，将事件传递到交互层，交互层及 model 层处理数据，数据自动响应式驱动视图更新。甚至基于视图层框架的 API，还可以封装很多图形基础组件及业务组件，进一步提效。
-
-基于这套框架，开发者也不需要关心图形相关的知识，不需要自己去实现繁琐的功能，比如相机、灯光、场景、父子视图关联创建与卸载、坐标系转换、事件冒泡机制、图形组件与 web 组件混用、如何利用离屏渲染模拟多视口及处理对应交互、抗锯齿、resize、对象拾取、基于响应式数据框架的精细化更新渲染任务队列等等功能。所有能力可以通过简单的声明和调用方式完成。
-
-web 3d 工程领域是一个小众领域，市面上大部分 web 3d 业务并不复杂在业务逻辑本身，更多是追求离线渲染、效果，不像游戏领域有那么多业务逻辑要写。图形学及 2d、3d 编程的门槛较高较垂直，而 web 2d/3d 更是一个小分支，市面上的人才较少，做渲染、写 shader、做端游的不屑于做 web 3d 工程/业务，而 web 前端想要做 3d 业务还是有一些陡峭的学习曲线和踩坑成本。开发这套框架的初衷是希望能达到降低入门门槛、上手成本，将职责分离，让业务跑的更快更好（开发者学一些基本的几何及代数知识即可上手）
-
-视图层框架有一个核心库 renderer-core（对应的依赖 react 的旧版视图框架 graphic-view 已暂停维护），它抽象了整个视图框架整体的核心流程与基本交互规则，基于这个核心库可以快速低成本的去适配任意 2d、3d 图形引擎 API，做出对应这个引擎的视图层框架实现，它们可以与 turbox 生态无缝协作。
-
-视图层框架对用户来说常用的就 Scene、Mesh、ViewEntity 三个概念，其余的细节看 ts 提示及注释，这里不再罗列：
-* Scene 对应的就是场景，可能有 Scene2D 的实现，也有可能有 Scene3D 的实现，通常用来提供一系列场景常用能力，如初始化、交互设置等
-* Mesh 则是一个图形或模型对象的最小表达单元，就像 web 场景中的 dom 元素，通常它是只处理模型显示逻辑，是不可交互的
-* 当需要将这个 Mesh 组件变为可交互，你需要在对应的 props 上将可交互属性打开或是重写对应的控制交互的方法，一般情况下还推荐同时定义 ViewEntity 信息（如果不定义则无法接收全局交互事件，只能接收局部事件），定义 ViewEntity 信息有两种方式，一种是通过外部 props 声明式得来传入默认保留字段 id、type，另一种则是重写 Mesh 组件上的 getViewEntity 方法，来进行自定义
-
-为什么需要 ViewEntity 概念？
-* 全局 Command 交互事件拾取时需要使用，虽然我们可以直接在图形对象上绑定事件，但是在一些稍具复杂交互的情况下，通常会有很多全局的事件逻辑，它们并不依赖某一个图形对象，而是会跟很多图形对象和数据产生交集，且这些逻辑有可能可以复用，比如模型选中、画笔等功能，这就需要一个 target 信息以供全局事件定位当前在处理的是哪个对象。类比到 web 场景就像事件绑定到某个元素上和绑定到 document 上批量进行代理的概念。
-* 另一个原因更多是在代码设计层面，框架推荐一个可交互 ViewEntity 去包含 N 个不可交互纯展示 Mesh 的组织形式。比如一个门窗是一个交互实体，一个图片搭配的商品也是一个交互实体，他们通常会有对应的 model 层数据结构去表达，甚至一般在数据库端都有对应的表结构，但是门窗是由玻璃、型材、扇组件、以及一些对应的交互控件如选中框、hint 框等纯展示 Mesh 组件组成的，图片搭配商品也是有对应的精灵、旋转缩放移动控件需要显示，他们通常都是采用 model 的相对坐标系去实现，所以更适合被内聚到一个整体，逻辑也会更简单。
-
-理解了基本概念之后，我们来看一下它的使用方式：
-```tsx
-// 用无 react 依赖的渲染器来渲染
-@Reactive
-export class FrontView extends Component {
-  render() {
-    const wall = doorWindowStore.global.walls[doorWindowStore.global.cWallIndex];
-    if (!wall) {
-      return null;
-    }
-    const viewport = doorWindowStore.scene.viewStyles.front;
-    const cameraPos = { x: wall.position.x + wall.size.x / 2, y: wall.position.y + wall.size.y / 2 };
-    return [
-      g(Scene2D, { // g() 是 graphicscript 的简称，类似 vue 中的 h() 函数，意思是用于生成图形对象的 js 声明式脚本
-        id: 'front-scene-2d'
-        commandMgr: appCommandManager,
-        container: SCENE_2D,
-        viewport,
-        camera2dSize: { x: wall.size.x, y: wall.size.y + 1000 },
-        coordinateType: 'front',
-        cameraPosition: cameraPos,
-        transparent: false,
-        backgroundColor: 0xE6E9EB,
-        resizeTo: SCENE_2D,
-        children: [
-          g(Axis2d, {
-            type: 'front',
-          }),
-          g(DoorWindowView, {
-            model,
-            // 全局 command 可以接收该对象事件的前提是已经定义了 id、type
-            id: model.id,
-            type: DoorWindowEntityType.DoorWindowVirtual,
-            clickable: true, // 声明成可以点击，也可以在组件内部重写 onClickable 方法
-            hoverable: true,
-            draggable: true,
-            pinchable: true,
-            rotatable: true,
-            pressable: true,
-            key: model.id,
-            onClick: (iv, ev, tools) => {}, // 简单交互场景，你也可以不使用全局的 command 系统来捕获事件，直接在组件内部重写 onClick 或者从外部 props 定义 onClick 等事件回调
-          })
-        ],
-        key: 'xxx',
-      }),
-    ];
-  }
-}
-
-// 一个可交互 Mesh2D 组件
-interface IProps {
-  model: DoorWindowPDMEntity;
-  x?: number;
-  y?: number;
-  width: number;
-  height: number;
-  central?: boolean;
-}
-
-@Reactive
-export class DoorWindowView extends Mesh2D<IProps> {
-  // 响应式管线，组件第一次 mount 或重新 render 时会按照顺序执行，管线中的每个任务都被 reactive 函数包裹，拥有响应式的能力，也就是说只有当依赖的属性变化时，才会触发该任务的重新执行，以此达到视图层的精细化更新，提高性能（比如只是材质变了，就重新计算材质相关的任务，只是位置变了就计算位置相关的任务
-  protected reactivePipeLine = [
-    this.updatePosition,
-    this.updateRotation,
-    this.updateScale,
-  ];
-  // 可以重写 getViewEntity 方法，来传递可交互 mesh 的信息，也可以不重写，默认逻辑使用的是 props 上的 id、type 字段，可以从组件外部传入
-  protected getViewEntity() {
-    return {
-      id: this.props.model.id, // 对象的 id
-      type: AdjustPointSymbol, // 对象的类别
-      viewObject: this.view, // 自定义字段
-    };
-  }
-  // 你也可以直接在组件内部重写事件回调逻辑
-  onClick(iv: Partial<ViewEntity>, ev: SceneEvent, tools: SceneTool) {
-    super.onClick(iv, ev, tools); // 默认会调用 props 上的 onClick 回调
-  }
-
-  updatePosition() {
-    const { position } = this.props.model;
-    this.view.position.set(position.x, position.y);
-  }
-
-  updateRotation() {
-    const { rotation } = this.props.model;
-    this.view.rotation = rotation.z * MathUtils.DEG2RAD;
-  }
-
-  updateScale() {
-    const { scale } = this.props.model;
-    this.view.scale.set(scale.x, scale.y);
-  }
-
-  render() {
-    const { x = 0, y = 0, width, height, central = false } = this.props;
-    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
-    return [
-      g(Rect2d, {
-        key: 'wireframe',
-        x: posX,
-        y: posY,
-        width,
-        height,
-        lineWidth: 1,
-        lineColor: 0xf056ff,
-        fillAlpha: 0,
-      }),
-      g(Rect2d, {
-        key: 'delete',
-        x: posX,
-        y: posY,
-        central: true,
-        width: 20,
-        height: 20,
-      }),
-      g(Rect2d, {
-        key: 'adjust',
-        x: posX + width,
-        y: posY + height,
-        central: true,
-        width: 20,
-        height: 20,
-      }),
-    ];
-  }
-}
-
-// 一个纯展示 Mesh2D 图形单元
-// 多边形组件
-export default class Polygon extends Mesh2D<IProps> {
-  static defaultProps: Partial<IProps> = {
-    position: { x: 0, y: 0 },
-    rotation: 0,
-    scale: { x: 0, y: 0 },
-  };
-  protected view = new PIXI.Graphics();
-  // 同样具有响应式管线
-  protected reactivePipeLine = [
-    this.updateGeometry,
-    this.updateMaterial,
-    this.updatePosition,
-    this.updateRotation,
-    this.updateScale,
-  ];
-
-  updateGeometry() {
-    this.view.clear();
-    const {
-      path,
-      lineWidth,
-      lineColor,
-      lineAlpha,
-      fillColor,
-      fillAlpha,
-      zIndex,
-    } = this.props;
-    zIndex && (this.view.zIndex = zIndex);
-    DrawUtils.drawPolygon(this.view, {
-      path: path.map(p => ({ x: p.x, y: p.y })),
-    }, {
-      lineWidth,
-      lineColor,
-      lineAlpha,
-      fillColor,
-      fillAlpha,
-    });
-  }
-
-  updateMaterial() {
-    //
-  }
-
-  updatePosition() {
-    // const { position } = this.props;
-    // this.view.position.set(position!.x, position!.y);
-  }
-
-  updateRotation() {
-    // this.view.rotation = this.props.rotation!;
-  }
-
-  updateScale() {
-    // const { scale } = this.props;
-    // this.view.scale.set(scale!.x, scale!.y);
-  }
-
-  // onClickable() {
-  //   return false;
-  // }
-
-  // onDraggable() {
-  //   return false;
-  // }
-
-  // onHoverable() {
-  //   return false;
-  // }
-}
-
-// 另一种方式，直接重写 draw 接口，每次重新 render 都会驱动 draw 重新执行，但不推荐使用，尤其在复杂图形情况下，尽量采用上面那种响应式精细化更新的写法
-@Reactive
-export class MullionMesh2D extends Mesh2D<IMeshProps> {
-  protected view = new PIXI.Graphics();
-
-  draw() {
-    this.view.clear();
-    drawMullion(this.view, this.props.model);
-  }
-
-  // onClickable() {
-  //   return false;
-  // }
-
-  // onDraggable() {
-  //   return false;
-  // }
-
-  // onHoverable() {
-  //   return false;
-  // }
-}
-```
-
-> Mesh 本身默认会创建一个图形对象节点，可以在组件中通过 ```this.view``` 访问（可能是 THREE.Object3D 或者 PIXI.DisplayObject 或者其他引擎对应的概念，具体默认创建的是什么，是由对应引擎对 renderer-core 的 binding 实现来决定的，比如在 renderer-three 中默认创建的是 THREE.Group），当然你可以在组件中覆写它
-
-> Mesh 组件嵌套 Mesh 组件，子组件会自动添加到父组件对应 view 的图形对象节点下面，如果遇到了空节点（Component 组件），则会继续往祖先节点找，直到顶层的 Scene 组件，最终所有的 Mesh 组件对应的图形对象都会添加到 Scene 中，组件树跟图形框架的场景树是对应的，只不过用声明的方式来表达逻辑上的层次关系，父组件 render 的子组件的坐标系也是相对于这个父节点的，这跟图形领域的父子节点关系也是一致的
-
-> 你还可以通过 onClickable，onDraggable，onHoverable 等钩子来实现该实体的动态交互功能，比如有时候需要禁用某些实体的可交互能力，那么可能它就不会在场景中被 pick 出来，有时候根据某些逻辑又要动态开放出来
-
-> 在使用 react 渲染的框架下，场景组件也是一个 react 组件，可以和普通的 web 组件混在一起使用，看使用场景（无 react 依赖的框架版本下就不能混用，图形组件需要单独通过 render、g 方法来渲染）
-
-主要的使用方式就是上面这些，还有一些细节能力，通过 ts 的注释提示来查看，不再罗列
-
 ### 其他
-剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和组件库，文档看 README 和注释，不再展开介绍
+剩下的一些包主要是公共工具函数库、数学库、以及一些通用引擎和图形组件库的实现，文档看 Type Doc 和注释，使用案例可以看 Demo 文件夹下的代码，不再展开介绍。
 
 ## 最佳实践
 图形业务，以单插件为例：
