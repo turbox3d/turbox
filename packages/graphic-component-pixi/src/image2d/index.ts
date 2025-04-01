@@ -3,14 +3,14 @@ import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { fail, Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
-import { computeFlowLayoutPosition } from '../_utils/utils';
 
-interface IImage2dProps {
-  width: number;
-  height: number;
+export interface IImage2dProps {
   x?: number;
   y?: number;
-  position?: Vec2;
+  width: number;
+  height: number;
+  rotation?: number;
+  scale?: Vec2;
   /**
    * 传入的位置坐标是否是矩形中心点
    */
@@ -19,6 +19,9 @@ interface IImage2dProps {
   lineWidth?: number;
   lineColor?: number;
   lineAlpha?: number;
+  /**
+   * 边框内扩、外扩
+   */
   alignment?: number;
   native?: boolean;
   fillColor?: number;
@@ -27,13 +30,7 @@ interface IImage2dProps {
   backgroundImage?: string | HTMLImageElement;
   materialDirection?: Vec2;
   fit?: IFitStyle;
-  /** top,right,bottom,left */
-  // padding?: string;
-  /** top,right,bottom,left */
-  margin?: string;
   zIndex?: number;
-  /** 使用类似 css 的流式布局定位，开启后 position 将会失效 */
-  useFlowLayout?: boolean;
 }
 
 /** UI组件-图片 */
@@ -64,11 +61,8 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     this.mask.clear();
     this.s.visible = false;
     const {
-      x = 0,
-      y = 0,
       width,
       height,
-      central = false,
       radius = 0,
       lineWidth = 0,
       lineColor = 0x0,
@@ -82,11 +76,11 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       fit = 'none',
     } = this.props;
     DrawUtils.drawRect(this.g, {
-      x,
-      y,
+      x: 0,
+      y: 0,
       width,
       height,
-      central,
+      central: false,
       radius,
       lineWidth,
       lineColor,
@@ -103,20 +97,9 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     } else if (alignment === 1) {
       alignParam = 0;
     }
-    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
-    const fillPos = { x: posX + lineWidth * alignParam, y: posY + lineWidth * alignParam };
+    const fillPos = { x: lineWidth * alignParam, y: lineWidth * alignParam };
     const rw = width - lineWidth * 2 * alignParam;
     const rh = height - lineWidth * 2 * alignParam;
-    DrawUtils.drawRect(this.mask, {
-      x: fillPos.x,
-      y: fillPos.y,
-      width: rw,
-      height: rh,
-      central: false,
-      radius: radius - lineWidth * alignParam,
-      fillColor,
-      native,
-    });
     if (!backgroundImage) {
       return;
     }
@@ -137,7 +120,15 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     const { width: tw, height: th } = t;
     const imgRatio = tw / th;
     const rectRatio = width / height;
-    const center = { x: posX + width / 2, y: posY + height / 2 };
+    const center = { x: width / 2, y: height / 2 };
+    DrawUtils.drawRect(this.mask, {
+      x: fillPos.x,
+      y: fillPos.y,
+      width: rw,
+      height: rh,
+      central: false,
+      radius: radius - lineWidth * alignParam,
+    });
     if (fit === 'none') {
       this.s.position.set(center.x - tw / 2, center.y - th / 2);
     } else if (fit === 'fill') {
@@ -164,6 +155,9 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
         this.s.height = rw / imgRatio;
         this.s.position.set(fillPos.x, fillPos.y + rh / 2 - rw / imgRatio / 2);
       }
+      this.mask.position.set(this.s.position.x, this.s.position.y);
+      this.mask.width = this.s.width;
+      this.mask.height = this.s.height;
     }
     this.s.mask = this.mask;
   }
@@ -176,21 +170,17 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
   }
 
   updatePosition() {
-    const { position = { x: 0, y: 0 }, margin, central = false, useFlowLayout = false } = this.props;
-    if (!useFlowLayout) {
-      const [posX, posY] = central ? [position.x - this.view.width / 2, position.y - this.view.height / 2] : [position.x, position.y];
-      this.view.position.x = posX;
-      this.view.position.y = posY;
-      return;
-    }
-    computeFlowLayoutPosition.call(this, central, margin);
+    const { x = 0, y = 0, central = false, width, height } = this.props;
+    const [posX, posY] = central ? [x - width / 2, y - height / 2] : [x, y];
+    this.view.position.x = posX;
+    this.view.position.y = posY;
   }
 
   updateRotation() {
-    //
+    this.view.rotation = this.props.rotation ?? 0;
   }
 
   updateScale() {
-    //
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
 }

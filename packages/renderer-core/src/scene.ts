@@ -172,7 +172,7 @@ export abstract class BaseScene<
   /** 射线实例，仅 3d 下有 */
   raycaster?: Raycaster;
 
-  tickers: Function[] = [];
+  tickers: Array<(deltaTime: number) => void> = [];
 
   width: number = BaseScene.DEFAULT_WIDTH;
 
@@ -435,10 +435,10 @@ export abstract class BaseScene<
         isBase64?: boolean
       ) => this.getScreenShot(sx, sy, w, h, fileType, quality, isBase64),
       getApp: () => this.getCurrentApp(),
-      addTicker: (ticker: () => void) => {
+      addTicker: (ticker: (deltaTime: number) => void) => {
         this.tickers.push(ticker);
       },
-      removeTicker: (ticker: () => void) => {
+      removeTicker: (ticker: (deltaTime: number) => void) => {
         remove(this.tickers, ticker);
       },
     };

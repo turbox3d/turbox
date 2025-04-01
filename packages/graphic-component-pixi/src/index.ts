@@ -14,7 +14,6 @@ if (
 }
 
 export { default as Rect2d } from './rect2d/index';
-export { default as Container2d } from './container2d/index';
 export { default as Circle2d } from './circle2d/index';
 export { default as Polygon } from './polygon/index';
 export { default as Placement } from './placement/index';

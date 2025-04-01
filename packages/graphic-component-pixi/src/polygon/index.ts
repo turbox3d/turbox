@@ -1,15 +1,10 @@
 import { Mesh2D } from '@turbox3d/renderer-pixi';
+import { Vec2 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 import DrawUtils from '../draw-utils/index';
 
-interface Vec2 {
-  x: number;
-  y: number;
-}
-
 interface IPolygonProps {
   path: Vec2[];
-  position?: Vec2;
   rotation?: number;
   scale?: Vec2;
   lineWidth?: number;
@@ -25,11 +20,6 @@ interface IPolygonProps {
 
 /** 多边形 */
 export default class Polygon extends Mesh2D<IPolygonProps> {
-  static defaultProps: Partial<IPolygonProps> = {
-    position: { x: 0, y: 0 },
-    rotation: 0,
-    scale: { x: 0, y: 0 },
-  };
   protected view = new PIXI.Graphics();
   protected reactivePipeLine = [
     this.updateGeometry,
@@ -77,11 +67,10 @@ export default class Polygon extends Mesh2D<IPolygonProps> {
   }
 
   updateRotation() {
-    // this.view.rotation = this.props.rotation!;
+    this.view.rotation = this.props.rotation ?? 0;
   }
 
   updateScale() {
-    // const { scale } = this.props;
-    // this.view.scale.set(scale!.x, scale!.y);
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
 }

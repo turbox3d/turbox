@@ -1,6 +1,7 @@
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import * as PIXI from 'pixi.js';
+import { Vec2 } from '@turbox3d/shared';
 import { drawText } from '../_utils/utils';
 
 interface IXY {
@@ -18,6 +19,8 @@ interface IDimensionProps {
   data: IDimensionData[];
   editableTextPs?: IXY[]; // 需要隐藏文字的位置
   clickCallback?: Function;
+  rotation?: number;
+  scale?: Vec2;
 }
 
 interface ILineData {
@@ -158,6 +161,9 @@ export default class Dimension extends Mesh2D<IDimensionProps> {
       this._interactContainer.addChild(interactGraphics);
       this.graphic2endPsMap.set(interactGraphics, info);
     });
+
+    this.view.rotation = this.props.rotation ?? 0;
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
   protected onClickable() {
     return true;

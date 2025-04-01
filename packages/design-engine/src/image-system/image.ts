@@ -1,5 +1,5 @@
-import { Vector2, Vec2 } from '@turbox3d/math';
-import { updateQueryStringParameter } from '@turbox3d/shared';
+import { Vector2 } from '@turbox3d/math';
+import { updateQueryStringParameter, Vec2 } from '@turbox3d/shared';
 import * as THREE from 'three';
 
 function convertUrl(url: string, key = 'turbox') {

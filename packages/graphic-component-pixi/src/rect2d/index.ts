@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
+import { Vec2 } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils/index';
 import { IFitStyle } from '../draw-utils/drawRect';
 
@@ -9,6 +10,7 @@ export interface IRect2dProps {
   width: number;
   height: number;
   rotation?: number;
+  scale?: Vec2;
   /**
    * 传入的位置坐标是否是矩形中心点
    */
@@ -41,9 +43,11 @@ export default class Rect2d extends Mesh2D<IRect2dProps> {
   updateGeometry() {
     this.view.clear();
     const {
+      x = 0,
+      y = 0,
       width,
       height,
-      central,
+      central = false,
       radius,
       lineWidth,
       lineColor,
@@ -57,8 +61,8 @@ export default class Rect2d extends Mesh2D<IRect2dProps> {
       native,
     } = this.props;
     DrawUtils.drawRect(this.view, {
-      x: 0,
-      y: 0,
+      x,
+      y,
       width,
       height,
       central,
@@ -82,8 +86,7 @@ export default class Rect2d extends Mesh2D<IRect2dProps> {
   }
 
   updatePosition() {
-    const { x = 0, y = 0 } = this.props;
-    this.view.position.set(x, y);
+    //
   }
 
   updateRotation() {
@@ -92,6 +95,7 @@ export default class Rect2d extends Mesh2D<IRect2dProps> {
   }
 
   updateScale() {
-    //
+    const { scale = { x: 1, y: 1 } } = this.props;
+    this.view.scale.set(scale.x, scale.y);
   }
 }

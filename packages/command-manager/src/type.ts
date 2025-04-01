@@ -30,6 +30,6 @@ export interface SceneTool {
     isBase64?: boolean
   ) => Promise<string | Blob>;
   getApp: () => any;
-  addTicker: (ticker: () => void) => void;
-  removeTicker: (ticker: () => void) => void;
+  addTicker: (ticker: (deltaTime: number) => void) => void;
+  removeTicker: (ticker: (deltaTime: number) => void) => void;
 }

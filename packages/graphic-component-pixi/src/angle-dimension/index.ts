@@ -1,5 +1,6 @@
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
+import { Vec2 } from '@turbox3d/shared';
 import { drawText } from '../_utils/utils';
 
 interface IXY {
@@ -9,6 +10,8 @@ interface IXY {
 
 interface IAngleDimensionProps {
   center: IXY;
+  rotation?: number;
+  scale?: Vec2;
   radius: number;
   startAngle: number;
   endAngle: number;
@@ -41,5 +44,8 @@ export default class AngleDimension extends Mesh2D<IAngleDimensionProps> {
     const bisectorAngle = (this.props.startAngle + this.props.endAngle) / 2;
     const bisectorDir = { x: Math.cos(bisectorAngle), y: Math.sin(bisectorAngle) };
     drawText(graphics, text.toFixed(0), { offset: { x: this.props.center.x + 1.3 * k * this.props.radius * bisectorDir.x, y: this.props.center.y + 1.2 * k * this.props.radius * bisectorDir.y }, size: this.props.radius / 2, rotation: Math.PI / 2 + bisectorAngle });
+
+    this.view.rotation = this.props.rotation ?? 0;
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
 }

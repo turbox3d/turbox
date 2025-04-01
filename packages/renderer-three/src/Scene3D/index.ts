@@ -127,7 +127,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
     this.updateCameraPosition(cameraPosition as Vec3);
     const animate = () => {
       if (this.renderFlag) {
-        this.tickers.forEach(ticker => ticker());
+        this.tickers.forEach(ticker => ticker(1000 / this.maxFPS));
         app.render(this.scene!, this.camera!);
       }
       if (this.maxFPS === 60) {

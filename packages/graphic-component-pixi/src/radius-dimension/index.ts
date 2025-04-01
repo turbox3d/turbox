@@ -7,6 +7,8 @@ interface IRadiusDimensionProps {
   center: Vec2;
   angle: number; // 角度
   radius: string; // 半径
+  rotation?: number;
+  scale?: Vec2;
   /**
    * @description: 标注线起点距离圆心距离
    */
@@ -45,5 +47,8 @@ export default class RadiusDimension extends Mesh2D<IRadiusDimensionProps> {
     const b = { x: 0.8 * textSize * textOffsetDir.x, y: 0.8 * textSize * textOffsetDir.y };
 
     drawText(graphics, this.props.radius, { offset: { x: startP.x + a.x + b.x, y: startP.y + a.y + b.y }, size: textSize, rotation: this.props.angle });
+
+    this.view.rotation = this.props.rotation ?? 0;
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
 }

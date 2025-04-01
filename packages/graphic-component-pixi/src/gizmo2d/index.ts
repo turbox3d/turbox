@@ -2,7 +2,7 @@ import { SceneEvent, ViewEntity } from '@turbox3d/event-manager';
 import { SceneTool } from '@turbox3d/command-manager';
 import { Mesh2D, g } from '@turbox3d/renderer-pixi';
 import Rect2d from '../rect2d';
-import Container2d from '../container2d';
+import Image2d from '../image2d';
 
 interface IGizmo2dProps {
   x?: number;
@@ -105,7 +105,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
           xRightHandler && xRightHandler('end', viewEntity, event, tools);
         },
       }),
-      g(Container2d, {
+      g(Image2d, {
         key: 'delete',
         clickable: true,
         x: posX,
@@ -117,13 +117,14 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         lineWidth: 2,
         lineColor: color,
         fillColor: color,
-        fit: 'contain',
+        fillAlpha: 1,
+        fit: 'cover',
         backgroundImage: deleteIcon,
         onClick: () => {
           deleteHandler && deleteHandler();
         },
       }),
-      g(Container2d, {
+      g(Image2d, {
         key: 'adjust',
         draggable: true,
         x: central ? width / 2 : width,
@@ -135,7 +136,8 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         lineWidth: 2,
         lineColor: color,
         fillColor: color,
-        fit: 'contain',
+        fillAlpha: 1,
+        fit: 'cover',
         backgroundImage: adjustIcon,
         onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
           adjustHandler && adjustHandler('start', viewEntity, event, tools);

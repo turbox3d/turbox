@@ -1,8 +1,6 @@
-import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import * as PIXI from 'pixi.js';
-import Container2d from '../container2d';
 
 interface IXY {
   x: number;
@@ -109,20 +107,20 @@ export async function drawText(
   }
 }
 
-export function computeFlowLayoutPosition(central: boolean, margin?: string) {
-  const [posX, posY] = central ? [0 - this.view.width / 2, 0 - this.view.height / 2] : [0, 0];
-  const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-  const parentNode = this._vNode.parent;
-  if (parentNode && parentNode.instance instanceof Container2d) {
-    this.view.position.x = posX + left;
-    if (parentNode.child === this._vNode) {
-      this.view.position.y = posY + top;
-    }
-    if (this._vNode.sibling) {
-      const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
-      if (this._vNode.sibling?.instance instanceof Mesh2D) {
-        ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
-      }
-    }
-  }
-}
+// export function computeFlowLayoutPosition(central: boolean, margin?: string) {
+//   const [posX, posY] = central ? [0 - this.view.width / 2, 0 - this.view.height / 2] : [0, 0];
+//   const [top, right, bottom, left] = margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
+//   const parentNode = this._vNode.parent;
+//   if (parentNode && parentNode.instance instanceof Container2d) {
+//     this.view.position.x = posX + left;
+//     if (parentNode.child === this._vNode) {
+//       this.view.position.y = posY + top;
+//     }
+//     if (this._vNode.sibling) {
+//       const siblingMargin = this._vNode.sibling?.props.margin?.split(',').map(n => parseInt(n, 10)) || [0, 0, 0, 0];
+//       if (this._vNode.sibling?.instance instanceof Mesh2D) {
+//         ((this._vNode.sibling?.instance as any).view as PIXI.Container).position.y = this.view.position.y + this.view.height + bottom + siblingMargin[0];
+//       }
+//     }
+//   }
+// }

@@ -12,6 +12,8 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
 
   sceneType = SceneType.Scene2D;
 
+  private timer: number;
+
   private offsetCenter: Vec2 = { x: 0, y: 0 };
 
   private brt?: PIXI.BaseRenderTexture;
@@ -23,19 +25,6 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
   constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
     super(props);
     this.view.sortableChildren = true;
-  }
-
-  componentDidUpdate() {
-    super.componentDidUpdate();
-    const app = this.getCurrentApp();
-    if (!app) {
-      return;
-    }
-    if (this.renderFlag) {
-      app.start();
-    } else {
-      app.stop();
-    }
   }
 
   createView() {
@@ -118,7 +107,7 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
         vp.visible = viewport.visible;
         app.stage.addChild(vp);
       }
-      app.ticker.add(() => {
+      this.sceneContext.getSceneTools().addTicker(() => {
         if (this.viewport?.visible && this.renderFlag) {
           app.renderer.render(this.view, {
             renderTexture: this.rt,
@@ -181,17 +170,25 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
       resolution: this.resolution,
       preserveDrawingBuffer,
     });
-    app.ticker.deltaMS = 1000 / this.maxFPS;
+    app.ticker.autoStart = false;
+    app.ticker.stop();
     if (this.isWebGL(app)) {
       // 暂存原始 resizeFramebuffer 函数
       this.originalResizeFramebufferFunction = (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer;
       // this.fixResizeFramebufferBug(app, resizeFramebuffer);
     }
-    if (this.renderFlag) {
-      app.start();
-    } else {
-      app.stop();
-    }
+    const animate = () => {
+      if (this.renderFlag) {
+        this.tickers.forEach(ticker => ticker(1000 / this.maxFPS));
+        app.renderer.render(app.stage);
+      }
+      if (this.maxFPS === 60) {
+        this.timer = requestAnimationFrame(animate);
+      } else {
+        this.timer = window.setTimeout(animate, 1000 / this.maxFPS);
+      }
+    };
+    animate();
     return app;
   }
 
@@ -366,6 +363,11 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
   destroyApp(app: PIXI.Application) {
     // 每一个子组件都会通过 componentWillUnmount 调用自己的 destroy 方法，所以这里的 children 设置为 false
     app.destroy(true, { children: false, texture: true, baseTexture: true });
+    if (this.maxFPS === 60) {
+      cancelAnimationFrame(this.timer);
+    } else {
+      window.clearTimeout(this.timer);
+    }
   }
 
   removeAppChildrenView(app: PIXI.Application) {

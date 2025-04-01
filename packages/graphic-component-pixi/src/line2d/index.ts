@@ -1,4 +1,4 @@
-import { Vector2 } from '@turbox3d/math';
+import { Vec2 } from '@turbox3d/shared';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import * as PIXI from 'pixi.js';
 import DrawUtils from '../draw-utils';
@@ -7,8 +7,10 @@ interface ILine2dProps {
   lineWidth?: number;
   lineColor?: number;
   alignment?: number;
-  start: Vector2;
-  end: Vector2;
+  start: Vec2;
+  end: Vec2;
+  rotation?: number;
+  scale?: Vec2;
   zIndex?: number;
 }
 
@@ -28,5 +30,7 @@ export default class Line2d extends Mesh2D<ILine2dProps> {
       lineColor,
       alignment,
     });
+    this.view.rotation = this.props.rotation ?? 0;
+    this.view.scale.set(this.props.scale?.x ?? 1, this.props.scale?.y ?? 1);
   }
 }
