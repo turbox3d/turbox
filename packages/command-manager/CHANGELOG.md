@@ -1,5 +1,11 @@
 # @turbox3d/command-manager
 
+## 1.1.32
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+
 ## 1.1.31
 
 ### Patch Changes

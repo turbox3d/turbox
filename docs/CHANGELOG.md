@@ -1022,6 +1022,14 @@
 
 # @turbox3d/renderer-three
 
+## 1.0.29
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/renderer-core@1.0.28
+
 ## 1.0.28
 
 ### Patch Changes
@@ -1212,6 +1220,14 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.30
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/renderer-core@1.0.28
+
 ## 1.0.29
 
 ### Patch Changes
@@ -1401,6 +1417,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.28
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/command-manager@1.1.32
 
 ## 1.0.27
 
@@ -2028,6 +2052,14 @@
 
 # @turbox3d/graphic-component-three
 
+## 1.1.38
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/renderer-three@1.0.29
+
 ## 1.1.37
 
 ### Patch Changes
@@ -2191,6 +2223,15 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.46
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/command-manager@1.1.32
+  - @turbox3d/renderer-pixi@1.0.30
 
 ## 1.1.45
 
@@ -2599,6 +2640,14 @@
 
 # @turbox3d/design-engine
 
+## 1.1.37
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/command-manager@1.1.32
+
 ## 1.1.36
 
 ### Patch Changes
@@ -2850,6 +2899,12 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/command-manager
+
+## 1.1.32
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
 
 ## 1.1.31
 

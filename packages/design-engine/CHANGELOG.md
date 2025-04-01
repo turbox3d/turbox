@@ -1,5 +1,13 @@
 # @turbox3d/design-engine
 
+## 1.1.37
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/command-manager@1.1.32
+
 ## 1.1.36
 
 ### Patch Changes

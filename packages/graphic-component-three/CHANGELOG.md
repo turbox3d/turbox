@@ -1,5 +1,13 @@
 # @turbox3d/graphic-component-three
 
+## 1.1.38
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/renderer-three@1.0.29
+
 ## 1.1.37
 
 ### Patch Changes

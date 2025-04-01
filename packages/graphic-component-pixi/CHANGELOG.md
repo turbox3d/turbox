@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.46
+
+### Patch Changes
+
+- 3376d2e: fix: fix ticker & pixi component issue
+- Updated dependencies [3376d2e]
+  - @turbox3d/command-manager@1.1.32
+  - @turbox3d/renderer-pixi@1.0.30
+
 ## 1.1.45
 
 ### Patch Changes
