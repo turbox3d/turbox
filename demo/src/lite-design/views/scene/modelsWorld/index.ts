@@ -69,12 +69,18 @@ export const SceneUtil = {
 
 @Reactive
 export class ModelsWorld extends Component {
+  tick = (deltaTime: number) => {
+    if (m.getControls()) {
+      (m.getControls() as OrbitControls).update(deltaTime);
+    }
+  }
+
   componentDidMount() {
-    this.context.getSceneTools().addTicker(() => {
-      if (m.getControls()) {
-        (m.getControls() as OrbitControls).update();
-      }
-    });
+    this.context.getSceneTools().addTicker(this.tick);
+  }
+
+  componentWillUnmount() {
+    this.context.getSceneTools().removeTicker(this.tick);
   }
 
   render() {

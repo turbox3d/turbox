@@ -1,15 +1,16 @@
 .left-panel {
   position: absolute;
   left: 0;
-  top: 45px;
+  top: 72px;
   bottom: 0;
-  width: 260px;
+  width: 320px;
   display: flex;
   flex-direction: column;
-  background: #e9ebf0;
-  padding: 20px;
+  background: #fff;
+  padding: 0 20px;
   z-index: 10;
   overflow: scroll;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
 
 .material-wp {
@@ -50,4 +51,50 @@
   align-items: center;
   font-size: 14px;
   font-weight: 500;
+}
+
+.flex-horizontal {
+  display: flex;
+  justify-content: space-between;
+}
+.text {
+  font-size: 14px;
+}
+.container-config-item {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 10px;
+}
+.container-config-text {
+  display: inline-block;
+  width: 50px;
+  text-align: right;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.divider-container {
+  margin-bottom: 30px;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  // flex-direction: column;
+}
+.block {
+  background: #f7f8fa;
+  border-radius: 10px;
+  transition: all 0.1s cubic-bezier(0.95, 0.55, 0.05, 0.46);
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 85px;
+  height: 65px;
+  &:hover {
+    outline: 2px #409eff solid;
+  }
 }

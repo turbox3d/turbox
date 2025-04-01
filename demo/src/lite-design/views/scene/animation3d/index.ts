@@ -72,7 +72,6 @@ export class Animation3d extends Mesh3D<IAnimationProps> {
   private gltfModel?: THREE.Group;
   private oriLoopCall?: Function;
   private oriFinishCall?: Function;
-  private lastTime = 0;
   /**
    * 主融合器
    */
@@ -82,11 +81,20 @@ export class Animation3d extends Mesh3D<IAnimationProps> {
    */
   private actions: IDictionary<THREE.AnimationAction> = {};
 
+  tick = (deltaTime: number) => {
+    if (!this.props.isPlay || !this.mixer) {
+      return;
+    }
+    this.mixer.update(deltaTime);
+  }
+
   componentDidMount() {
     // 加入循环
-    this.context.getSceneTools().addTicker(() => {
-      this.tick();
-    });
+    this.context.getSceneTools().addTicker(this.tick);
+  }
+
+  componentWillUnmount() {
+    this.context.getSceneTools().removeTicker(this.tick);
   }
 
   /**
@@ -165,19 +173,5 @@ export class Animation3d extends Mesh3D<IAnimationProps> {
     }
     this.actions = actions;
     this.updateAnimation();
-  }
-
-  /**
-   * 外部调用的每帧更新方法
-   * @returns
-   */
-  tick() {
-    if (!this.props.isPlay || !this.mixer) {
-      return;
-    }
-    const now = Date.now();
-    const dt = this.lastTime ? now - this.lastTime : 0;
-    this.lastTime = now;
-    this.mixer.update(dt / 1000);
   }
 }

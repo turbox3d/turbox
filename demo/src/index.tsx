@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { config, Tolerance, EnvSystem } from '@turbox3d/turbox';
 import { IDocumentData } from './image-builder/models/domain/document';
 import { ItemType } from './image-builder/common/consts/scene';
-import { BLACK } from './image-builder/common/consts/color';
+import { BLACK, GRAY, WHITE } from './image-builder/common/consts/color';
 
 config({
   middleware: {
@@ -45,13 +45,18 @@ const imageBuilderData = {
       href: '',
       attribute: {
         fontSize: 30,
-        lineHeight: 30,
+        lineHeight: 1.5,
         fontFamily: 'Arial',
         color: BLACK,
         fontWeight: 'normal',
         align: 'left',
         wordWrap: true,
-        wordWrapWidth: 400,
+        wordWrapWidth: 375,
+        fontStyle: 'normal',
+        borderWidth: 0,
+        borderColor: GRAY,
+        backgroundColor: WHITE,
+        borderRadius: 0,
       },
     }
   }],

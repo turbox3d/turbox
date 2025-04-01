@@ -5,6 +5,7 @@ import './index.less';
 import { imageBuilderStore } from '../../models';
 import { appCommandManager } from '../../commands';
 import { IDocumentData } from '../../models/domain/document';
+import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
 
 export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData) => void }) => {
   const undo = () => {
@@ -26,23 +27,23 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
 
   return (
     <div className="top-bar">
-      <div>Demo Builder</div>
-      <div>
-        <Button size="small" onClick={undo}>
-          撤销
+      <div>ImageBuilder</div>
+      <div className="action">
+        <Button className="button" size="small" onClick={redo}>
+          <RedoOutlined />
         </Button>
-        <Button size="small" onClick={redo}>
-          恢复
+        <Button className="button" size="small" onClick={undo}>
+          <UndoOutlined />
         </Button>
-        <Button size="small" onClick={clear}>
+
+        {/* <Button size="small" onClick={clear}>
           清空
+        </Button> */}
+        <Button className="button" size="small" onClick={dump} disabled={showInvalidRangeFrame}>
+          Save
         </Button>
       </div>
-      <div>
-        <Button size="small" onClick={dump} disabled={showInvalidRangeFrame}>
-          保存
-        </Button>
-      </div>
+
       {selected && (
         <div className="global-msg">
           <Alert message="按住 Ctrl 可固定左上角进行拉伸" type="info" />

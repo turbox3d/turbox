@@ -74,7 +74,7 @@ const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
         id="scene2d"
         style={{
           position: 'absolute',
-          top: 45,
+          top: 72,
           right: 0,
           bottom: 0,
           left: 260,

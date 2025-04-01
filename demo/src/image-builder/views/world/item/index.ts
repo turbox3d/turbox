@@ -97,10 +97,8 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
       lineColor: model.attribute.borderColor,
       fillColor: model.attribute.backgroundColor,
       radius: model.attribute.borderRadius,
-      position: {
-        x: -(model.size.x / 2),
-        y: -(model.size.y / 2),
-      },
+      x: -(model.size.x / 2),
+      y: -(model.size.y / 2),
       id: model.id,
       type: ItemSymbol,
       clickable: true,

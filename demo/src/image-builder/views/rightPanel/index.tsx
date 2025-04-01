@@ -8,6 +8,7 @@ import { ItemType } from '../../common/consts/scene';
 import { Color } from 'antd/es/color-picker';
 import { loadImageElement } from '../../common/utils/image';
 import { imageBuilderStore } from '../../models';
+import { Attribute } from './attribute';
 
 export const RightPanel = ReactiveReact(() => {
   const selected = appCommandManager.default.select.getSelectedEntities()[0];
@@ -16,18 +17,18 @@ export const RightPanel = ReactiveReact(() => {
   }
 
   const textAttributesMap = {
-    fontFamily: { text: '字体', value: selected.attribute.fontFamily, type: 'text' },
-    fontSize: { text: '字号', value: selected.attribute.fontSize, disabled: true, type: 'number' },
-    align: { text: '对齐', value: selected.attribute.align, type: 'text' },
-    fontWeight: { text: '粗细', value: selected.attribute.fontWeight, type: 'text' },
-    lineHeight: { text: '行高(倍数)', value: selected.attribute.lineHeight, type: 'number' },
-    fontStyle: { text: '斜体', value: selected.attribute.fontStyle, type: 'text' },
+    fontFamily: { text: 'Font Family', value: selected.attribute.fontFamily, type: 'text' },
+    fontSize: { text: 'Font Size', value: selected.attribute.fontSize, disabled: true, type: 'number' },
+    align: { text: 'Align', value: selected.attribute.align, type: 'text' },
+    fontWeight: { text: 'Font Weight', value: selected.attribute.fontWeight, type: 'text' },
+    lineHeight: { text: 'Line Height', value: selected.attribute.lineHeight, type: 'number' },
+    fontStyle: { text: 'Font Style', value: selected.attribute.fontStyle, type: 'text' },
   };
   const imgAttributesMap = {
-    width: { text: '宽度', value: selected.size.x, disabled: true, type: 'number' },
-    height: { text: '高度', value: selected.size.y, disabled: true, type: 'number' },
-    borderRadius: { text: 'borderRadius', value: selected.attribute.borderRadius, type: 'number' },
-    borderWidth: { text: 'borderWidth', value: selected.attribute.borderWidth, type: 'number' },
+    width: { text: 'Width', value: selected.size.x, disabled: true, type: 'number' },
+    height: { text: 'Height', value: selected.size.y, disabled: true, type: 'number' },
+    borderRadius: { text: 'Border Radius', value: selected.attribute.borderRadius, type: 'number' },
+    borderWidth: { text: 'Border Width', value: selected.attribute.borderWidth, type: 'number' },
   };
 
   const onTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -46,7 +47,7 @@ export const RightPanel = ReactiveReact(() => {
       },
     });
   };
-  const attributeHandler = (key: string) => (e) => {
+  const attributeHandler = (key: string) => e => {
     const obj = {
       ...textAttributesMap,
       ...imgAttributesMap,
@@ -55,7 +56,7 @@ export const RightPanel = ReactiveReact(() => {
     selected.$update({
       attribute: {
         ...selected.attribute,
-       [key]: val,
+        [key]: val,
       },
     });
   };
@@ -80,35 +81,39 @@ export const RightPanel = ReactiveReact(() => {
       x: ratio > 1 ? bgSize.width / 6 : (bgSize.height / 6) * ratio,
       y: ratio > 1 ? bgSize.width / 6 / ratio : bgSize.height / 6,
     });
-  }
+  };
 
   return (
     <div className="right-panel" key={selected.id}>
       {selected.itemType === ItemType.TEXT && (
         <>
-          <div>
-            <div>文本</div>
-            <Input.TextArea
-              value={selected.text}
-              onChange={onTextHandler}
-              autoSize={{ minRows: 3, maxRows: 5 }}
-            />
+          <div className="flex-horizontal">
+            <Attribute attribute="Text" />
+            <Input.TextArea value={selected.text} onChange={onTextHandler} autoSize={{ minRows: 3, maxRows: 5 }} />
           </div>
           <div>
-            <div>超链接</div>
-            <Input
-              defaultValue={selected.href}
-              onPressEnter={onItemEntityHandler('href')}
-            />
+            <Attribute attribute="Link" />
+            <Input defaultValue={selected.href} onPressEnter={onItemEntityHandler('href')} />
           </div>
           <div>
-            <div>颜色</div>
-            <ColorPicker defaultValue={`#${selected.attribute.color.toString(16)}`} placement="rightBottom" disabledAlpha showText onChange={onColorHandler('color')} />
+            <Attribute attribute="Color" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.color.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('color')}
+            />
           </div>
           {Object.keys(textAttributesMap).map(key => (
             <div key={key}>
-              <div>{textAttributesMap[key].text}</div>
-              <Input value={`${textAttributesMap[key].value}`} type={textAttributesMap[key].type} onChange={attributeHandler(key)} disabled={textAttributesMap[key].disabled} />
+              <Attribute attribute={textAttributesMap[key].text} />
+              <Input
+                value={`${textAttributesMap[key].value}`}
+                type={textAttributesMap[key].type}
+                onChange={attributeHandler(key)}
+                disabled={textAttributesMap[key].disabled}
+              />
             </div>
           ))}
         </>
@@ -116,32 +121,43 @@ export const RightPanel = ReactiveReact(() => {
       {selected.itemType === ItemType.IMAGE && (
         <>
           <div>
-            <div>图片地址</div>
-            <Input
-              defaultValue={selected.resourceUrl}
-              onPressEnter={onImgSrcHandler}
-            />
+            <Attribute attribute="Image Source" />
+            <Input defaultValue={selected.resourceUrl} onPressEnter={onImgSrcHandler} />
           </div>
           <div>
-            <div>超链接</div>
-            <Input
-              defaultValue={selected.href}
-              onPressEnter={onItemEntityHandler('href')}
-            />
+            <Attribute attribute="Link" />
+            <Input defaultValue={selected.href} onPressEnter={onItemEntityHandler('href')} />
           </div>
           {Object.keys(imgAttributesMap).map(key => (
             <div key={key}>
-              <div>{imgAttributesMap[key].text}</div>
-              <Input value={`${imgAttributesMap[key].value}`} type={imgAttributesMap[key].type} onChange={attributeHandler(key)} disabled={imgAttributesMap[key].disabled} />
+              <Attribute attribute={imgAttributesMap[key].text} />
+              <Input
+                value={`${imgAttributesMap[key].value}`}
+                type={imgAttributesMap[key].type}
+                onChange={attributeHandler(key)}
+                disabled={imgAttributesMap[key].disabled}
+              />
             </div>
           ))}
           <div>
-            <div>边框颜色</div>
-            <ColorPicker defaultValue={`#${selected.attribute.borderColor.toString(16)}`} placement="rightBottom" disabledAlpha showText onChange={onColorHandler('borderColor')} />
+            <Attribute attribute="Border" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.borderColor.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('borderColor')}
+            />
           </div>
           <div>
-            <div>背景颜色</div>
-            <ColorPicker defaultValue={`#${selected.attribute.backgroundColor.toString(16)}`} placement="rightBottom" disabledAlpha showText onChange={onColorHandler('backgroundColor')} />
+            <Attribute attribute="Background" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.backgroundColor.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('backgroundColor')}
+            />
           </div>
         </>
       )}
