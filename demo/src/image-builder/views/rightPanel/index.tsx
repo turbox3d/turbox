@@ -161,6 +161,70 @@ export const RightPanel = ReactiveReact(() => {
           </div>
         </>
       )}
+      {selected.itemType === ItemType.BUTTON && (
+        <>
+          <div className="flex-horizontal">
+            <Attribute attribute="Text" />
+            <Input.TextArea value={selected.text} onChange={onTextHandler} autoSize={{ minRows: 3, maxRows: 5 }} />
+          </div>
+          <div>
+            <Attribute attribute="Link" />
+            <Input defaultValue={selected.href} onPressEnter={onItemEntityHandler('href')} />
+          </div>
+          {Object.keys(imgAttributesMap).map(key => (
+            <div key={key}>
+              <Attribute attribute={imgAttributesMap[key].text} />
+              <Input
+                value={`${imgAttributesMap[key].value}`}
+                type={imgAttributesMap[key].type}
+                onChange={attributeHandler(key)}
+                disabled={imgAttributesMap[key].disabled}
+              />
+            </div>
+          ))}
+          <div>
+            <Attribute attribute="Border" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.borderColor.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('borderColor')}
+            />
+          </div>
+          <div>
+            <Attribute attribute="Background" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.backgroundColor.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('backgroundColor')}
+            />
+          </div>
+          <div>
+            <Attribute attribute="Color" />
+            <ColorPicker
+              defaultValue={`#${selected.attribute.color.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={onColorHandler('color')}
+            />
+          </div>
+          {Object.keys(textAttributesMap).map(key => (
+            <div key={key}>
+              <Attribute attribute={textAttributesMap[key].text} />
+              <Input
+                value={`${textAttributesMap[key].value}`}
+                type={textAttributesMap[key].type}
+                onChange={attributeHandler(key)}
+                disabled={textAttributesMap[key].disabled}
+              />
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 });

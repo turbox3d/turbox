@@ -1,110 +1,109 @@
 /* tslint-disable */
-import { Button, Input, InputNumber, Divider } from 'antd';
-import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
-import debounce from 'lodash/debounce';
+import { Button, Divider } from 'antd';
 import * as React from 'react';
-import { PictureOutlined, FileImageOutlined } from '@ant-design/icons';
+import { FileImageOutlined } from '@ant-design/icons';
 
 import './index.less';
 import { appCommandManager } from '../../commands/index';
 import { useMaterialDragAndReplace } from '../../hooks/index';
-import { FrameEntity } from '../../models/entity/frame';
-import { imageBuilderStore } from '../../models/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
+import { ItemType } from '../../common/consts/scene';
 
-const images = [
-  {
-    name: 'wardrobe',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/wardrobe.png',
-  },
-  {
-    name: 'sofa',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
-  },
-  {
-    name: 'light',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/light.png',
-  },
-  {
-    name: 'desk',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/desk.png',
-  },
-  {
-    name: 'chair',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/chair.png',
-  },
-  {
-    name: 'art',
-    url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/art.png',
-  },
-];
+// const images = [
+//   {
+//     name: 'wardrobe',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/wardrobe.png',
+//   },
+//   {
+//     name: 'sofa',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
+//   },
+//   {
+//     name: 'light',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/light.png',
+//   },
+//   {
+//     name: 'desk',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/desk.png',
+//   },
+//   {
+//     name: 'chair',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/chair.png',
+//   },
+//   {
+//     name: 'art',
+//     url: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/art.png',
+//   },
+// ];
 
-const textUrl = 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/text.jpeg';
+// const textUrl = 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/text.jpeg';
 
 // eslint-disable-next-line max-lines-per-function
 export function LeftPanel() {
-  const { dragControl } = useMaterialDragAndReplace();
-  const [width, setWidth] = React.useState(375);
-  const [height, setHeight] = React.useState(667);
-  const pointerDownHandler = (url: string, name?: number | string) => (e: React.PointerEvent) => {
+  const { dragControl } = useMaterialDragAndReplace<{ type: string; name?: number | string; }>();
+  // const [width, setWidth] = React.useState(375);
+  // const [height, setHeight] = React.useState(667);
+  const pointerDownHandler = (url: string, type: string, name?: number | string) => (e: React.PointerEvent) => {
     e.persist();
-    dragControl.current.onMouseDown(url, { name })(e.nativeEvent);
+    dragControl.current.onMouseDown(url, { name, type })(e.nativeEvent);
   };
-  const colorChange: React.ChangeEventHandler<HTMLInputElement> | undefined = debounce(
-    (e: React.BaseSyntheticEvent) => {
-      const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-      appCommandManager._shared.entity.addFrameEntity({
-        size: { x: width, y: height },
-        target,
-        color: parseInt(e.target.value.replace('#', '0x'), 16),
-      });
-    },
-    300
-  );
-  const uploadImgChange = async (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'done') {
-      const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-      const buffer = await info.file.originFileObj?.arrayBuffer();
-      if (!buffer) {
-        return;
-      }
-      appCommandManager._shared.entity.addFrameEntity({
-        size: { x: width, y: height },
-        target,
-        texture: new Blob([buffer], { type: info.file.type }),
-      });
-    }
-  };
-  const widthChange = debounce((value: number) => {
-    setWidth(value);
-    const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-    appCommandManager._shared.entity.addFrameEntity({
-      size: { x: value, y: height },
-      target,
-    });
-  }, 300);
-  const heightChange = debounce((value: number) => {
-    setHeight(value);
-    const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-    appCommandManager._shared.entity.addFrameEntity({
-      size: { x: width, y: value },
-      target,
-    });
-  }, 300);
-  const pointerDownTextHandler = (e: React.PointerEvent) => {
-    appCommandManager._shared.entity.addTextItemEntity('hello world!');
-  };
+  // const colorChange: React.ChangeEventHandler<HTMLInputElement> | undefined = debounce(
+  //   (e: React.BaseSyntheticEvent) => {
+  //     const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
+  //     appCommandManager._shared.entity.addFrameEntity({
+  //       size: { x: width, y: height },
+  //       target,
+  //       color: parseInt(e.target.value.replace('#', '0x'), 16),
+  //     });
+  //   },
+  //   300
+  // );
+  // const uploadImgChange = async (info: UploadChangeParam<UploadFile<any>>) => {
+  //   if (info.file.status === 'done') {
+  //     const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
+  //     const buffer = await info.file.originFileObj?.arrayBuffer();
+  //     if (!buffer) {
+  //       return;
+  //     }
+  //     appCommandManager._shared.entity.addFrameEntity({
+  //       size: { x: width, y: height },
+  //       target,
+  //       texture: new Blob([buffer], { type: info.file.type }),
+  //     });
+  //   }
+  // };
+  // const widthChange = debounce((value: number) => {
+  //   setWidth(value);
+  //   const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
+  //   appCommandManager._shared.entity.addFrameEntity({
+  //     size: { x: value, y: height },
+  //     target,
+  //   });
+  // }, 300);
+  // const heightChange = debounce((value: number) => {
+  //   setHeight(value);
+  //   const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
+  //   appCommandManager._shared.entity.addFrameEntity({
+  //     size: { x: width, y: value },
+  //     target,
+  //   });
+  // }, 300);
   const updateZ = (type: Z_INDEX_ACTION) => () => {
     appCommandManager._shared.entity.updateRenderOrder(type);
   };
-  const pointerDownButtonHandler = (e: React.PointerEvent) => {};
 
   return (
     <div className="left-panel">
       <div className="divider-container">
         <Divider orientation="left">Blocks</Divider>
         <div className="flex-horizontal">
-          <div className="block" onPointerDown={pointerDownTextHandler}>
+          <div
+            className="block"
+            onPointerDown={pointerDownHandler(
+              'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/text.jpeg',
+              ItemType.TEXT,
+            )}
+          >
             <svg
               width="24"
               height="24"
@@ -125,14 +124,14 @@ export function LeftPanel() {
           <div
             className="block"
             onPointerDown={pointerDownHandler(
-              'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png'
+              'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
+              ItemType.IMAGE,
             )}
           >
             <FileImageOutlined style={{ fontSize: 18, height: 25 }} />
-
             <div className="text">Image</div>
           </div>
-          <div className="block" onPointerDown={pointerDownButtonHandler}>
+          <div className="block" onPointerDown={pointerDownHandler('https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/button.svg', ItemType.BUTTON)}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 40, height: 25 }}>
               <path
                 d="M22 9v6c0 1.1-.9 2-2 2h-1v-2h1V9H4v6h6v2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2zm-7.5 10l1.09-2.41L18 15.5l-2.41-1.09L14.5 12l-1.09 2.41L11 15.5l2.41 1.09L14.5 19zm2.5-5l.62-1.38L19 12l-1.38-.62L17 10l-.62 1.38L15 12l1.38.62L17 14zm-2.5 5l1.09-2.41L18 15.5l-2.41-1.09L14.5 12l-1.09 2.41L11 15.5l2.41 1.09L14.5 19zm2.5-5l.62-1.38L19 12l-1.38-.62L17 10l-.62 1.38L15 12l1.38.62L17 14z"
@@ -143,8 +142,7 @@ export function LeftPanel() {
           </div>
         </div>
       </div>
-
-      <div className="divider-container">
+      {/* <div className="divider-container">
         <Divider orientation="left">Container</Divider>
         <div className="container-config-item">
           <span className="container-config-text">Width</span>
@@ -158,7 +156,7 @@ export function LeftPanel() {
           <span className="container-config-text">Color</span>
           <input type="color" onChange={colorChange} style={{ width: 200 }} />
         </div>
-      </div>
+      </div> */}
       <div className="divider-container">
         <Divider orientation="left">Layer Level</Divider>
         <div className="container-config-item">

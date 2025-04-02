@@ -10,13 +10,14 @@ import { appCommandManager } from '../commands/index';
 import { ItemSymbol } from '../common/consts/view-entity';
 import { ItemEntity } from '../models/entity/item';
 import { imageBuilderStore } from '../models/index';
+import { ItemType } from '../common/consts/scene';
 
 type IParams<T> = React.MutableRefObject<{
   url: string;
   extraInfo?: T;
 }>;
 
-export function useMaterialDragAndReplace<CustomBizData>(
+export function useMaterialDragAndReplace<CustomBizData extends { type: string; name?: number | string; }>(
   /** 开始拖拽前的回调 */
   handleDragStart?: (params: IParams<CustomBizData>) => Promise<void>,
   /** 预处理需要加载的图片 */
@@ -143,11 +144,25 @@ export function useMaterialDragAndReplace<CustomBizData>(
                 params.current.extraInfo
               );
             } else {
-              product = await appCommandManager._shared.entity.addItemEntity<CustomBizData>(
-                params.current.url,
-                params.current.extraInfo,
-                false
-              );
+              if (params.current.extraInfo?.type === ItemType.IMAGE) {
+                product = await appCommandManager._shared.entity.addItemEntity<CustomBizData>(
+                  params.current.url,
+                  params.current.extraInfo,
+                  false
+                );
+              } else if (params.current.extraInfo?.type === ItemType.TEXT) {
+                product = await appCommandManager._shared.entity.addTextItemEntity<CustomBizData>(
+                  'hello world',
+                  params.current.extraInfo,
+                  false
+                );
+              } else if (params.current.extraInfo?.type === ItemType.BUTTON) {
+                product = await appCommandManager._shared.entity.addButtonItemEntity<CustomBizData>(
+                  'Go to TikTok',
+                  params.current.extraInfo,
+                  false
+                );
+              }
               if (!product) {
                 isSuccess = false;
               } else {

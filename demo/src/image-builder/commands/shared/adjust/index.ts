@@ -69,7 +69,7 @@ export class AdjustCommand extends Command {
         if (width > 10) {
           const p = localPoint.x > 0 ? new Vector2(width / 2 - itemEntity.size.x / 2, 0) : new Vector2(-width / 2 + itemEntity.size.x / 2, 0);
           const p1 = p.applyMatrix3(itemEntity.getConcatenatedMatrix3());
-          if (itemEntity.itemType === ItemType.TEXT && width <= imageBuilderStore.scene.currentTextMinWidth) {
+          if ((itemEntity.itemType === ItemType.TEXT || itemEntity.itemType === ItemType.BUTTON) && width <= imageBuilderStore.scene.currentTextMinWidth) {
             return;
           }
           itemEntity.setSize({

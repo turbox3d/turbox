@@ -1,4 +1,4 @@
-import { Reactive, Component, g, Axis2d, Rect2d, MathUtils, Line2d, Grid2d, Gizmo2d } from '@turbox3d/turbox';
+import { Reactive, Component, g, Rect2d, MathUtils, Line2d, Grid2d, Gizmo2d } from '@turbox3d/turbox';
 
 import { FrameEntity } from '../../models/entity/frame';
 import { ItemEntity } from '../../models/entity/item';
@@ -8,7 +8,7 @@ import { ItemViewEntity } from './item/index';
 import { imageBuilderStore } from '../../models/index';
 import { appCommandManager } from '../../commands';
 import { RenderOrder } from '../../common/consts/scene';
-import { GRAY, PRIMARY_COLOR, RED } from '../../common/consts/color';
+import { BLUE, GRAY, RED } from '../../common/consts/color';
 
 @Reactive
 export class World extends Component {
@@ -20,11 +20,12 @@ export class World extends Component {
     const showInvalidRangeFrame = imageBuilderStore.scene.isShowInvalidRangeFrame();
 
     return [
-      g(Axis2d),
+      // g(Axis2d),
       g(Grid2d, {
         gridWidth: 250000,
         cellSize: 50,
         lineColor: GRAY,
+        lineWidth: 1,
         zIndex: RenderOrder.GRID,
       }),
       // g(Image2d, {
@@ -110,7 +111,7 @@ export class World extends Component {
           height: hinted.size.y,
           central: true,
           lineWidth: 1,
-          lineColor: PRIMARY_COLOR,
+          lineColor: BLUE,
           fillAlpha: 0,
           alignment: 1,
           rotation: hinted.rotation.z * MathUtils.DEG2RAD,
@@ -126,7 +127,7 @@ export class World extends Component {
           central: true,
           rotation: selected.rotation.z * MathUtils.DEG2RAD,
           zIndex: RenderOrder.GIZMO,
-          color: PRIMARY_COLOR,
+          color: BLUE,
           deleteIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/delete.svg',
           deleteIconSize: 18,
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',

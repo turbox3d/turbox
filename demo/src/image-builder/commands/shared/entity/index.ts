@@ -8,7 +8,7 @@ import { imageBuilderStore } from '../../../models/index';
 
 import { Z_INDEX_ACTION } from '../../../common/consts/action';
 import { ItemType, RenderOrder } from '../../../common/consts/scene';
-import { WHITE } from '../../../common/consts/color';
+import { GRAY, PRIMARY_COLOR, WHITE } from '../../../common/consts/color';
 
 export class EntityCommand extends Command {
   @mutation
@@ -27,6 +27,7 @@ export class EntityCommand extends Command {
       return;
     }
     entity.$update({
+      itemType: ItemType.IMAGE,
       imageData: map.element,
       resourceUrl: url,
     });
@@ -47,6 +48,54 @@ export class EntityCommand extends Command {
     }
     return entity;
   };
+
+  @mutation
+  addButtonItemEntity = async <CustomBizData>(
+    text: string,
+    extraInfo?: CustomBizData,
+    addToDocument = true,
+    sort = true,
+    specificId?: string
+  ) => {
+    const entity = new ItemEntity(specificId);
+    entity.$update({
+      itemType: ItemType.BUTTON,
+      text,
+    });
+    if (extraInfo) {
+      entity.$update({
+        extraInfo,
+        attribute: {
+          fontSize: 16,
+          lineHeight: 1.5,
+          fontFamily: 'Arial',
+          color: WHITE,
+          fontWeight: 'normal',
+          align: 'center',
+          wordWrap: false,
+          wordWrapWidth: 375,
+          fontStyle: 'normal',
+          borderWidth: 0,
+          borderColor: GRAY,
+          backgroundColor: PRIMARY_COLOR,
+          borderRadius: 5,
+        },
+      });
+      entity.setName((extraInfo as any).name);
+    }
+    entity.setPosition({
+      x: imageBuilderStore.scene.sceneSize.width / 2,
+      y: imageBuilderStore.scene.sceneSize.height / 2,
+    });
+    entity.setSize({
+      x: 160,
+      y: 40,
+    });
+    if (addToDocument) {
+      imageBuilderStore.document.addModel(entity, sort);
+    }
+    return entity;
+  }
 
   @mutation
   addTextItemEntity = async <CustomBizData>(
@@ -204,9 +253,6 @@ export class EntityCommand extends Command {
   updateText = (text: string) => {
     const selected = appCommandManager.default.select.getSelectedEntities()[0];
     if (!(selected instanceof ItemEntity)) {
-      return;
-    }
-    if (selected.itemType !== ItemType.TEXT) {
       return;
     }
     selected.$update({

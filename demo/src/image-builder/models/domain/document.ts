@@ -122,7 +122,7 @@ export class DocumentDomain extends DocumentSystem {
     });
     await Promise.all(
       items.map(async i => {
-        if (i.type === 'image') {
+        if (i.type === ItemType.IMAGE) {
           const itemEntity = await appCommandManager._shared.entity.addItemEntity(i.data.src, undefined, true, false);
           if (!itemEntity) {
             return;
@@ -141,7 +141,7 @@ export class DocumentDomain extends DocumentSystem {
           });
           itemEntity.setRenderOrder(i.zIndex);
           this.sortModels([itemEntity]);
-        } else if (i.type === 'text') {
+        } else if (i.type === ItemType.TEXT) {
           const textEntity = await appCommandManager._shared.entity.addTextItemEntity(i.data.content, undefined, true, false);
           textEntity.setSize({
             x: i.width,
@@ -157,6 +157,22 @@ export class DocumentDomain extends DocumentSystem {
           });
           textEntity.setRenderOrder(i.zIndex);
           this.sortModels([textEntity]);
+        } else if (i.type === ItemType.BUTTON) {
+          const buttonEntity = await appCommandManager._shared.entity.addButtonItemEntity(i.data.content, undefined, true, false);
+          buttonEntity.setSize({
+            x: i.width,
+            y: i.height,
+          });
+          buttonEntity.setPosition({
+            x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
+            y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
+          });
+          buttonEntity.$update({
+            href: i.data.href,
+            attribute: i.data.attribute,
+          });
+          buttonEntity.setRenderOrder(i.zIndex);
+          this.sortModels([buttonEntity]);
         }
       })
     );
