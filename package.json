@@ -7,12 +7,12 @@
     "start": "webpack-dev-server --config ./demo/webpack.config.js",
     "build": "NODE_ENV=production webpack --mode production --config ./demo/webpack.config.js",
     "lint-tsc": "tsc --noEmit",
-    "typedoc": "rm -rf typedocs && cross-env GEN_ENV=typedoc npx ./gen.js",
-    "build:all": "pnpm install --link-workspace-packages true && pnpm run -r build:all && pnpm run typedoc && git restore ./pnpm-lock.yaml",
+    "typedoc": "rm -rf typedocs && cross-env GEN_ENV=typedoc pnpm exec node ./gen.js",
+    "build:all": "pnpm install --link-workspace-packages true && pnpm --filter './packages/**' run build:all && pnpm run typedoc && git restore ./pnpm-lock.yaml",
     "build:all-changelog": "pnpm run build:all && pnpm changeset && git push --all",
-    "changelog": "rm -rf ./docs/CHANGELOG.md && cross-env GEN_ENV=changelog npx ./gen.js && git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
-    "release": "pnpm run build:all && pnpm changeset version && pnpm run changelog && pnpm changeset tag && pnpm -r publish",
-    "release:pre": "pnpm run build:all && pnpm -r publish --dry-run --report-summary --no-git-checks --force"
+    "changelog": "rm -rf ./docs/CHANGELOG.md && cross-env GEN_ENV=changelog pnpm exec node ./gen.js && git add . && git commit -m 'doc: add changelog' --no-verify && git push --all",
+    "release": "pnpm run build:all && pnpm changeset version && pnpm run changelog && pnpm changeset tag && pnpm --filter './packages/**' publish",
+    "release:pre": "pnpm run build:all && pnpm --filter './packages/**' publish --dry-run --report-summary --no-git-checks --force"
   },
   "repository": {
     "type": "git",
@@ -100,7 +100,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && npm run lint-tsc"
+      "pre-commit": "lint-staged && pnpm run lint-tsc"
     }
   }
 }

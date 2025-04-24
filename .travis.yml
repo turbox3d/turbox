@@ -23,8 +23,8 @@ jobs:
   include:
     - stage: test
       script:
-        - pnpm run -r build:ts
-        - pnpm run -r test
+        - pnpm --filter './packages/**' run build:ts
+        - pnpm --filter './packages/**' run test
     - stage: deploy
       script:
         - cp .npmrc.template $HOME/.npmrc
@@ -33,4 +33,4 @@ jobs:
       script:
         - cp .vsce.template $HOME/.vsce
         - cd ./plugins/turbox-snippets
-        - npx vsce publish
+        - pnpm exec vsce publish

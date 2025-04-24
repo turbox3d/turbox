@@ -10,7 +10,7 @@
     "url": "git+https://github.com/turbox3d/turbox.git"
   },
   "scripts": {
-    "deploy": "npx vsce publish"
+    "deploy": "pnpm exec vsce publish"
   },
   "publisher": "feifan-gff",
   "engines": {

@@ -75,15 +75,15 @@
     "url": "git+https://github.com/turbox3d/turbox.git"
   },
   "scripts": {
-    "test": "npx jest --forceExit --coverage --verbose --passWithNoTests",
-    "test:watch": "npm run test -- --watchAll",
-    "build:dts": "cross-env GEN_ENV=dts npx ../../gen.js",
-    "build:ts": "rm -rf ts && tsc && npm run build:dts && copyfiles -u 1 src/**/*.less ./ts",
-    "build:es": "rm -rf es && npm run build:ts && npx babel ts --out-dir ./es && copyfiles -u 1 src/**/*.less ./es",
-    "build:lib": "rm -rf lib && npm run build:ts && cross-env BABEL_ENV=commonjs npx babel ts --out-dir lib && copyfiles -u 1 src/**/*.less ./lib",
-    "build:watch": "tsc -w & npx babel ts -w --out-dir es & copyfiles -u 1 src/**/*.less ./es",
-    "build:umd": "npx webpack --node-env=development --mode=development",
-    "build:umd:min": "npx webpack --node-env=production --mode=production",
-    "build:all": "npm run build:es && npm run build:lib && npm run build:umd && npm run build:umd:min"
+    "test": "pnpm exec jest --forceExit --coverage --verbose --passWithNoTests",
+    "test:watch": "pnpm run test -- --watchAll",
+    "build:dts": "cross-env GEN_ENV=dts pnpm exec node ../../gen.js",
+    "build:ts": "rm -rf ts && tsc && pnpm run build:dts && copyfiles -u 1 src/**/*.less ./ts",
+    "build:es": "rm -rf es && pnpm run build:ts && pnpm exec babel ts --out-dir ./es && copyfiles -u 1 src/**/*.less ./es",
+    "build:lib": "rm -rf lib && pnpm run build:ts && cross-env BABEL_ENV=commonjs pnpm exec babel ts --out-dir lib && copyfiles -u 1 src/**/*.less ./lib",
+    "build:watch": "tsc -w & pnpm exec babel ts -w --out-dir es & copyfiles -u 1 src/**/*.less ./es",
+    "build:umd": "pnpm exec webpack --node-env=development --mode=development",
+    "build:umd:min": "pnpm exec webpack --node-env=production --mode=production",
+    "build:all": "pnpm run build:es && pnpm run build:lib && pnpm run build:umd && pnpm run build:umd:min"
   }
 }
