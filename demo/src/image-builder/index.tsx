@@ -31,10 +31,11 @@ const updateSceneSize = () => {
 
 interface IImageBuilderProps {
   handleSave: (json?: IDocumentData) => void;
+  showImageBuilder?: boolean;
   data: IDocumentData | null;
 }
 
-const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
+function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuilderProps) {
   React.useEffect(() => {
     updateSceneSize();
     window.addEventListener('resize', () => {
@@ -46,7 +47,6 @@ const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
         draggable: true,
         scalable: true,
         container: 'scene2d',
-        transparent: true,
         commandMgr: appCommandManager,
         cameraPosition: { x: 0, y: 0 },
         resizeTo: 'scene2d',
@@ -63,10 +63,15 @@ const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
   }, []);
 
   React.useEffect(() => {
-    if (data) {
-      imageBuilderStore.document.loadData(data);
-    }
-  }, [data]);
+    const fetchData = async () => {
+      imageBuilderStore.document.clear();
+      imageBuilderStore.document.clearHistory();
+      if (data && showImageBuilder) {
+        await imageBuilderStore.document.loadData(data);
+      }
+    };
+    fetchData();
+  }, [data, showImageBuilder]);
 
   return (
     <>
@@ -86,6 +91,6 @@ const ImageBuilder = ({ handleSave, data }: IImageBuilderProps) => {
       {process.env.NODE_ENV === 'development' && <FPSMonitorComponent className="fps-monitor" />}
     </>
   );
-};
+}
 
 export default ImageBuilder;

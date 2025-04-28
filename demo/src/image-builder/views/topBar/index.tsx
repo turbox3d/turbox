@@ -1,11 +1,11 @@
 import React from 'react';
 import { Alert, Button } from 'antd';
 import { ReactiveReact } from '@turbox3d/turbox';
+import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
 import './index.less';
 import { imageBuilderStore } from '../../models';
 import { appCommandManager } from '../../commands';
 import { IDocumentData } from '../../models/domain/document';
-import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
 
 export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData) => void }) => {
   const undo = () => {
@@ -29,10 +29,10 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
     <div className="top-bar">
       <div>ImageBuilder</div>
       <div className="action">
-        <Button className="button" size="small" onClick={redo}>
+        <Button className="button" size="small" disabled={!imageBuilderStore.document.redoable} onClick={redo}>
           <RedoOutlined />
         </Button>
-        <Button className="button" size="small" onClick={undo}>
+        <Button className="button" size="small" disabled={!imageBuilderStore.document.undoable} onClick={undo}>
           <UndoOutlined />
         </Button>
 
