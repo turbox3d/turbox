@@ -11,6 +11,7 @@ export interface IDocumentData {
   container: {
     width: number;
     height: number;
+    backgroundColor?: number;
   };
   items: Array<{
     type: ItemType;
@@ -106,76 +107,76 @@ export class DocumentDomain extends DocumentSystem {
   }
 
   getFrameEntities() {
-    return [...this.models.values()].filter(m => m instanceof FrameEntity);
+    return [...this.models.values()].filter(m => m instanceof FrameEntity) as FrameEntity[];
   }
 
   getItemEntities() {
     return [...this.models.values()].filter(m => m instanceof ItemEntity) as ItemEntity[];
   }
 
+  @mutation
   async loadData(json: IDocumentData) {
     this.pauseRecord();
     const { container, items } = json;
     const frameEntity = await appCommandManager._shared.entity.addFrameEntity({
       size: { x: container.width, y: container.height },
-      color: GRAY,
+      color: container.backgroundColor || GRAY,
     });
-    await Promise.all(
-      items.map(async i => {
-        if (i.type === ItemType.IMAGE) {
-          const itemEntity = await appCommandManager._shared.entity.addItemEntity(i.data.src, undefined, true, false);
-          if (!itemEntity) {
-            return;
-          }
-          itemEntity.setSize({
-            x: i.width,
-            y: i.height,
-          });
-          itemEntity.setPosition({
-            x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
-            y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
-          });
-          itemEntity.$update({
-            href: i.data.href,
-            attribute: i.data.attribute,
-          });
-          itemEntity.setRenderOrder(i.zIndex);
-          this.sortModels([itemEntity]);
-        } else if (i.type === ItemType.TEXT) {
-          const textEntity = await appCommandManager._shared.entity.addTextItemEntity(i.data.content, undefined, true, false);
-          textEntity.setSize({
-            x: i.width,
-            y: i.height,
-          });
-          textEntity.setPosition({
-            x: frameEntity.position.x - container.width / 2 + i.left,
-            y: frameEntity.position.y - container.height / 2 + i.top,
-          });
-          textEntity.$update({
-            href: i.data.href,
-            attribute: i.data.attribute,
-          });
-          textEntity.setRenderOrder(i.zIndex);
-          this.sortModels([textEntity]);
-        } else if (i.type === ItemType.BUTTON) {
-          const buttonEntity = await appCommandManager._shared.entity.addButtonItemEntity(i.data.content, undefined, true, false);
-          buttonEntity.setSize({
-            x: i.width,
-            y: i.height,
-          });
-          buttonEntity.setPosition({
-            x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
-            y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
-          });
-          buttonEntity.$update({
-            href: i.data.href,
-            attribute: i.data.attribute,
-          });
-          buttonEntity.setRenderOrder(i.zIndex);
-          this.sortModels([buttonEntity]);
+    const promises = items.map(async i => {
+      if (i.type === ItemType.IMAGE) {
+        const itemEntity = await appCommandManager._shared.entity.addItemEntity(i.data.src, undefined, true, false);
+        if (!itemEntity) {
+          return;
         }
-      })
-    );
+        itemEntity.setSize({
+          x: i.width,
+          y: i.height,
+        });
+        itemEntity.setPosition({
+          x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
+          y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
+        });
+        itemEntity.$update({
+          href: i.data.href,
+          attribute: i.data.attribute,
+        });
+        itemEntity.setRenderOrder(i.zIndex);
+        this.sortModels([itemEntity]);
+      } else if (i.type === ItemType.TEXT) {
+        const textEntity = await appCommandManager._shared.entity.addTextItemEntity(i.data.content, undefined, true, false);
+        textEntity.setSize({
+          x: i.width,
+          y: i.height,
+        });
+        textEntity.setPosition({
+          x: frameEntity.position.x - container.width / 2 + i.left + textEntity.size.x / 2,
+          y: frameEntity.position.y - container.height / 2 + i.top + textEntity.size.y / 2,
+        });
+        textEntity.$update({
+          href: i.data.href,
+          attribute: i.data.attribute,
+        });
+        textEntity.setRenderOrder(i.zIndex);
+        this.sortModels([textEntity]);
+      } else if (i.type === ItemType.BUTTON) {
+        const buttonEntity = await appCommandManager._shared.entity.addButtonItemEntity(i.data.content, undefined, true, false);
+        buttonEntity.setSize({
+          x: i.width,
+          y: i.height,
+        });
+        buttonEntity.setPosition({
+          x: frameEntity.position.x - container.width / 2 + i.width / 2 + i.left,
+          y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
+        });
+        buttonEntity.$update({
+          href: i.data.href,
+          attribute: i.data.attribute,
+        });
+        buttonEntity.setRenderOrder(i.zIndex);
+        this.sortModels([buttonEntity]);
+      }
+    });
+    await Promise.all(promises);
     this.updateRenderOrder();
     this.resumeRecord();
   }
@@ -193,6 +194,7 @@ export class DocumentDomain extends DocumentSystem {
       container: {
         width: container.size.x,
         height: container.size.y,
+        backgroundColor: container.bgColor,
       },
       items: items.map(i => {
         const pos = new Vector2(i.position.x, i.position.y)

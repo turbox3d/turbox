@@ -1,5 +1,5 @@
 /* tslint-disable */
-import { Button, Divider } from 'antd';
+import { Button, ColorPicker, Divider, InputNumber } from 'antd';
 import * as React from 'react';
 import { FileImageOutlined } from '@ant-design/icons';
 
@@ -8,6 +8,9 @@ import { appCommandManager } from '../../commands/index';
 import { useMaterialDragAndReplace } from '../../hooks/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { ItemType } from '../../common/consts/scene';
+import { imageBuilderStore } from '../../models';
+import { ReactiveReact } from '@turbox3d/turbox';
+import { Color } from 'antd/es/color-picker';
 
 // const images = [
 //   {
@@ -39,25 +42,12 @@ import { ItemType } from '../../common/consts/scene';
 // const textUrl = 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/text.jpeg';
 
 // eslint-disable-next-line max-lines-per-function
-export function LeftPanel() {
+export const LeftPanel = ReactiveReact(() => {
   const { dragControl } = useMaterialDragAndReplace<{ type: string; name?: number | string; }>();
-  // const [width, setWidth] = React.useState(375);
-  // const [height, setHeight] = React.useState(667);
   const pointerDownHandler = (url: string, type: string, name?: number | string) => (e: React.PointerEvent) => {
     e.persist();
     dragControl.current.onMouseDown(url, { name, type })(e.nativeEvent);
   };
-  // const colorChange: React.ChangeEventHandler<HTMLInputElement> | undefined = debounce(
-  //   (e: React.BaseSyntheticEvent) => {
-  //     const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-  //     appCommandManager._shared.entity.addFrameEntity({
-  //       size: { x: width, y: height },
-  //       target,
-  //       color: parseInt(e.target.value.replace('#', '0x'), 16),
-  //     });
-  //   },
-  //   300
-  // );
   // const uploadImgChange = async (info: UploadChangeParam<UploadFile<any>>) => {
   //   if (info.file.status === 'done') {
   //     const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
@@ -72,22 +62,24 @@ export function LeftPanel() {
   //     });
   //   }
   // };
-  // const widthChange = debounce((value: number) => {
-  //   setWidth(value);
-  //   const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-  //   appCommandManager._shared.entity.addFrameEntity({
-  //     size: { x: value, y: height },
-  //     target,
-  //   });
-  // }, 300);
-  // const heightChange = debounce((value: number) => {
-  //   setHeight(value);
-  //   const target = imageBuilderStore.document.getFrameEntities[0] as FrameEntity | undefined;
-  //   appCommandManager._shared.entity.addFrameEntity({
-  //     size: { x: width, y: value },
-  //     target,
-  //   });
-  // }, 300);
+  const widthChange = (value: number) => {
+    const target = imageBuilderStore.document.getFrameEntities()[0];
+    target.setSize({
+      x: value,
+    });
+  };
+  const heightChange = (value: number) => {
+    const target = imageBuilderStore.document.getFrameEntities()[0];
+    target.setSize({
+      y: value,
+    });
+  };
+  const colorChange = (e: Color) => {
+    const target = imageBuilderStore.document.getFrameEntities()[0];
+    target.$update({
+      bgColor: Number(e.toHexString().replace('#', '0x')),
+    });
+  };
   const updateZ = (type: Z_INDEX_ACTION) => () => {
     appCommandManager._shared.entity.updateRenderOrder(type);
   };
@@ -142,21 +134,29 @@ export function LeftPanel() {
           </div>
         </div>
       </div>
-      {/* <div className="divider-container">
-        <Divider orientation="left">Container</Divider>
-        <div className="container-config-item">
-          <span className="container-config-text">Width</span>
-          <InputNumber value={width} onChange={widthChange} style={{ width: 200 }} />
+      {imageBuilderStore.document.getFrameEntities().length > 0 && (
+        <div className="divider-container">
+          <Divider orientation="left">Container</Divider>
+          <div className="container-config-item">
+            <span className="container-config-text">Width</span>
+            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.x} onChange={widthChange} max={375} style={{ width: 200 }} />
+          </div>
+          <div className="container-config-item">
+            <span className="container-config-text">Height</span>
+            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.y} onChange={heightChange} style={{ width: 200 }} />
+          </div>
+          <div className="container-config-item">
+            <span className="container-config-text">Color</span>
+            <ColorPicker
+              defaultValue={`#${imageBuilderStore.document.getFrameEntities()[0].bgColor.toString(16)}`}
+              placement="rightBottom"
+              disabledAlpha
+              showText
+              onChange={colorChange}
+            />
+          </div>
         </div>
-        <div className="container-config-item">
-          <span className="container-config-text">Height</span>
-          <InputNumber value={height} onChange={heightChange} style={{ width: 200 }} />
-        </div>
-        <div className="container-config-item">
-          <span className="container-config-text">Color</span>
-          <input type="color" onChange={colorChange} style={{ width: 200 }} />
-        </div>
-      </div> */}
+      )}
       <div className="divider-container">
         <Divider orientation="left">Layer Level</Divider>
         <div className="container-config-item">
@@ -179,4 +179,4 @@ export function LeftPanel() {
       </div>
     </div>
   );
-}
+});

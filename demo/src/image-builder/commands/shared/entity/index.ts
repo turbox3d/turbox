@@ -145,7 +145,7 @@ export class EntityCommand extends Command {
     entity.setSize(size);
     if (color || !target) {
       entity.$update({
-        bgColor: color || WHITE,
+        bgColor: color || GRAY,
       });
     }
     entity.setPosition({
