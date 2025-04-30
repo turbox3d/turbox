@@ -62,13 +62,19 @@ export const LeftPanel = ReactiveReact(() => {
   //     });
   //   }
   // };
-  const widthChange = (value: number) => {
+  const widthChange = (value: number | null) => {
+    if (!value) {
+      return;
+    }
     const target = imageBuilderStore.document.getFrameEntities()[0];
     target.setSize({
       x: value,
     });
   };
-  const heightChange = (value: number) => {
+  const heightChange = (value: number | null) => {
+    if (!value) {
+      return;
+    }
     const target = imageBuilderStore.document.getFrameEntities()[0];
     target.setSize({
       y: value,
@@ -139,11 +145,11 @@ export const LeftPanel = ReactiveReact(() => {
           <Divider orientation="left">Container</Divider>
           <div className="container-config-item">
             <span className="container-config-text">Width</span>
-            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.x} onChange={widthChange} max={375} style={{ width: 200 }} />
+            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.x} onChange={widthChange} min={1} max={375} style={{ width: 200 }} />
           </div>
           <div className="container-config-item">
             <span className="container-config-text">Height</span>
-            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.y} onChange={heightChange} style={{ width: 200 }} />
+            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.y} onChange={heightChange} min={1} style={{ width: 200 }} />
           </div>
           <div className="container-config-item">
             <span className="container-config-text">Color</span>
