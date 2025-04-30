@@ -210,7 +210,7 @@ export class DocumentDomain extends DocumentSystem {
             src: i.resourceUrl,
             href: i.href,
             attribute: {
-             ...i.attribute,
+              ...i.attribute,
             },
           },
         };

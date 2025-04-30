@@ -30,10 +30,10 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
   loadingImg = 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/loading.svg',
   maxFPS = 120
 ) {
-  let action: React.MutableRefObject<Action | undefined>,
-    dragControl: React.MutableRefObject<MaterialDragSystem>,
-    thumbnailEl: React.MutableRefObject<HTMLElement>,
-    loadingEl: React.MutableRefObject<HTMLImageElement>;
+  let action: React.MutableRefObject<Action | undefined>;
+  let dragControl: React.MutableRefObject<MaterialDragSystem>;
+  let thumbnailEl: React.MutableRefObject<HTMLElement>;
+  let loadingEl: React.MutableRefObject<HTMLImageElement>;
   const params = useRef<{ url: string; extraInfo?: CustomBizData }>({
     url: '',
     extraInfo: undefined,

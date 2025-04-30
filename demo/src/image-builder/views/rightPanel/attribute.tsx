@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export const Attribute = ({ attribute }: { attribute: string }) => {
+export function Attribute({ attribute }: { attribute: string }) {
   return (
     <p
       style={{
@@ -13,4 +13,4 @@ export const Attribute = ({ attribute }: { attribute: string }) => {
       {attribute}
     </p>
   );
-};
+}

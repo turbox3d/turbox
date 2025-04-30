@@ -8,9 +8,8 @@ function updateQueryStringParameter(url: string, key: string, value: string) {
   const separator = url.indexOf('?') !== -1 ? '&' : '?';
   if (url.match(re)) {
     return url.replace(re, `$1${key}=${value}$2`);
-  } else {
-    return `${url + separator + key}=${value}`;
   }
+  return `${url + separator + key}=${value}`;
 }
 
 export function convertUrl(url: string, maxWidth = 2560) {
@@ -32,39 +31,38 @@ export const mirrorImage = (
   fileType = 'image/png',
   quality = 1,
   maxWidth?: number
-) =>
-  new Promise<string | Blob>(resolve => {
-    if (materialDirection.x === 1 && materialDirection.y === 1) {
-      resolve(image);
-    } else {
-      const img = new Image();
-      img.setAttribute('crossOrigin', 'anonymous');
-      img.src = image instanceof Blob ? URL.createObjectURL(image) : convertUrl(image, maxWidth);
-      img.onload = () => {
-        image instanceof Blob && URL.revokeObjectURL(img.src);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d')!;
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.translate(materialDirection.x === -1 ? canvas.width : 0, materialDirection.y === -1 ? canvas.height : 0);
-        ctx.scale(materialDirection.x, materialDirection.y);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-        if (isBase64) {
-          resolve(`${canvas.toDataURL(fileType, quality)}`);
-        } else {
-          canvas.toBlob(
-            blob => {
-              if (blob) {
-                resolve(blob);
-              }
-            },
-            fileType,
-            quality
-          );
-        }
-      };
-    }
-  });
+) => new Promise<string | Blob>(resolve => {
+  if (materialDirection.x === 1 && materialDirection.y === 1) {
+    resolve(image);
+  } else {
+    const img = new Image();
+    img.setAttribute('crossOrigin', 'anonymous');
+    img.src = image instanceof Blob ? URL.createObjectURL(image) : convertUrl(image, maxWidth);
+    img.onload = () => {
+      image instanceof Blob && URL.revokeObjectURL(img.src);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.translate(materialDirection.x === -1 ? canvas.width : 0, materialDirection.y === -1 ? canvas.height : 0);
+      ctx.scale(materialDirection.x, materialDirection.y);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+      if (isBase64) {
+        resolve(`${canvas.toDataURL(fileType, quality)}`);
+      } else {
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              resolve(blob);
+            }
+          },
+          fileType,
+          quality
+        );
+      }
+    };
+  }
+});
 
 export async function loadImageBase64(url: string | Blob, fileType = 'image/png', quality = 1, maxWidth?: number) {
   const img = new Image();

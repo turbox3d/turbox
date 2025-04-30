@@ -90,17 +90,15 @@ export class World extends Component {
       //   zIndex: 100,
       //   rotation: MathUtils.DEG2RAD * 45,
       // }),
-      ...frames.map(m =>
-        g(FrameViewEntity, {
-          key: m.id,
-          model: m as FrameEntity,
-        })
+      ...frames.map(m => g(FrameViewEntity, {
+        key: m.id,
+        model: m as FrameEntity,
+      })
       ),
-      ...items.map(m =>
-        g(ItemViewEntity, {
-          key: m.id,
-          model: m as ItemEntity,
-        })
+      ...items.map(m => g(ItemViewEntity, {
+        key: m.id,
+        model: m as ItemEntity,
+      })
       ),
       hinted &&
         g(Rect2d, {

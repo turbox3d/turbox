@@ -45,7 +45,7 @@ export class AdjustCommand extends Command {
           this.fixedScale = false;
         }
       },
-    })
+    });
   }
 
   private xStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {

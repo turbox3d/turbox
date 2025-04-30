@@ -34,7 +34,7 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
     });
     const width = new PIXI.Text(maxWidthWord, style).width;
     return width;
-  }
+  };
 
   private getBounds = (bounds: Vec2) => {
     const isText = this.props.model.itemType === ItemType.TEXT;
@@ -61,7 +61,7 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
       height: bounds.y,
     });
     imageBuilderStore.document.resumeRecord();
-  }
+  };
 
   render() {
     const { model } = this.props;

@@ -95,7 +95,7 @@ export class EntityCommand extends Command {
       imageBuilderStore.document.addModel(entity, sort);
     }
     return entity;
-  }
+  };
 
   @mutation
   addTextItemEntity = async <CustomBizData>(
@@ -258,5 +258,5 @@ export class EntityCommand extends Command {
     selected.$update({
       text,
     });
-  }
+  };
 }
