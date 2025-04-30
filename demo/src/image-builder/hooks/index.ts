@@ -94,7 +94,7 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
         imgEl.style.opacity = '0.8';
         imgEl.style.border = '2px solid #BF975B';
         imgEl.style.borderRadius = '5px';
-        imgEl.style.zIndex = '100';
+        imgEl.style.zIndex = '9999';
         imgEl.style.position = 'absolute';
         imgEl.style.top = `${pe.clientY - imgEl.clientHeight / 2}px`;
         imgEl.style.left = `${pe.clientX - imgEl.clientWidth / 2}px`;
@@ -125,7 +125,7 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
     if (imgEl) {
       imgEl.style.display = 'none';
       loadingEl.current.style.display = 'block';
-      loadingEl.current.style.zIndex = '100';
+      loadingEl.current.style.zIndex = '9999';
       loadingEl.current.style.position = 'absolute';
       loadingEl.current.style.top = `${e.clientY - loadingEl.current.clientHeight / 2}px`;
       loadingEl.current.style.left = `${e.clientX - loadingEl.current.clientWidth / 2}px`;
