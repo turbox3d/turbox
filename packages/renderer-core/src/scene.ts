@@ -52,10 +52,6 @@ export interface BaseSceneProps {
    */
   container: string;
   /**
-   * 根视图容器参数（在一个 renderer 中渲染多个子视图并互相隔离时使用）
-   */
-  viewport?: ViewportInfo;
-  /**
    * 画布背景色，使用十六进制。默认：0xffffff
    */
   backgroundColor?: number;
@@ -63,10 +59,6 @@ export interface BaseSceneProps {
    * 画布背景图，优先级高于背景色
    */
   backgroundImage?: string;
-  /**
-   * 天空盒背景图，只有 3d 下才有效，图片列表顺序 pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
-   */
-  skyBoxImages?: string[];
   /**
    * 画布背景透明度。默认：1
    */
@@ -87,14 +79,8 @@ export interface BaseSceneProps {
    * 处理本场景的 commandMgr
    */
   commandMgr?: CommandManager;
-  /**
-   * 2d 相机的尺寸（x是宽度、y是高度）单位：毫米
-   */
-  camera2dSize?: Vec2;
   /** 相机的初始位置 */
   cameraPosition?: Vec3 | Vec2;
-  /** 视椎体的大小（高度），只供 3d 正交相机使用 */
-  frustumSize?: number;
   /** 坐标系类型 */
   coordinateType?: 'top' | 'front' | 'left';
   /** resizeTo 适配的 dom id 或元素引用 */
@@ -103,8 +89,6 @@ export interface BaseSceneProps {
   resolution?: number;
   /** 保留绘制缓存数据，用来截图 */
   preserveDrawingBuffer?: boolean;
-  /** resizeFramebuffer */
-  resizeFramebuffer?: boolean;
   /** 颜色输出模式 renderer.outputColorSpace */
   outputColorSpace?: string;
   /** 最大帧率限制 */
@@ -115,6 +99,8 @@ export interface BaseSceneProps {
   renderFlag?: boolean;
   /** 场景初始化完成的回调 */
   initialized?: (sceneTool: SceneTool) => void;
+  /** 场景缩放系数限制（[0.1, 2]） */
+  zoomRange?: number[];
 }
 
 export interface ViewInfo {

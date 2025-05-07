@@ -1,11 +1,24 @@
 import { CoordinateController, InteractiveConfig, InteractiveType, SceneEvent, ViewEntity } from '@turbox3d/event-manager';
-import { BaseScene, BaseSceneProps, ComponentProps, SceneType } from '@turbox3d/renderer-core';
+import { BaseScene, BaseSceneProps, ComponentProps, SceneType, ViewportInfo } from '@turbox3d/renderer-core';
 import { Vec2, Vec3 } from '@turbox3d/shared';
 import * as PIXI from 'pixi.js';
 
 const boundary = new PIXI.EventBoundary();
 
 export const Scene2DSymbol = Symbol('scene2d');
+
+export interface Scene2DProps extends BaseSceneProps {
+  /**
+   * 根视图容器参数（在一个 renderer 中渲染多个子视图并互相隔离时使用）
+   */
+  viewport?: ViewportInfo;
+  /**
+   * 2d 相机的尺寸（x是宽度、y是高度）单位：毫米
+   */
+  camera2dSize?: Vec2;
+  /** resizeFramebuffer */
+  resizeFramebuffer?: boolean;
+}
 
 export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, never, never, PIXI.Container, PIXI.DisplayObject, PIXI.Sprite> {
   defaultSceneViewType = Scene2DSymbol;
@@ -22,7 +35,7 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
 
   private originalResizeFramebufferFunction: Function;
 
-  constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
+  constructor(props: Exclude<ComponentProps<Scene2DProps>, ViewEntity>) {
     super(props);
     this.view.sortableChildren = true;
   }
@@ -158,7 +171,7 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
   }
 
   createApp() {
-    const { backgroundColor = BaseScene.BACKGROUND_COLOR, backgroundAlpha = BaseScene.BACKGROUND_ALPHA, preserveDrawingBuffer = true, resizeFramebuffer } = this.props;
+    const { backgroundColor = BaseScene.BACKGROUND_COLOR, backgroundAlpha = BaseScene.BACKGROUND_ALPHA, preserveDrawingBuffer = true } = this.props;
     // 初始化应用
     const app = new PIXI.Application({
       width: this.width,
@@ -175,7 +188,7 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
     if (this.isWebGL(app)) {
       // 暂存原始 resizeFramebuffer 函数
       this.originalResizeFramebufferFunction = (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer;
-      // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+      // this.fixResizeFramebufferBug(app);
     }
     const animate = () => {
       if (this.renderFlag) {
@@ -204,10 +217,10 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
    * 修复 PIXI bug，改写 resizeFramebuffer，解决 pixi frame buffer 只能由大变小但不能由小变大 resize 的问题
    * 因为修复此 bug 会导致性能问题，所以只在必要的时候使用，通过参数控制改写的内容
    */
-  private fixResizeFramebufferBug(app: PIXI.Application, resizeFramebuffer = false) {
+  private fixResizeFramebufferBug(app: PIXI.Application) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
-    if (resizeFramebuffer) {
+    if (this.props.resizeFramebuffer) {
       (app.renderer as PIXI.Renderer).framebuffer.resizeFramebuffer = function (framebuffer) {
         _this.originalResizeFramebufferFunction.call(this, framebuffer);
         this.updateFramebuffer(framebuffer);
@@ -351,9 +364,9 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
   }
 
   resizeViewport(app: PIXI.Application) {
-    const { viewport, resizeFramebuffer } = this.props;
+    const { viewport } = this.props;
     if (this.isWebGL(app)) {
-      // this.fixResizeFramebufferBug(app, resizeFramebuffer);
+      // this.fixResizeFramebufferBug(app);
     }
     if (this.brt && viewport) {
       this.brt.resize(viewport.width, viewport.height);
@@ -406,7 +419,7 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
   }
 
   canvasScaleImpl(event: SceneEvent) {
-    const { coordinateType } = this.props;
+    const { coordinateType, zoomRange = [0.1, 2] } = this.props;
     let ratio = 1;
     let offsetX = 0;
     let offsetY = 0;
@@ -420,6 +433,10 @@ export class Scene2D extends BaseScene<PIXI.Application, PIXI.ICanvas, never, ne
       offsetY = event.event.clientY;
     }
     const currentScale = this.getViewInfo().scale.x;
+    const [min, max] = zoomRange;
+    if (currentScale * ratio < min || currentScale * ratio > max) {
+      return;
+    }
     if (coordinateType === 'front' || coordinateType === 'left') {
       this.setViewScale({ x: currentScale * ratio, y: -currentScale * ratio });
     } else {

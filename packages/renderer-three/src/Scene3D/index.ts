@@ -5,6 +5,15 @@ import { Vec2, Vec3 } from '@turbox3d/shared';
 
 export const Scene3DSymbol = Symbol('scene3d');
 
+export interface Scene3DProps extends BaseSceneProps {
+  /**
+   * 天空盒背景图，只有 3d 下才有效，图片列表顺序 pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
+   */
+  skyBoxImages?: string[];
+  /** 视椎体的大小（高度），只供 3d 正交相机使用 */
+  frustumSize?: number;
+}
+
 export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, THREE.Scene, THREE.Camera, THREE.Raycaster, THREE.Group, THREE.Object3D, THREE.Sprite> {
   defaultSceneViewType = Scene3DSymbol;
   sceneType = SceneType.Scene3D;
@@ -12,7 +21,7 @@ export class Scene3D extends BaseScene<THREE.WebGLRenderer, HTMLCanvasElement, T
   private timer: number;
 
   // eslint-disable-next-line no-useless-constructor
-  constructor(props: Exclude<ComponentProps<BaseSceneProps>, ViewEntity>) {
+  constructor(props: Exclude<ComponentProps<Scene3DProps>, ViewEntity>) {
     super(props);
   }
 
