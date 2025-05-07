@@ -86,7 +86,7 @@ export default class Animation3d extends Mesh3D<IAnimationProps> {
     if (!this.props.isPlay || !this.mixer) {
       return;
     }
-    this.mixer.update(deltaTime);
+    this.mixer.update(deltaTime / 1000);
   };
 
   componentDidMount() {

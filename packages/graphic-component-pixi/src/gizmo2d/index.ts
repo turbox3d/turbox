@@ -15,21 +15,19 @@ interface IGizmo2dProps {
   color?: number;
   deleteIcon?: string;
   deleteIconSize?: number;
+  copyIcon?: string;
+  copyIconSize?: number;
   adjustIcon?: string;
   adjustIconSize?: number;
-  xLeftHandler?: (
+  stretchHandler?: (
+    actionKey: 'x-left' | 'x-right' | 'y-top' | 'y-bottom',
     op: 'start' | 'move' | 'end',
     viewEntity: Partial<ViewEntity>,
     event: SceneEvent<any>,
-    tools: SceneTool
-  ) => void;
-  xRightHandler?: (
-    op: 'start' | 'move' | 'end',
-    viewEntity: Partial<ViewEntity>,
-    event: SceneEvent<any>,
-    tools: SceneTool
+    tools: SceneTool,
   ) => void;
   deleteHandler?: () => void;
+  copyHandler?: () => void;
   adjustHandler?: (
     op: 'start' | 'move' | 'end',
     viewEntity: Partial<ViewEntity>,
@@ -40,7 +38,26 @@ interface IGizmo2dProps {
 
 export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
   render() {
-    const { x = 0, y = 0, width, height, rotation = 0, central = false, zIndex = 1000, xLeftHandler, xRightHandler, deleteHandler, adjustHandler, color = 0xffffff, deleteIcon = '', adjustIcon = '', deleteIconSize = 10, adjustIconSize = 10 } = this.props;
+    const {
+      x = 0,
+      y = 0,
+      width,
+      height,
+      rotation = 0,
+      central = false,
+      zIndex = 1000,
+      stretchHandler,
+      deleteHandler,
+      copyHandler,
+      adjustHandler,
+      color = 0xffffff,
+      deleteIcon = '',
+      copyIcon = '',
+      adjustIcon = '',
+      deleteIconSize = 10,
+      copyIconSize = 10,
+      adjustIconSize = 10,
+    } = this.props;
     const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
     this.view.position.set(x, y);
@@ -73,13 +90,13 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 0.01,
         alignment: 1,
         onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xLeftHandler && xLeftHandler('start', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-left', 'start', viewEntity, event, tools);
         },
         onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xLeftHandler && xLeftHandler('move', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-left', 'move', viewEntity, event, tools);
         },
         onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xLeftHandler && xLeftHandler('end', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-left', 'end', viewEntity, event, tools);
         },
       }),
       g(Rect2d, {
@@ -96,13 +113,59 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 0.01,
         alignment: 1,
         onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xRightHandler && xRightHandler('start', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-right', 'start', viewEntity, event, tools);
         },
         onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xRightHandler && xRightHandler('move', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-right', 'move', viewEntity, event, tools);
         },
         onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          xRightHandler && xRightHandler('end', viewEntity, event, tools);
+          stretchHandler && stretchHandler('x-right', 'end', viewEntity, event, tools);
+        },
+      }),
+      g(Rect2d, {
+        key: 'y-top',
+        draggable: true,
+        x: posX + width / 2,
+        y: posY,
+        width: 10,
+        height: 10,
+        central: true,
+        lineWidth: 1,
+        lineColor: color,
+        fillColor: 0xffffff,
+        fillAlpha: 0.01,
+        alignment: 1,
+        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-top', 'start', viewEntity, event, tools);
+        },
+        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-top', 'move', viewEntity, event, tools);
+        },
+        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-top', 'end', viewEntity, event, tools);
+        },
+      }),
+      g(Rect2d, {
+        key: 'y-bottom',
+        draggable: true,
+        x: posX + width / 2,
+        y: posY + height,
+        width: 10,
+        height: 10,
+        central: true,
+        lineWidth: 1,
+        lineColor: color,
+        fillColor: 0xffffff,
+        fillAlpha: 0.01,
+        alignment: 1,
+        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-bottom', 'start', viewEntity, event, tools);
+        },
+        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-bottom', 'move', viewEntity, event, tools);
+        },
+        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+          stretchHandler && stretchHandler('y-bottom', 'end', viewEntity, event, tools);
         },
       }),
       g(Image2d, {
@@ -122,6 +185,25 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         backgroundImage: deleteIcon,
         onClick: () => {
           deleteHandler && deleteHandler();
+        },
+      }),
+      g(Image2d, {
+        key: 'copy',
+        clickable: true,
+        x: posX + width,
+        y: posY,
+        central: true,
+        width: copyIconSize,
+        height: copyIconSize,
+        radius: copyIconSize / 2,
+        lineWidth: 2,
+        lineColor: color,
+        fillColor: color,
+        fillAlpha: 1,
+        fit: 'cover',
+        backgroundImage: copyIcon,
+        onClick: () => {
+          copyHandler && copyHandler();
         },
       }),
       g(Image2d, {

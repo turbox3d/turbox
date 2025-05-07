@@ -159,13 +159,15 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       this.mask.width = this.s.width;
       this.mask.height = this.s.height;
     }
+    // anchor 设置为 0.5，此处需要调整回去
+    this.s.position.set(this.s.position.x + this.s.width / 2, this.s.position.y + this.s.height / 2);
     this.s.mask = this.mask;
   }
 
   updateMaterial() {
     const { zIndex = 0, materialDirection = { x: 1, y: 1 } } = this.props;
     this.view.zIndex = zIndex;
-    // this.s.anchor.set(0.5, 0.5);
+    this.s.anchor.set(0.5, 0.5);
     this.s.scale.set(materialDirection.x, materialDirection.y);
   }
 
