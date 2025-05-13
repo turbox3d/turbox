@@ -43,7 +43,8 @@ export abstract class BaseMesh<
     });
   }
 
-  commit(type: CommitType) {
+  commit(type: CommitType, updateRange?: { interactive: boolean; customProps: boolean; }): void {
+    // 删除操作
     if (type === 'delete') {
       if (this.reactions.length) {
         this.reactions.forEach(reaction => reaction.dispose());
@@ -55,35 +56,44 @@ export abstract class BaseMesh<
       this.removeFromWorld();
       return;
     }
-    const isCreate = type === 'create';
-    if (!isCreate) {
-      if (this._vNode.committing) {
-        return;
-      }
-      this._vNode.committing = true;
-    }
-    this.clearView();
-    this.draw();
-    if (this.reactivePipeLine.length) {
-      if (isCreate) {
+    // 创建操作
+    if (type === 'create') {
+      this.clearView();
+      this.draw();
+      if (this.reactivePipeLine.length) {
         this.reactions = this.reactivePipeLine.map(task => reactive(() => task.call(this), {
           name: 'baseMeshReactivePipeLine',
           immediately: false,
         }));
-      } else {
-        /*
-         * props上的属性值变了，会强制全部重新执行（因为可能存在非响应式属性传入的情况，导致pipeLine不会重新执行）
-         * @todo props 和 pipeLine 同时都执行，需要合并
-         */
-        this.reactivePipeLine.forEach(task => task.call(this));
       }
-    }
-    if (isCreate) {
       // 将视图添加到场景中
       this.appendToWorld();
+      // 配置交互能力
+      this.applyInteractive();
+      return;
     }
-    // 配置交互能力
-    this.applyInteractive();
+    // 更新操作
+    if (this._vNode.committing) {
+      return;
+    }
+    this._vNode.committing = true;
+
+    const { interactive, customProps } = updateRange || {};
+    if (interactive) {
+      this.applyInteractive();
+    }
+    if (!customProps) {
+      return;
+    }
+    this.clearView();
+    this.draw();
+    if (this.reactivePipeLine.length) {
+      /*
+       * props上的属性值变了，会强制全部重新执行（因为可能存在非响应式属性传入的情况，导致pipeLine不会重新执行）
+       * @todo props 和 pipeLine 同时都执行，需要合并
+       */
+      this.reactivePipeLine.forEach(task => task.call(this));
+    }
   }
 
   abstract createDefaultView(): DisplayObject;

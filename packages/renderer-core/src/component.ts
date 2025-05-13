@@ -34,6 +34,35 @@ export interface PreserveProps {
 
 export type ComponentProps<P> = PreserveProps & Partial<ViewEntity> & P;
 
+const dummyPreserveProps: PreserveProps & Partial<ViewEntity> = {
+  key: void 0,
+  children: void 0,
+  onClick: void 0,
+  onDBClick: void 0,
+  onRightClick: void 0,
+  onDragStart: void 0,
+  onDragMove: void 0,
+  onDragEnd: void 0,
+  onPinchStart: void 0,
+  onPinch: void 0,
+  onPinchEnd: void 0,
+  onRotateStart: void 0,
+  onRotate: void 0,
+  onRotateEnd: void 0,
+  onPress: void 0,
+  onPressUp: void 0,
+  onHoverIn: void 0,
+  onHoverOut: void 0,
+  clickable: void 0,
+  hoverable: void 0,
+  draggable: void 0,
+  pinchable: void 0,
+  rotatable: void 0,
+  pressable: void 0,
+  id: void 0,
+  type: void 0,
+};
+
 /**
  * graphic render component
  */
@@ -59,6 +88,29 @@ export class Component<P extends object = {}> {
 
   shouldComponentUpdate(nextProps = {} as Readonly<ComponentProps<P>>) {
     return true;
+  }
+
+  shouldComponentInteractiveUpdate(nextProps = {} as Readonly<ComponentProps<P>>) {
+    return !shallowEqual({
+      clickable: this.props.clickable,
+      hoverable: this.props.hoverable,
+      draggable: this.props.draggable,
+      pinchable: this.props.pinchable,
+      rotatable: this.props.rotatable,
+      pressable: this.props.pressable,
+    }, {
+      clickable: nextProps.clickable,
+      hoverable: nextProps.hoverable,
+      draggable: nextProps.draggable,
+      pinchable: nextProps.pinchable,
+      rotatable: nextProps.rotatable,
+      pressable: nextProps.pressable,
+    });
+  }
+
+  shouldComponentCustomPropsUpdate(nextProps = {} as Readonly<ComponentProps<P>>) {
+    const preserveKeys = Object.keys(dummyPreserveProps);
+    return !shallowEqual(this.props, nextProps, preserveKeys);
   }
 
   componentWillMount(): void | Promise<void> {
@@ -88,6 +140,8 @@ export class Component<P extends object = {}> {
 
 export class PureComponent<P extends object = {}> extends Component<P> {
   shouldComponentUpdate(nextProps: Readonly<ComponentProps<P>>) {
-    return !shallowEqual(this.props, nextProps);
+    const interactiveKeys = new Set(['clickable', 'hoverable', 'draggable', 'pinchable', 'rotatable', 'pressable']);
+    const preserveKeys = Object.keys(dummyPreserveProps).filter(key => !interactiveKeys.has(key));
+    return !shallowEqual(this.props, nextProps, preserveKeys);
   }
 }

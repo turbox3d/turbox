@@ -115,13 +115,21 @@ export function bind(fn, ctx) {
 }
 
 // From: https://github.com/facebook/fbjs/blob/c69904a511b900266935168223063dd8772dfc40/packages/fbjs/src/core/shallowEqual.js
-export function shallowEqual(objA, objB) {
+export function shallowEqual(objA, objB, ignoreKeys: string[] = []) {
   if (is(objA, objB)) return true;
   if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
     return false;
   }
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
+  let keysA: string[] = [];
+  let keysB: string[] = [];
+  if (ignoreKeys && ignoreKeys.length > 0) {
+    const ignoreSet = new Set(ignoreKeys);
+    keysA = Object.keys(objA).filter(key => !ignoreSet.has(key));
+    keysB = Object.keys(objB).filter(key =>!ignoreSet.has(key));
+  } else {
+    keysA = Object.keys(objA);
+    keysB = Object.keys(objB);
+  }
   if (keysA.length !== keysB.length) return false;
   for (let i = 0; i < keysA.length; i++) {
     if (!objB.hasOwnProperty(keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {

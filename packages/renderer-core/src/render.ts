@@ -201,6 +201,14 @@ export class VirtualNode<P extends object = any> {
             const needUpdate = node.instance!.shouldComponentUpdate(el.props);
             node.status |= needUpdate ? NodeStatus.UPDATE : NodeStatus.FAKE_UPDATE;
             if (needUpdate) {
+              const needUpdateInteractive = node.instance!.shouldComponentInteractiveUpdate(el.props);
+              if (needUpdateInteractive) {
+                node.status |= NodeStatus.UPDATE_INTERACTIVE;
+              }
+              const needUpdateCustomProps = node.instance!.shouldComponentCustomPropsUpdate(el.props);
+              if (needUpdateCustomProps) {
+                node.status |= NodeStatus.UPDATE_CUSTOM_PROPS;
+              }
               node.props = el.props;
             }
             remove(tempNodes, node);
@@ -262,7 +270,12 @@ export class VirtualNode<P extends object = any> {
       return this;
     }
     if (this.instance instanceof BaseMesh) {
-      this.instance.commit('update');
+      const needUpdateInteractive = this.status & NodeStatus.UPDATE_INTERACTIVE;
+      const needUpdateCustomProps = this.status & NodeStatus.UPDATE_CUSTOM_PROPS;
+      this.instance.commit('update', {
+        interactive: !!needUpdateInteractive,
+        customProps: !!needUpdateCustomProps,
+      });
     }
     this.instance!.componentDidUpdate(prevProps);
     return this;
