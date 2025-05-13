@@ -4,7 +4,7 @@ import { Vec2 } from '@turbox3d/shared';
 
 interface IText2dProps {
   text: string;
-  style?: PIXI.TextStyle | Partial<PIXI.TextStyle>;
+  style?: Partial<PIXI.TextStyle>;
   x?: number;
   y?: number;
   width?: number;
@@ -35,7 +35,7 @@ export default class Text2d extends Mesh2D<IText2dProps> {
       height,
     } = this.props;
     this.view.text = text;
-    this.view.style = style || new PIXI.TextStyle({
+    this.view.style = style ? new PIXI.TextStyle(style) : new PIXI.TextStyle({
       fontSize: 16,
       fontFamily: 'Arial',
     });
