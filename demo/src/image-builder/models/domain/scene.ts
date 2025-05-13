@@ -14,8 +14,8 @@ export class SceneDomain extends Domain {
   @reactor isTextStretching = false;
   @reactor currentTextMinWidth = -1;
   @reactor textBounds = { width: 0, height: 0 };
-
-  private sceneTools: SceneTool;
+  @reactor sceneTools?: SceneTool;
+  @reactor cameraPosition = { x: 0, y: 0 };
 
   @mutation
   setTextStretching(flag: boolean) {
@@ -53,12 +53,9 @@ export class SceneDomain extends Domain {
     this.snapLines = [];
   }
 
+  @mutation
   setSceneTools(sceneTools: SceneTool) {
     this.sceneTools = sceneTools;
-  }
-
-  getSceneTools() {
-    return this.sceneTools;
   }
 
   isShowInvalidRangeFrame() {

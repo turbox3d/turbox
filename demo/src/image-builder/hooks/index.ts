@@ -59,10 +59,10 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
         x: e.clientX,
         y: e.clientY,
       },
-      (imageBuilderStore.scene.getSceneTools().getApp() as PIXI.Application).view as HTMLCanvasElement
+      (imageBuilderStore.scene.sceneTools?.getApp() as PIXI.Application).view as HTMLCanvasElement
     );
     if (point) {
-      const viewEntity = imageBuilderStore.scene.getSceneTools().hitTarget(point);
+      const viewEntity = imageBuilderStore.scene.sceneTools?.hitTarget(point);
       if (viewEntity && viewEntity.type === ItemSymbol) {
         return imageBuilderStore.document.findModelById(viewEntity.id!) as ItemEntity;
       }
@@ -166,7 +166,7 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
               if (!product) {
                 isSuccess = false;
               } else {
-                const position = imageBuilderStore.scene.getSceneTools().coordinateTransform(
+                const position = imageBuilderStore.scene.sceneTools?.coordinateTransform(
                   {
                     x: e.clientX,
                     y: e.clientY,
@@ -175,8 +175,8 @@ export function useMaterialDragAndReplace<CustomBizData extends { type: string; 
                   0
                 );
                 product.setPosition({
-                  x: position.x,
-                  y: position.y,
+                  x: position?.x,
+                  y: position?.y,
                 });
                 imageBuilderStore.document.addModel(product);
               }

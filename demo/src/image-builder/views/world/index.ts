@@ -12,6 +12,24 @@ import { BLUE, GRAY, RED } from '../../common/consts/color';
 
 @Reactive
 export class World extends Component {
+  deleteHandler = () => {
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    appCommandManager._shared.entity.deleteEntity([selected]);
+  }
+
+  copyHandler = () => {
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    appCommandManager._shared.entity.copyItemEntity(selected as ItemEntity);
+  }
+
+  adjustHandler = (op, v, e, t) => {
+    appCommandManager._shared.adjust.adjustHandler(op, v, e, t);
+  }
+
+  stretchHandler = (a, op, v, e, t) => {
+    appCommandManager._shared.adjust.stretchHandler(a, op, v, e, t);
+  }
+
   render() {
     const selected = appCommandManager.default.select.getSelectedEntities()[0];
     const hinted = appCommandManager.default.hint.getHintedEntity();
@@ -128,14 +146,14 @@ export class World extends Component {
           color: BLUE,
           deleteIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/delete.svg',
           deleteIconSize: 18,
+          copyIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/copy.svg',
+          copyIconSize: 18,
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
           adjustIconSize: 18,
-          deleteHandler: () => {
-            appCommandManager._shared.entity.deleteEntity([selected]);
-          },
-          adjustHandler: (...args) => appCommandManager._shared.adjust.adjustHandler(...args),
-          xLeftHandler: (...args) => appCommandManager._shared.adjust.xStretchHandler(...args),
-          xRightHandler: (...args) => appCommandManager._shared.adjust.xStretchHandler(...args),
+          deleteHandler: this.deleteHandler,
+          copyHandler: this.copyHandler,
+          adjustHandler: this.adjustHandler,
+          stretchHandler: this.stretchHandler,
         }),
       ...imageBuilderStore.scene.snapLines.map((sl, index) => g(Line2d, {
         key: `snapLine-${index}`,

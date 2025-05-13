@@ -12,6 +12,7 @@ import { World } from './views/world';
 import { TopBar } from './views/topBar';
 import { IDocumentData } from './models/domain/document';
 import { RightPanel } from './views/rightPanel';
+import { BottomBar } from './views/bottomBar';
 
 window.$$DEBUG = {
   depCollector,
@@ -48,7 +49,7 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
         scalable: true,
         container: 'scene2d',
         commandMgr: appCommandManager,
-        cameraPosition: { x: 0, y: 0 },
+        cameraPosition: imageBuilderStore.scene.cameraPosition,
         resizeTo: 'scene2d',
         maxFPS: 120,
         disableResize: false,
@@ -57,6 +58,7 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
         initialized: (sceneTools: SceneTool) => {
           imageBuilderStore.scene.setSceneTools(sceneTools);
         },
+        zoomRange: imageBuilderStore.scene.canvasZoomRange,
         children: [g(World)],
       }),
     ]);
@@ -82,12 +84,13 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
           top: 72,
           right: 0,
           bottom: 0,
-          left: 260,
+          left: 0,
         }}
       />
       <LeftPanel />
       <RightPanel />
       <TopBar onSave={handleSave} />
+      <BottomBar />
       {process.env.NODE_ENV === 'development' && <FPSMonitorComponent className="fps-monitor" />}
     </>
   );

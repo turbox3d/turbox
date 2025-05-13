@@ -1,4 +1,4 @@
-import { DocumentSystem, EntityObject, Vector2, mutation } from '@turbox3d/turbox';
+import { DocumentSystem, EntityObject, Vec2, Vector2, mutation } from '@turbox3d/turbox';
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { FrameEntity } from '../entity/frame';
@@ -24,6 +24,7 @@ export interface IDocumentData {
       content: string;
       src: string;
       href: string;
+      materialDirection: Vec2;
       attribute: ITextStyles & {
         [key: string]: any;
       };
@@ -137,6 +138,7 @@ export class DocumentDomain extends DocumentSystem {
           y: frameEntity.position.y - container.height / 2 + i.height / 2 + i.top,
         });
         itemEntity.$update({
+          materialDirection: new Vector2(i.data.materialDirection.x, i.data.materialDirection.y),
           href: i.data.href,
           attribute: i.data.attribute,
         });
@@ -211,6 +213,7 @@ export class DocumentDomain extends DocumentSystem {
             content: i.text,
             src: i.resourceUrl,
             href: i.href,
+            materialDirection: { x: i.materialDirection.x, y: i.materialDirection.y },
             attribute: {
               ...i.attribute,
             },

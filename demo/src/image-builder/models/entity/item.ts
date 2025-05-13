@@ -1,4 +1,4 @@
-import { EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
+import { EntityObject, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
 import { BLACK, GRAY, WHITE } from '../../common/consts/color';
 
@@ -7,8 +7,8 @@ export interface ITextStyles {
   lineHeight: number;
   fontFamily: string;
   color: number;
-  fontWeight: 'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900';
-  align: 'left'|'center'|'right'|'justify';
+  fontWeight: 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+  align: 'left' | 'center' | 'right' | 'justify';
   wordWrap: boolean;
   wordWrapWidth: number;
 }
@@ -43,10 +43,4 @@ export class ItemEntity extends EntityObject {
     backgroundColor: WHITE,
     borderRadius: 0,
   };
-
-  @mutation
-  setMaterialDirection(v: Vector2) {
-    this.materialDirection.x = v.x;
-    this.materialDirection.y = v.y;
-  }
 }

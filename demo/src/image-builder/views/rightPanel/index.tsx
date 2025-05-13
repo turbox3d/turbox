@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ReactiveReact } from '@turbox3d/turbox';
-import { ColorPicker, Input } from 'antd';
+import { ColorPicker, Input, Switch } from 'antd';
 import './index.less';
 import { Color } from 'antd/es/color-picker';
 import { appCommandManager } from '../../commands';
@@ -9,6 +9,7 @@ import { ItemType } from '../../common/consts/scene';
 import { loadImageElement } from '../../common/utils/image';
 import { imageBuilderStore } from '../../models';
 import { Attribute } from './attribute';
+import { MIRROR_ACTION } from '../../common/consts/action';
 
 export const RightPanel = ReactiveReact(() => {
   const selected = appCommandManager.default.select.getSelectedEntities()[0];
@@ -81,6 +82,9 @@ export const RightPanel = ReactiveReact(() => {
       x: ratio > 1 ? bgSize.width / 6 : (bgSize.height / 6) * ratio,
       y: ratio > 1 ? bgSize.width / 6 / ratio : bgSize.height / 6,
     });
+  };
+  const mirror = (type: MIRROR_ACTION) => () => {
+    appCommandManager._shared.entity.updateMirror(type);
   };
 
   return (
@@ -158,6 +162,19 @@ export const RightPanel = ReactiveReact(() => {
               showText
               onChange={onColorHandler('backgroundColor')}
             />
+          </div>
+          <div>
+            <Attribute attribute="Mirror" />
+            <div className="mirror-group">
+              <div>
+                <span>X:</span>
+                <Switch onChange={mirror(MIRROR_ACTION.LEFT_RIGHT)} />
+              </div>
+              <div>
+                <span>Y:</span>
+                <Switch onChange={mirror(MIRROR_ACTION.TOP_BOTTOM)} />
+              </div>
+            </div>
           </div>
         </>
       )}

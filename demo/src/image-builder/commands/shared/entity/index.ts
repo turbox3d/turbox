@@ -1,4 +1,4 @@
-import { mutation, EntityObject, Vec2, Command } from '@turbox3d/turbox';
+import { mutation, EntityObject, Vec2, Command, Vector2 } from '@turbox3d/turbox';
 
 import { appCommandManager } from '../../index';
 import { loadImageElement } from '../../../common/utils/image';
@@ -6,7 +6,7 @@ import { FrameEntity } from '../../../models/entity/frame';
 import { ItemEntity } from '../../../models/entity/item';
 import { imageBuilderStore } from '../../../models/index';
 
-import { Z_INDEX_ACTION } from '../../../common/consts/action';
+import { MIRROR_ACTION, Z_INDEX_ACTION } from '../../../common/consts/action';
 import { ItemType, RenderOrder } from '../../../common/consts/scene';
 import { GRAY, PRIMARY_COLOR, WHITE } from '../../../common/consts/color';
 
@@ -184,6 +184,39 @@ export class EntityCommand extends Command {
     appCommandManager.default.select.clearAllSelected();
   };
 
+  @mutation
+  copyItemEntity = async (model: ItemEntity) => {
+    let entity: ItemEntity | undefined;
+    if (model.itemType === ItemType.IMAGE) {
+      entity = await this.addItemEntity(model.resourceUrl);
+    }
+    if (model.itemType === ItemType.TEXT) {
+      entity = await this.addTextItemEntity(model.text);
+    }
+    if (model.itemType === ItemType.BUTTON) {
+      entity = await this.addButtonItemEntity(model.text);
+    }
+    if (!entity) {
+      return;
+    }
+    entity.setSize({
+      x: model.size.x,
+      y: model.size.y,
+    });
+    entity.setPosition({
+      x: model.position.x + model.size.x / 2,
+      y: model.position.y + model.size.y / 2,
+    });
+    entity.$update({
+      href: model.href,
+      materialDirection: model.materialDirection,
+      attribute: {
+        ...model.attribute,
+      },
+    });
+    appCommandManager.default.select.select([entity]);
+  };
+
   /**
    * 替换
    * @param url 新素材的图片路径
@@ -258,5 +291,18 @@ export class EntityCommand extends Command {
     selected.$update({
       text,
     });
+  };
+
+  @mutation
+  updateMirror = (type: MIRROR_ACTION) => {
+    const selected = appCommandManager.default.select.getSelectedEntities()[0] as ItemEntity;
+    const v = new Vector2().copy(selected.materialDirection);
+    if (type === MIRROR_ACTION.LEFT_RIGHT) {
+      v.x *= -1;
+    } else if (type === MIRROR_ACTION.TOP_BOTTOM) {
+      v.y *= -1;
+    }
+    selected.materialDirection.x = v.x;
+    selected.materialDirection.y = v.y;
   };
 }
