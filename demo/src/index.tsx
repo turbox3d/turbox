@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { config, Tolerance, EnvSystem } from '@turbox3d/turbox';
 import { IDocumentData } from './image-builder/models/domain/document';
 import { ItemType } from './image-builder/common/consts/scene';
-import { BLACK, GRAY, WHITE } from './image-builder/common/consts/color';
+import { BLACK, GRAY, WHITE, PRIMARY_COLOR } from './image-builder/common/consts/color';
 
 config({
   middleware: {
@@ -31,10 +31,11 @@ const imageBuilderData = {
   container: {
     width: 375,
     height: 375,
+    backgroundColor: GRAY,
   },
   items: [{
     type: ItemType.IMAGE,
-    top: 0,
+    top: 100,
     left: 0,
     width: 180.5,
     height: 57.51896813353566,
@@ -43,6 +44,7 @@ const imageBuilderData = {
       content: '',
       src: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/sofa.png',
       href: '',
+      materialDirection: { x: 1, y: 1 },
       attribute: {
         fontSize: 30,
         lineHeight: 1.5,
@@ -58,6 +60,62 @@ const imageBuilderData = {
         backgroundColor: WHITE,
         borderRadius: 0,
       },
+    }
+  }, {
+    type: ItemType.TEXT,
+    top: 10,
+    left: 10,
+    width: 144,
+    height: 45,
+    zIndex: 2,
+    data: {
+      content: 'hello world',
+      src: '',
+      href: '',
+      materialDirection: { x: 1, y: 1 },
+      attribute: {
+        fontSize: 30,
+        lineHeight: 1.5,
+        fontFamily: 'Arial',
+        color: BLACK,
+        fontWeight: 'normal',
+        align: 'left',
+        wordWrap: true,
+        wordWrapWidth: 375,
+        fontStyle: 'normal',
+        borderWidth: 0,
+        borderColor: GRAY,
+        backgroundColor: WHITE,
+        borderRadius: 0,
+      }
+    }
+  }, {
+    type: ItemType.BUTTON,
+    top: 204.72265625,
+    left: 107.5,
+    width: 160,
+    height: 40,
+    zIndex: 1,
+    data: {
+      content: 'Go to TikTok',
+      src: '',
+      href: '',
+      materialDirection: { x: 1, y: 1 },
+      attribute: {
+        fontSize: 16,
+        lineHeight: 1.5,
+        fontFamily: 'Arial',
+        color: WHITE,
+        fontWeight: 'normal',
+        align: 'center',
+        wordWrap: false,
+        wordWrapWidth: 375,
+        fontStyle: 'normal',
+        borderWidth: 0,
+        borderColor: GRAY,
+        backgroundColor: PRIMARY_COLOR,
+        borderRadius: 5,
+      }
     }
   }],
 } as IDocumentData;
