@@ -1,5 +1,14 @@
 # @turbox3d/renderer-three
 
+## 1.0.30
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-core@1.0.29
+  - @turbox3d/shared@1.1.25
+
 ## 1.0.29
 
 ### Patch Changes

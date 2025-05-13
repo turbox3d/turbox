@@ -1,5 +1,14 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.47
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-pixi@1.0.31
+  - @turbox3d/shared@1.1.25
+
 ## 1.1.46
 
 ### Patch Changes

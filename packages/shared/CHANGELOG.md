@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.25
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+
 ## 1.1.24
 
 ### Patch Changes

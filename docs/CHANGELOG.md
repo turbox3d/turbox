@@ -906,6 +906,12 @@
 
 # @turbox3d/shared
 
+## 1.1.25
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+
 ## 1.1.24
 
 ### Patch Changes
@@ -1021,6 +1027,15 @@
 - Replace pnpm from lerna
 
 # @turbox3d/renderer-three
+
+## 1.0.30
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-core@1.0.29
+  - @turbox3d/shared@1.1.25
 
 ## 1.0.29
 
@@ -1220,6 +1235,15 @@
 
 # @turbox3d/renderer-pixi
 
+## 1.0.31
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-core@1.0.29
+  - @turbox3d/shared@1.1.25
+
 ## 1.0.30
 
 ### Patch Changes
@@ -1417,6 +1441,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.29
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/shared@1.1.25
 
 ## 1.0.28
 
@@ -2052,6 +2084,15 @@
 
 # @turbox3d/graphic-component-three
 
+## 1.1.39
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-three@1.0.30
+  - @turbox3d/shared@1.1.25
+
 ## 1.1.38
 
 ### Patch Changes
@@ -2223,6 +2264,15 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/graphic-component-pixi
+
+## 1.1.47
+
+### Patch Changes
+
+- a283c1c: fix: fix rerender performance & component bug
+- Updated dependencies [a283c1c]
+  - @turbox3d/renderer-pixi@1.0.31
+  - @turbox3d/shared@1.1.25
 
 ## 1.1.46
 
