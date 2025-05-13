@@ -179,10 +179,11 @@ export class VirtualNode<P extends object = any> {
   }
 
   resetStatus() {
-    const childNodes = this.getChildren();
-    childNodes.forEach(n => {
-      n.status = NodeStatus.READY;
-    });
+    this.status = NodeStatus.READY;
+    // const childNodes = this.getChildren();
+    // childNodes.forEach(n => {
+    //   n.status = NodeStatus.READY;
+    // });
   }
 
   diff(elements: Element<P>[] | null) {
@@ -242,7 +243,8 @@ export class VirtualNode<P extends object = any> {
   }
 
   update(isForce = false) {
-    if (!isForce && this.status & NodeStatus.FAKE_UPDATE) {
+    // combine batch update status, once the UPDATE status appears, continue to update
+    if (!isForce && !(this.status & NodeStatus.UPDATE)) {
       return;
     }
     // delete first, then do not to update or create
@@ -255,12 +257,12 @@ export class VirtualNode<P extends object = any> {
     const elements = this.instance!.render();
     this.diff(elements);
     this.patch();
-    this.resetStatus();
     if (VirtualNode.isBatchUpdate) {
       VirtualNode.batchQueue.push(() => this.commitUpdate(prevProps));
     } else {
       this.commitUpdate(prevProps);
       this.committing = false;
+      this.resetStatus();
     }
   }
 
@@ -324,6 +326,7 @@ export function batchUpdate(callback: () => void, finish?: () => void) {
   }
   nodes.forEach(n => {
     n.committing = false;
+    n.resetStatus();
   });
   VirtualNode.isBatchUpdate = false;
   VirtualNode.batchQueue = [];
