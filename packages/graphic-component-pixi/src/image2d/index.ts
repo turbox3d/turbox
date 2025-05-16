@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { fail, Vec2 } from '@turbox3d/shared';
-import DrawUtils from '../draw-utils/index';
+import DrawUtils from '../draw-utils';
 import { IFitStyle } from '../draw-utils/drawRect';
 
 export interface IImage2dProps {
@@ -45,21 +45,15 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
   ];
   private g = new PIXI.Graphics();
   private s = new PIXI.Sprite();
-  private mask = new PIXI.Graphics();
 
   componentDidMount() {
     this.g.zIndex = -1;
     this.s.zIndex = -1;
-    this.mask.zIndex = -1;
     this.view.addChild(this.g);
     this.view.addChild(this.s);
-    this.view.addChild(this.mask);
   }
 
   async updateGeometry() {
-    this.g.clear();
-    this.mask.clear();
-    this.s.visible = false;
     const {
       width,
       height,
@@ -75,6 +69,19 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       backgroundImage = '',
       fit = 'none',
     } = this.props;
+
+    let alignParam = alignment;
+    if (alignment === 0) {
+      alignParam = 1;
+    } else if (alignment === 1) {
+      alignParam = 0;
+    }
+    const fillPos = { x: lineWidth * alignParam, y: lineWidth * alignParam };
+    const rw = width - lineWidth * 2 * alignParam;
+    const rh = height - lineWidth * 2 * alignParam;
+
+    this.g.clear();
+    this.s.visible = false;
     DrawUtils.drawRect(this.g, {
       x: 0,
       y: 0,
@@ -91,15 +98,7 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       fillAlpha,
       alpha,
     });
-    let alignParam = alignment;
-    if (alignment === 0) {
-      alignParam = 1;
-    } else if (alignment === 1) {
-      alignParam = 0;
-    }
-    const fillPos = { x: lineWidth * alignParam, y: lineWidth * alignParam };
-    const rw = width - lineWidth * 2 * alignParam;
-    const rh = height - lineWidth * 2 * alignParam;
+
     if (!backgroundImage) {
       return;
     }
@@ -117,18 +116,12 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     }
     this.s.texture = t;
     this.s.visible = true;
+
     const { width: tw, height: th } = t;
     const imgRatio = tw / th;
     const rectRatio = width / height;
     const center = { x: width / 2, y: height / 2 };
-    DrawUtils.drawRect(this.mask, {
-      x: fillPos.x,
-      y: fillPos.y,
-      width: rw,
-      height: rh,
-      central: false,
-      radius: radius - lineWidth * alignParam,
-    });
+
     if (fit === 'none') {
       this.s.position.set(center.x - tw / 2, center.y - th / 2);
     } else if (fit === 'fill') {
@@ -155,13 +148,9 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
         this.s.height = rw / imgRatio;
         this.s.position.set(fillPos.x, fillPos.y + rh / 2 - rw / imgRatio / 2);
       }
-      this.mask.position.set(this.s.position.x, this.s.position.y);
-      this.mask.width = this.s.width;
-      this.mask.height = this.s.height;
     }
     // anchor 设置为 0.5，此处需要调整回去
     this.s.position.set(this.s.position.x + this.s.width / 2, this.s.position.y + this.s.height / 2);
-    this.s.mask = this.mask;
   }
 
   updateMaterial() {
