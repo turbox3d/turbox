@@ -20,7 +20,6 @@ export { default as EntityObject } from './entity-object/index';
 export { default as EnvSystem } from './env-system/index';
 export { default as FreeDrawCommand } from './free-draw-command/index';
 export { default as HintCommand } from './hint-command/index';
-export { default as ImageSystem } from './image-system/index';
 export { default as InferenceEngine } from './inference-engine/index';
 export { default as LoadSystem } from './load-system/index';
 export { default as MaterialBrushCommand } from './material-brush-command/index';

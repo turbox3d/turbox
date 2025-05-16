@@ -1,6 +1,6 @@
-import { Vector2 } from '@turbox3d/math';
-import { updateQueryStringParameter, Vec2 } from '@turbox3d/shared';
 import * as THREE from 'three';
+import { updateQueryStringParameter } from './common';
+import { Vec2 } from './graphic';
 
 function convertUrl(url: string, key = 'turbox') {
   if (url.includes(';base64,') || !url) {
@@ -9,7 +9,7 @@ function convertUrl(url: string, key = 'turbox') {
   return updateQueryStringParameter(url, key, 'true');
 }
 
-export const mirrorImage = (image: string | Blob, materialDirection: Vector2, isBase64 = false, fileType = 'image/png', quality = 1) => {
+export const mirrorImage = (image: string | Blob, materialDirection: Vec2, isBase64 = false, fileType = 'image/png', quality = 1) => {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
   img.src = image instanceof Blob ? URL.createObjectURL(image) : convertUrl(image);
@@ -70,7 +70,7 @@ export const getRenderTargetImageData = (
     canvas.toBlob(
       async blob => {
         if (blob) {
-          const image = (await mirrorImage(blob, new Vector2(1, -1), false, fileType)) as Blob;
+          const image = (await mirrorImage(blob, { x: 1, y: -1 }, false, fileType)) as Blob;
           resolve(image);
         }
       },

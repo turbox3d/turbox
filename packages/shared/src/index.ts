@@ -3,6 +3,7 @@ export * from './type';
 export * from './task';
 export * from './rafTask';
 export * from './lang';
+export * from './image';
 export * from './graphic';
 export * from './event';
 export * from './error';
