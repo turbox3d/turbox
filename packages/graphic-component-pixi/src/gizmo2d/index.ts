@@ -36,7 +36,30 @@ interface IGizmo2dProps {
   ) => void;
 }
 
+enum StretchKey {
+  X_LEFT = 'x-left',
+  X_RIGHT = 'x-right',
+  Y_TOP = 'y-top',
+  Y_BOTTOM = 'y-bottom',
+}
+
 export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
+  deleteHandler() {
+    this.props.deleteHandler && this.props.deleteHandler();
+  }
+
+  copyHandler() {
+    this.props.copyHandler && this.props.copyHandler();
+  }
+
+  dragHandler = (op: 'start' | 'move' | 'end') => (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+    this.props.adjustHandler && this.props.adjustHandler(op, viewEntity, event, tools);
+  }
+
+  stretchHandler = (actionKey: 'x-left' | 'x-right' | 'y-top' | 'y-bottom', op: 'start' | 'move' | 'end') => (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
+    this.props.stretchHandler && this.props.stretchHandler(actionKey, op, viewEntity, event, tools);
+  }
+
   render() {
     const {
       x = 0,
@@ -46,10 +69,6 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
       rotation = 0,
       central = false,
       zIndex = 1000,
-      stretchHandler,
-      deleteHandler,
-      copyHandler,
-      adjustHandler,
       color = 0xffffff,
       deleteIcon = '',
       copyIcon = '',
@@ -77,7 +96,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         alignment: 1,
       }),
       g(Rect2d, {
-        key: 'x-left',
+        key: StretchKey.X_LEFT,
         draggable: true,
         x: posX,
         y: posY + height / 2,
@@ -89,18 +108,12 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillColor: 0xffffff,
         fillAlpha: 0.01,
         alignment: 1,
-        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-left', 'start', viewEntity, event, tools);
-        },
-        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-left', 'move', viewEntity, event, tools);
-        },
-        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-left', 'end', viewEntity, event, tools);
-        },
+        onDragStart: this.stretchHandler(StretchKey.X_LEFT, 'start'),
+        onDragMove: this.stretchHandler(StretchKey.X_LEFT, 'move'),
+        onDragEnd: this.stretchHandler(StretchKey.X_LEFT, 'end'),
       }),
       g(Rect2d, {
-        key: 'x-right',
+        key: StretchKey.X_RIGHT,
         draggable: true,
         x: posX + width,
         y: posY + height / 2,
@@ -112,18 +125,12 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillColor: 0xffffff,
         fillAlpha: 0.01,
         alignment: 1,
-        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-right', 'start', viewEntity, event, tools);
-        },
-        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-right', 'move', viewEntity, event, tools);
-        },
-        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('x-right', 'end', viewEntity, event, tools);
-        },
+        onDragStart: this.stretchHandler(StretchKey.X_RIGHT, 'start'),
+        onDragMove: this.stretchHandler(StretchKey.X_RIGHT, 'move'),
+        onDragEnd: this.stretchHandler(StretchKey.X_RIGHT, 'end'),
       }),
       g(Rect2d, {
-        key: 'y-top',
+        key: StretchKey.Y_TOP,
         draggable: true,
         x: posX + width / 2,
         y: posY,
@@ -135,18 +142,12 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillColor: 0xffffff,
         fillAlpha: 0.01,
         alignment: 1,
-        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-top', 'start', viewEntity, event, tools);
-        },
-        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-top', 'move', viewEntity, event, tools);
-        },
-        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-top', 'end', viewEntity, event, tools);
-        },
+        onDragStart: this.stretchHandler(StretchKey.Y_TOP, 'start'),
+        onDragMove: this.stretchHandler(StretchKey.Y_TOP, 'move'),
+        onDragEnd: this.stretchHandler(StretchKey.Y_TOP, 'end'),
       }),
       g(Rect2d, {
-        key: 'y-bottom',
+        key: StretchKey.Y_BOTTOM,
         draggable: true,
         x: posX + width / 2,
         y: posY + height,
@@ -158,15 +159,9 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillColor: 0xffffff,
         fillAlpha: 0.01,
         alignment: 1,
-        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-bottom', 'start', viewEntity, event, tools);
-        },
-        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-bottom', 'move', viewEntity, event, tools);
-        },
-        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          stretchHandler && stretchHandler('y-bottom', 'end', viewEntity, event, tools);
-        },
+        onDragStart: this.stretchHandler(StretchKey.Y_BOTTOM, 'start'),
+        onDragMove: this.stretchHandler(StretchKey.Y_BOTTOM, 'move'),
+        onDragEnd: this.stretchHandler(StretchKey.Y_BOTTOM, 'end'),
       }),
       g(Image2d, {
         key: 'delete',
@@ -183,9 +178,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 1,
         fit: 'cover',
         backgroundImage: deleteIcon,
-        onClick: () => {
-          deleteHandler && deleteHandler();
-        },
+        onClick: this.deleteHandler,
       }),
       g(Image2d, {
         key: 'copy',
@@ -202,9 +195,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 1,
         fit: 'cover',
         backgroundImage: copyIcon,
-        onClick: () => {
-          copyHandler && copyHandler();
-        },
+        onClick: this.copyHandler,
       }),
       g(Image2d, {
         key: 'adjust',
@@ -221,15 +212,9 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 1,
         fit: 'cover',
         backgroundImage: adjustIcon,
-        onDragStart: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          adjustHandler && adjustHandler('start', viewEntity, event, tools);
-        },
-        onDragMove: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          adjustHandler && adjustHandler('move', viewEntity, event, tools);
-        },
-        onDragEnd: (viewEntity: Partial<ViewEntity>, event: SceneEvent<any>, tools: SceneTool) => {
-          adjustHandler && adjustHandler('end', viewEntity, event, tools);
-        },
+        onDragStart: this.dragHandler('start'),
+        onDragMove: this.dragHandler('move'),
+        onDragEnd: this.dragHandler('end'),
       }),
     ];
   }
