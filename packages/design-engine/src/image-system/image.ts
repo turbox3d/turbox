@@ -157,12 +157,18 @@ export async function loadImageElement(url: string | Blob) {
   });
 }
 
-export async function cropImage(url: string | Blob, rect: { start: Vec2; end: Vec2 }, fileType = 'image/png', quality = 1) {
+export async function cropImage(
+  url: string | Blob,
+  rect: { start: Vec2; end: Vec2 },
+  fileType = 'image/png',
+  quality = 1,
+) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
   img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
   return new Promise<{
     blob: Blob | null;
+    element?: HTMLImageElement;
     width: number;
     height: number;
   }>(resolve => {
@@ -170,12 +176,12 @@ export async function cropImage(url: string | Blob, rect: { start: Vec2; end: Ve
       url instanceof Blob && URL.revokeObjectURL(img.src);
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
-      canvas.width = img.width * (rect.end.x - rect.start.x);
-      canvas.height = img.height * (rect.end.y - rect.start.y);
+      canvas.width = rect.end.x - rect.start.x;
+      canvas.height = rect.end.y - rect.start.y;
       ctx.drawImage(
         img,
-        img.width * rect.start.x,
-        img.height * rect.start.y,
+        rect.start.x,
+        rect.start.y,
         canvas.width,
         canvas.height,
         0,
@@ -185,11 +191,26 @@ export async function cropImage(url: string | Blob, rect: { start: Vec2; end: Ve
       );
       canvas.toBlob(
         blob => {
-          resolve({
-            blob,
-            width: canvas.width,
-            height: canvas.height,
-          });
+          if (!blob) {
+            resolve({
+              blob: null,
+              width: 0,
+              height: 0,
+            });
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve({
+              blob,
+              element: img,
+              width: canvas.width,
+              height: canvas.height,
+            });
+          };
+          img.src = url;
         },
         fileType,
         quality
