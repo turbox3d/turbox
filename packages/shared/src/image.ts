@@ -158,14 +158,18 @@ export async function loadImageElement(url: string | Blob) {
 }
 
 export async function cropImage(
-  url: string | Blob,
+  url: string | Blob | HTMLImageElement,
   rect: { start: Vec2; end: Vec2 },
   fileType = 'image/png',
   quality = 1,
 ) {
   const img = new Image();
   img.setAttribute('crossOrigin', 'anonymous');
-  img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  if (url instanceof HTMLImageElement) {
+    img.src = url.src;
+  } else {
+    img.src = url instanceof Blob ? URL.createObjectURL(url) : convertUrl(url);
+  }
   return new Promise<{
     blob: Blob | null;
     element?: HTMLImageElement;

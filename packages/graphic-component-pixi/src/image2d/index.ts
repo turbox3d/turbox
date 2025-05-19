@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Mesh2D } from '@turbox3d/renderer-pixi';
-import { fail, Vec2 } from '@turbox3d/shared';
+import { fail, Vec2, cropImage } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils';
 import { IFitStyle } from '../draw-utils/drawRect';
 
@@ -20,7 +20,7 @@ export interface IImage2dProps {
   lineColor?: number;
   lineAlpha?: number;
   /**
-   * 边框内扩、外扩
+   * 边框内扩 0、外扩 1
    */
   alignment?: number;
   native?: boolean;
@@ -104,8 +104,9 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     }
     let t: PIXI.Texture | undefined;
     if (backgroundImage instanceof HTMLImageElement) {
-      t = PIXI.Texture.from(backgroundImage);
-      t.baseTexture.setSize(rw, rh);
+      t = await PIXI.Texture.fromLoader(backgroundImage, backgroundImage.src).catch(() => {
+        fail('Load Image2d backgroundImage texture failed.');
+      });
     } else {
       t = await PIXI.Texture.fromURL(backgroundImage).catch(() => {
         fail('Load Image2d backgroundImage texture failed.');
@@ -115,7 +116,6 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       return;
     }
     this.s.texture = t;
-    this.s.visible = true;
 
     const { width: tw, height: th } = t;
     const imgRatio = tw / th;
@@ -123,21 +123,37 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     const center = { x: width / 2, y: height / 2 };
 
     if (fit === 'none') {
-      this.s.position.set(center.x - tw / 2, center.y - th / 2);
+      if (rectRatio > 1) {
+        this.s.width = rw;
+        this.s.height = rw / imgRatio;
+      } else {
+        this.s.width = rh * imgRatio;
+        this.s.height = rh;
+      }
+      this.s.position.set(center.x - this.s.width / 2, center.y - this.s.height / 2);
     } else if (fit === 'fill') {
       this.s.width = rw;
       this.s.height = rh;
       this.s.position.set(fillPos.x, fillPos.y);
     } else if (fit === 'cover') {
       if (imgRatio <= rectRatio) {
+        const ratio = rw / tw;
+        const { element } = await cropImage(backgroundImage, { start: { x: 0, y: th / 2 - rh / ratio / 2 }, end: { x: tw, y: th / 2 + rh / ratio / 2 }});
+        if (element) {
+          this.s.texture = PIXI.Texture.from(element);
+        }
         this.s.width = rw;
-        this.s.height = rw / imgRatio;
-        this.s.position.set(fillPos.x, fillPos.y + rh / 2 - rw / imgRatio / 2);
-      } else {
-        this.s.width = rh * imgRatio;
         this.s.height = rh;
-        this.s.position.set(fillPos.x + rw / 2 - (rh * imgRatio) / 2, fillPos.y);
+      } else {
+        const ratio = rh / th;
+        const { element } = await cropImage(backgroundImage, { start: { x: tw / 2 - rw / ratio / 2, y: 0 }, end: { x: tw / 2 + rw / ratio / 2, y: th }});
+        if (element) {
+          this.s.texture = PIXI.Texture.from(element);
+        }
+        this.s.width = rw;
+        this.s.height = rh;
       }
+      this.s.position.set(fillPos.x, fillPos.y);
     } else if (fit === 'contain') {
       if (imgRatio <= rectRatio) {
         this.s.width = rh * imgRatio;
@@ -151,6 +167,7 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     }
     // anchor 设置为 0.5，此处需要调整回去
     this.s.position.set(this.s.position.x + this.s.width / 2, this.s.position.y + this.s.height / 2);
+    this.s.visible = true;
   }
 
   updateMaterial() {
