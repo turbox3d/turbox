@@ -19,6 +19,7 @@ interface IGizmo2dProps {
   copyIconSize?: number;
   adjustIcon?: string;
   adjustIconSize?: number;
+  stretchRectSize?: number;
   stretchHandler?: (
     actionKey: 'x-left' | 'x-right' | 'y-top' | 'y-bottom',
     op: 'start' | 'move' | 'end',
@@ -44,11 +45,11 @@ enum StretchKey {
 }
 
 export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
-  deleteHandler() {
+  deleteHandler = () => {
     this.props.deleteHandler && this.props.deleteHandler();
   }
 
-  copyHandler() {
+  copyHandler = () => {
     this.props.copyHandler && this.props.copyHandler();
   }
 
@@ -76,6 +77,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
       deleteIconSize = 10,
       copyIconSize = 10,
       adjustIconSize = 10,
+      stretchRectSize = 8,
     } = this.props;
     const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
@@ -100,8 +102,8 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         draggable: true,
         x: posX,
         y: posY + height / 2,
-        width: 10,
-        height: 10,
+        width: stretchRectSize,
+        height: stretchRectSize,
         central: true,
         lineWidth: 1,
         lineColor: color,
@@ -117,8 +119,8 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         draggable: true,
         x: posX + width,
         y: posY + height / 2,
-        width: 10,
-        height: 10,
+        width: stretchRectSize,
+        height: stretchRectSize,
         central: true,
         lineWidth: 1,
         lineColor: color,
@@ -134,8 +136,8 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         draggable: true,
         x: posX + width / 2,
         y: posY,
-        width: 10,
-        height: 10,
+        width: stretchRectSize,
+        height: stretchRectSize,
         central: true,
         lineWidth: 1,
         lineColor: color,
@@ -151,8 +153,8 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         draggable: true,
         x: posX + width / 2,
         y: posY + height,
-        width: 10,
-        height: 10,
+        width: stretchRectSize,
+        height: stretchRectSize,
         central: true,
         lineWidth: 1,
         lineColor: color,
