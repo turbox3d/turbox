@@ -1,5 +1,13 @@
 # @turbox3d/graphic-component-pixi
 
+## 1.1.48
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
+
 ## 1.1.47
 
 ### Patch Changes

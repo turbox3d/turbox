@@ -1,5 +1,11 @@
 # @turbox3d/shared
 
+## 1.1.26
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+
 ## 1.1.25
 
 ### Patch Changes

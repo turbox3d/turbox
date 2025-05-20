@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/design-engine",
-  "version": "1.1.37",
+  "version": "1.1.38",
   "description": "Large-scale design application engine library",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -70,6 +70,6 @@
     "@turbox3d/math": "~1.1.21",
     "@turbox3d/reactivity": "~2.1.27",
     "@turbox3d/reactivity-react": "~1.1.27",
-    "@turbox3d/shared": "~1.1.23"
+    "@turbox3d/shared": "~1.1.26"
   }
 }

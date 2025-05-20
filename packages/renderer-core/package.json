@@ -1,6 +1,6 @@
 {
   "name": "@turbox3d/renderer-core",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "Large-scale declarative graphic ui core renderer",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -56,6 +56,6 @@
     "@turbox3d/command-manager": "~1.1.32",
     "@turbox3d/event-manager": "~1.1.30",
     "@turbox3d/reactivity": "~2.1.27",
-    "@turbox3d/shared": "~1.1.25"
+    "@turbox3d/shared": "~1.1.26"
   }
 }

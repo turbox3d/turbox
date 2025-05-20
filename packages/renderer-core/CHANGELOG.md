@@ -1,5 +1,13 @@
 # @turbox3d/renderer-core
 
+## 1.0.30
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
+
 ## 1.0.29
 
 ### Patch Changes

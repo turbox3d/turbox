@@ -1,5 +1,13 @@
 # @turbox3d/design-engine
 
+## 1.1.38
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
+
 ## 1.1.37
 
 ### Patch Changes

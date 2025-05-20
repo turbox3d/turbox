@@ -906,6 +906,12 @@
 
 # @turbox3d/shared
 
+## 1.1.26
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+
 ## 1.1.25
 
 ### Patch Changes
@@ -1441,6 +1447,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/renderer-core
+
+## 1.0.30
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
 
 ## 1.0.29
 
@@ -2265,6 +2279,14 @@
 
 # @turbox3d/graphic-component-pixi
 
+## 1.1.48
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
+
 ## 1.1.47
 
 ### Patch Changes
@@ -2689,6 +2711,14 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/design-engine
+
+## 1.1.38
+
+### Patch Changes
+
+- 781fc3b: fix: fix issue
+- Updated dependencies [781fc3b]
+  - @turbox3d/shared@1.1.26
 
 ## 1.1.37
 
