@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { Mesh2D, DrawUtils } from '@turbox3d/turbox';
 
-import { FrameEntity } from '../../../models/entity/frame';
+import { FrameEntity } from '../../../../models/entity/frame';
 
 export interface IFrameViewEntityProps {
   model: FrameEntity;

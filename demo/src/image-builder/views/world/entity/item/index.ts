@@ -2,10 +2,9 @@ import * as PIXI from 'pixi.js';
 
 import { Mesh2D, MathUtils, g, Reactive, Text2d, Vec2, Image2d, Rect2d } from '@turbox3d/turbox';
 
-import { ItemSymbol } from '../../../common/consts/view-entity';
-import { ItemEntity } from '../../../models/entity/item';
-import { imageBuilderStore } from '../../../models';
-import { ItemType } from '../../../common/consts/scene';
+import { ItemEntity } from '../../../../models/entity/item';
+import { imageBuilderStore } from '../../../../models';
+import { ItemType } from '../../../../common/consts/scene';
 
 export interface IItemViewEntityProps {
   model: ItemEntity;
@@ -86,13 +85,8 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
         },
         x: imageBuilderStore.scene.textBounds.width / 2 - model.size.x / 2,
         y: 0,
-        id: model.id,
-        type: ItemSymbol,
         getBounds: this.getBounds,
         central: true,
-        clickable: true,
-        draggable: true,
-        hoverable: true,
       }),
       model.itemType === ItemType.IMAGE && g(Image2d, {
         backgroundImage: model.imageData,
@@ -104,12 +98,8 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
         radius: model.attribute.borderRadius,
         x: -(model.size.x / 2),
         y: -(model.size.y / 2),
-        id: model.id,
-        type: ItemSymbol,
-        clickable: true,
-        draggable: true,
-        hoverable: true,
         materialDirection: model.materialDirection,
+        fit: 'fill',
       }),
       model.itemType === ItemType.BUTTON && g(Rect2d, {
         width: model.size.x,
@@ -121,11 +111,6 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
         radius: model.attribute.borderRadius,
         x: -(model.size.x / 2),
         y: -(model.size.y / 2),
-        id: model.id,
-        type: ItemSymbol,
-        clickable: true,
-        draggable: true,
-        hoverable: true,
         children: [
           g(Text2d, {
             text: model.text,
@@ -140,8 +125,6 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
               wordWrapWidth: model.attribute.wordWrapWidth,
               fontStyle: model.attribute.fontStyle,
             },
-            id: model.id,
-            type: ItemSymbol,
             getBounds: this.getBounds,
             central: true,
           }),

@@ -1,7 +1,6 @@
 import { mutation, EntityObject, Vec2, Command, Vector2 } from '@turbox3d/turbox';
 
 import { appCommandManager } from '../../index';
-import { loadImageElement } from '../../../common/utils/image';
 import { FrameEntity } from '../../../models/entity/frame';
 import { ItemEntity } from '../../../models/entity/item';
 import { imageBuilderStore } from '../../../models/index';
@@ -9,6 +8,7 @@ import { imageBuilderStore } from '../../../models/index';
 import { MIRROR_ACTION, Z_INDEX_ACTION } from '../../../common/consts/action';
 import { ItemType, RenderOrder } from '../../../common/consts/scene';
 import { GRAY, PRIMARY_COLOR, WHITE } from '../../../common/consts/color';
+import { loadImageElement } from '../../../common/utils/image';
 
 export class EntityCommand extends Command {
   @mutation

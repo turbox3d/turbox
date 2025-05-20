@@ -6,10 +6,10 @@ import { Color } from 'antd/es/color-picker';
 import { appCommandManager } from '../../commands';
 import { ItemEntity } from '../../models/entity/item';
 import { ItemType } from '../../common/consts/scene';
-import { loadImageElement } from '../../common/utils/image';
 import { imageBuilderStore } from '../../models';
 import { Attribute } from './attribute';
 import { MIRROR_ACTION } from '../../common/consts/action';
+import { loadImageElement } from '../../common/utils/image';
 
 export const RightPanel = ReactiveReact(() => {
   const selected = appCommandManager.default.select.getSelectedEntities()[0];
@@ -168,11 +168,11 @@ export const RightPanel = ReactiveReact(() => {
             <div className="mirror-group">
               <div>
                 <span>X:</span>
-                <Switch onChange={mirror(MIRROR_ACTION.LEFT_RIGHT)} />
+                <Switch value={selected.materialDirection.x !== 1} onChange={mirror(MIRROR_ACTION.LEFT_RIGHT)} />
               </div>
               <div>
                 <span>Y:</span>
-                <Switch onChange={mirror(MIRROR_ACTION.TOP_BOTTOM)} />
+                <Switch value={selected.materialDirection.y !== 1} onChange={mirror(MIRROR_ACTION.TOP_BOTTOM)} />
               </div>
             </div>
           </div>

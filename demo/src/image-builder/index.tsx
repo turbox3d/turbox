@@ -8,11 +8,16 @@ import './index.less';
 import { appCommandManager } from './commands/index';
 import { imageBuilderStore } from './models/index';
 import { LeftPanel } from './views/leftPanel/index';
-import { World } from './views/world';
 import { TopBar } from './views/topBar';
 import { IDocumentData } from './models/domain/document';
 import { RightPanel } from './views/rightPanel';
 import { BottomBar } from './views/bottomBar';
+import { ViewEntity } from './views/world/entity';
+import { SnapLine } from './views/world/snapLine';
+import { RangeLine } from './views/world/rangeLine';
+import { Grid } from './views/world/grid';
+import { HintLine } from './views/world/hintLine';
+import { Gizmo } from './views/world/gizmo';
 
 window.$$DEBUG = {
   depCollector,
@@ -59,7 +64,14 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
           imageBuilderStore.scene.setSceneTools(sceneTools);
         },
         zoomRange: imageBuilderStore.scene.canvasZoomRange,
-        children: [g(World)],
+        children: [
+          g(Grid),
+          g(ViewEntity),
+          g(Gizmo),
+          g(HintLine),
+          g(SnapLine),
+          g(RangeLine),
+        ],
       }),
     ]);
   }, []);
