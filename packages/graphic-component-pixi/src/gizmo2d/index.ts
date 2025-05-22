@@ -19,6 +19,7 @@ interface IGizmo2dProps {
   copyIconSize?: number;
   adjustIcon?: string;
   adjustIconSize?: number;
+  showStretchRect?: ('x-left' | 'x-right' | 'y-top' | 'y-bottom')[];
   stretchRectSize?: number;
   stretchHandler?: (
     actionKey: 'x-left' | 'x-right' | 'y-top' | 'y-bottom',
@@ -78,6 +79,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
       copyIconSize = 10,
       adjustIconSize = 10,
       stretchRectSize = 8,
+      showStretchRect = [StretchKey.X_LEFT, StretchKey.X_RIGHT, StretchKey.Y_TOP, StretchKey.Y_BOTTOM],
     } = this.props;
     const [posX, posY] = central ? [-width / 2, -height / 2] : [0, 0];
     this.view.zIndex = zIndex;
@@ -97,7 +99,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         fillAlpha: 0,
         alignment: 1,
       }),
-      g(Rect2d, {
+      showStretchRect.includes(StretchKey.X_LEFT) && g(Rect2d, {
         key: StretchKey.X_LEFT,
         draggable: true,
         x: posX,
@@ -114,7 +116,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         onDragMove: this.stretchHandler(StretchKey.X_LEFT, 'move'),
         onDragEnd: this.stretchHandler(StretchKey.X_LEFT, 'end'),
       }),
-      g(Rect2d, {
+      showStretchRect.includes(StretchKey.X_RIGHT) && g(Rect2d, {
         key: StretchKey.X_RIGHT,
         draggable: true,
         x: posX + width,
@@ -131,7 +133,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         onDragMove: this.stretchHandler(StretchKey.X_RIGHT, 'move'),
         onDragEnd: this.stretchHandler(StretchKey.X_RIGHT, 'end'),
       }),
-      g(Rect2d, {
+      showStretchRect.includes(StretchKey.Y_TOP) && g(Rect2d, {
         key: StretchKey.Y_TOP,
         draggable: true,
         x: posX + width / 2,
@@ -148,7 +150,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         onDragMove: this.stretchHandler(StretchKey.Y_TOP, 'move'),
         onDragEnd: this.stretchHandler(StretchKey.Y_TOP, 'end'),
       }),
-      g(Rect2d, {
+      showStretchRect.includes(StretchKey.Y_BOTTOM) && g(Rect2d, {
         key: StretchKey.Y_BOTTOM,
         draggable: true,
         x: posX + width / 2,
@@ -165,7 +167,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         onDragMove: this.stretchHandler(StretchKey.Y_BOTTOM, 'move'),
         onDragEnd: this.stretchHandler(StretchKey.Y_BOTTOM, 'end'),
       }),
-      g(Image2d, {
+      deleteIcon && g(Image2d, {
         key: 'delete',
         clickable: true,
         x: posX,
@@ -182,7 +184,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         backgroundImage: deleteIcon,
         onClick: this.deleteHandler,
       }),
-      g(Image2d, {
+      copyIcon && g(Image2d, {
         key: 'copy',
         clickable: true,
         x: posX + width,
@@ -199,7 +201,7 @@ export default class Gizmo2d extends Mesh2D<IGizmo2dProps> {
         backgroundImage: copyIcon,
         onClick: this.copyHandler,
       }),
-      g(Image2d, {
+      adjustIcon && g(Image2d, {
         key: 'adjust',
         draggable: true,
         x: central ? width / 2 : width,
