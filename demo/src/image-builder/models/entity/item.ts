@@ -1,4 +1,4 @@
-import { EntityObject, reactor, Vector2 } from '@turbox3d/turbox';
+import { EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
 import { BLACK, GRAY, WHITE } from '../../common/consts/color';
 
@@ -43,4 +43,26 @@ export class ItemEntity extends EntityObject {
     backgroundColor: WHITE,
     borderRadius: 0,
   };
+  /** 当前操作 entity 中的文字实时包围盒 */
+  @reactor textBounds = { width: 0, height: 0 };
+
+  @mutation
+  setTextBounds(bounds: Partial<{ width: number; height: number }>) {
+    bounds.width && (this.textBounds.width = bounds.width);
+    bounds.height && (this.textBounds.height = bounds.height);
+  }
+
+  getFontStyle() {
+    return {
+      fontSize: this.attribute.fontSize,
+      lineHeight: this.attribute.lineHeight * this.attribute.fontSize,
+      fontFamily: this.attribute.fontFamily,
+      fill: this.attribute.color,
+      fontWeight: this.attribute.fontWeight,
+      align: this.attribute.align,
+      wordWrap: this.attribute.wordWrap,
+      wordWrapWidth: this.attribute.wordWrapWidth,
+      fontStyle: this.attribute.fontStyle,
+    };
+  }
 }

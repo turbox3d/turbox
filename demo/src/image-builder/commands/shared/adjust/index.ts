@@ -18,7 +18,6 @@ import {
 import { ITextStyles, ItemEntity } from '../../../models/entity/item';
 import { appCommandManager } from '../../index';
 import { imageBuilderStore } from '../../../models';
-import { ItemType } from '../../../common/consts/scene';
 
 const ADJUST_ACTION_NAME = 'adjustEntity';
 const STRETCH_ACTION_NAME = 'stretchEntity';
@@ -49,7 +48,6 @@ export class AdjustCommand extends Command {
   }
 
   private xStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
-    imageBuilderStore.scene.setTextStretching(true);
     const selected = appCommandManager.default.select.getSelectedEntities()[0];
     if (selected instanceof ItemEntity && !selected.locked) {
       this.target = selected;
@@ -61,17 +59,15 @@ export class AdjustCommand extends Command {
     if (!itemEntity) {
       return;
     }
+    const minWidth = imageBuilderStore.scene.getEntityMinWidth(itemEntity);
     const mp = e.getScenePosition() as Vec2;
     const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
     this.stretchAction.execute(
       () => {
         const width = Math.abs(localPoint.x) + itemEntity.size.x / 2;
-        if (width > 10) {
+        if (width > minWidth) {
           const p = localPoint.x > 0 ? new Vector2(width / 2 - itemEntity.size.x / 2, 0) : new Vector2(-width / 2 + itemEntity.size.x / 2, 0);
           const p1 = p.applyMatrix3(itemEntity.getConcatenatedMatrix3());
-          if ((itemEntity.itemType === ItemType.TEXT || itemEntity.itemType === ItemType.BUTTON) && width <= imageBuilderStore.scene.currentTextMinWidth) {
-            return;
-          }
           itemEntity.setSize({
             x: width,
           });
@@ -99,35 +95,85 @@ export class AdjustCommand extends Command {
       this.stretchAction = Action.create(STRETCH_ACTION_NAME);
     }
     this.target = undefined;
-    imageBuilderStore.scene.setTextStretching(false);
+  }
+
+  private yStretchStartHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    if (selected instanceof ItemEntity && !selected.locked) {
+      this.target = selected;
+    }
+  }
+
+  private yStretchMoveHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    const itemEntity = this.target;
+    if (!itemEntity) {
+      return;
+    }
+    const minHeight = imageBuilderStore.scene.getEntityMinHeight(itemEntity);
+    const mp = e.getScenePosition() as Vec2;
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
+    this.stretchAction.execute(
+      () => {
+        const height = Math.abs(localPoint.y) + itemEntity.size.y / 2;
+        if (height > minHeight) {
+          const p = localPoint.y > 0 ? new Vector2(0, height / 2 - itemEntity.size.y / 2) : new Vector2(0, -height / 2 + itemEntity.size.y / 2);
+          const p1 = p.applyMatrix3(itemEntity.getConcatenatedMatrix3());
+          itemEntity.setSize({
+            y: height,
+          });
+          itemEntity.setPosition(p1);
+          itemEntity.$update({
+            attribute: {
+              ...itemEntity.attribute,
+            },
+          });
+        }
+      },
+      undefined,
+      true,
+      { immediately: true }
+    );
+  }
+
+  private yStretchEndHandler(v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+    if (!this.target) {
+      this.stretchAction.abort();
+      this.stretchAction = Action.create(STRETCH_ACTION_NAME);
+    } else {
+      this.stretchAction.complete();
+      this.stretchAction = Action.create(STRETCH_ACTION_NAME);
+    }
+    this.target = undefined;
   }
 
   private initPosition?: Vector2;
   private degree = 0;
 
   private onRotateStartHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
-    if (!this.target) {
-      return;
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    if (selected instanceof ItemEntity && !selected.locked) {
+      this.target = selected;
+      const ip = event.getScenePosition() as Vec2;
+      this.initPosition = new Vector2(ip.x, ip.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
     }
-    const ip = event.getScenePosition() as Vec2;
-    this.initPosition = new Vector2(ip.x, ip.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
   }
 
   private onRotateMoveHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
-    if (!this.target || !this.initPosition) {
+    const itemEntity = this.target;
+    if (!itemEntity || !this.initPosition) {
       return;
     }
     const mp = event.getScenePosition() as Vec2;
-    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
+    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(itemEntity.getConcatenatedMatrix3().inverted());
     const degree = this.initPosition.clone().angleTo(localPoint) * MathUtils.RAD2DEG;
     this.degree = degree;
-    const { snapped } = this.inferenceEngine.rotateSnap2d(this.target.rotation.z + degree);
+    const { snapped } = this.inferenceEngine.rotateSnap2d(itemEntity.rotation.z + degree);
     this.adjustAction.execute(
       () => {
-        this.target?.setRotation({
-          z: this.target.rotation.z + (degree % 360),
+        itemEntity?.setRotation({
+          z: itemEntity.rotation.z + (degree % 360),
         });
-        this.target?.$update({
+        itemEntity?.$update({
           snapped,
         });
       },
@@ -170,21 +216,22 @@ export class AdjustCommand extends Command {
   private initItemPosition?: Vec2;
 
   private onScaleStartHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
-    if (!this.target) {
-      return;
+    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    if (selected instanceof ItemEntity && !selected.locked) {
+      this.target = selected;
+      const mp = event.getScenePosition() as Vec2;
+      const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
+      this.initLength = localPoint.length;
+      this.initSize = {
+        x: this.target.size.x,
+        y: this.target.size.y,
+      };
+      this.initAttribute = this.target.attribute;
+      this.initItemPosition = {
+        x: this.target.position.x,
+        y: this.target.position.y,
+      };
     }
-    const mp = event.getScenePosition() as Vec2;
-    const localPoint = new Vector2(mp.x, mp.y).applyMatrix3(this.target.getConcatenatedMatrix3().inverted());
-    this.initLength = localPoint.length;
-    this.initSize = {
-      x: this.target.size.x,
-      y: this.target.size.y,
-    };
-    this.initAttribute = this.target.attribute;
-    this.initItemPosition = {
-      x: this.target.position.x,
-      y: this.target.position.y,
-    };
   }
 
   private onScaleMoveHandler(viewEntity: Partial<ViewEntity>, event: SceneEvent, tools: SceneTool) {
@@ -258,14 +305,10 @@ export class AdjustCommand extends Command {
   adjustHandler(op: 'start' | 'move' | 'end', v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
     const actionsMap = {
       start: () => {
-        const selected = appCommandManager.default.select.getSelectedEntities()[0];
-        if (selected instanceof ItemEntity && !selected.locked) {
-          this.target = selected;
-          if (!this.fixedScale) {
-            this.onRotateStartHandler(v, e, t);
-          }
-          this.onScaleStartHandler(v, e, t);
+        if (!this.fixedScale) {
+          this.onRotateStartHandler(v, e, t);
         }
+        this.onScaleStartHandler(v, e, t);
       },
       move: () => {
         if (!this.fixedScale) {
@@ -283,18 +326,36 @@ export class AdjustCommand extends Command {
     actionsMap[op]();
   }
 
-  xStretchHandler(op:'start' |'move' | 'end', v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
+  stretchHandler(key: 'x-left' | 'x-right' | 'y-top' | 'y-bottom', op: 'start' |'move' | 'end', v: Partial<ViewEntity>, e: SceneEvent, t: SceneTool) {
     const actionsMap = {
-      start: () => {
-        this.xStretchStartHandler(v, e, t);
+      x: {
+        start: () => {
+          this.xStretchStartHandler(v, e, t);
+        },
+        move: () => {
+          this.xStretchMoveHandler(v, e, t);
+        },
+        end: () => {
+          this.xStretchEndHandler(v, e, t);
+        },
       },
-      move: () => {
-        this.xStretchMoveHandler(v, e, t);
-      },
-      end: () => {
-        this.xStretchEndHandler(v, e, t);
+      y: {
+        start: () => {
+          this.yStretchStartHandler(v, e, t);
+        },
+        move: () => {
+          this.yStretchMoveHandler(v, e, t);
+        },
+        end: () => {
+          this.yStretchEndHandler(v, e, t);
+        },
       },
     };
-    actionsMap[op]();
+    if (key.includes('x')) {
+      actionsMap['x'][op]();
+    }
+    if (key.includes('y')) {
+      actionsMap['y'][op]();
+    }
   }
 }

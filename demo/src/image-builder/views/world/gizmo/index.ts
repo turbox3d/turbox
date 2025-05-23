@@ -1,6 +1,6 @@
 import { Reactive, Component, g, MathUtils, Gizmo2d } from '@turbox3d/turbox';
 import { appCommandManager } from '../../../commands';
-import { RenderOrder } from '../../../common/consts/scene';
+import { ItemType, RenderOrder } from '../../../common/consts/scene';
 import { BLUE } from '../../../common/consts/color';
 import { ItemEntity } from '../../../models/entity/item';
 
@@ -25,7 +25,7 @@ export class Gizmo extends Component {
   }
 
   render() {
-    const selected = appCommandManager.default.select.getSelectedEntities()[0];
+    const selected = appCommandManager.default.select.getSelectedEntities()[0] as ItemEntity;
 
     return [
       selected &&
@@ -45,6 +45,7 @@ export class Gizmo extends Component {
           copyIconSize: 18,
           adjustIcon: 'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/edm/adjust2.svg',
           adjustIconSize: 18,
+          showStretchRect: selected.itemType === ItemType.TEXT ? ['x-left', 'x-right'] : undefined,
           deleteHandler: this.deleteHandler,
           copyHandler: this.copyHandler,
           adjustHandler: this.adjustHandler,

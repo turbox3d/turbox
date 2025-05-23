@@ -1,5 +1,3 @@
-import * as PIXI from 'pixi.js';
-
 import { Mesh2D, MathUtils, g, Reactive, Text2d, Vec2, Image2d, Rect2d } from '@turbox3d/turbox';
 
 import { ItemEntity } from '../../../../models/entity/item';
@@ -12,50 +10,17 @@ export interface IItemViewEntityProps {
 
 @Reactive
 export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
-  private getMaxWidthWord = () => {
-    const { model } = this.props;
-    const style = new PIXI.TextStyle({
-      fontSize: model.attribute.fontSize,
-      lineHeight: model.attribute.lineHeight * model.attribute.fontSize,
-      fontFamily: model.attribute.fontFamily,
-      fill: model.attribute.color,
-      fontWeight: model.attribute.fontWeight,
-      align: model.attribute.align,
-    });
-    const words = model.text.trim().split(/\s+/);
-    const maxWidthWord = words.reduce((prev, cur) => {
-      const prevWidth = new PIXI.Text(prev, style).width;
-      const curWidth = new PIXI.Text(cur, style).width;
-      if (prevWidth > curWidth) {
-        return prev;
-      }
-      return cur;
-    });
-    const width = new PIXI.Text(maxWidthWord, style).width;
-    return width;
-  };
-
   private getBounds = (bounds: Vec2) => {
     const isText = this.props.model.itemType === ItemType.TEXT;
     imageBuilderStore.document.pauseRecord();
     const { model } = this.props;
-    const isTextStretching = imageBuilderStore.scene.isTextStretching;
-    if (isTextStretching) {
-      let wrapWidth = bounds.x;
-      if (isText) {
-        model.setSize({
-          y: bounds.y,
-        });
-        wrapWidth = this.getMaxWidthWord();
-      }
-      imageBuilderStore.scene.setCurrentTextMinWidth(wrapWidth);
-    } else if (isText) {
+    if (isText) {
+      // 文本换行可能会影响高度变化
       model.setSize({
-        x: bounds.x,
         y: bounds.y,
       });
     }
-    imageBuilderStore.scene.setTextBounds({
+    model.setTextBounds({
       width: bounds.x,
       height: bounds.y,
     });
@@ -72,18 +37,8 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
     return [
       model.itemType === ItemType.TEXT && g(Text2d, {
         text: model.text,
-        style: {
-          fontSize: model.attribute.fontSize,
-          lineHeight: model.attribute.lineHeight * model.attribute.fontSize,
-          fontFamily: model.attribute.fontFamily,
-          fill: model.attribute.color,
-          fontWeight: model.attribute.fontWeight,
-          align: model.attribute.align,
-          wordWrap: model.attribute.wordWrap,
-          wordWrapWidth: model.attribute.wordWrapWidth,
-          fontStyle: model.attribute.fontStyle,
-        },
-        x: imageBuilderStore.scene.textBounds.width / 2 - model.size.x / 2,
+        style: model.getFontStyle(),
+        x: model.textBounds.width / 2 - model.size.x / 2,
         y: 0,
         getBounds: this.getBounds,
         central: true,
@@ -114,17 +69,7 @@ export class ItemViewEntity extends Mesh2D<IItemViewEntityProps> {
         children: [
           g(Text2d, {
             text: model.text,
-            style: {
-              fontSize: model.attribute.fontSize,
-              lineHeight: model.attribute.lineHeight * model.attribute.fontSize,
-              fontFamily: model.attribute.fontFamily,
-              fill: model.attribute.color,
-              fontWeight: model.attribute.fontWeight,
-              align: model.attribute.align,
-              wordWrap: model.attribute.wordWrap,
-              wordWrapWidth: model.attribute.wordWrapWidth,
-              fontStyle: model.attribute.fontStyle,
-            },
+            style: model.getFontStyle(),
             getBounds: this.getBounds,
             central: true,
           }),
