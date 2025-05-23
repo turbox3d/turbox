@@ -2279,6 +2279,12 @@
 
 # @turbox3d/graphic-component-pixi
 
+## 1.1.49
+
+### Patch Changes
+
+- 83a2eb7: fix: fix gizmo2d
+
 ## 1.1.48
 
 ### Patch Changes
