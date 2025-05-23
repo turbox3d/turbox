@@ -297,6 +297,11 @@ export class EntityCommand extends Command {
     selected.$update({
       text,
     });
+    const { width, height } = getTextBounds(selected);
+    selected.setSize({
+      x: width,
+      y: height,
+    });
   };
 
   @mutation
