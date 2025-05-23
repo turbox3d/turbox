@@ -65,7 +65,7 @@ const imageBuilderData = {
     type: ItemType.TEXT,
     top: 10,
     left: 10,
-    width: 144,
+    width: 200,
     height: 45,
     zIndex: 2,
     data: {

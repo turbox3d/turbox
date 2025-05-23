@@ -9,6 +9,7 @@ import { MIRROR_ACTION, Z_INDEX_ACTION } from '../../../common/consts/action';
 import { ItemType, RenderOrder } from '../../../common/consts/scene';
 import { GRAY, PRIMARY_COLOR, WHITE } from '../../../common/consts/color';
 import { loadImageElement } from '../../../common/utils/image';
+import { getTextBounds } from '../../../common/utils/text';
 
 export class EntityCommand extends Command {
   @mutation
@@ -121,6 +122,11 @@ export class EntityCommand extends Command {
     entity.setPosition({
       x: imageBuilderStore.scene.sceneSize.width / 2,
       y: imageBuilderStore.scene.sceneSize.height / 2,
+    });
+    const { width, height } = getTextBounds(entity);
+    entity.setSize({
+      x: width,
+      y: height,
     });
     if (addToDocument) {
       imageBuilderStore.document.addModel(entity, sort);
