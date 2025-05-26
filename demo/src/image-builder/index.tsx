@@ -78,6 +78,7 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
 
   React.useEffect(() => {
     const fetchData = async () => {
+      appCommandManager.default.select.clearAllSelected();
       imageBuilderStore.document.clear();
       imageBuilderStore.document.clearHistory();
       if (data && showImageBuilder) {
