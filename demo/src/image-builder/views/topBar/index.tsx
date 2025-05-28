@@ -29,11 +29,11 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
     <div className="top-bar">
       <div>ImageBuilder</div>
       <div className="action">
-        <Button className="button" size="small" disabled={!imageBuilderStore.document.redoable} onClick={redo}>
-          <RedoOutlined />
-        </Button>
         <Button className="button" size="small" disabled={!imageBuilderStore.document.undoable} onClick={undo}>
           <UndoOutlined />
+        </Button>
+        <Button className="button" size="small" disabled={!imageBuilderStore.document.redoable} onClick={redo}>
+          <RedoOutlined />
         </Button>
 
         {/* <Button size="small" onClick={clear}>
