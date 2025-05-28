@@ -25,8 +25,8 @@ window.$$DEBUG = {
   imageBuilderStore,
 };
 
-imageBuilderStore.document.createHistory(20);
-imageBuilderStore.document.applyHistory();
+imageBuilderStore.document.createTimeTravel('image-builder', 20);
+imageBuilderStore.document.applyTimeTravel();
 
 const updateSceneSize = () => {
   const domElement = document.getElementById('scene2d');
@@ -80,7 +80,7 @@ function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuild
     const fetchData = async () => {
       appCommandManager.default.select.clearAllSelected();
       imageBuilderStore.document.clear();
-      imageBuilderStore.document.clearHistory();
+      imageBuilderStore.document.clearTimeTravel();
       if (data && showImageBuilder) {
         await imageBuilderStore.document.loadData(data);
       }

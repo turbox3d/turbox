@@ -32,17 +32,23 @@ export interface HistoryCollectorPayload {
  * collect prop diff history record
  */
 export class TimeTravel {
+  static timeTravels: Record<string, TimeTravel> = {};
   static currentTimeTravel?: TimeTravel;
   static processing = false;
 
-  static switch = (instance: TimeTravel) => {
-    TimeTravel.currentTimeTravel = instance;
+  static switch = (name: string) => {
+    TimeTravel.currentTimeTravel = TimeTravel.get(name);
   };
 
-  static create = () => {
+  static create = (name: string) => {
     const tt = new TimeTravel();
+    TimeTravel.timeTravels[name] = tt;
     return tt;
   };
+
+  static get = (name: string): TimeTravel | undefined => {
+    return TimeTravel.timeTravels[name];
+  }
 
   static pause = () => {
     ctx.timeTravel.isActive = false;

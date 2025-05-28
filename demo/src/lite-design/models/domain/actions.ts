@@ -771,7 +771,7 @@ export class ActionsDomain extends Domain {
       isPdfMode: false,
     });
     ldeStore.actions.resetView();
-    ldeStore.document.clearHistory();
+    ldeStore.document.clearTimeTravel();
     ldeStore.document.resumeRecord();
   };
 

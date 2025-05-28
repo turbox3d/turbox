@@ -1,4 +1,5 @@
 import { config, Domain, mutation, reactor, TimeTravel, HistoryOperationType, Action } from '@turbox3d/reactivity';
+import { warn } from '@turbox3d/shared';
 import EntityObject from '../entity-object/index';
 
 export default class DocumentSystem extends Domain {
@@ -12,9 +13,8 @@ export default class DocumentSystem extends Domain {
 
   @reactor(false, false) disableUndoRedo = false;
 
-  history?: TimeTravel;
-
   maxStepNumber = 20;
+  name = 'document';
 
   initDomainContext() {
     return {
@@ -81,23 +81,29 @@ export default class DocumentSystem extends Domain {
   }
 
   /** 创建操作历史记录 */
-  createHistory(maxStepNumber = 20) {
-    this.maxStepNumber = maxStepNumber;
-    if (this.history) {
+  createTimeTravel(name: string, maxStepNumber = 20) {
+    if (TimeTravel.get(name)) {
+      warn(`Time travel ${name} already exists.`);
       return;
     }
+    this.name = name;
+    this.maxStepNumber = maxStepNumber;
     config({
       timeTravel: {
         isActive: true,
         maxStepNumber,
       },
     });
-    this.history = TimeTravel.create();
-    TimeTravel.switch(this.history);
-    this.history.onChange = (undoable, redoable, type, action) => {
+    TimeTravel.create(name);
+    TimeTravel.get(name)!.onChange = (undoable, redoable, type, action) => {
       this.updateTimeTravelStatus(undoable, redoable);
       this.historyChangeCustomHook(type, action);
     };
+  }
+
+  /** 切换到指定的历史记录 */
+  applyTimeTravel() {
+    TimeTravel.switch(this.name);
   }
 
   /** 历史记录变更会触发的自定义钩子，子类可以重写 */
@@ -106,29 +112,20 @@ export default class DocumentSystem extends Domain {
   }
 
   /** 清空历史记录 */
-  clearHistory() {
-    if (!this.history) {
-      return;
-    }
-    TimeTravel.switch(this.history);
+  clearTimeTravel() {
+    TimeTravel.switch(this.name);
     TimeTravel.clear();
   }
 
   /** 暂停记录历史 */
   pauseRecord() {
-    if (!this.history) {
-      return;
-    }
-    TimeTravel.switch(this.history);
+    TimeTravel.switch(this.name);
     TimeTravel.pause();
   }
 
   /** 继续记录历史 */
   resumeRecord() {
-    if (!this.history) {
-      return;
-    }
-    TimeTravel.switch(this.history);
+    TimeTravel.switch(this.name);
     TimeTravel.resume();
   }
 
@@ -137,11 +134,15 @@ export default class DocumentSystem extends Domain {
     if (this.disableUndoRedo) {
       return;
     }
-    if (!this.history || !this.undoable) {
+    if (!this.undoable) {
       return;
     }
-    TimeTravel.switch(this.history);
-    this.history.undo();
+    TimeTravel.switch(this.name);
+    const t = TimeTravel.get(this.name);
+    if (!t) {
+      return;
+    }
+    t.undo();
   }
 
   /** 重做 */
@@ -149,19 +150,15 @@ export default class DocumentSystem extends Domain {
     if (this.disableUndoRedo) {
       return;
     }
-    if (!this.history || !this.redoable) {
+    if (!this.redoable) {
       return;
     }
-    TimeTravel.switch(this.history);
-    this.history.redo();
-  }
-
-  /** 切换应用到当前历史记录 */
-  applyHistory() {
-    if (!this.history) {
+    TimeTravel.switch(this.name);
+    const t = TimeTravel.get(this.name);
+    if (!t) {
       return;
     }
-    TimeTravel.switch(this.history);
+    t.redo();
   }
 
   /** 文档加载状态设置为加载中 */

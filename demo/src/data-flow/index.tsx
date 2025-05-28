@@ -43,8 +43,8 @@ const p = new Point({
   type: EPointType.CIRCLE,
 });
 
-export const mainTimeTravel = TimeTravel.create();
-TimeTravel.switch(mainTimeTravel);
+export const mainTimeTravel = TimeTravel.create('main');
+TimeTravel.switch('main');
 
 init();
 
@@ -507,8 +507,8 @@ const DemoBox = Reactive(() => {
           清空
                 </button>
         <button onClick={() => {
-          const a = TimeTravel.create();
-          TimeTravel.switch(a);
+          TimeTravel.create('main2');
+          TimeTravel.switch('main2');
         }}>
           切换撤销恢复空间
                 </button>

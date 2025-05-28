@@ -16,8 +16,8 @@ window.$$DEMO_DEBUG = {
   depCollector,
 };
 
-ldeStore.document.createHistory(20);
-ldeStore.document.applyHistory();
+ldeStore.document.createTimeTravel('lite-design', 20);
+ldeStore.document.applyTimeTravel();
 
 export const Demo = () => (
   <>

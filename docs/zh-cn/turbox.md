@@ -2472,8 +2472,9 @@ let ctx = {
 框架提供了时间旅行功能，可以做撤销恢复，以及获取是否可以撤销恢复的状态、撤销恢复状态变更的钩子函数，动态暂停或继续运行时间旅行记录器、清空撤销恢复栈、切换撤销恢复栈等。对应的接口：
 ```js
 export class TimeTravel {
-  static create: () => TimeTravel;
-  static switch: (instance: TimeTravel) => void;
+  static create: (name: string) => TimeTravel;
+  static switch: (name: string) => void;
+  static get: (name: string) => TimeTravel | undefined;
   static pause: () => void;
   static resume: () => void;
   static undo: () => void;
@@ -2492,8 +2493,12 @@ export class TimeTravel {
 
 你可以创建多个时间旅行器，并切换应用它，这时相应的操作会自动记录到当前最新被切换的时间旅行器实例中，如果要退出当前的，只要切换到其他旅行器即可
 ```js
-const mainTimeTravel = TimeTravel.create();
-TimeTravel.switch(mainTimeTravel);
+TimeTravel.create('A');
+TimeTravel.create('B');
+// 切换到 A，此时所有操作都会记录到 A 中
+TimeTravel.switch('A');
+// 切换到 B，此时所有操作都会记录到 B 中
+TimeTravel.switch('B');
 ```
 
 > 时间旅行只会记录每一次变化的信息，而不是整个 snapshot，这样内存占用会更小
