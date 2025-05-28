@@ -1,5 +1,15 @@
 # @turbox3d/turbox2d
 
+## 1.0.32
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/design-engine@1.2.0
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+  - @turbox3d/renderer-core@1.0.31
+
 ## 1.0.31
 
 ### Patch Changes

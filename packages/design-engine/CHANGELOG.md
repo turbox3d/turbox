@@ -1,5 +1,17 @@
 # @turbox3d/design-engine
 
+## 1.2.0
+
+### Minor Changes
+
+- f6ac1f8: fix: upgrade time travel&document system api
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+
 ## 1.1.38
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @turbox3d/reactivity
 
+## 2.2.0
+
+### Minor Changes
+
+- f6ac1f8: fix: upgrade time travel&document system api
+
 ## 2.1.27
 
 ### Patch Changes

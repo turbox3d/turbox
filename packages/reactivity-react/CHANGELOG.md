@@ -1,5 +1,12 @@
 # @turbox3d/reactivity-react
 
+## 1.1.28
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
+
 ## 1.1.27
 
 ### Patch Changes

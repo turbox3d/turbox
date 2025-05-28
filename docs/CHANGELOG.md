@@ -1,5 +1,15 @@
 # @turbox3d/turbox3d
 
+## 1.1.38
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/design-engine@1.2.0
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+  - @turbox3d/renderer-core@1.0.31
+
 ## 1.1.37
 
 ### Patch Changes
@@ -290,6 +300,16 @@
 
 # @turbox3d/turbox2d
 
+## 1.0.32
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/design-engine@1.2.0
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+  - @turbox3d/renderer-core@1.0.31
+
 ## 1.0.31
 
 ### Patch Changes
@@ -579,6 +599,16 @@
   - @turbox3d/renderer-pixi@1.0.11
 
 # @turbox3d/turbox
+
+## 1.1.41
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/design-engine@1.2.0
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+  - @turbox3d/renderer-core@1.0.31
 
 ## 1.1.40
 
@@ -1448,6 +1478,13 @@
 
 # @turbox3d/renderer-core
 
+## 1.0.31
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
+
 ## 1.0.30
 
 ### Patch Changes
@@ -1672,6 +1709,13 @@
 
 # @turbox3d/reactivity-react
 
+## 1.1.28
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
+
 ## 1.1.27
 
 ### Patch Changes
@@ -1835,6 +1879,12 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/reactivity
+
+## 2.2.0
+
+### Minor Changes
+
+- f6ac1f8: fix: upgrade time travel&document system api
 
 ## 2.1.27
 
@@ -2718,6 +2768,18 @@
 
 # @turbox3d/design-engine
 
+## 1.2.0
+
+### Minor Changes
+
+- f6ac1f8: fix: upgrade time travel&document system api
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
+  - @turbox3d/reactivity-react@1.1.28
+
 ## 1.1.38
 
 ### Patch Changes
@@ -3155,6 +3217,13 @@
   - @turbox3d/shared@1.1.6
 
 # @turbox3d/turbox-hot-loader
+
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [f6ac1f8]
+  - @turbox3d/reactivity@2.2.0
 
 ## 1.0.27
 
