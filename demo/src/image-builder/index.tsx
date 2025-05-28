@@ -25,8 +25,7 @@ window.$$DEBUG = {
   imageBuilderStore,
 };
 
-imageBuilderStore.document.createTimeTravel('image-builder', 20);
-imageBuilderStore.document.applyTimeTravel();
+imageBuilderStore.document.createTimeTravel('image-builder');
 
 const updateSceneSize = () => {
   const domElement = document.getElementById('scene2d');
@@ -41,49 +40,47 @@ interface IImageBuilderProps {
   data: IDocumentData | null;
 }
 
-function ImageBuilder({ handleSave, showImageBuilder = true, data }: IImageBuilderProps) {
+function ImageBuilder({ handleSave, showImageBuilder = false, data }: IImageBuilderProps) {
   React.useEffect(() => {
-    updateSceneSize();
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       updateSceneSize();
-    });
-    render([
-      g(Scene2D, {
-        id: 'scene2d',
-        draggable: true,
-        scalable: true,
-        container: 'scene2d',
-        commandMgr: appCommandManager,
-        cameraPosition: imageBuilderStore.scene.cameraPosition,
-        resizeTo: 'scene2d',
-        maxFPS: 120,
-        disableResize: false,
-        resolution: imageBuilderStore.scene.resolution,
-        renderFlag: imageBuilderStore.scene.renderFlag2d,
-        initialized: (sceneTools: SceneTool) => {
-          imageBuilderStore.scene.setSceneTools(sceneTools);
-        },
-        zoomRange: imageBuilderStore.scene.canvasZoomRange,
-        children: [
-          g(Grid),
-          g(ViewEntity),
-          g(Gizmo),
-          g(HintLine),
-          g(SnapLine),
-          g(RangeLine),
-        ],
-      }),
-    ]);
+    };
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    };
   }, []);
-
   React.useEffect(() => {
     const fetchData = async () => {
+      if (!data || !showImageBuilder) {
+        return;
+      }
+      updateSceneSize();
+      imageBuilderStore.document.applyTimeTravel();
       appCommandManager.default.select.clearAllSelected();
       imageBuilderStore.document.clear();
       imageBuilderStore.document.clearTimeTravel();
-      if (data && showImageBuilder) {
-        await imageBuilderStore.document.loadData(data);
-      }
+      render([
+        g(Scene2D, {
+          id: 'scene2d',
+          draggable: true,
+          scalable: true,
+          container: 'scene2d',
+          commandMgr: appCommandManager,
+          cameraPosition: imageBuilderStore.scene.cameraPosition,
+          resizeTo: 'scene2d',
+          maxFPS: 120,
+          disableResize: false,
+          resolution: imageBuilderStore.scene.resolution,
+          renderFlag: imageBuilderStore.scene.renderFlag2d,
+          initialized: (sceneTools: SceneTool) => {
+            imageBuilderStore.scene.setSceneTools(sceneTools);
+          },
+          zoomRange: imageBuilderStore.scene.canvasZoomRange,
+          children: [g(Grid), g(ViewEntity), g(Gizmo), g(HintLine), g(SnapLine), g(RangeLine)],
+        }),
+      ]);
+      await imageBuilderStore.document.loadData(data);
     };
     fetchData();
   }, [data, showImageBuilder]);

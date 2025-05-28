@@ -128,7 +128,7 @@ root.render(
         <Route path="/" element={<DataFlow />} />
         <Route path="/image-builder" element={<ImageBuilder handleSave={(json?: IDocumentData) => {
           console.log(json);
-        }} data={imageBuilderData} />} />
+        }} data={imageBuilderData} showImageBuilder={true} />} />
         <Route path="/lite-design" element={<LiteDesign />} />
       </Routes>
     </Suspense>
