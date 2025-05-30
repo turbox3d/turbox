@@ -1,5 +1,11 @@
 # @turbox3d/renderer-core
 
+## 1.0.32
+
+### Patch Changes
+
+- f993ffc: fix: fix pure component compare range issue
+
 ## 1.0.31
 
 ### Patch Changes
