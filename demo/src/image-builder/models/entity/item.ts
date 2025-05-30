@@ -1,4 +1,4 @@
-import { EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
+import { computed, EntityObject, mutation, reactor, Vector2 } from '@turbox3d/turbox';
 import { ItemType } from '../../common/consts/scene';
 import { BLACK, GRAY, WHITE } from '../../common/consts/color';
 
@@ -7,10 +7,24 @@ export interface ITextStyles {
   lineHeight: number;
   fontFamily: string;
   color: number;
-  fontWeight: 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+  fontWeight:
+    | 'normal'
+    | 'bold'
+    | 'bolder'
+    | 'lighter'
+    | '100'
+    | '200'
+    | '300'
+    | '400'
+    | '500'
+    | '600'
+    | '700'
+    | '800'
+    | '900';
   align: 'left' | 'center' | 'right' | 'justify';
   wordWrap: boolean;
   wordWrapWidth: number;
+  fontStyle: 'normal' | 'italic' | 'oblique';
 }
 
 export interface IImageStyles {
@@ -18,6 +32,7 @@ export interface IImageStyles {
   borderWidth: number;
   borderColor: number;
   backgroundColor: number;
+  transparent: boolean;
 }
 
 export class ItemEntity extends EntityObject {
@@ -38,13 +53,14 @@ export class ItemEntity extends EntityObject {
     wordWrap: true,
     wordWrapWidth: 375,
     fontStyle: 'normal',
+    borderRadius: 0,
     borderWidth: 0,
     borderColor: GRAY,
     backgroundColor: WHITE,
-    borderRadius: 0,
+    transparent: true,
   };
   /** 当前操作 entity 中的文字实时包围盒 */
-  @reactor textBounds = { width: 0, height: 0 };
+  @reactor(true, false) textBounds = { width: 0, height: 0 };
 
   @mutation
   setTextBounds(bounds: Partial<{ width: number; height: number }>) {
@@ -52,7 +68,8 @@ export class ItemEntity extends EntityObject {
     bounds.height && (this.textBounds.height = bounds.height);
   }
 
-  getFontStyle() {
+  @computed({ lazy: false })
+  get fontStyles() {
     return {
       fontSize: this.attribute.fontSize,
       lineHeight: this.attribute.lineHeight * this.attribute.fontSize,

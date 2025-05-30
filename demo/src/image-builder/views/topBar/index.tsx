@@ -15,10 +15,13 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
     imageBuilderStore.document.redo();
   };
   const clear = () => {
-    imageBuilderStore.document.clear();
+    imageBuilderStore.document.clearItemEntities();
   };
   const dump = () => {
+    appCommandManager.default.select.clearAllSelected();
     const json = imageBuilderStore.document.dumpData();
+    imageBuilderStore.document.clear();
+    imageBuilderStore.document.clearTimeTravel();
     onSave(json);
   };
 
@@ -36,9 +39,9 @@ export const TopBar = ReactiveReact(({ onSave }: { onSave: (json?: IDocumentData
           <RedoOutlined />
         </Button>
 
-        {/* <Button size="small" onClick={clear}>
-          清空
-        </Button> */}
+        <Button className="button" size="small" onClick={clear}>
+          Clear Canvas
+        </Button>
         <Button className="button" size="small" onClick={dump} disabled={showInvalidRangeFrame}>
           Save
         </Button>

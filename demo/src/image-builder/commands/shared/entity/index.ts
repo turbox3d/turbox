@@ -11,6 +11,8 @@ import { GRAY, PRIMARY_COLOR, WHITE } from '../../../common/consts/color';
 import { loadImageElement } from '../../../common/utils/image';
 import { getTextBounds } from '../../../common/utils/text';
 
+const DEFAULT_BUTTON_PADDING = 8;
+
 export class EntityCommand extends Command {
   @mutation
   addItemEntity = async <CustomBizData>(
@@ -88,9 +90,10 @@ export class EntityCommand extends Command {
       x: imageBuilderStore.scene.sceneSize.width / 2,
       y: imageBuilderStore.scene.sceneSize.height / 2,
     });
+    const { width, height } = getTextBounds(entity);
     entity.setSize({
-      x: 160,
-      y: 40,
+      x: width + DEFAULT_BUTTON_PADDING * 2,
+      y: height + DEFAULT_BUTTON_PADDING * 2,
     });
     if (addToDocument) {
       imageBuilderStore.document.addModel(entity, sort);
@@ -299,8 +302,8 @@ export class EntityCommand extends Command {
     });
     const { width, height } = getTextBounds(selected);
     selected.setSize({
-      x: width,
-      y: height,
+      x: selected.itemType === ItemType.TEXT ? width : width + DEFAULT_BUTTON_PADDING * 2,
+      y: selected.itemType === ItemType.TEXT ? height : height + DEFAULT_BUTTON_PADDING * 2,
     });
   };
 

@@ -86,12 +86,20 @@ export const RightPanel = ReactiveReact(() => {
   const mirror = (type: MIRROR_ACTION) => () => {
     appCommandManager._shared.entity.updateMirror(type);
   };
+  const updateTransparent = (checked: boolean) => {
+    selected.$update({
+      attribute: {
+        ...selected.attribute,
+        transparent: checked,
+      },
+    });
+  };
 
   return (
     <div className="right-panel" key={selected.id}>
       {selected.itemType === ItemType.TEXT && (
         <>
-          <div className="flex-horizontal">
+          <div>
             <Attribute attribute="Text" />
             <Input.TextArea value={selected.text} onChange={onTextHandler} autoSize={{ minRows: 3, maxRows: 5 }} />
           </div>
@@ -144,7 +152,7 @@ export const RightPanel = ReactiveReact(() => {
             </div>
           ))}
           <div>
-            <Attribute attribute="Border" />
+            <Attribute attribute="Border Color" />
             <ColorPicker
               defaultValue={`#${selected.attribute.borderColor.toString(16)}`}
               placement="rightBottom"
@@ -154,7 +162,7 @@ export const RightPanel = ReactiveReact(() => {
             />
           </div>
           <div>
-            <Attribute attribute="Background" />
+            <Attribute attribute="Background Color" />
             <ColorPicker
               defaultValue={`#${selected.attribute.backgroundColor.toString(16)}`}
               placement="rightBottom"
@@ -162,6 +170,10 @@ export const RightPanel = ReactiveReact(() => {
               showText
               onChange={onColorHandler('backgroundColor')}
             />
+          </div>
+          <div>
+            <Attribute attribute="Transparent" />
+            <Switch value={selected.attribute.transparent} onChange={updateTransparent} />
           </div>
           <div>
             <Attribute attribute="Mirror" />
@@ -180,7 +192,7 @@ export const RightPanel = ReactiveReact(() => {
       )}
       {selected.itemType === ItemType.BUTTON && (
         <>
-          <div className="flex-horizontal">
+          <div>
             <Attribute attribute="Text" />
             <Input.TextArea value={selected.text} onChange={onTextHandler} autoSize={{ minRows: 3, maxRows: 5 }} />
           </div>
@@ -200,7 +212,7 @@ export const RightPanel = ReactiveReact(() => {
             </div>
           ))}
           <div>
-            <Attribute attribute="Border" />
+            <Attribute attribute="Border Color" />
             <ColorPicker
               defaultValue={`#${selected.attribute.borderColor.toString(16)}`}
               placement="rightBottom"
@@ -210,7 +222,7 @@ export const RightPanel = ReactiveReact(() => {
             />
           </div>
           <div>
-            <Attribute attribute="Background" />
+            <Attribute attribute="Background Color" />
             <ColorPicker
               defaultValue={`#${selected.attribute.backgroundColor.toString(16)}`}
               placement="rightBottom"
@@ -229,17 +241,19 @@ export const RightPanel = ReactiveReact(() => {
               onChange={onColorHandler('color')}
             />
           </div>
-          {Object.keys(textAttributesMap).map(key => (
-            <div key={key}>
-              <Attribute attribute={textAttributesMap[key].text} />
-              <Input
-                value={`${textAttributesMap[key].value}`}
-                type={textAttributesMap[key].type}
-                onChange={attributeHandler(key)}
-                disabled={textAttributesMap[key].disabled}
-              />
-            </div>
-          ))}
+          {Object.keys(textAttributesMap)
+            .filter(k => !['lineHeight', 'align'].includes(k))
+            .map(key => (
+              <div key={key}>
+                <Attribute attribute={textAttributesMap[key].text} />
+                <Input
+                  value={`${textAttributesMap[key].value}`}
+                  type={textAttributesMap[key].type}
+                  onChange={attributeHandler(key)}
+                  disabled={textAttributesMap[key].disabled}
+                />
+              </div>
+            ))}
         </>
       )}
     </div>

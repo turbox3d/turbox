@@ -2,10 +2,29 @@ import { DocumentSystem, EntityObject, Vec2, Vector2, mutation } from '@turbox3d
 
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { FrameEntity } from '../entity/frame';
-import { ITextStyles, ItemEntity } from '../entity/item';
+import { IImageStyles, ITextStyles, ItemEntity } from '../entity/item';
 import { appCommandManager } from '../../commands';
 import { ItemType } from '../../common/consts/scene';
 import { GRAY } from '../../common/consts/color';
+
+export interface IItem {
+  type: ItemType;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  zIndex: number;
+  data: {
+    content: string;
+    src: string;
+    href: string;
+    materialDirection: Vec2;
+    attribute: ITextStyles &
+      IImageStyles & {
+        [key: string]: any;
+      };
+  };
+}
 
 export interface IDocumentData {
   container: {
@@ -13,23 +32,7 @@ export interface IDocumentData {
     height: number;
     backgroundColor?: number;
   };
-  items: Array<{
-    type: ItemType;
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    zIndex: number;
-    data: {
-      content: string;
-      src: string;
-      href: string;
-      materialDirection: Vec2;
-      attribute: ITextStyles & {
-        [key: string]: any;
-      };
-    };
-  }>;
+  items: IItem[];
 }
 
 export class DocumentDomain extends DocumentSystem {
@@ -81,6 +84,13 @@ export class DocumentDomain extends DocumentSystem {
       return;
     }
     f(model);
+  }
+
+  @mutation
+  clearItemEntities() {
+    this.getItemEntities().forEach(m => {
+      this.removeModel(m);
+    });
   }
 
   @mutation
@@ -145,7 +155,12 @@ export class DocumentDomain extends DocumentSystem {
         itemEntity.setRenderOrder(i.zIndex);
         this.sortModels([itemEntity]);
       } else if (i.type === ItemType.TEXT) {
-        const textEntity = await appCommandManager._shared.entity.addTextItemEntity(i.data.content, undefined, true, false);
+        const textEntity = await appCommandManager._shared.entity.addTextItemEntity(
+          i.data.content,
+          undefined,
+          true,
+          false,
+        );
         textEntity.setSize({
           x: i.width,
           y: i.height,
@@ -161,7 +176,12 @@ export class DocumentDomain extends DocumentSystem {
         textEntity.setRenderOrder(i.zIndex);
         this.sortModels([textEntity]);
       } else if (i.type === ItemType.BUTTON) {
-        const buttonEntity = await appCommandManager._shared.entity.addButtonItemEntity(i.data.content, undefined, true, false);
+        const buttonEntity = await appCommandManager._shared.entity.addButtonItemEntity(
+          i.data.content,
+          undefined,
+          true,
+          false,
+        );
         buttonEntity.setSize({
           x: i.width,
           y: i.height,
