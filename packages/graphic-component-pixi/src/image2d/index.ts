@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { ComponentProps, Mesh2D } from '@turbox3d/renderer-pixi';
+import { Mesh2D } from '@turbox3d/renderer-pixi';
 import { fail, Vec2, cropImage } from '@turbox3d/shared';
 import DrawUtils from '../draw-utils';
 import { IFitStyle } from '../draw-utils/drawRect';
@@ -51,17 +51,6 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     this.s.zIndex = -1;
     this.view.addChild(this.g);
     this.view.addChild(this.s);
-  }
-
-  async componentWillUpdate(prevProps: ComponentProps<IImage2dProps>) {
-    if (prevProps.backgroundImage !== this.props.backgroundImage) {
-      this.s.visible = false;
-      const t = await this.loadTextureResource();
-      if (!t) {
-        return;
-      }
-      this.s.texture = t;
-    }
   }
 
   private async loadTextureResource() {
@@ -128,13 +117,11 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
       alpha,
     });
 
-    if (!this.s.texture.baseTexture.valid) {
-      const t = await this.loadTextureResource();
-      if (!t) {
-        return;
-      }
-      this.s.texture = t;
+    const t = await this.loadTextureResource();
+    if (!t) {
+      return;
     }
+    this.s.texture = t;
 
     const { width: tw, height: th } = this.s.texture;
     const imgRatio = tw / th;
@@ -157,21 +144,17 @@ export default class Image2d extends Mesh2D<IImage2dProps> {
     } else if (fit === 'cover') {
       if (imgRatio <= rectRatio) {
         const ratio = rw / tw;
-        if (!this.s.texture.baseTexture.valid) {
-          const { element } = await cropImage(backgroundImage, { start: { x: 0, y: th / 2 - rh / ratio / 2 }, end: { x: tw, y: th / 2 + rh / ratio / 2 }});
-          if (element) {
-            this.s.texture = PIXI.Texture.from(element);
-          }
+        const { element } = await cropImage(backgroundImage, { start: { x: 0, y: th / 2 - rh / ratio / 2 }, end: { x: tw, y: th / 2 + rh / ratio / 2 }});
+        if (element) {
+          this.s.texture = PIXI.Texture.from(element);
         }
         this.s.width = rw;
         this.s.height = rh;
       } else {
         const ratio = rh / th;
-        if (!this.s.texture.baseTexture.valid) {
-          const { element } = await cropImage(backgroundImage, { start: { x: tw / 2 - rw / ratio / 2, y: 0 }, end: { x: tw / 2 + rw / ratio / 2, y: th }});
-          if (element) {
-            this.s.texture = PIXI.Texture.from(element);
-          }
+        const { element } = await cropImage(backgroundImage, { start: { x: tw / 2 - rw / ratio / 2, y: 0 }, end: { x: tw / 2 + rw / ratio / 2, y: th }});
+        if (element) {
+          this.s.texture = PIXI.Texture.from(element);
         }
         this.s.width = rw;
         this.s.height = rh;
