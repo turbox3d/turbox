@@ -54,6 +54,12 @@ export class DocumentDomain extends DocumentSystem {
   }
 
   @mutation
+  clear() {
+    super.clear();
+    this.sortedModels = [];
+  }
+
+  @mutation
   addModel(model: EntityObject | EntityObject[], sort = true) {
     const f = (m: EntityObject) => {
       super.addModel(m);

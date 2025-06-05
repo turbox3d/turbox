@@ -2,6 +2,8 @@
 import { Button, ColorPicker, Divider, InputNumber } from 'antd';
 import * as React from 'react';
 import { FileImageOutlined } from '@ant-design/icons';
+import { Color } from 'antd/es/color-picker';
+import { ReactiveReact } from '@turbox3d/turbox';
 
 import './index.less';
 import { appCommandManager } from '../../commands/index';
@@ -9,8 +11,6 @@ import { useMaterialDragAndReplace } from '../../hooks/index';
 import { Z_INDEX_ACTION } from '../../common/consts/action';
 import { ItemType } from '../../common/consts/scene';
 import { imageBuilderStore } from '../../models';
-import { ReactiveReact } from '@turbox3d/turbox';
-import { Color } from 'antd/es/color-picker';
 
 // const images = [
 //   {
@@ -43,7 +43,7 @@ import { Color } from 'antd/es/color-picker';
 
 // eslint-disable-next-line max-lines-per-function
 export const LeftPanel = ReactiveReact(() => {
-  const { dragControl } = useMaterialDragAndReplace<{ type: string; name?: number | string; }>();
+  const { dragControl } = useMaterialDragAndReplace<{ type: string; name?: number | string }>();
   const pointerDownHandler = (url: string, type: string, name?: number | string) => (e: React.PointerEvent) => {
     e.persist();
     dragControl.current.onMouseDown(url, { name, type })(e.nativeEvent);
@@ -129,7 +129,13 @@ export const LeftPanel = ReactiveReact(() => {
             <FileImageOutlined style={{ fontSize: 18, height: 25 }} />
             <div className="text">Image</div>
           </div>
-          <div className="block" onPointerDown={pointerDownHandler('https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/button.svg', ItemType.BUTTON)}>
+          <div
+            className="block"
+            onPointerDown={pointerDownHandler(
+              'https://sf16-va.tiktokcdn.com/obj/eden-va2/uhmplmeh7uhmplmbn/button.svg',
+              ItemType.BUTTON,
+            )}
+          >
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 40, height: 25 }}>
               <path
                 d="M22 9v6c0 1.1-.9 2-2 2h-1v-2h1V9H4v6h6v2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2zm-7.5 10l1.09-2.41L18 15.5l-2.41-1.09L14.5 12l-1.09 2.41L11 15.5l2.41 1.09L14.5 19zm2.5-5l.62-1.38L19 12l-1.38-.62L17 10l-.62 1.38L15 12l1.38.62L17 14zm-2.5 5l1.09-2.41L18 15.5l-2.41-1.09L14.5 12l-1.09 2.41L11 15.5l2.41 1.09L14.5 19zm2.5-5l.62-1.38L19 12l-1.38-.62L17 10l-.62 1.38L15 12l1.38.62L17 14z"
@@ -145,11 +151,22 @@ export const LeftPanel = ReactiveReact(() => {
           <Divider orientation="left">Container</Divider>
           <div className="container-config-item">
             <span className="container-config-text">Width</span>
-            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.x} onChange={widthChange} min={1} max={375} style={{ width: 200 }} />
+            <InputNumber
+              value={imageBuilderStore.document.getFrameEntities()[0].size.x}
+              onChange={widthChange}
+              min={1}
+              max={375}
+              style={{ width: 200 }}
+            />
           </div>
           <div className="container-config-item">
             <span className="container-config-text">Height</span>
-            <InputNumber value={imageBuilderStore.document.getFrameEntities()[0].size.y} onChange={heightChange} min={1} style={{ width: 200 }} />
+            <InputNumber
+              value={imageBuilderStore.document.getFrameEntities()[0].size.y}
+              onChange={heightChange}
+              min={1}
+              style={{ width: 200 }}
+            />
           </div>
           <div className="container-config-item">
             <span className="container-config-text">Color</span>
@@ -166,19 +183,18 @@ export const LeftPanel = ReactiveReact(() => {
       <div className="divider-container">
         <Divider orientation="left">Layer Level</Divider>
         <div className="container-config-item">
-          <span className="container-config-text">Config</span>
           <div className="btn-group">
-            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.TOP)} style={{ height: 30, width: 80 }}>
-              Move Top
-            </Button>
-            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.INCREASE)} style={{ height: 30 }}>
-              Move Up
-            </Button>
-            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.DECREASE)} style={{ height: 30 }}>
-              Move Down
+            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.TOP)} style={{ height: 30 }}>
+              Move to top
             </Button>
             <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.BOTTOM)} style={{ height: 30 }}>
-              Move Bottom
+              Move to bottom
+            </Button>
+            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.INCREASE)} style={{ height: 30 }}>
+              Move upwards
+            </Button>
+            <Button size="small" className="op" onClick={updateZ(Z_INDEX_ACTION.DECREASE)} style={{ height: 30 }}>
+              Move downwards
             </Button>
           </div>
         </div>
