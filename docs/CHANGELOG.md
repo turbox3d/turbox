@@ -2335,6 +2335,12 @@
 
 # @turbox3d/graphic-component-pixi
 
+## 1.1.50
+
+### Patch Changes
+
+- 0625b84: fix: fix image2d update texture not work issue
+
 ## 1.1.49
 
 ### Patch Changes
