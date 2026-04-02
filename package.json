@@ -86,7 +86,7 @@
     "@turbox3d/turbox": "^1.1.40",
     "@turbox3d/turbox-dev-tool": "^1.0.22",
     "antd": "^5.22.7",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "mobx": "^6.12.0",
     "pixi.js": "~7.3.2",
     "react": "~18.2.0",
